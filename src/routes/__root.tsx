@@ -55,11 +55,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CISC Connect · Tuskegee University" },
-      { name: "description", content: "Farmers markets, workshops, publications, grants, internships and equipment from the Center for Integrated and Sustainable Communities at Tuskegee University." },
-      { property: "og:title", content: "CISC Connect · Tuskegee University" },
-      { property: "og:description", content: "Programs, resources and opportunities from Tuskegee University's Center for Integrated and Sustainable Communities." },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#7A0C16" },
+      { title: "JESUP · The Digital Extension Wagon" },
+      { name: "description", content: "JESUP is the digital home of the Carver Integrative Sustainability Center at Tuskegee University — programs, workshops, publications, and opportunities across the Black Belt." },
+      { property: "og:title", content: "JESUP · The Digital Extension Wagon" },
+      { property: "og:description", content: "Powered by the Carver Integrative Sustainability Center at Tuskegee University." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
