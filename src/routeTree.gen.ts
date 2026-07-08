@@ -24,6 +24,14 @@ import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminSurveysRouteImport } from './routes/_authenticated/admin/surveys'
+import { Route as AuthenticatedAdminPublicationsRouteImport } from './routes/_authenticated/admin/publications'
+import { Route as AuthenticatedAdminMarketsRouteImport } from './routes/_authenticated/admin/markets'
+import { Route as AuthenticatedAdminInternshipsRouteImport } from './routes/_authenticated/admin/internships'
+import { Route as AuthenticatedAdminGrantsRouteImport } from './routes/_authenticated/admin/grants'
+import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin/events'
+import { Route as AuthenticatedAdminEquipmentRouteImport } from './routes/_authenticated/admin/equipment'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -99,6 +107,53 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminSurveysRoute =
+  AuthenticatedAdminSurveysRouteImport.update({
+    id: '/surveys',
+    path: '/surveys',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminPublicationsRoute =
+  AuthenticatedAdminPublicationsRouteImport.update({
+    id: '/publications',
+    path: '/publications',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminMarketsRoute =
+  AuthenticatedAdminMarketsRouteImport.update({
+    id: '/markets',
+    path: '/markets',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminInternshipsRoute =
+  AuthenticatedAdminInternshipsRouteImport.update({
+    id: '/internships',
+    path: '/internships',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminGrantsRoute =
+  AuthenticatedAdminGrantsRouteImport.update({
+    id: '/grants',
+    path: '/grants',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminEventsRoute =
+  AuthenticatedAdminEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminEquipmentRoute =
+  AuthenticatedAdminEquipmentRouteImport.update({
+    id: '/equipment',
+    path: '/equipment',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -114,6 +169,14 @@ export interface FileRoutesByFullPath {
   '/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
   '/events/': typeof EventsIndexRoute
+  '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/grants': typeof AuthenticatedAdminGrantsRoute
+  '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
+  '/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -129,6 +192,14 @@ export interface FileRoutesByTo {
   '/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
   '/events': typeof EventsIndexRoute
+  '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/grants': typeof AuthenticatedAdminGrantsRoute
+  '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
+  '/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -147,6 +218,14 @@ export interface FileRoutesById {
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
   '/events/': typeof EventsIndexRoute
+  '/_authenticated/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
+  '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/_authenticated/admin/grants': typeof AuthenticatedAdminGrantsRoute
+  '/_authenticated/admin/internships': typeof AuthenticatedAdminInternshipsRoute
+  '/_authenticated/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/_authenticated/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/_authenticated/admin/surveys': typeof AuthenticatedAdminSurveysRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -165,6 +244,14 @@ export interface FileRouteTypes {
     | '/me'
     | '/events/$id'
     | '/events/'
+    | '/admin/equipment'
+    | '/admin/events'
+    | '/admin/grants'
+    | '/admin/internships'
+    | '/admin/markets'
+    | '/admin/publications'
+    | '/admin/surveys'
+    | '/admin/users'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -180,6 +267,14 @@ export interface FileRouteTypes {
     | '/me'
     | '/events/$id'
     | '/events'
+    | '/admin/equipment'
+    | '/admin/events'
+    | '/admin/grants'
+    | '/admin/internships'
+    | '/admin/markets'
+    | '/admin/publications'
+    | '/admin/surveys'
+    | '/admin/users'
     | '/admin'
   id:
     | '__root__'
@@ -197,6 +292,14 @@ export interface FileRouteTypes {
     | '/_authenticated/me'
     | '/events/$id'
     | '/events/'
+    | '/_authenticated/admin/equipment'
+    | '/_authenticated/admin/events'
+    | '/_authenticated/admin/grants'
+    | '/_authenticated/admin/internships'
+    | '/_authenticated/admin/markets'
+    | '/_authenticated/admin/publications'
+    | '/_authenticated/admin/surveys'
+    | '/_authenticated/admin/users'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -322,15 +425,87 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/surveys': {
+      id: '/_authenticated/admin/surveys'
+      path: '/surveys'
+      fullPath: '/admin/surveys'
+      preLoaderRoute: typeof AuthenticatedAdminSurveysRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/publications': {
+      id: '/_authenticated/admin/publications'
+      path: '/publications'
+      fullPath: '/admin/publications'
+      preLoaderRoute: typeof AuthenticatedAdminPublicationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/markets': {
+      id: '/_authenticated/admin/markets'
+      path: '/markets'
+      fullPath: '/admin/markets'
+      preLoaderRoute: typeof AuthenticatedAdminMarketsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/internships': {
+      id: '/_authenticated/admin/internships'
+      path: '/internships'
+      fullPath: '/admin/internships'
+      preLoaderRoute: typeof AuthenticatedAdminInternshipsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/grants': {
+      id: '/_authenticated/admin/grants'
+      path: '/grants'
+      fullPath: '/admin/grants'
+      preLoaderRoute: typeof AuthenticatedAdminGrantsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/events': {
+      id: '/_authenticated/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/equipment': {
+      id: '/_authenticated/admin/equipment'
+      path: '/equipment'
+      fullPath: '/admin/equipment'
+      preLoaderRoute: typeof AuthenticatedAdminEquipmentRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminEquipmentRoute: typeof AuthenticatedAdminEquipmentRoute
+  AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
+  AuthenticatedAdminGrantsRoute: typeof AuthenticatedAdminGrantsRoute
+  AuthenticatedAdminInternshipsRoute: typeof AuthenticatedAdminInternshipsRoute
+  AuthenticatedAdminMarketsRoute: typeof AuthenticatedAdminMarketsRoute
+  AuthenticatedAdminPublicationsRoute: typeof AuthenticatedAdminPublicationsRoute
+  AuthenticatedAdminSurveysRoute: typeof AuthenticatedAdminSurveysRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminEquipmentRoute: AuthenticatedAdminEquipmentRoute,
+    AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
+    AuthenticatedAdminGrantsRoute: AuthenticatedAdminGrantsRoute,
+    AuthenticatedAdminInternshipsRoute: AuthenticatedAdminInternshipsRoute,
+    AuthenticatedAdminMarketsRoute: AuthenticatedAdminMarketsRoute,
+    AuthenticatedAdminPublicationsRoute: AuthenticatedAdminPublicationsRoute,
+    AuthenticatedAdminSurveysRoute: AuthenticatedAdminSurveysRoute,
+    AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
 

@@ -92,6 +92,13 @@ export type Database = {
             referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "equipment_checkouts_user_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       event_registrations: {
@@ -122,6 +129,13 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_registrations_user_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -241,6 +255,13 @@ export type Database = {
             columns: ["internship_id"]
             isOneToOne: false
             referencedRelation: "internships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internship_applications_user_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
