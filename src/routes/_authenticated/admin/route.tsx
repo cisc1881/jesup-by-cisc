@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
-import { LayoutDashboard, MapPin, Calendar, BookOpen, DollarSign, Briefcase, Package, ClipboardList, Users, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, MapPin, Calendar, BookOpen, DollarSign, Briefcase, Package, ClipboardList, Users, LogOut, ExternalLink, Mic, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -23,6 +23,8 @@ const items = [
   { to: "/admin/grants", label: "Grants", icon: DollarSign },
   { to: "/admin/internships", label: "Internships", icon: Briefcase },
   { to: "/admin/equipment", label: "Equipment", icon: Package },
+  { to: "/admin/podcast", label: "Podcast", icon: Mic },
+  { to: "/admin/partners", label: "Partners", icon: Building2 },
   { to: "/admin/surveys", label: "Surveys", icon: ClipboardList },
   { to: "/admin/users", label: "Users", icon: Users },
 ];
@@ -35,8 +37,8 @@ function AdminShell() {
         <Sidebar collapsible="icon">
           <SidebarHeader>
             <Link to="/admin" className="flex items-center gap-2 px-2 py-1">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground font-serif font-bold">C</span>
-              <span className="font-serif text-sm font-bold text-primary group-data-[collapsible=icon]:hidden">CISC Admin</span>
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md grad-crimson text-white font-black">C</span>
+              <span className="font-black tracking-tight text-sm text-foreground group-data-[collapsible=icon]:hidden">JESUP Admin</span>
             </Link>
           </SidebarHeader>
           <SidebarContent>
@@ -74,7 +76,7 @@ function AdminShell() {
         <div className="flex flex-1 flex-col">
           <header className="flex h-14 items-center gap-3 border-b bg-background px-4">
             <SidebarTrigger />
-            <div className="font-serif text-sm font-semibold text-primary">CISC Connect · Admin</div>
+            <div className="font-black tracking-tight text-sm text-foreground">JESUP · Admin</div>
             <div className="ml-auto"><Button asChild variant="outline" size="sm"><Link to="/">Public site</Link></Button></div>
           </header>
           <main className="flex-1 bg-secondary/30 p-4 sm:p-6"><Outlet /></main>
