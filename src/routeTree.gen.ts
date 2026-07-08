@@ -33,6 +33,8 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSurveysRouteImport } from './routes/_authenticated/admin/surveys'
 import { Route as AuthenticatedAdminPublicationsRouteImport } from './routes/_authenticated/admin/publications'
+import { Route as AuthenticatedAdminPodcastRouteImport } from './routes/_authenticated/admin/podcast'
+import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin/partners'
 import { Route as AuthenticatedAdminMarketsRouteImport } from './routes/_authenticated/admin/markets'
 import { Route as AuthenticatedAdminInternshipsRouteImport } from './routes/_authenticated/admin/internships'
 import { Route as AuthenticatedAdminGrantsRouteImport } from './routes/_authenticated/admin/grants'
@@ -160,6 +162,18 @@ const AuthenticatedAdminPublicationsRoute =
     path: '/publications',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminPodcastRoute =
+  AuthenticatedAdminPodcastRouteImport.update({
+    id: '/podcast',
+    path: '/podcast',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminPartnersRoute =
+  AuthenticatedAdminPartnersRouteImport.update({
+    id: '/partners',
+    path: '/partners',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminMarketsRoute =
   AuthenticatedAdminMarketsRouteImport.update({
     id: '/markets',
@@ -216,6 +230,8 @@ export interface FileRoutesByFullPath {
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/podcast': typeof AuthenticatedAdminPodcastRoute
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -245,6 +261,8 @@ export interface FileRoutesByTo {
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/admin/podcast': typeof AuthenticatedAdminPodcastRoute
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -277,6 +295,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/_authenticated/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/_authenticated/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
+  '/_authenticated/admin/podcast': typeof AuthenticatedAdminPodcastRoute
   '/_authenticated/admin/publications': typeof AuthenticatedAdminPublicationsRoute
   '/_authenticated/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -309,6 +329,8 @@ export interface FileRouteTypes {
     | '/admin/grants'
     | '/admin/internships'
     | '/admin/markets'
+    | '/admin/partners'
+    | '/admin/podcast'
     | '/admin/publications'
     | '/admin/surveys'
     | '/admin/users'
@@ -338,6 +360,8 @@ export interface FileRouteTypes {
     | '/admin/grants'
     | '/admin/internships'
     | '/admin/markets'
+    | '/admin/partners'
+    | '/admin/podcast'
     | '/admin/publications'
     | '/admin/surveys'
     | '/admin/users'
@@ -369,6 +393,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/grants'
     | '/_authenticated/admin/internships'
     | '/_authenticated/admin/markets'
+    | '/_authenticated/admin/partners'
+    | '/_authenticated/admin/podcast'
     | '/_authenticated/admin/publications'
     | '/_authenticated/admin/surveys'
     | '/_authenticated/admin/users'
@@ -565,6 +591,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPublicationsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/podcast': {
+      id: '/_authenticated/admin/podcast'
+      path: '/podcast'
+      fullPath: '/admin/podcast'
+      preLoaderRoute: typeof AuthenticatedAdminPodcastRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/partners': {
+      id: '/_authenticated/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AuthenticatedAdminPartnersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/markets': {
       id: '/_authenticated/admin/markets'
       path: '/markets'
@@ -609,6 +649,8 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminGrantsRoute: typeof AuthenticatedAdminGrantsRoute
   AuthenticatedAdminInternshipsRoute: typeof AuthenticatedAdminInternshipsRoute
   AuthenticatedAdminMarketsRoute: typeof AuthenticatedAdminMarketsRoute
+  AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
+  AuthenticatedAdminPodcastRoute: typeof AuthenticatedAdminPodcastRoute
   AuthenticatedAdminPublicationsRoute: typeof AuthenticatedAdminPublicationsRoute
   AuthenticatedAdminSurveysRoute: typeof AuthenticatedAdminSurveysRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -622,6 +664,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminGrantsRoute: AuthenticatedAdminGrantsRoute,
     AuthenticatedAdminInternshipsRoute: AuthenticatedAdminInternshipsRoute,
     AuthenticatedAdminMarketsRoute: AuthenticatedAdminMarketsRoute,
+    AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
+    AuthenticatedAdminPodcastRoute: AuthenticatedAdminPodcastRoute,
     AuthenticatedAdminPublicationsRoute: AuthenticatedAdminPublicationsRoute,
     AuthenticatedAdminSurveysRoute: AuthenticatedAdminSurveysRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
