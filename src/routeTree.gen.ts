@@ -11,15 +11,21 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SurveysRouteImport } from './routes/surveys'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as PublicationsRouteImport } from './routes/publications'
+import { Route as ProgramsRouteImport } from './routes/programs'
+import { Route as PodcastRouteImport } from './routes/podcast'
+import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as InternshipsRouteImport } from './routes/internships'
 import { Route as GrantsRouteImport } from './routes/grants'
 import { Route as EquipmentRouteImport } from './routes/equipment'
+import { Route as DonateRouteImport } from './routes/donate'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
+import { Route as ProgramsSlugRouteImport } from './routes/programs.$slug'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
@@ -43,9 +49,29 @@ const SurveysRoute = SurveysRouteImport.update({
   path: '/surveys',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicationsRoute = PublicationsRouteImport.update({
   id: '/publications',
   path: '/publications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsRoute = ProgramsRouteImport.update({
+  id: '/programs',
+  path: '/programs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastRoute = PodcastRouteImport.update({
+  id: '/podcast',
+  path: '/podcast',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketsRoute = MarketsRouteImport.update({
@@ -68,6 +94,11 @@ const EquipmentRoute = EquipmentRouteImport.update({
   path: '/equipment',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DonateRoute = DonateRouteImport.update({
+  id: '/donate',
+  path: '/donate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -86,6 +117,11 @@ const EventsIndexRoute = EventsIndexRouteImport.update({
   id: '/events/',
   path: '/events/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsSlugRoute = ProgramsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ProgramsRoute,
 } as any)
 const EventsIdRoute = EventsIdRouteImport.update({
   id: '/events/$id',
@@ -158,16 +194,22 @@ const AuthenticatedAdminEquipmentRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/donate': typeof DonateRoute
   '/equipment': typeof EquipmentRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
   '/markets': typeof MarketsRoute
+  '/partners': typeof PartnersRoute
+  '/podcast': typeof PodcastRoute
+  '/programs': typeof ProgramsRouteWithChildren
   '/publications': typeof PublicationsRoute
+  '/resources': typeof ResourcesRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
+  '/programs/$slug': typeof ProgramsSlugRoute
   '/events/': typeof EventsIndexRoute
   '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
@@ -182,15 +224,21 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/donate': typeof DonateRoute
   '/equipment': typeof EquipmentRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
   '/markets': typeof MarketsRoute
+  '/partners': typeof PartnersRoute
+  '/podcast': typeof PodcastRoute
+  '/programs': typeof ProgramsRouteWithChildren
   '/publications': typeof PublicationsRoute
+  '/resources': typeof ResourcesRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
+  '/programs/$slug': typeof ProgramsSlugRoute
   '/events': typeof EventsIndexRoute
   '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
@@ -207,16 +255,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/donate': typeof DonateRoute
   '/equipment': typeof EquipmentRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
   '/markets': typeof MarketsRoute
+  '/partners': typeof PartnersRoute
+  '/podcast': typeof PodcastRoute
+  '/programs': typeof ProgramsRouteWithChildren
   '/publications': typeof PublicationsRoute
+  '/resources': typeof ResourcesRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
+  '/programs/$slug': typeof ProgramsSlugRoute
   '/events/': typeof EventsIndexRoute
   '/_authenticated/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
@@ -233,16 +287,22 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/donate'
     | '/equipment'
     | '/grants'
     | '/internships'
     | '/markets'
+    | '/partners'
+    | '/podcast'
+    | '/programs'
     | '/publications'
+    | '/resources'
     | '/surveys'
     | '/unauthorized'
     | '/admin'
     | '/me'
     | '/events/$id'
+    | '/programs/$slug'
     | '/events/'
     | '/admin/equipment'
     | '/admin/events'
@@ -257,15 +317,21 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/donate'
     | '/equipment'
     | '/grants'
     | '/internships'
     | '/markets'
+    | '/partners'
+    | '/podcast'
+    | '/programs'
     | '/publications'
+    | '/resources'
     | '/surveys'
     | '/unauthorized'
     | '/me'
     | '/events/$id'
+    | '/programs/$slug'
     | '/events'
     | '/admin/equipment'
     | '/admin/events'
@@ -281,16 +347,22 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/donate'
     | '/equipment'
     | '/grants'
     | '/internships'
     | '/markets'
+    | '/partners'
+    | '/podcast'
+    | '/programs'
     | '/publications'
+    | '/resources'
     | '/surveys'
     | '/unauthorized'
     | '/_authenticated/admin'
     | '/_authenticated/me'
     | '/events/$id'
+    | '/programs/$slug'
     | '/events/'
     | '/_authenticated/admin/equipment'
     | '/_authenticated/admin/events'
@@ -307,11 +379,16 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  DonateRoute: typeof DonateRoute
   EquipmentRoute: typeof EquipmentRoute
   GrantsRoute: typeof GrantsRoute
   InternshipsRoute: typeof InternshipsRoute
   MarketsRoute: typeof MarketsRoute
+  PartnersRoute: typeof PartnersRoute
+  PodcastRoute: typeof PodcastRoute
+  ProgramsRoute: typeof ProgramsRouteWithChildren
   PublicationsRoute: typeof PublicationsRoute
+  ResourcesRoute: typeof ResourcesRoute
   SurveysRoute: typeof SurveysRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   EventsIdRoute: typeof EventsIdRoute
@@ -334,11 +411,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SurveysRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/publications': {
       id: '/publications'
       path: '/publications'
       fullPath: '/publications'
       preLoaderRoute: typeof PublicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs': {
+      id: '/programs'
+      path: '/programs'
+      fullPath: '/programs'
+      preLoaderRoute: typeof ProgramsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcast': {
+      id: '/podcast'
+      path: '/podcast'
+      fullPath: '/podcast'
+      preLoaderRoute: typeof PodcastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/markets': {
@@ -369,6 +474,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EquipmentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/donate': {
+      id: '/donate'
+      path: '/donate'
+      fullPath: '/donate'
+      preLoaderRoute: typeof DonateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -396,6 +508,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/events/'
       preLoaderRoute: typeof EventsIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/programs/$slug': {
+      id: '/programs/$slug'
+      path: '/$slug'
+      fullPath: '/programs/$slug'
+      preLoaderRoute: typeof ProgramsSlugRouteImport
+      parentRoute: typeof ProgramsRoute
     }
     '/events/$id': {
       id: '/events/$id'
@@ -527,15 +646,32 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ProgramsRouteChildren {
+  ProgramsSlugRoute: typeof ProgramsSlugRoute
+}
+
+const ProgramsRouteChildren: ProgramsRouteChildren = {
+  ProgramsSlugRoute: ProgramsSlugRoute,
+}
+
+const ProgramsRouteWithChildren = ProgramsRoute._addFileChildren(
+  ProgramsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  DonateRoute: DonateRoute,
   EquipmentRoute: EquipmentRoute,
   GrantsRoute: GrantsRoute,
   InternshipsRoute: InternshipsRoute,
   MarketsRoute: MarketsRoute,
+  PartnersRoute: PartnersRoute,
+  PodcastRoute: PodcastRoute,
+  ProgramsRoute: ProgramsRouteWithChildren,
   PublicationsRoute: PublicationsRoute,
+  ResourcesRoute: ResourcesRoute,
   SurveysRoute: SurveysRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   EventsIdRoute: EventsIdRoute,
@@ -544,13 +680,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
