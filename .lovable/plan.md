@@ -1,130 +1,97 @@
+# JESUP — The Digital Extension Wagon
 
-# CISC Connect — Foundation Build
+Rebrand the entire application and elevate it from a university-style site to a premium mobile-first product (Apple / Nike / Spotify feel). All existing CRUD, auth, RLS, admin dashboard, and equipment logic stay intact — this is a design + IA overhaul plus a few new content sections.
 
-Responsive web app for Tuskegee University's Center for Integrated and Sustainable Communities. This plan covers the foundation: design system, auth, database, public portal, user dashboard, and admin dashboard with full CRUD. No AI, shelf-life, or notification features.
+## 1. Brand & design system (`src/styles.css`, `__root.tsx`)
 
-## Design system
+- App name everywhere: **JESUP** / subtitle *The Digital Extension Wagon* / "Powered by CISC · Tuskegee University Cooperative Extension".
+- Replace maroon/gold palette with the new crimson gradient + neutrals + metallic gold:
+  - `--primary` deep crimson `#7A0C16`, `--primary-mid` `#9E1B2F`, `--primary-bright` `#C1273D`
+  - `--gradient-primary: linear-gradient(135deg,#7A0C16,#9E1B2F 55%,#C1273D)`
+  - Neutrals: bg `#F5F5F3`, card `#FFFFFF`, secondary bg `#ECECEC`, text `#1F1F1F`, muted `#6B6B6B`, border `#D8D8D8`
+  - Metallic gold tokens `--gold`, `--gold-light`, `--gold-dark` (`#B08D57 / #C6A15B / #A87B2D`) — reserved for dividers, badges, active indicators, certificates only.
+- Typography: keep **Inter** for body, swap Playfair for **Instrument Sans / SF-style** display via existing Inter weights (600/700/800) — no serif. Larger tracking-tight headings.
+- Global tokens: `--radius: 1.25rem`, rounded-2xl/3xl cards, soft shadows (`shadow-[0_8px_30px_rgba(0,0,0,0.06)]`), generous spacing.
+- Utilities: `.grad-primary`, `.grad-text`, `.gold-divider`, `.card-elevated`, `.fade-in`, `.slide-up`.
+- Upload the CISC logo as a Lovable asset (`src/assets/cisc-logo.png.asset.json`) and use it in the footer / powered-by chip.
 
-Tokens in `src/styles.css` (oklch equivalents of the hex values):
-- `--primary` maroon `#7C2529`
-- `--accent` gold `#C9A227`
-- `--background` white, `--foreground` dark gray `#2A2A2A`
-- Neutral card/border/muted surfaces
-- Gold accent bar utility for section headings
+## 2. Information architecture
 
-Fonts loaded via `<link>` in `__root.tsx` head:
-- Playfair Display (headings) → `--font-serif`
-- Inter (body) → `--font-sans`
+New public shell = **mobile-first with bottom tab bar** (5 tabs) on `<md`, top nav on desktop.
 
-Shared UI: rounded-2xl cards, mobile-first grids, sticky public top nav with mobile sheet menu, collapsible admin sidebar (shadcn Sidebar with `collapsible="icon"`).
+Bottom tabs → routes:
+1. **Home** `/`
+2. **Programs** `/programs` (new hub) — nests existing markets/events/publications logic later
+3. **Events** `/events`
+4. **Resources** `/resources` (hub linking Publications, Grants, Internships, Equipment, Surveys)
+5. **Profile** `/me` (auth-gated, prompts sign-in if signed out)
 
-## Stack
+Secondary routes surfaced from Home / Resources: `/podcast`, `/partners`, `/donate`, plus the existing `/markets`, `/publications`, `/grants`, `/internships`, `/equipment`, `/surveys`, `/auth`.
 
-TanStack Start template as-is, Lovable Cloud for auth/DB/storage, shadcn/ui components. Google Maps deferred — `/markets` uses a list view plus a "map placeholder" card, per the spec.
+Admin dashboard stays exactly as-is (styling refreshed to match new tokens; no functional change).
 
-## Auth
+## 3. New / redesigned public screens
 
-- Email/password + Google (via `lovable.auth.signInWithOAuth("google", ...)` from a public `/auth` route)
-- `supabase--configure_social_auth` called for Google in the same turn Google is wired
-- `app_role` enum (`admin`, `user`), `user_roles` table, `has_role()` security-definer function
-- Root `onAuthStateChange` in `__root.tsx` for router/query invalidation
-- `_authenticated/route.tsx` (integration-managed) gates user-only pages
-- `_authenticated/admin/route.tsx` additionally checks `has_role(uid,'admin')` in `beforeLoad`; non-admins → `/unauthorized`
+### Home `/` — immersive dashboard
+- Hero **carousel** (embla) with 3–5 large image slides + crimson gradient overlay: welcome message ("Welcome to JESUP"), today's weather (static placeholder card — no external API this pass), upcoming workshop (from `events`), featured program, latest publication.
+- Quick Actions grid: Programs / Events / Podcast / Donate / Partners / Equipment — rounded image cards.
+- "Latest from CISC" strip (publications) and "Upcoming" strip (events).
 
-## Database (migrations, RLS + GRANTs)
+### Programs `/programs` — Apple Fitness-style cards
+Static hardcoded list of the 10 named programs, each with cover image (generated), tagline, tag chips. Detail route `/programs/$slug` shows hero, description, related events.
 
-Tables in `public`:
-- `profiles` (id fk auth.users, full_name, email, phone, affiliation)
-- `user_roles` (user_id, role) with `has_role()` fn
-- `markets` (name, description, address, city, state, lat, lng, hours, season, image_url)
-- `events` (title, description, starts_at, ends_at, location, capacity, image_url, registration_open)
-- `event_registrations` (event_id, user_id, notes, created_at) unique(event_id,user_id)
-- `publications` (title, description, category, file_url, external_url, published_at)
-- `grants` (title, funder, description, amount, deadline, url)
-- `internships` (title, description, department, deadline, is_open)
-- `internship_applications` (internship_id, user_id, resume_url, cover_letter, status, created_at)
-- `equipment` (name, description, category, quantity_total, image_url)
-- `equipment_checkouts` (equipment_id, user_id, quantity, checkout_date, return_date, status enum, notes)
-- `surveys` (title, description, qualtrics_url)
+### Podcast `/podcast` — Spotify-style
+- Show hero cover + play button (non-functional player UI; audio URL optional per episode)
+- Episode cards: cover, title, guest, duration, description, category badge.
+- Data: new `podcast_episodes` table + admin CRUD.
 
-RLS pattern per table:
-- Public catalogs (markets/events/publications/grants/internships/equipment/surveys): SELECT to `anon, authenticated`; INSERT/UPDATE/DELETE only when `has_role(auth.uid(),'admin')`
-- User-owned (event_registrations, internship_applications, equipment_checkouts): user SELECT/INSERT own rows (`auth.uid() = user_id`); admin full access
-- `profiles`: user reads/updates own; admin reads all
-- `user_roles`: user reads own; admin manages
-- Every table ships `GRANT`s to `authenticated` + `service_role`, plus `anon` SELECT where public
+### Partners `/partners`
+- Grid of logo cards with name, description, website, category filter.
+- Data: new `partners` table + admin CRUD.
 
-Trigger: on new `auth.users` row, insert into `profiles` and grant `user` role.
+### Donate `/donate`
+- Large hero + mission statement.
+- "Ways to Give" cards: Sponsor Programs / Support Students / Support Research.
+- Placeholder "Give Online" CTA button (external URL configurable later).
 
-Storage buckets (created via `supabase--storage_create_bucket`):
-- `publications` (public) — PDF uploads
-- `market-images`, `event-images`, `equipment-images` (public)
-- `resumes` (private) — user reads own, admin reads all
+### Resources `/resources`
+Hub page linking Publications, Grants, Internships, Equipment, Surveys with icon cards. Existing pages restyled.
 
-## Routes
+### Profile `/me`
+Personalized dashboard: greeting, avatar, role chip, tabs for My Registrations / My Applications / My Checkouts (existing data), plus a "Personalize your experience" card teasing future role-based views (Farmer / Student / Faculty / Extension Agent / Community).
 
-Public:
-```
-/                    Landing: mission, quick links, upcoming events
-/auth                Sign in / sign up (email + Google)
-/markets             Directory: list + map placeholder card
-/events              Upcoming events grid
-/events/$id          Detail + register button
-/publications        Grid with download / open buttons
-/grants              List + detail
-/internships         List + apply
-/equipment           Catalog + checkout request form
-/surveys             Qualtrics link cards
-/unauthorized        Access denied
-```
+## 4. Components to add
+- `src/components/bottom-nav.tsx` — fixed bottom tab bar, hides on `md+`.
+- `src/components/top-nav.tsx` — refreshed desktop nav with JESUP wordmark + gold divider.
+- `src/components/hero-carousel.tsx` — embla-based.
+- `src/components/program-card.tsx`, `podcast-card.tsx`, `partner-card.tsx`, `quick-action.tsx`, `section-header.tsx`, `stat-pill.tsx`.
+- `src/components/public-layout.tsx` — updated shell (top nav + bottom nav + page padding for tab bar).
 
-Authenticated user:
-```
-/_authenticated/me   My activity: my registrations, applications, checkouts
-```
+## 5. Database additions (single migration)
+- `podcast_episodes` (title, slug, guest, duration_seconds, description, cover_url, audio_url, category, published_at, is_published)
+- `partners` (name, slug, description, logo_url, website_url, category, sort_order)
+- `programs` seeded server-side (static in code — no table needed; keeps admin simple)
+- Public `SELECT` for anon+authenticated on published rows; admin full via `has_role('admin')`. Include `GRANT`s per rules.
 
-Admin (under `_authenticated/admin`):
-```
-/admin                     Dashboard: counts + recent activity
-/admin/markets             CRUD
-/admin/events              CRUD + per-event registrations viewer
-/admin/publications        CRUD (upload PDF to `publications` bucket OR external URL)
-/admin/grants              CRUD
-/admin/internships         CRUD
-/admin/internships/applications   Review applications, update status
-/admin/equipment           CRUD inventory
-/admin/equipment/requests  Approve / deny / check out / mark returned
-/admin/surveys             CRUD Qualtrics links
-/admin/users               List users, grant/revoke admin
-```
+## 6. Admin additions
+- `/admin/podcast` and `/admin/partners` CRUD pages, styled to match refreshed tokens. CSV export wired.
+- Sidebar gets two new items.
 
-Every list has search + "Export CSV" (client-side helper).
+## 7. Assets
+Generate cover imagery with imagegen (fast tier): hero carousel (3 images), 10 program covers, podcast default cover, donate hero, partner placeholder. Save under `src/assets/jesup/*.jpg` and import.
 
-## Server functions (`createServerFn`)
-
-- Public reads use a server publishable-key client (no bearer needed at SSR)
-- User-scoped actions use `.middleware([requireSupabaseAuth])`
-- Admin mutations additionally call `has_role` before running
-- Equipment availability: `requestEquipmentCheckout` sums overlapping `approved` + `checked_out` reservations for the item within `[checkout_date, return_date]` and rejects when `sum + requested > quantity_total`
-
-Representative set: `listMarkets/upsertMarket/deleteMarket`, `listEvents/upsertEvent/deleteEvent/listEventRegistrations`, `registerForEvent`, `listPublications/upsertPublication/deletePublication`, `listGrants/upsert/delete`, `listInternships/upsert/delete`, `applyForInternship/listApplications/updateApplication`, `listEquipment/upsert/delete`, `requestEquipmentCheckout/listCheckouts/updateCheckoutStatus`, `listSurveys/upsert/delete`, `listUsers/setUserRole`.
-
-## CSV export
-
-`src/lib/csv.ts` — `toCsv(rows, columns)` → Blob + download. Wired to each admin list's Export button.
-
-## SEO / head
-
-Each public route sets its own `head()` with `title`, `description`, `og:title`, `og:description`. Landing gets an `og:image` from a generated hero.
+## 8. Out of scope this pass
+- Real weather API, real audio playback engine, real payment integration, push notifications, role-personalized profile logic (UI stub only), any AI/shelf-life/pesticide features.
 
 ## Build order
+1. Design tokens + fonts + utilities (`src/styles.css`, `__root.tsx` title/meta).
+2. Migration for `podcast_episodes` + `partners` (await approval).
+3. Generate hero + program cover images in parallel.
+4. New layout shell + bottom nav + top nav + rebrand text.
+5. Redesign Home (`/`) with carousel + quick actions + strips.
+6. New routes: `/programs`, `/programs/$slug`, `/podcast`, `/partners`, `/donate`, `/resources`.
+7. Restyle existing catalog pages (Events, Publications, Grants, Internships, Equipment, Surveys, Markets, Me, Auth) to new tokens — content/logic unchanged.
+8. Admin: add Podcast + Partners CRUD, restyle sidebar/header to new tokens.
+9. Verify build + screenshot key screens at mobile viewport.
 
-1. Enable Lovable Cloud
-2. Design tokens, fonts, `__root.tsx` metadata + auth listener
-3. Migrations: enums, tables, `has_role`, RLS + GRANTs, profile/role trigger; create storage buckets
-4. Auth pages, `_authenticated/` + `_authenticated/admin/` layout gates, `/unauthorized`
-5. Public shell (sticky nav) + landing
-6. Public catalogs (markets, events + detail, publications, grants, internships, equipment, surveys)
-7. `/me` user dashboard
-8. Admin shell (sidebar) + dashboard + all CRUD screens + CSV export
-9. Head metadata polish + mobile QA
+Confirm and I'll start executing.
