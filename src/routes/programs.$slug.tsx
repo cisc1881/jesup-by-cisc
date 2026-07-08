@@ -55,7 +55,7 @@ function ProgramDetail() {
               <ArrowLeft className="h-3.5 w-3.5" /> All programs
             </Link>
             <div className="mb-3 flex flex-wrap gap-1.5">
-              {program.tags.map((t) => (
+              {program.tags.map((t: string) => (
                 <span key={t} className="rounded-full border border-white/30 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">{t}</span>
               ))}
             </div>

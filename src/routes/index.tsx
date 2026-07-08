@@ -35,7 +35,7 @@ function Home() {
   });
   const { data: pubs } = useQuery({
     queryKey: ["home-pubs"],
-    queryFn: async () => (await supabase.from("publications").select("id,title,summary,cover_url,published_at").order("published_at", { ascending: false, nullsFirst: false }).limit(4)).data ?? [],
+    queryFn: async () => (await supabase.from("publications").select("id,title,description,published_at").order("published_at", { ascending: false, nullsFirst: false }).limit(4)).data ?? [],
   });
 
   const featuredProgram = programs[0];
