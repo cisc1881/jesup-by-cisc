@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
-import { LayoutDashboard, MapPin, Calendar, BookOpen, DollarSign, Briefcase, Package, ClipboardList, Users, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, MapPin, Calendar, BookOpen, DollarSign, Briefcase, Package, ClipboardList, Users, LogOut, ExternalLink, Mic, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -23,6 +23,8 @@ const items = [
   { to: "/admin/grants", label: "Grants", icon: DollarSign },
   { to: "/admin/internships", label: "Internships", icon: Briefcase },
   { to: "/admin/equipment", label: "Equipment", icon: Package },
+  { to: "/admin/podcast", label: "Podcast", icon: Mic },
+  { to: "/admin/partners", label: "Partners", icon: Building2 },
   { to: "/admin/surveys", label: "Surveys", icon: ClipboardList },
   { to: "/admin/users", label: "Users", icon: Users },
 ];
