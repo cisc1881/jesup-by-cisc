@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "@/components/ui/sonner";
+import { OfflineBanner } from "@/components/offline-banner";
 
 function NotFoundComponent() {
   return (
@@ -99,15 +100,18 @@ function RootComponent() {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      if (event !== "SIGNED_OUT") {
+        queryClient.invalidateQueries({ predicate: (q) => q.queryKey[0] !== "home-page" });
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, [router, queryClient]);
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
+        <OfflineBanner />
         <Outlet />
-        <Toaster richColors position="top-right" />
+        <Toaster richColors position="top-center" className="sm:!top-4 sm:!right-4 sm:!left-auto" />
       </QueryClientProvider>
     </ThemeProvider>
   );

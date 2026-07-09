@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { downloadCsv } from "@/lib/csv";
+import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -20,6 +21,7 @@ const empty = { title: "", description: "", qualtrics_url: "" };
 
 function AdminSurveys() {
   const qc = useQueryClient();
+  const { confirmAndDelete, dialog } = useAdminDelete();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
@@ -40,11 +42,16 @@ function AdminSurveys() {
     if (res.error) return toast.error(res.error.message);
     toast.success("Saved"); setOpen(false); qc.invalidateQueries({ queryKey: ["admin-surveys"] });
   }
-  async function del(id: string) {
-    if (!confirm("Delete?")) return;
-    const { error } = await supabase.from("surveys").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-surveys"] });
+  async function del(id: string, title: string) {
+    await confirmAndDelete({
+      entityLabel: "survey",
+      itemName: title,
+      onDelete: async () => {
+        const { error } = await supabase.from("surveys").delete().eq("id", id);
+        if (error) throw error;
+      },
+      onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-surveys"] }),
+    });
   }
 
   return (
@@ -63,7 +70,7 @@ function AdminSurveys() {
                 <TableCell className="max-w-md truncate text-sm text-muted-foreground">{r.qualtrics_url}</TableCell>
                 <TableCell><div className="flex gap-1">
                   <Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => del(r.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => del(r.id, r.title)} aria-label={`Delete ${r.title}`}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </div></TableCell>
               </TableRow>
             ))}
@@ -82,6 +89,7 @@ function AdminSurveys() {
           </form>
         </DialogContent>
       </Dialog>
+      {dialog}
     </AdminShell>
   );
 }

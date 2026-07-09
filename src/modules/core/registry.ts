@@ -44,8 +44,8 @@ export const PLATFORM_MODULES: Record<ModuleId, PlatformModule> = {
     id: "podcasts",
     label: "Podcasts",
     description: "Podcast episodes and audio content",
-    publicRoute: "/podcast",
-    adminRoute: "/admin/podcast",
+    publicRoute: "/podcasts",
+    adminRoute: "/admin/podcasts",
     aiEnabled: true,
   },
   partners: {
@@ -54,6 +54,14 @@ export const PLATFORM_MODULES: Record<ModuleId, PlatformModule> = {
     description: "Community and organizational partners",
     publicRoute: "/partners",
     adminRoute: "/admin/partners",
+  },
+  news: {
+    id: "news",
+    label: "News",
+    description: "News articles and announcements",
+    publicRoute: "/news",
+    adminRoute: "/admin/news",
+    aiEnabled: true,
   },
   donations: {
     id: "donations",
@@ -92,8 +100,33 @@ export const PLATFORM_MODULES: Record<ModuleId, PlatformModule> = {
   twofas: {
     id: "twofas",
     label: "2FAS",
-    description: "Two-factor authentication services",
+    description: "Future Farmers and Agricultural Specialists student management",
     aiEnabled: false,
+    adminRoute: "/admin/2fas/applications",
+  },
+  volunteers: {
+    id: "volunteers",
+    label: "Volunteers",
+    description: "Volunteer coordination and service hours",
+    adminRoute: "/admin/volunteers",
+  },
+  members: {
+    id: "members",
+    label: "Members",
+    description: "Community member directory and profiles",
+    adminRoute: "/admin/members",
+  },
+  organizations: {
+    id: "organizations",
+    label: "Organizations",
+    description: "Partner organizations and affiliations",
+    adminRoute: "/admin/organizations",
+  },
+  counties: {
+    id: "counties",
+    label: "Counties",
+    description: "County-level Extension coverage and contacts",
+    adminRoute: "/admin/counties",
   },
   ai: {
     id: "ai",
@@ -108,6 +141,25 @@ export const PLATFORM_MODULES: Record<ModuleId, PlatformModule> = {
     description: "Platform analytics and reporting",
     adminRoute: "/admin/analytics",
     aiEnabled: true,
+  },
+  reports: {
+    id: "reports",
+    label: "Reports",
+    description: "Platform reports and metrics",
+    adminRoute: "/admin/reports",
+    aiEnabled: true,
+  },
+  activity: {
+    id: "activity",
+    label: "Activity",
+    description: "Command Center activity feed",
+    adminRoute: "/admin/activity",
+  },
+  roles: {
+    id: "roles",
+    label: "Roles",
+    description: "User roles and permissions",
+    adminRoute: "/admin/roles",
   },
   settings: {
     id: "settings",
@@ -125,6 +177,7 @@ export const PLATFORM_MODULES: Record<ModuleId, PlatformModule> = {
     id: "search",
     label: "Search",
     description: "Global content search",
+    publicRoute: "/search",
     adminRoute: "/admin/search",
     aiEnabled: true,
   },
@@ -148,6 +201,7 @@ export function getContentModules(): PlatformModule[] {
     PLATFORM_MODULES.publications,
     PLATFORM_MODULES.podcasts,
     PLATFORM_MODULES.partners,
+    PLATFORM_MODULES.news,
     PLATFORM_MODULES.grants,
   ];
 }

@@ -1,5 +1,4 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer } from "@/components/design-system";
 import {
@@ -8,26 +7,34 @@ import {
   ProgramContentSections,
   ProgramDetailHero,
 } from "@/components/programs";
+import { buildPageHead, programJsonLd } from "@/lib/seo";
 import { fetchProgramBySlug, fetchPrograms } from "@/lib/programs";
 
 export const Route = createFileRoute("/programs/$slug")({
   loader: async ({ params }) => {
     const program = await fetchProgramBySlug(params.slug);
     if (!program) throw notFound();
-    return { program };
+    const allPrograms = await fetchPrograms();
+    const related = allPrograms.filter((p) => p.slug !== program.slug).slice(0, 3);
+    return { program, related };
   },
   head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "Program not found · JESUP" }, { name: "robots", content: "noindex" }] };
+    if (!loaderData) {
+      return buildPageHead({ title: "Program not found", noindex: true });
+    }
     const p = loaderData.program;
-    return {
-      meta: [
-        { title: `${p.name} · JESUP` },
-        { name: "description", content: p.tagline ?? p.name },
-        { property: "og:title", content: `${p.name} · JESUP` },
-        { property: "og:description", content: p.tagline ?? p.name },
-        ...(p.coverImageUrl ? [{ property: "og:image", content: p.coverImageUrl }] : []),
-      ],
-    };
+    return buildPageHead({
+      title: p.name,
+      description: p.tagline ?? p.short ?? p.name,
+      path: `/programs/${p.slug}`,
+      imageUrl: p.coverImageUrl,
+      jsonLd: programJsonLd({
+        name: p.name,
+        description: p.tagline ?? p.short,
+        path: `/programs/${p.slug}`,
+        imageUrl: p.coverImageUrl,
+      }),
+    });
   },
   component: ProgramDetail,
   notFoundComponent: () => (
@@ -43,12 +50,7 @@ export const Route = createFileRoute("/programs/$slug")({
 });
 
 function ProgramDetail() {
-  const { program } = Route.useLoaderData();
-  const { data: allPrograms } = useQuery({
-    queryKey: ["programs"],
-    queryFn: () => fetchPrograms(),
-  });
-  const related = (allPrograms ?? []).filter((p) => p.slug !== program.slug).slice(0, 3);
+  const { program, related } = Route.useLoaderData();
 
   return (
     <PublicLayout>

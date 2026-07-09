@@ -9,6 +9,7 @@ import {
   Heart,
   Mic,
   Briefcase,
+  Newspaper,
 } from "lucide-react";
 
 /** Routes that belong under the Resources tab (mobile) and hub page. */
@@ -21,7 +22,8 @@ export const RESOURCE_ROUTES = [
   "/surveys",
   "/partners",
   "/donate",
-  "/podcast",
+  "/podcasts",
+  "/news",
   "/internships",
 ] as const;
 
@@ -46,7 +48,8 @@ export const resourceHubLinks: ResourceHubLink[] = [
   { to: "/surveys", icon: ClipboardList, title: "Surveys", body: "Share your voice and shape our programs." },
   { to: "/partners", icon: Building2, title: "Partners", body: "Organizations and collaborators across the Black Belt." },
   { to: "/donate", icon: Heart, title: "Donate", body: "Support programs, students, and community impact." },
-  { to: "/podcast", icon: Mic, title: "Podcast", body: "Conversations from the field and the community." },
+  { to: "/podcasts", icon: Mic, title: "Podcasts", body: "Conversations from the field and the community." },
+  { to: "/news", icon: Newspaper, title: "News & stories", body: "Programs, research, Extension updates, and community impact." },
   { to: "/internships", icon: Briefcase, title: "Internships", body: "Apply for hands-on student and community internships." },
 ];
 
@@ -54,8 +57,9 @@ export const resourceHubLinks: ResourceHubLink[] = [
 export const desktopNavLinks = [
   { to: "/programs", label: "Programs" },
   { to: "/events", label: "Events" },
+  { to: "/news", label: "News" },
   { to: "/resources", label: "Resources" },
-  { to: "/podcast", label: "Podcast" },
+  { to: "/podcasts", label: "Podcasts" },
   { to: "/partners", label: "Partners" },
   { to: "/donate", label: "Donate" },
 ] as const;

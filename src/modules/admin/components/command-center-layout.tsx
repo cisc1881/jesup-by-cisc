@@ -21,6 +21,8 @@ import {
   COMMAND_CENTER_NAV_GROUPS,
   COMMAND_CENTER_TITLE,
 } from "../config/nav-items";
+import { NotificationBellDropdown } from "./notification-bell-dropdown";
+import { GlobalSearchDialog } from "@/components/search/global-search-dialog";
 
 export function CommandCenterLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -45,7 +47,7 @@ export function CommandCenterLayout() {
               if (items.length === 0) return null;
               return (
                 <SidebarGroup key={group.id}>
-                  <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+                  {group.label ? <SidebarGroupLabel>{group.label}</SidebarGroupLabel> : null}
                   <SidebarGroupContent>
                     <SidebarMenu>
                       {items.map((item) => {
@@ -95,7 +97,9 @@ export function CommandCenterLayout() {
           <header className="flex h-14 items-center gap-3 border-b bg-background px-4">
             <SidebarTrigger />
             <div className="font-black tracking-tight text-sm text-foreground">{COMMAND_CENTER_TITLE}</div>
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-2">
+              <GlobalSearchDialog />
+              <NotificationBellDropdown />
               <Button asChild variant="outline" size="sm">
                 <Link to="/">Public site</Link>
               </Button>

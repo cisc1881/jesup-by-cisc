@@ -178,7 +178,7 @@ export async function fetchPublicationBySlug(slug: string): Promise<PublicationD
       .order("sort_order"),
     supabase
       .from("publication_podcast_episodes")
-      .select("sort_order, podcast_episodes ( id, title, guest )")
+      .select("sort_order, podcast_episodes ( id, title, guest, slug )")
       .eq("publication_id", publicationId)
       .order("sort_order"),
   ]);
@@ -215,12 +215,13 @@ export async function fetchPublicationBySlug(slug: string): Promise<PublicationD
       };
     }),
     podcasts: (podcastsRes.data ?? []).map((item) => {
-      const ep = item.podcast_episodes as { id: string; title: string; guest: string | null };
+      const ep = item.podcast_episodes as { id: string; title: string; guest: string | null; slug: string };
       return {
         id: ep.id,
         title: ep.title,
         subtitle: ep.guest,
-        href: "/podcast",
+        href: "/podcasts/$slug",
+        hrefParams: { slug: ep.slug },
       };
     }),
   };

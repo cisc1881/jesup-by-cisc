@@ -56,18 +56,7 @@ export type RelationshipDef = {
   label: string;
 };
 
-export type NotificationRecord = {
-  id: string;
-  userId: string | null;
-  title: string;
-  body: string | null;
-  channel: "in_app" | "email" | "sms" | "push";
-  status: "pending" | "sent" | "failed" | "read";
-  entityType: string | null;
-  entityId: string | null;
-  createdAt: string;
-  readAt: string | null;
-};
+export type NotificationRecord = import("@/modules/notifications/types").NotificationRecord;
 
 export type PlatformSettingKey =
   | "organization"

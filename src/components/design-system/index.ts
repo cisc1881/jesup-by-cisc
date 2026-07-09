@@ -13,6 +13,8 @@ export { StatGrid } from "./stat-grid";
 export { MediaCard } from "./media-card";
 export { SectionActionLink } from "./section-action-link";
 export { BrandMark } from "./brand-mark";
+export { FilterPill } from "./filter-pill";
+export { QueryErrorState } from "./query-error-state";
 export { HomeSection, type HomeSectionMetaProps } from "./home-section";
 export { PortraitMediaCard } from "./portrait-media-card";
 export { CrimsonPanel } from "./crimson-panel";

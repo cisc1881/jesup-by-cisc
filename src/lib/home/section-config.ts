@@ -4,7 +4,9 @@ export type HomeSectionId =
   | "events"
   | "publications"
   | "podcast"
+  | "news"
   | "market"
+  | "partners"
   | "impact";
 
 export type HomeSectionMeta = {
@@ -28,7 +30,7 @@ export type HomeImpactMetricDef = {
  * Default section copy and labels.
  * Replace `fetchHomeSectionMeta()` with a Supabase query when CMS tables exist.
  */
-const DEFAULT_SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
+export const DEFAULT_SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
   programs: {
     id: "programs",
     eyebrow: null,
@@ -60,10 +62,19 @@ const DEFAULT_SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     id: "podcast",
     eyebrow: null,
     title: "Featured podcast",
-    viewAllRoute: "/podcast",
+    viewAllRoute: "/podcasts",
     viewAllLabel: "All episodes",
     emptyTitle: null,
     emptyDescription: null,
+  },
+  news: {
+    id: "news",
+    eyebrow: null,
+    title: "News & stories",
+    viewAllRoute: "/news",
+    viewAllLabel: "View all news",
+    emptyTitle: "News & stories",
+    emptyDescription: "Stories from CISC programs, research, Extension, and community impact.",
   },
   market: {
     id: "market",
@@ -73,6 +84,15 @@ const DEFAULT_SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     viewAllLabel: "View all",
     emptyTitle: "Farmers markets coming soon",
     emptyDescription: "Locally grown food and community markets served by CISC Extension.",
+  },
+  partners: {
+    id: "partners",
+    eyebrow: null,
+    title: "Strategic partners",
+    viewAllRoute: "/partners",
+    viewAllLabel: "View all partners",
+    emptyTitle: "Strategic partners",
+    emptyDescription: "Collaborators advancing research, education, and community impact across the Black Belt.",
   },
   impact: {
     id: "impact",

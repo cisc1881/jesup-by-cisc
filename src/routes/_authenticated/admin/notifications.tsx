@@ -1,106 +1,178 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CommandCenterContentShell, CommandCenterPageHeader } from "@/modules/admin";
-import { fetchNotifications, markNotificationRead, createNotification } from "@/modules/notifications";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { Bell, Plus } from "lucide-react";
 import { useState } from "react";
+import { CommandCenterContentShell, CommandCenterPageHeader } from "@/modules/admin";
+import {
+  fetchAdminNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "@/modules/notifications";
+import { DEFAULT_ACTION_URLS, NOTIFICATION_TYPE_LABELS } from "@/modules/notifications/types";
+import { useAuth } from "@/hooks/use-auth";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { fmtDateTime } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/notifications")({ component: AdminNotifications });
 
-function AdminNotifications() {
-  const qc = useQueryClient();
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+type FilterMode = "all" | "unread";
 
-  const { data: notifications, isLoading } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: () => fetchNotifications(),
+const PRIORITY_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  low: "outline",
+  normal: "secondary",
+  high: "default",
+  urgent: "destructive",
+};
+
+function AdminNotifications() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [filter, setFilter] = useState<FilterMode>("all");
+
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ["notifications-center", user?.id, filter],
+    enabled: !!user,
+    queryFn: () =>
+      fetchAdminNotifications(user!.id, {
+        unreadOnly: filter === "unread",
+        limit: 100,
+      }),
   });
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!title.trim()) return;
-    try {
-      await createNotification({ title: title.trim(), body: body.trim() || undefined });
-      toast.success("Notification created");
-      setTitle("");
-      setBody("");
-      qc.invalidateQueries({ queryKey: ["notifications"] });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to create notification");
-    }
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  function refresh() {
+    qc.invalidateQueries({ queryKey: ["notifications-center"] });
+    qc.invalidateQueries({ queryKey: ["notifications-dropdown"] });
+    qc.invalidateQueries({ queryKey: ["notifications-unread-count"] });
   }
 
   async function handleMarkRead(id: string) {
+    if (!user) return;
     try {
-      await markNotificationRead(id);
-      qc.invalidateQueries({ queryKey: ["notifications"] });
+      await markNotificationRead(id, user.id);
+      refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update");
+      toast.error(err instanceof Error ? err.message : "Failed to mark as read");
     }
+  }
+
+  async function handleMarkAllRead() {
+    if (!user) return;
+    try {
+      await markAllNotificationsRead(user.id, "admin");
+      toast.success("All notifications marked as read");
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to mark all as read");
+    }
+  }
+
+  function openNotification(
+    actionUrl: string | null,
+    type: keyof typeof DEFAULT_ACTION_URLS | null,
+    id: string,
+    isRead: boolean,
+  ) {
+    if (!isRead && user) void handleMarkRead(id);
+    const target = actionUrl ?? (type ? DEFAULT_ACTION_URLS[type] : "/admin");
+    navigate({ to: target });
   }
 
   return (
     <CommandCenterContentShell>
       <CommandCenterPageHeader
         title="Notification Center"
-        description="Manage in-app notifications. Future support for push, email, and SMS delivery."
+        description="In-app alerts for Command Center activity. Email, SMS, and push delivery coming later."
+        actions={
+          unreadCount > 0 ? (
+            <Button variant="outline" size="sm" onClick={() => void handleMarkAllRead()}>
+              Mark all as read
+            </Button>
+          ) : undefined
+        }
       />
 
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <form onSubmit={handleCreate} className="space-y-3">
-            <h2 className="flex items-center gap-2 font-semibold">
-              <Plus className="h-4 w-4" /> Create notification
-            </h2>
-            <div>
-              <Label>Title</Label>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
-            </div>
-            <div>
-              <Label>Body</Label>
-              <Input value={body} onChange={(e) => setBody(e.target.value)} />
-            </div>
-            <Button type="submit">Send in-app notification</Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-        <Bell className="h-4 w-4" />
-        Channels: in-app (active) · email · SMS · push (coming soon)
+      <div className="mb-4 flex gap-2">
+        <Button
+          size="sm"
+          variant={filter === "all" ? "default" : "outline"}
+          className={filter === "all" ? "bg-primary hover:bg-primary/90" : undefined}
+          onClick={() => setFilter("all")}
+        >
+          All
+        </Button>
+        <Button
+          size="sm"
+          variant={filter === "unread" ? "default" : "outline"}
+          className={filter === "unread" ? "bg-primary hover:bg-primary/90" : undefined}
+          onClick={() => setFilter("unread")}
+        >
+          Unread
+        </Button>
       </div>
 
-      {isLoading && <p className="text-muted-foreground">Loading…</p>}
+      {isLoading && <p className="text-muted-foreground">Loading notifications…</p>}
+
       <div className="space-y-3">
-        {(notifications ?? []).map((n) => (
-          <Card key={n.id} className={n.readAt ? "opacity-60" : ""}>
-            <CardContent className="flex items-start justify-between gap-4 p-4">
-              <div>
-                <div className="font-medium text-foreground">{n.title}</div>
-                {n.body && <p className="mt-1 text-sm text-muted-foreground">{n.body}</p>}
-                <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
-                  <span>{n.channel}</span>
-                  <span>{n.status}</span>
-                  <span>{new Date(n.createdAt).toLocaleString()}</span>
+        {notifications.map((n) => (
+          <Card
+            key={n.id}
+            className={cn(
+              "border-0 shadow-token-soft transition hover:shadow-token-lift",
+              !n.isRead && "ring-1 ring-primary/15",
+            )}
+          >
+            <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
+              <button
+                type="button"
+                className="min-w-0 flex-1 text-left"
+                onClick={() => openNotification(n.actionUrl, n.notificationType, n.id, n.isRead)}
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  {!n.isRead && <span className="h-2 w-2 rounded-full bg-primary" />}
+                  <span className="font-medium text-foreground">{n.title}</span>
+                  {n.notificationType && (
+                    <Badge variant="outline" className="text-[10px] uppercase">
+                      {NOTIFICATION_TYPE_LABELS[n.notificationType]}
+                    </Badge>
+                  )}
+                  <Badge variant={PRIORITY_VARIANT[n.priority] ?? "secondary"} className="text-[10px] uppercase">
+                    {n.priority}
+                  </Badge>
                 </div>
-              </div>
-              {!n.readAt && (
-                <Button variant="outline" size="sm" onClick={() => handleMarkRead(n.id)}>
-                  Mark read
+                {n.body && <p className="mt-2 text-sm text-muted-foreground">{n.body}</p>}
+                <p className="mt-2 text-xs text-muted-foreground">{fmtDateTime(n.createdAt)}</p>
+              </button>
+              <div className="flex shrink-0 gap-2">
+                {!n.isRead && (
+                  <Button variant="outline" size="sm" onClick={() => void handleMarkRead(n.id)}>
+                    Mark read
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" asChild>
+                  <Link
+                    to={n.actionUrl ?? (n.notificationType ? DEFAULT_ACTION_URLS[n.notificationType] : "/admin")}
+                  >
+                    Open
+                  </Link>
                 </Button>
-              )}
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
-      {!isLoading && (notifications ?? []).length === 0 && (
-        <p className="py-12 text-center text-muted-foreground">No notifications yet.</p>
+
+      {!isLoading && notifications.length === 0 && (
+        <Card className="border-dashed">
+          <CardContent className="py-12 text-center text-muted-foreground">
+            {filter === "unread" ? "No unread notifications." : "No notifications yet."}
+          </CardContent>
+        </Card>
       )}
     </CommandCenterContentShell>
   );

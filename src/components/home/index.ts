@@ -7,4 +7,6 @@ export { FeaturedPodcastSection } from "./featured-podcast-section";
 export { FarmersMarketsHomeSection } from "./farmers-markets-home-section";
 export { NearbyMarketSection } from "./nearby-market-section";
 export { CommunityImpactSection } from "./community-impact-section";
+export { StrategicPartnersHomeSection } from "./strategic-partners-home-section";
+export { NewsHomeSection } from "./news-home-section";
 export { HomeCtaSection } from "./home-cta-section";

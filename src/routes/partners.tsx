@@ -1,75 +1,127 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PublicLayout, PageHeader } from "@/components/public-layout";
-import { supabase } from "@/integrations/supabase/client";
-import { ExternalLink, Building2 } from "lucide-react";
-import { useState } from "react";
+import { Building2 } from "lucide-react";
+import { PublicLayout } from "@/components/public-layout";
+import { EmptyState, LoadingState, PageContainer } from "@/components/design-system";
+import {
+  PartnerCard,
+  PartnerFilters,
+  PartnerImpactStats,
+  PartnersPageHero,
+} from "@/components/partners";
+import { partnerFilterCategories } from "@/lib/partner-categories";
+import {
+  fetchPartnerImpactCounts,
+  fetchPartners,
+  filterPartners,
+  sortPartners,
+  type PartnerSortMode,
+} from "@/lib/partners";
 
 export const Route = createFileRoute("/partners")({
   head: () => ({
     meta: [
-      { title: "Partners · JESUP" },
-      { name: "description", content: "The organizations, universities, and community leaders that power CISC." },
-      { property: "og:title", content: "Partners · JESUP" },
-      { property: "og:description", content: "Building sustainable communities together." },
+      { title: "Strategic Partners · JESUP" },
+      {
+        name: "description",
+        content:
+          "Universities, federal agencies, foundations, and community organizations collaborating with CISC through JESUP.",
+      },
+      { property: "og:title", content: "Strategic Partners · JESUP" },
     ],
   }),
-  component: PartnersPage,
+  component: PartnersLayout,
 });
 
-function PartnersPage() {
-  const [cat, setCat] = useState<string>("All");
-  const { data } = useQuery({
+function PartnersLayout() {
+  const matches = useMatches();
+  const isChild = matches.some((m) => m.routeId === "/partners/$slug");
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [focusArea, setFocusArea] = useState<string | null>(null);
+  const [sortMode, setSortMode] = useState<PartnerSortMode>("featured");
+
+  const { data: partners, isLoading } = useQuery({
     queryKey: ["partners"],
-    queryFn: async () => (await supabase.from("partners").select("*").eq("is_published", true).order("sort_order", { ascending: true }).order("name", { ascending: true })).data ?? [],
+    queryFn: () => fetchPartners(),
   });
 
-  const categories = ["All", ...Array.from(new Set((data ?? []).map((p) => p.category).filter(Boolean) as string[]))];
-  const filtered = (data ?? []).filter((p) => cat === "All" || p.category === cat);
+  const { data: impactCounts } = useQuery({
+    queryKey: ["partner-impact-counts"],
+    queryFn: fetchPartnerImpactCounts,
+    enabled: !isChild,
+  });
+
+  const categories = useMemo(
+    () => partnerFilterCategories((partners ?? []).map((p) => p.category)),
+    [partners],
+  );
+
+  const filtered = useMemo(() => {
+    const list = filterPartners(partners ?? [], search, category === "All" ? null : category, focusArea);
+    return sortPartners(list, sortMode);
+  }, [partners, search, category, focusArea, sortMode]);
+
+  if (isChild) return <Outlet />;
 
   return (
     <PublicLayout>
-      <PageHeader eyebrow="Together" title="Our partners" description="We build with universities, government agencies, community organizations, and industry — because sustainable change is never a solo effort." />
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-        {categories.length > 1 && (
-          <div className="mb-6 flex flex-wrap gap-2">
-            {categories.map((c) => (
-              <button key={c} onClick={() => setCat(c)} className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${cat === c ? "grad-crimson text-white" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
-                {c}
-              </button>
-            ))}
-          </div>
-        )}
+      <PartnersPageHero />
+      <PageContainer size="lg" className="space-y-8 pb-bottom-nav pt-10 md:pb-[var(--page-py)]">
+        {impactCounts && <PartnerImpactStats counts={impactCounts} />}
 
-        {filtered.length === 0 ? (
-          <div className="rounded-3xl bg-card p-16 text-center shadow-[var(--shadow-soft)]">
-            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-secondary text-muted-foreground">
-              <Building2 className="h-6 w-6" />
-            </div>
-            <p className="mt-4 font-bold">Partners coming soon</p>
-          </div>
+        {isLoading ? (
+          <LoadingState label="Loading partners…" />
+        ) : !partners?.length ? (
+          <EmptyState
+            icon={Building2}
+            title="Partners coming soon"
+            description="Strategic partners will appear here once published in the Command Center."
+          />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((p) => (
-              <div key={p.id} className="group flex flex-col rounded-3xl bg-card p-6 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]">
-                <div className="grid h-20 place-items-center overflow-hidden rounded-2xl bg-secondary/60">
-                  {p.logo_url ? <img src={p.logo_url} alt={p.name} className="max-h-16 max-w-[80%] object-contain" loading="lazy" /> : <span className="text-lg font-black text-muted-foreground">{p.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}</span>}
-                </div>
-                <div className="mt-4 flex-1">
-                  {p.category && <div className="text-[10px] font-semibold uppercase tracking-widest grad-gold-text">{p.category}</div>}
-                  <h3 className="mt-1 text-lg font-black tracking-tight text-foreground">{p.name}</h3>
-                  {p.description && <p className="mt-1.5 text-sm text-muted-foreground">{p.description}</p>}
-                </div>
-                {p.website_url && (
-                  <a href={p.website_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 self-start rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground transition hover:bg-primary hover:text-white">
-                    Visit <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
+          <>
+            <PartnerFilters
+              categories={categories}
+              selectedCategory={category}
+              onCategoryChange={setCategory}
+              selectedFocusArea={focusArea}
+              onFocusAreaChange={setFocusArea}
+              sortMode={sortMode}
+              onSortModeChange={setSortMode}
+              search={search}
+              onSearchChange={setSearch}
+            />
+
+            {filtered.length === 0 ? (
+              <EmptyState
+                icon={Building2}
+                title="No matches"
+                description="Try a different search, category, or partnership focus area."
+                action={
+                  <button
+                    type="button"
+                    className="text-sm font-semibold text-primary hover:underline"
+                    onClick={() => {
+                      setSearch("");
+                      setCategory("All");
+                      setFocusArea(null);
+                    }}
+                  >
+                    Clear filters
+                  </button>
+                }
+              />
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {filtered.map((partner) => (
+                  <PartnerCard key={partner.id} partner={partner} />
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
-      </div>
+      </PageContainer>
     </PublicLayout>
   );
 }

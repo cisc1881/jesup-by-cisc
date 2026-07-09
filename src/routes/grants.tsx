@@ -7,8 +7,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { fmtDate } from "@/lib/format";
 import { ExternalLink, DollarSign } from "lucide-react";
 
+import { listPageHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/grants")({
-  head: () => ({ meta: [{ title: "Grants · CISC Connect" }, { name: "description", content: "Grant opportunities for community and sustainability projects." }] }),
+  head: () =>
+    listPageHead({
+      title: "Grants",
+      description: "Grant opportunities for community and sustainability projects across the Black Belt.",
+      path: "/grants",
+    }),
   component: GrantsPage,
 });
 

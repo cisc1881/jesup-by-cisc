@@ -48,6 +48,29 @@ export type HomePodcastEpisode = {
 
 export type HomeMarket = MarketListItem;
 
+export type HomePartner = {
+  id: string;
+  slug: string;
+  name: string;
+  logoUrl: string | null;
+  category: string | null;
+  isFeatured: boolean;
+};
+
+export type HomeNewsArticle = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string | null;
+  author: string | null;
+  category: string | null;
+  coverImageUrl: string | null;
+  publishedAt: string | null;
+  isFeatured: boolean;
+  readingTimeMinutes: number | null;
+  tags: string[];
+};
+
 export type HomeImpactStat = {
   id: string;
   label: string;
@@ -75,6 +98,9 @@ export type HomePageData = {
   events: HomeEvent[];
   publications: HomePublication[];
   featuredPodcast: HomePodcastEpisode | null;
+  featuredNews: HomeNewsArticle | null;
+  latestNews: HomeNewsArticle[];
+  partners: HomePartner[];
   markets: HomeMarket[];
   impactStats: HomeImpactStat[];
   cta: HomeCta | null;

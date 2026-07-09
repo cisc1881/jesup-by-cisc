@@ -1,38 +1,35 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CommandCenterContentShell, CommandCenterPageHeader } from "@/modules/admin";
-import { globalSearch } from "@/modules/cms";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
-
-const ENTITY_LABELS: Record<string, string> = {
-  program: "Program",
-  event: "Event",
-  market: "Market",
-  publication: "Publication",
-  podcast: "Podcast",
-  partner: "Partner",
-  grant: "Grant",
-};
+import { CommandCenterContentShell, CommandCenterPageHeader } from "@/modules/admin";
+import { Input } from "@/components/ui/input";
+import {
+  SearchEmptyState,
+  SearchLoadingState,
+  SearchResultsGrouped,
+} from "@/components/search/search-results";
+import { MIN_SEARCH_QUERY_LENGTH, universalSearch } from "@/lib/search";
+import { universalSearchQueryKey } from "@/lib/query-config";
 
 export const Route = createFileRoute("/_authenticated/admin/search")({ component: AdminSearch });
 
 function AdminSearch() {
   const [query, setQuery] = useState("");
 
-  const { data: results, isFetching } = useQuery({
-    queryKey: ["global-search", query],
-    queryFn: () => globalSearch(query),
-    enabled: query.trim().length >= 2,
+  const { data, isFetching } = useQuery({
+    queryKey: universalSearchQueryKey(query),
+    queryFn: () => universalSearch(query, { limit: 60 }),
+    enabled: query.trim().length >= MIN_SEARCH_QUERY_LENGTH,
   });
+
+  const hasResults = (data?.totalCount ?? 0) > 0;
 
   return (
     <CommandCenterContentShell>
       <CommandCenterPageHeader
         title="Global Search"
-        description="Search across programs, events, markets, publications, podcasts, partners, and grants."
+        description="Search across programs, events, markets, publications, 2FAS opportunities, grants, partners, and podcasts."
       />
 
       <div className="relative mb-8">
@@ -40,61 +37,27 @@ function AdminSearch() {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search all content…"
-          className="h-12 pl-12 text-lg"
+          placeholder="Search all JESUP content…"
+          className="h-12 pl-12 text-lg shadow-token-soft"
           autoFocus
         />
       </div>
 
-      {query.trim().length < 2 && (
-        <p className="text-center text-muted-foreground">Type at least 2 characters to search.</p>
+      {query.trim().length < MIN_SEARCH_QUERY_LENGTH && (
+        <SearchEmptyState query={query} minLength={MIN_SEARCH_QUERY_LENGTH} />
       )}
-
-      {isFetching && <p className="text-muted-foreground">Searching…</p>}
-
-      {results && results.length === 0 && query.trim().length >= 2 && (
-        <p className="text-center text-muted-foreground">No results found.</p>
+      {isFetching && query.trim().length >= MIN_SEARCH_QUERY_LENGTH && <SearchLoadingState />}
+      {!isFetching && query.trim().length >= MIN_SEARCH_QUERY_LENGTH && !hasResults && (
+        <SearchEmptyState query={query} minLength={MIN_SEARCH_QUERY_LENGTH} />
       )}
-
-      <div className="space-y-3">
-        {results?.map((result) => (
-          <Card key={`${result.entityType}-${result.id}`}>
-            <CardContent className="flex items-center gap-4 p-4">
-              {result.imageUrl && (
-                <img src={result.imageUrl} alt="" className="h-12 w-12 rounded-lg object-cover" />
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="text-xs font-semibold uppercase tracking-wide text-primary">
-                  {ENTITY_LABELS[result.entityType] ?? result.entityType}
-                </div>
-                <div className="font-medium text-foreground">{result.title}</div>
-                {result.subtitle && (
-                  <div className="truncate text-sm text-muted-foreground">{result.subtitle}</div>
-                )}
-              </div>
-              {result.hrefParams ? (
-                <Link
-                  to={result.href}
-                  params={result.hrefParams}
-                  className="shrink-0 text-sm font-semibold text-primary hover:underline"
-                  target="_blank"
-                >
-                  View →
-                </Link>
-              ) : (
-                <a
-                  href={result.href}
-                  className="shrink-0 text-sm font-semibold text-primary hover:underline"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View →
-                </a>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {!isFetching && hasResults && data && (
+        <div>
+          <p className="mb-6 text-sm text-muted-foreground">
+            {data.totalCount} result{data.totalCount === 1 ? "" : "s"} grouped by content type
+          </p>
+          <SearchResultsGrouped groups={data.groups} />
+        </div>
+      )}
     </CommandCenterContentShell>
   );
 }

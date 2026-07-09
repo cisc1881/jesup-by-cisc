@@ -6,6 +6,7 @@ type HorizontalScrollProps = {
   className?: string;
   /** Gap between items — defaults to mobile-first snap row */
   gap?: "sm" | "md";
+  "aria-label"?: string;
 };
 
 const gaps = {
@@ -13,9 +14,11 @@ const gaps = {
   md: "gap-4",
 };
 
-export function HorizontalScroll({ children, className, gap = "md" }: HorizontalScrollProps) {
+export function HorizontalScroll({ children, className, gap = "md", "aria-label": ariaLabel }: HorizontalScrollProps) {
   return (
     <div
+      role="region"
+      aria-label={ariaLabel}
       className={cn(
         "-mx-[var(--page-px)] flex snap-x snap-mandatory overflow-x-auto px-[var(--page-px)] pb-1",
         "scrollbar-none [&::-webkit-scrollbar]:hidden",

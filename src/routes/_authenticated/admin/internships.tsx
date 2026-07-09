@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { downloadCsv } from "@/lib/csv";
+import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
 import { Pencil, Trash2, Users } from "lucide-react";
 import { fmtDate } from "@/lib/format";
@@ -24,6 +25,7 @@ const empty = { title: "", description: "", department: "", deadline: "", is_ope
 
 function AdminInternships() {
   const qc = useQueryClient();
+  const { confirmAndDelete, dialog } = useAdminDelete();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [appsOpen, setAppsOpen] = useState<string | null>(null);
@@ -54,11 +56,16 @@ function AdminInternships() {
     if (res.error) return toast.error(res.error.message);
     toast.success("Saved"); setOpen(false); qc.invalidateQueries({ queryKey: ["admin-internships"] });
   }
-  async function del(id: string) {
-    if (!confirm("Delete?")) return;
-    const { error } = await supabase.from("internships").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-internships"] });
+  async function del(id: string, title: string) {
+    await confirmAndDelete({
+      entityLabel: "internship",
+      itemName: title,
+      onDelete: async () => {
+        const { error } = await supabase.from("internships").delete().eq("id", id);
+        if (error) throw error;
+      },
+      onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-internships"] }),
+    });
   }
   async function setStatus(appId: string, status: string) {
     const { error } = await supabase.from("internship_applications").update({ status: status as any }).eq("id", appId);
@@ -93,7 +100,7 @@ function AdminInternships() {
                 <TableCell><div className="flex gap-1">
                   <Button size="icon" variant="ghost" onClick={() => setAppsOpen(r.id)}><Users className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => del(r.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => del(r.id, r.title)} aria-label={`Delete ${r.title}`}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </div></TableCell>
               </TableRow>
             ))}
@@ -149,6 +156,7 @@ function AdminInternships() {
           </div>
         </DialogContent>
       </Dialog>
+      {dialog}
     </AdminShell>
   );
 }

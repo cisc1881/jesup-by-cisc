@@ -561,36 +561,70 @@ export type Database = {
       }
       internship_applications: {
         Row: {
+          cohort_id: string | null
           cover_letter: string | null
           created_at: string
+          emergency_contact: Json
+          graduation_year: number | null
           id: string
           internship_id: string
+          major: string | null
           resume_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          school_name: string | null
           status: Database["public"]["Enums"]["application_status"]
+          submitted_at: string | null
+          track: Database["public"]["Enums"]["twofas_track"] | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          cohort_id?: string | null
           cover_letter?: string | null
           created_at?: string
+          emergency_contact?: Json
+          graduation_year?: number | null
           id?: string
           internship_id: string
+          major?: string | null
           resume_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          school_name?: string | null
           status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          track?: Database["public"]["Enums"]["twofas_track"] | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          cohort_id?: string | null
           cover_letter?: string | null
           created_at?: string
+          emergency_contact?: Json
+          graduation_year?: number | null
           id?: string
           internship_id?: string
+          major?: string | null
           resume_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          school_name?: string | null
           status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          track?: Database["public"]["Enums"]["twofas_track"] | null
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "internship_applications_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "twofas_cohorts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "internship_applications_internship_id_fkey"
             columns: ["internship_id"]
@@ -609,36 +643,72 @@ export type Database = {
       }
       internships: {
         Row: {
+          cohort_id: string | null
           created_at: string
           deadline: string | null
           department: string | null
           description: string | null
           id: string
+          is_2fas: boolean
           is_open: boolean
+          max_applicants: number | null
+          program_id: string | null
+          requirements_html: string | null
+          slug: string | null
           title: string
+          track: Database["public"]["Enums"]["twofas_track"] | null
           updated_at: string
         }
         Insert: {
+          cohort_id?: string | null
           created_at?: string
           deadline?: string | null
           department?: string | null
           description?: string | null
           id?: string
+          is_2fas?: boolean
           is_open?: boolean
+          max_applicants?: number | null
+          program_id?: string | null
+          requirements_html?: string | null
+          slug?: string | null
           title: string
+          track?: Database["public"]["Enums"]["twofas_track"] | null
           updated_at?: string
         }
         Update: {
+          cohort_id?: string | null
           created_at?: string
           deadline?: string | null
           department?: string | null
           description?: string | null
           id?: string
+          is_2fas?: boolean
           is_open?: boolean
+          max_applicants?: number | null
+          program_id?: string | null
+          requirements_html?: string | null
+          slug?: string | null
           title?: string
+          track?: Database["public"]["Enums"]["twofas_track"] | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "internships_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "twofas_cohorts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internships_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       markets: {
         Row: {
@@ -1197,8 +1267,186 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_reads: {
+        Row: {
+          id: string
+          notification_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          notification_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          notification_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_reads_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_articles: {
+        Row: {
+          author: string | null
+          category: string | null
+          content_html: string | null
+          cover_image_url: string | null
+          created_at: string
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          published_at: string | null
+          reading_time_minutes: number | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sort_order: number
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content_html?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sort_order?: number
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content_html?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sort_order?: number
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      news_events: {
+        Row: {
+          event_id: string
+          news_article_id: string
+          sort_order: number
+        }
+        Insert: {
+          event_id: string
+          news_article_id: string
+          sort_order?: number
+        }
+        Update: {
+          event_id?: string
+          news_article_id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      news_partners: {
+        Row: {
+          news_article_id: string
+          partner_id: string
+          sort_order: number
+        }
+        Insert: {
+          news_article_id: string
+          partner_id: string
+          sort_order?: number
+        }
+        Update: {
+          news_article_id?: string
+          partner_id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      news_programs: {
+        Row: {
+          news_article_id: string
+          program_id: string
+          sort_order: number
+        }
+        Insert: {
+          news_article_id: string
+          program_id: string
+          sort_order?: number
+        }
+        Update: {
+          news_article_id?: string
+          program_id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      news_publications: {
+        Row: {
+          news_article_id: string
+          publication_id: string
+          sort_order: number
+        }
+        Insert: {
+          news_article_id: string
+          publication_id: string
+          sort_order?: number
+        }
+        Update: {
+          news_article_id?: string
+          publication_id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      news_tags: {
+        Row: {
+          news_article_id: string
+          tag: string
+        }
+        Insert: {
+          news_article_id: string
+          tag: string
+        }
+        Update: {
+          news_article_id?: string
+          tag?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
+          action_url: string | null
+          audience: Database["public"]["Enums"]["notification_audience"]
           body: string | null
           channel: Database["public"]["Enums"]["notification_channel"]
           created_at: string
@@ -1206,12 +1454,16 @@ export type Database = {
           entity_type: string | null
           id: string
           metadata: Json
+          notification_type: Database["public"]["Enums"]["notification_type"] | null
+          priority: Database["public"]["Enums"]["notification_priority"]
           read_at: string | null
           status: Database["public"]["Enums"]["notification_status"]
           title: string
           user_id: string | null
         }
         Insert: {
+          action_url?: string | null
+          audience?: Database["public"]["Enums"]["notification_audience"]
           body?: string | null
           channel?: Database["public"]["Enums"]["notification_channel"]
           created_at?: string
@@ -1219,12 +1471,16 @@ export type Database = {
           entity_type?: string | null
           id?: string
           metadata?: Json
+          notification_type?: Database["public"]["Enums"]["notification_type"] | null
+          priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
           title: string
           user_id?: string | null
         }
         Update: {
+          action_url?: string | null
+          audience?: Database["public"]["Enums"]["notification_audience"]
           body?: string | null
           channel?: Database["public"]["Enums"]["notification_channel"]
           created_at?: string
@@ -1232,6 +1488,8 @@ export type Database = {
           entity_type?: string | null
           id?: string
           metadata?: Json
+          notification_type?: Database["public"]["Enums"]["notification_type"] | null
+          priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
           title?: string
@@ -1551,43 +1809,106 @@ export type Database = {
       }
       partners: {
         Row: {
+          address: string | null
           category: string | null
           created_at: string
           description: string | null
+          email: string | null
           id: string
+          is_featured: boolean
           is_published: boolean
           logo_url: string | null
+          mission: string | null
           name: string
+          notes: string | null
+          partnership_areas: string[]
+          phone: string | null
+          short_description: string | null
           slug: string
+          social_links: Json
           sort_order: number
           updated_at: string
           website_url: string | null
         }
         Insert: {
+          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
+          email?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
+          mission?: string | null
           name: string
+          notes?: string | null
+          partnership_areas?: string[]
+          phone?: string | null
+          short_description?: string | null
           slug: string
+          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
         }
         Update: {
+          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
+          email?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
+          mission?: string | null
           name?: string
+          notes?: string | null
+          partnership_areas?: string[]
+          phone?: string | null
+          short_description?: string | null
           slug?: string
+          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      partner_publications: {
+        Row: {
+          partner_id: string
+          publication_id: string
+          sort_order: number
+        }
+        Insert: {
+          partner_id: string
+          publication_id: string
+          sort_order?: number
+        }
+        Update: {
+          partner_id?: string
+          publication_id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      partner_podcast_episodes: {
+        Row: {
+          partner_id: string
+          podcast_episode_id: string
+          sort_order: number
+        }
+        Insert: {
+          partner_id: string
+          podcast_episode_id: string
+          sort_order?: number
+        }
+        Update: {
+          partner_id?: string
+          podcast_episode_id?: string
+          sort_order?: number
         }
         Relationships: []
       }
@@ -1599,8 +1920,10 @@ export type Database = {
           created_at: string
           description: string | null
           duration_seconds: number | null
+          embed_url: string | null
           guest: string | null
           id: string
+          is_featured: boolean
           is_published: boolean
           published_at: string | null
           slug: string
@@ -1614,8 +1937,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration_seconds?: number | null
+          embed_url?: string | null
           guest?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           published_at?: string | null
           slug: string
@@ -1629,8 +1954,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration_seconds?: number | null
+          embed_url?: string | null
           guest?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           published_at?: string | null
           slug?: string
@@ -1880,6 +2207,262 @@ export type Database = {
         }
         Relationships: []
       }
+      twofas_cohort_milestones: {
+        Row: {
+          cohort_id: string
+          created_at: string
+          description: string | null
+          due_offset_days: number | null
+          id: string
+          is_required: boolean
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cohort_id: string
+          created_at?: string
+          description?: string | null
+          due_offset_days?: number | null
+          id?: string
+          is_required?: boolean
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cohort_id?: string
+          created_at?: string
+          description?: string | null
+          due_offset_days?: number | null
+          id?: string
+          is_required?: boolean
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twofas_cohort_milestones_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "twofas_cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twofas_cohorts: {
+        Row: {
+          created_at: string
+          description: string | null
+          ends_on: string | null
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          starts_on: string | null
+          track: Database["public"]["Enums"]["twofas_track"]
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          ends_on?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          starts_on?: string | null
+          track: Database["public"]["Enums"]["twofas_track"]
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          ends_on?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          starts_on?: string | null
+          track?: Database["public"]["Enums"]["twofas_track"]
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      twofas_documents: {
+        Row: {
+          application_id: string
+          created_at: string
+          doc_type: Database["public"]["Enums"]["twofas_document_type"]
+          file_path: string
+          id: string
+          label: string | null
+          user_id: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          doc_type?: Database["public"]["Enums"]["twofas_document_type"]
+          file_path: string
+          id?: string
+          label?: string | null
+          user_id: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          doc_type?: Database["public"]["Enums"]["twofas_document_type"]
+          file_path?: string
+          id?: string
+          label?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twofas_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "internship_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twofas_mentor_assignments: {
+        Row: {
+          application_id: string
+          assigned_at: string
+          assigned_by: string | null
+          created_at: string
+          id: string
+          mentor_id: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          mentor_id: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          mentor_id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twofas_mentor_assignments_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: true
+            referencedRelation: "internship_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twofas_mentor_assignments_mentor_id_fkey"
+            columns: ["mentor_id"]
+            isOneToOne: false
+            referencedRelation: "twofas_mentors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twofas_mentors: {
+        Row: {
+          bio: string | null
+          created_at: string
+          email: string | null
+          expertise: string[]
+          full_name: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          expertise?: string[]
+          full_name: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          expertise?: string[]
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      twofas_student_milestones: {
+        Row: {
+          application_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          milestone_id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["milestone_status"]
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          milestone_id: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["milestone_status"]
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          milestone_id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["milestone_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twofas_student_milestones_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "internship_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twofas_student_milestones_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "twofas_cohort_milestones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1956,7 +2539,19 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      application_status: "pending" | "reviewed" | "accepted" | "rejected"
+      application_status:
+        | "pending"
+        | "reviewed"
+        | "under_review"
+        | "accepted"
+        | "waitlisted"
+        | "rejected"
+        | "active"
+        | "completed"
+        | "withdrawn"
+      milestone_status: "pending" | "in_progress" | "completed" | "waived"
+      twofas_document_type: "resume" | "transcript" | "portfolio" | "other"
+      twofas_track: "high_school" | "undergraduate" | "graduate" | "fellow"
       checkout_status:
         | "pending"
         | "approved"
@@ -1988,8 +2583,17 @@ export type Database = {
         | "audio"
         | "logo"
         | "document"
+      notification_audience: "admin" | "user"
       notification_channel: "in_app" | "email" | "sms" | "push"
+      notification_priority: "low" | "normal" | "high" | "urgent"
       notification_status: "pending" | "sent" | "failed" | "read"
+      notification_type:
+        | "twofas_application"
+        | "event_registration"
+        | "event_near_capacity"
+        | "publication_added"
+        | "equipment_request"
+        | "grant_deadline"
       publication_content_type:
         | "factsheet"
         | "report"
@@ -2127,7 +2731,20 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      application_status: ["pending", "reviewed", "accepted", "rejected"],
+      application_status: [
+        "pending",
+        "reviewed",
+        "under_review",
+        "accepted",
+        "waitlisted",
+        "rejected",
+        "active",
+        "completed",
+        "withdrawn",
+      ],
+      milestone_status: ["pending", "in_progress", "completed", "waived"],
+      twofas_document_type: ["resume", "transcript", "portfolio", "other"],
+      twofas_track: ["high_school", "undergraduate", "graduate", "fellow"],
       checkout_status: [
         "pending",
         "approved",
@@ -2162,8 +2779,18 @@ export const Constants = {
         "logo",
         "document",
       ],
+      notification_audience: ["admin", "user"],
       notification_channel: ["in_app", "email", "sms", "push"],
+      notification_priority: ["low", "normal", "high", "urgent"],
       notification_status: ["pending", "sent", "failed", "read"],
+      notification_type: [
+        "twofas_application",
+        "event_registration",
+        "event_near_capacity",
+        "publication_added",
+        "equipment_request",
+        "grant_deadline",
+      ],
       publication_content_type: [
         "factsheet",
         "report",

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { LogOut, Search, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,6 +40,11 @@ export function PublicNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <Button asChild variant="outline" size="icon" className="rounded-full" aria-label="Search JESUP">
+            <Link to="/search">
+              <Search className="h-4 w-4" />
+            </Link>
+          </Button>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -255,8 +255,14 @@ export async function fetchProgramBySlug(slug: string): Promise<ProgramDetail | 
       };
     }),
     podcasts: (podsRes.data ?? []).map((row) => {
-      const ep = row.podcast_episodes as { id: string; title: string; guest: string | null };
-      return { id: ep.id, title: ep.title, subtitle: ep.guest, href: "/podcast" };
+      const ep = row.podcast_episodes as { id: string; title: string; guest: string | null; slug: string };
+      return {
+        id: ep.id,
+        title: ep.title,
+        subtitle: ep.guest,
+        href: "/podcasts/$slug",
+        hrefParams: { slug: ep.slug },
+      };
     }),
     events: (eventsRes.data ?? []).map((row) => {
       const ev = row.events as { id: string; title: string; starts_at: string };
@@ -269,8 +275,13 @@ export async function fetchProgramBySlug(slug: string): Promise<ProgramDetail | 
       };
     }),
     partners: (partnersRes.data ?? []).map((row) => {
-      const partner = row.partners as { id: string; name: string };
-      return { id: partner.id, title: partner.name, href: "/partners" };
+      const partner = row.partners as { id: string; name: string; slug: string };
+      return {
+        id: partner.id,
+        title: partner.name,
+        href: "/partners/$slug",
+        hrefParams: { slug: partner.slug },
+      };
     }),
     grants: (grantsRes.data ?? []).map((row) => {
       const grant = row.grants as { id: string; title: string; funder: string | null; url: string | null };

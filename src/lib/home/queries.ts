@@ -1,4 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
+import { fetchFeaturedNewsArticle, fetchNewsArticles } from "@/lib/news";
+import { fetchFeaturedPodcastEpisode } from "@/lib/podcasts";
+import { fetchPartners } from "@/lib/partners";
 import { fetchPublications } from "@/lib/publications";
 import { fetchHomePrograms } from "./programs-source";
 import { DEFAULT_IMPACT_METRICS, fetchHomeSectionMeta } from "./section-config";
@@ -11,6 +14,7 @@ import type {
   HomePageData,
   HomePodcastEpisode,
   HomePublication,
+  HomeNewsArticle,
 } from "./types";
 
 const now = () => new Date().toISOString();
@@ -48,6 +52,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       .select("id,slug,title,description,cover_url")
       .eq("is_published", true)
       .not("cover_url", "is", null)
+      .order("is_featured", { ascending: false })
       .order("published_at", { ascending: false, nullsFirst: false })
       .limit(limit),
     supabase
@@ -98,7 +103,8 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       imageAlt: p.title,
       title: p.title,
       subtitle: p.description,
-      linkTo: "/podcast",
+      linkTo: "/podcasts/$slug",
+      linkParams: { slug: p.slug },
       linkLabel: p.title,
     });
   }
@@ -147,25 +153,75 @@ export async function fetchHomePublications(limit = 4): Promise<HomePublication[
 }
 
 export async function fetchFeaturedPodcast(): Promise<HomePodcastEpisode | null> {
-  const { data, error } = await supabase
-    .from("podcast_episodes")
-    .select("id,slug,title,description,cover_url,guest,duration_seconds,published_at")
-    .eq("is_published", true)
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw error;
-  if (!data) return null;
+  const episode = await fetchFeaturedPodcastEpisode();
+  if (!episode) return null;
   return {
-    id: data.id,
-    slug: data.slug,
-    title: data.title,
-    description: data.description,
-    coverUrl: data.cover_url,
-    guest: data.guest,
-    durationSeconds: data.duration_seconds,
-    publishedAt: data.published_at,
+    id: episode.id,
+    slug: episode.slug,
+    title: episode.title,
+    description: episode.description,
+    coverUrl: episode.coverUrl,
+    guest: episode.guest,
+    durationSeconds: episode.durationSeconds,
+    publishedAt: episode.publishedAt,
   };
+}
+
+function mapHomeNewsArticle(article: Awaited<ReturnType<typeof fetchNewsArticles>>[number]): HomeNewsArticle {
+  return {
+    id: article.id,
+    slug: article.slug,
+    title: article.title,
+    summary: article.summary,
+    author: article.author,
+    category: article.category,
+    coverImageUrl: article.coverImageUrl,
+    publishedAt: article.publishedAt,
+    isFeatured: article.isFeatured,
+    readingTimeMinutes: article.readingTimeMinutes,
+    tags: article.tags,
+  };
+}
+
+export async function fetchHomeNews(limit = 4) {
+  const featured = await fetchFeaturedNewsArticle();
+  const articles = await fetchNewsArticles({ limit: limit + 1 });
+  const featuredArticle = featured ? mapHomeNewsArticle(featured) : null;
+  const latest = articles
+    .filter((a) => !featuredArticle || a.id !== featuredArticle.id)
+    .slice(0, limit)
+    .map(mapHomeNewsArticle);
+  return { featured: featuredArticle, latest };
+}
+
+export async function fetchHomePartners(limit = 6) {
+  const featured = await fetchPartners({ featuredOnly: true, limit });
+  if (featured.length >= limit) {
+    return featured.slice(0, limit).map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      logoUrl: p.logoUrl,
+      category: p.category,
+      isFeatured: p.isFeatured,
+    }));
+  }
+
+  const all = await fetchPartners({ limit: limit * 2 });
+  const merged = [...featured];
+  for (const partner of all) {
+    if (merged.length >= limit) break;
+    if (!merged.some((m) => m.id === partner.id)) merged.push(partner);
+  }
+
+  return merged.slice(0, limit).map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    logoUrl: p.logoUrl,
+    category: p.category,
+    isFeatured: p.isFeatured,
+  }));
 }
 
 export async function fetchHomeMarkets() {
@@ -220,7 +276,8 @@ export function resolveHomeCta(events: HomeEvent[], podcast: HomePodcastEpisode 
       eyebrow: podcast.guest,
       title: podcast.title,
       body: podcast.description,
-      linkTo: "/podcast",
+      linkTo: "/podcasts/$slug",
+      linkParams: { slug: podcast.slug },
       buttonLabel: podcast.title,
     };
   }
@@ -255,13 +312,15 @@ export function pickNearestMarket(markets: HomeMarket[], coords: { lat: number; 
 }
 
 export async function fetchHomePageData(): Promise<HomePageData> {
-  const [heroSlides, programs, events, publications, featuredPodcast, markets, impactStats, sections] =
+  const [heroSlides, programs, events, publications, featuredPodcast, homeNews, partners, markets, impactStats, sections] =
     await Promise.all([
       fetchHomeHeroSlides(),
       fetchHomePrograms(6),
       fetchHomeEvents(),
       fetchHomePublications(),
       fetchFeaturedPodcast(),
+      fetchHomeNews(4),
+      fetchHomePartners(6),
       fetchHomeMarkets(),
       fetchHomeImpactStats(),
       fetchHomeSectionMeta(),
@@ -273,6 +332,9 @@ export async function fetchHomePageData(): Promise<HomePageData> {
     events,
     publications,
     featuredPodcast,
+    featuredNews: homeNews.featured,
+    latestNews: homeNews.latest,
+    partners,
     markets,
     impactStats,
     sections,

@@ -11,12 +11,14 @@ import { downloadCsv } from "@/lib/csv";
 import { toast } from "sonner";
 import { fmtDate } from "@/lib/format";
 import { useAuth } from "@/hooks/use-auth";
+import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({ component: AdminUsers });
 
 function AdminUsers() {
   const qc = useQueryClient();
   const { user } = useAuth();
+  const { confirm, dialog } = useConfirmDialog();
   const [q, setQ] = useState("");
 
   const { data } = useQuery({
@@ -39,11 +41,20 @@ function AdminUsers() {
     if (error) return toast.error(error.message);
     toast.success("Admin granted"); qc.invalidateQueries({ queryKey: ["admin-users"] });
   }
-  async function revokeAdmin(uid: string) {
-    if (uid === user?.id && !confirm("Remove your own admin access?")) return;
+  async function revokeAdmin(uid: string, name: string) {
+    if (uid === user?.id) {
+      const ok = await confirm({
+        title: "Remove your own admin access?",
+        description: "You will lose access to the JESUP Command Center immediately after confirming.",
+        confirmLabel: "Remove access",
+        destructive: true,
+      });
+      if (!ok) return;
+    }
     const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).eq("role", "admin");
     if (error) return toast.error(error.message);
-    toast.success("Admin revoked"); qc.invalidateQueries({ queryKey: ["admin-users"] });
+    toast.success(uid === user?.id ? "Admin access removed" : `Revoked admin from ${name}`);
+    qc.invalidateQueries({ queryKey: ["admin-users"] });
   }
 
   return (
@@ -69,7 +80,7 @@ function AdminUsers() {
                   <TableCell className="text-sm text-muted-foreground">{fmtDate(r.created_at)}</TableCell>
                   <TableCell>
                     {isAdmin ? (
-                      <Button size="sm" variant="outline" onClick={() => revokeAdmin(r.id)}>Revoke admin</Button>
+                      <Button size="sm" variant="outline" onClick={() => revokeAdmin(r.id, r.full_name ?? r.email ?? "user")}>Revoke admin</Button>
                     ) : (
                       <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={() => grantAdmin(r.id)}>Grant admin</Button>
                     )}
@@ -80,6 +91,7 @@ function AdminUsers() {
           </TableBody>
         </Table>
       </CardContent></Card>
+      {dialog}
     </AdminShell>
   );
 }

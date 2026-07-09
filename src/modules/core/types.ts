@@ -7,14 +7,22 @@ export type ModuleId =
   | "publications"
   | "podcasts"
   | "partners"
+  | "news"
   | "donations"
   | "equipment"
   | "grants"
   | "surveys"
   | "internships"
   | "twofas"
+  | "volunteers"
+  | "members"
+  | "organizations"
+  | "counties"
   | "ai"
   | "analytics"
+  | "reports"
+  | "activity"
+  | "roles"
   | "settings"
   | "media"
   | "search"
@@ -40,7 +48,8 @@ export type ContentEntityType =
   | "grant"
   | "equipment"
   | "survey"
-  | "internship";
+  | "internship"
+  | "twofas";
 
 export type ContentStatus = "draft" | "published" | "archived" | "inactive";
 

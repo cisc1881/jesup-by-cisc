@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
-import { PageContainer } from "@/components/design-system";
+import { PageContainer, QueryErrorState } from "@/components/design-system";
 import {
   FeaturedProgramHero,
   ProgramFilters,
@@ -14,15 +14,15 @@ import {
 } from "@/components/programs";
 import { fetchProgramCategories, fetchPrograms } from "@/lib/programs";
 import type { ProgramListItem } from "@/lib/programs";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/programs")({
-  head: () => ({
-    meta: [
-      { title: "Programs · JESUP" },
-      { name: "description", content: "Signature programs from the Carver Integrative Sustainability Center." },
-      { property: "og:title", content: "Programs · JESUP" },
-    ],
-  }),
+  head: () =>
+    listPageHead({
+      title: "Programs",
+      description: "Signature programs from the Carver Integrative Sustainability Center.",
+      path: "/programs",
+    }),
   component: ProgramsLayout,
 });
 
@@ -47,6 +47,7 @@ function ProgramsLayout() {
     data: programs,
     isLoading,
     isFetching,
+    isError,
     refetch,
   } = useQuery({
     queryKey: ["programs"],
@@ -96,6 +97,8 @@ function ProgramsLayout() {
 
           {showInitialSkeleton ? (
             <ProgramsPageSkeleton />
+          ) : isError ? (
+            <QueryErrorState title="Couldn't load programs" onRetry={() => refetch()} />
           ) : !programs?.length ? (
             <ProgramsEmptyState variant="empty" />
           ) : (

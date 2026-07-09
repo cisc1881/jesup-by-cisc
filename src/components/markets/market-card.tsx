@@ -17,19 +17,31 @@ type MarketCardProps = {
 export function MarketCard({ market, className, animationIndex = 0, saved, onToggleSaved }: MarketCardProps) {
   const address = formatMarketAddress(market);
 
-  const card = (
+  return (
     <AppCard
       variant="lift"
       padding="none"
       className={cn(
-        "group flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-token-lift active:scale-[0.98] animate-fade-up",
+        "group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-token-lift active:scale-[0.98] animate-fade-up",
         className,
       )}
       style={{ animationDelay: `${animationIndex * 90}ms` }}
     >
+      <Link
+        to="/markets/$id"
+        params={{ id: market.id }}
+        className="absolute inset-0 z-[1] rounded-[inherit]"
+        aria-label={`View ${market.name}`}
+      />
+
       <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
         {market.coverImageUrl ? (
-          <img src={market.coverImageUrl} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
+          <img
+            src={market.coverImageUrl}
+            alt={market.name}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
         ) : (
           <div className="h-full w-full grad-crimson" />
         )}
@@ -38,20 +50,16 @@ export function MarketCard({ market, className, animationIndex = 0, saved, onTog
           style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.5) 100%)" }}
         />
         {market.isOpenToday && (
-          <span className="absolute left-3 top-3 glass-surface-dark rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="pointer-events-none absolute left-3 top-3 glass-surface-dark rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
             Open today
           </span>
         )}
         {onToggleSaved && (
           <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleSaved();
-            }}
+            onClick={onToggleSaved}
             className={cn(
-              "absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full glass-surface transition",
+              "absolute right-3 top-3 z-[2] grid h-10 w-10 place-items-center rounded-full glass-surface transition",
               saved && "text-accent",
             )}
             aria-label={saved ? "Remove favorite" : "Favorite market"}
@@ -60,13 +68,13 @@ export function MarketCard({ market, className, animationIndex = 0, saved, onTog
           </button>
         )}
         {market.distanceKm != null && (
-          <span className="absolute bottom-3 left-3 glass-surface rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="pointer-events-none absolute bottom-3 left-3 glass-surface rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
             {formatDistance(market.distanceKm)}
           </span>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="relative z-0 flex flex-1 flex-col p-4">
         <div className="flex flex-wrap gap-2">
           {market.acceptsSnapEbt && <AppBadge variant="gold">SNAP/EBT</AppBadge>}
           {market.season && <AppBadge variant="outline">{market.season}</AppBadge>}
@@ -93,11 +101,5 @@ export function MarketCard({ market, className, animationIndex = 0, saved, onTog
         </div>
       </div>
     </AppCard>
-  );
-
-  return (
-    <Link to="/markets/$id" params={{ id: market.id }} className="block h-full">
-      {card}
-    </Link>
   );
 }

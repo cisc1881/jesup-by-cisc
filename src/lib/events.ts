@@ -369,7 +369,8 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
         id: partner.id,
         title: partner.name,
         subtitle: item.sponsorship_level,
-        href: partner.website_url ?? `/partners`,
+        href: `/partners/$slug`,
+        hrefParams: { slug: partner.slug },
         imageUrl: partner.logo_url,
       };
     }),
@@ -397,7 +398,7 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
         id: ep.id,
         title: ep.title,
         subtitle: ep.guest,
-        href: "/podcast/$slug",
+        href: "/podcasts/$slug",
         hrefParams: { slug: ep.slug },
       };
     }),
@@ -406,7 +407,8 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
       return {
         id: partner.id,
         title: partner.name,
-        href: `/partners`,
+        href: `/partners/$slug`,
+        hrefParams: { slug: partner.slug },
         imageUrl: partner.logo_url,
       };
     }),

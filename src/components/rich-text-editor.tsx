@@ -36,19 +36,19 @@ export function RichTextEditor({ value, onChange, className, placeholder }: Rich
   return (
     <div className={cn("overflow-hidden rounded-xl border border-border bg-background", className)}>
       <div className="flex flex-wrap gap-1 border-b border-border bg-secondary/40 p-2">
-        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => { exec("bold"); handleInput(); }}>
+        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" aria-label="Bold" onClick={() => { exec("bold"); handleInput(); }}>
           <Bold className="h-4 w-4" />
         </Button>
-        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => { exec("italic"); handleInput(); }}>
+        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" aria-label="Italic" onClick={() => { exec("italic"); handleInput(); }}>
           <Italic className="h-4 w-4" />
         </Button>
-        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => { exec("insertUnorderedList"); handleInput(); }}>
+        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" aria-label="Bulleted list" onClick={() => { exec("insertUnorderedList"); handleInput(); }}>
           <List className="h-4 w-4" />
         </Button>
-        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => { exec("insertOrderedList"); handleInput(); }}>
+        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" aria-label="Numbered list" onClick={() => { exec("insertOrderedList"); handleInput(); }}>
           <ListOrdered className="h-4 w-4" />
         </Button>
-        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={addLink}>
+        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" aria-label="Insert link" onClick={addLink}>
           <Link2 className="h-4 w-4" />
         </Button>
       </div>
@@ -57,6 +57,7 @@ export function RichTextEditor({ value, onChange, className, placeholder }: Rich
         contentEditable
         role="textbox"
         aria-multiline="true"
+        aria-label={placeholder ?? "Rich text editor"}
         data-placeholder={placeholder}
         className="min-h-[180px] px-3 py-3 text-sm leading-relaxed outline-none [&_a]:text-primary [&_a]:underline [&_li]:ml-4 [&_ol]:list-decimal [&_ul]:list-disc empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"
         onInput={handleInput}

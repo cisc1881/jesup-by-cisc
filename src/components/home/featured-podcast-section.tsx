@@ -68,9 +68,9 @@ export function FeaturedPodcastSection({ episode, meta, isLoading }: FeaturedPod
             )}
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <AppButton variant="primary" size="md" shape="pill" asChild>
-                <Link to="/podcast">
+                <Link to="/podcasts/$slug" params={{ slug: episode.slug }}>
                   <Play className="h-4 w-4 fill-current" aria-hidden="true" />
-                  {episode.title}
+                  Listen now
                 </Link>
               </AppButton>
               {episode.durationSeconds != null && (
