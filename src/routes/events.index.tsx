@@ -1,68 +1,189 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PublicLayout, PageHeader } from "@/components/public-layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
-import { fmtDateTime } from "@/lib/format";
-import { MapPin } from "lucide-react";
+import { PublicLayout } from "@/components/public-layout";
+import { PageContainer } from "@/components/design-system";
+import {
+  EventCalendarView,
+  EventFilters,
+  EventMapView,
+  EventSectionRow,
+  EventsEmptyState,
+  EventsPageSkeleton,
+  EventsPullRefresh,
+  FeaturedEventHero,
+  type EventViewMode,
+} from "@/components/events";
+import { useSavedEvents } from "@/hooks/use-saved-events";
+import { fetchEventCategories, fetchEvents, filterEvents, partitionEvents } from "@/lib/events";
 
 export const Route = createFileRoute("/events/")({
-  head: () => ({ meta: [{ title: "Events & Workshops · CISC Connect" }, { name: "description", content: "Upcoming workshops and events from CISC at Tuskegee University." }] }),
+  head: () => ({
+    meta: [
+      { title: "Events · JESUP" },
+      { name: "description", content: "Workshops, conferences, trainings, and community events from CISC at Tuskegee University." },
+      { property: "og:title", content: "Events · JESUP" },
+    ],
+  }),
   component: EventsPage,
 });
 
 function EventsPage() {
-  const { data, isLoading } = useQuery({
+  const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<EventViewMode>("list");
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
+  const { savedIds, toggleSaved, savedCount } = useSavedEvents();
+
+  const {
+    data: events,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
     queryKey: ["events"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("events").select("*").order("starts_at", { ascending: true });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => fetchEvents({ upcomingOnly: false }),
   });
 
-  const now = Date.now();
-  const upcoming = (data ?? []).filter((e) => new Date(e.starts_at).getTime() >= now);
-  const past = (data ?? []).filter((e) => new Date(e.starts_at).getTime() < now);
+  const { data: categories = [] } = useQuery({
+    queryKey: ["event-categories"],
+    queryFn: fetchEventCategories,
+  });
+
+  const filtered = useMemo(
+    () => filterEvents(events ?? [], search, categoryId, showSavedOnly, savedIds),
+    [events, search, categoryId, showSavedOnly, savedIds],
+  );
+
+  const sections = useMemo(() => partitionEvents(filtered), [filtered]);
+  const showInitialSkeleton = isLoading && !events?.length;
+
+  const handleRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
+  const clearFilters = useCallback(() => {
+    setSearch("");
+    setCategoryId(null);
+    setShowSavedOnly(false);
+    setViewMode("list");
+  }, []);
 
   return (
     <PublicLayout>
-      <PageHeader title="Events & Workshops" description="Learn, network, and grow with our community programs." />
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        {isLoading && <p className="text-muted-foreground">Loading…</p>}
-        <h2 className="font-serif text-xl font-semibold text-primary">Upcoming</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {upcoming.length === 0 && !isLoading && <p className="text-muted-foreground">No upcoming events.</p>}
-          {upcoming.map((e) => <EventCard key={e.id} e={e} />)}
-        </div>
-        {past.length > 0 && (
-          <>
-            <h2 className="mt-12 font-serif text-xl font-semibold text-primary">Past events</h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3 opacity-75">
-              {past.slice(0, 6).map((e) => <EventCard key={e.id} e={e} />)}
-            </div>
-          </>
-        )}
-      </div>
-    </PublicLayout>
-  );
-}
+      <EventsPullRefresh onRefresh={handleRefresh} disabled={isFetching}>
+        <PageContainer size="lg" className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]">
+          <header className="space-y-3">
+            <p className="text-eyebrow grad-gold-text">CISC Extension</p>
+            <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">Events</h1>
+            {events && events.length > 0 && (
+              <p className="max-w-2xl text-base text-muted-foreground">
+                {filtered.length} upcoming and archived event{filtered.length === 1 ? "" : "s"} — workshops, conferences,
+                trainings, academies, and field demonstrations.
+              </p>
+            )}
+          </header>
 
-function EventCard({ e }: { e: any }) {
-  return (
-    <Link to="/events/$id" params={{ id: e.id }}>
-      <Card className="h-full overflow-hidden transition hover:shadow-md">
-        {e.image_url ? (
-          <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `url(${e.image_url})` }} />
-        ) : (
-          <div className="h-40 bg-gradient-to-br from-primary/80 to-primary" />
-        )}
-        <CardContent className="p-5">
-          <div className="text-xs font-medium uppercase tracking-wider text-accent">{fmtDateTime(e.starts_at)}</div>
-          <h3 className="mt-2 font-serif text-lg font-semibold text-primary">{e.title}</h3>
-          {e.location && <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="h-3.5 w-3.5" />{e.location}</p>}
-        </CardContent>
-      </Card>
-    </Link>
+          {showInitialSkeleton ? (
+            <EventsPageSkeleton />
+          ) : !events?.length ? (
+            <EventsEmptyState variant="empty" />
+          ) : (
+            <>
+              {filtered.length === 0 ? (
+                <>
+                  <EventFilters
+                    categories={categories}
+                    selectedCategoryId={categoryId}
+                    onCategoryChange={setCategoryId}
+                    search={search}
+                    onSearchChange={setSearch}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    showSavedOnly={showSavedOnly}
+                    onShowSavedOnlyChange={setShowSavedOnly}
+                    savedCount={savedCount}
+                  />
+                  <EventsEmptyState
+                    variant={showSavedOnly ? "saved" : "no-results"}
+                    onClearFilters={showSavedOnly ? undefined : clearFilters}
+                  />
+                </>
+              ) : (
+                <div className="space-y-10 md:space-y-12">
+                  {sections.featured && viewMode === "list" && !showSavedOnly && (
+                    <FeaturedEventHero event={sections.featured} />
+                  )}
+
+                  <EventFilters
+                    categories={categories}
+                    selectedCategoryId={categoryId}
+                    onCategoryChange={setCategoryId}
+                    search={search}
+                    onSearchChange={setSearch}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    showSavedOnly={showSavedOnly}
+                    onShowSavedOnlyChange={setShowSavedOnly}
+                    savedCount={savedCount}
+                  />
+
+                  {viewMode === "calendar" && <EventCalendarView events={filtered} />}
+                  {viewMode === "map" && <EventMapView events={filtered} />}
+
+                  {viewMode === "list" && (
+                    <>
+                      <EventSectionRow
+                        title="Upcoming Events"
+                        events={sections.upcoming}
+                        sectionId="upcoming-events"
+                        savedIds={savedIds}
+                        onToggleSaved={toggleSaved}
+                      />
+                      <EventSectionRow
+                        title="This Week"
+                        events={sections.thisWeek}
+                        sectionId="this-week-events"
+                        animationOffset={2}
+                        savedIds={savedIds}
+                        onToggleSaved={toggleSaved}
+                      />
+                      <EventSectionRow
+                        title="This Month"
+                        events={sections.thisMonth}
+                        sectionId="this-month-events"
+                        animationOffset={4}
+                        savedIds={savedIds}
+                        onToggleSaved={toggleSaved}
+                      />
+                      {sections.later.length > 0 && (
+                        <EventSectionRow
+                          title="Later"
+                          events={sections.later}
+                          sectionId="later-events"
+                          animationOffset={6}
+                          savedIds={savedIds}
+                          onToggleSaved={toggleSaved}
+                        />
+                      )}
+                      {sections.past.length > 0 && !showSavedOnly && (
+                        <EventSectionRow
+                          title="Past Events"
+                          events={sections.past.slice(0, 12)}
+                          sectionId="past-events"
+                          animationOffset={8}
+                          savedIds={savedIds}
+                          onToggleSaved={toggleSaved}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </PageContainer>
+      </EventsPullRefresh>
+    </PublicLayout>
   );
 }

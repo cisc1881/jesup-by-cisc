@@ -25,21 +25,29 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
+import { Route as PublicationsSlugRouteImport } from './routes/publications.$slug'
 import { Route as ProgramsSlugRouteImport } from './routes/programs.$slug'
+import { Route as MarketsIdRouteImport } from './routes/markets.$id'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSurveysRouteImport } from './routes/_authenticated/admin/surveys'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
+import { Route as AuthenticatedAdminSearchRouteImport } from './routes/_authenticated/admin/search'
 import { Route as AuthenticatedAdminPublicationsRouteImport } from './routes/_authenticated/admin/publications'
+import { Route as AuthenticatedAdminProgramsRouteImport } from './routes/_authenticated/admin/programs'
 import { Route as AuthenticatedAdminPodcastRouteImport } from './routes/_authenticated/admin/podcast'
 import { Route as AuthenticatedAdminPartnersRouteImport } from './routes/_authenticated/admin/partners'
+import { Route as AuthenticatedAdminNotificationsRouteImport } from './routes/_authenticated/admin/notifications'
+import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin/media'
 import { Route as AuthenticatedAdminMarketsRouteImport } from './routes/_authenticated/admin/markets'
 import { Route as AuthenticatedAdminInternshipsRouteImport } from './routes/_authenticated/admin/internships'
 import { Route as AuthenticatedAdminGrantsRouteImport } from './routes/_authenticated/admin/grants'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin/events'
 import { Route as AuthenticatedAdminEquipmentRouteImport } from './routes/_authenticated/admin/equipment'
+import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -120,10 +128,20 @@ const EventsIndexRoute = EventsIndexRouteImport.update({
   path: '/events/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicationsSlugRoute = PublicationsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => PublicationsRoute,
+} as any)
 const ProgramsSlugRoute = ProgramsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ProgramsRoute,
+} as any)
+const MarketsIdRoute = MarketsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MarketsRoute,
 } as any)
 const EventsIdRoute = EventsIdRouteImport.update({
   id: '/events/$id',
@@ -156,10 +174,28 @@ const AuthenticatedAdminSurveysRoute =
     path: '/surveys',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminSearchRoute =
+  AuthenticatedAdminSearchRouteImport.update({
+    id: '/search',
+    path: '/search',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminPublicationsRoute =
   AuthenticatedAdminPublicationsRouteImport.update({
     id: '/publications',
     path: '/publications',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminProgramsRoute =
+  AuthenticatedAdminProgramsRouteImport.update({
+    id: '/programs',
+    path: '/programs',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminPodcastRoute =
@@ -174,6 +210,17 @@ const AuthenticatedAdminPartnersRoute =
     path: '/partners',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminNotificationsRoute =
+  AuthenticatedAdminNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminMediaRoute = AuthenticatedAdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedAdminMarketsRoute =
   AuthenticatedAdminMarketsRouteImport.update({
     id: '/markets',
@@ -204,6 +251,12 @@ const AuthenticatedAdminEquipmentRoute =
     path: '/equipment',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAnalyticsRoute =
+  AuthenticatedAdminAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -212,27 +265,35 @@ export interface FileRoutesByFullPath {
   '/equipment': typeof EquipmentRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
-  '/markets': typeof MarketsRoute
+  '/markets': typeof MarketsRouteWithChildren
   '/partners': typeof PartnersRoute
   '/podcast': typeof PodcastRoute
   '/programs': typeof ProgramsRouteWithChildren
-  '/publications': typeof PublicationsRoute
+  '/publications': typeof PublicationsRouteWithChildren
   '/resources': typeof ResourcesRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
+  '/markets/$id': typeof MarketsIdRoute
   '/programs/$slug': typeof ProgramsSlugRoute
+  '/publications/$slug': typeof PublicationsSlugRoute
   '/events/': typeof EventsIndexRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/podcast': typeof AuthenticatedAdminPodcastRoute
+  '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/admin/search': typeof AuthenticatedAdminSearchRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -244,26 +305,34 @@ export interface FileRoutesByTo {
   '/equipment': typeof EquipmentRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
-  '/markets': typeof MarketsRoute
+  '/markets': typeof MarketsRouteWithChildren
   '/partners': typeof PartnersRoute
   '/podcast': typeof PodcastRoute
   '/programs': typeof ProgramsRouteWithChildren
-  '/publications': typeof PublicationsRoute
+  '/publications': typeof PublicationsRouteWithChildren
   '/resources': typeof ResourcesRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
+  '/markets/$id': typeof MarketsIdRoute
   '/programs/$slug': typeof ProgramsSlugRoute
+  '/publications/$slug': typeof PublicationsSlugRoute
   '/events': typeof EventsIndexRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/podcast': typeof AuthenticatedAdminPodcastRoute
+  '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/admin/search': typeof AuthenticatedAdminSearchRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -277,27 +346,35 @@ export interface FileRoutesById {
   '/equipment': typeof EquipmentRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
-  '/markets': typeof MarketsRoute
+  '/markets': typeof MarketsRouteWithChildren
   '/partners': typeof PartnersRoute
   '/podcast': typeof PodcastRoute
   '/programs': typeof ProgramsRouteWithChildren
-  '/publications': typeof PublicationsRoute
+  '/publications': typeof PublicationsRouteWithChildren
   '/resources': typeof ResourcesRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRoute
+  '/markets/$id': typeof MarketsIdRoute
   '/programs/$slug': typeof ProgramsSlugRoute
+  '/publications/$slug': typeof PublicationsSlugRoute
   '/events/': typeof EventsIndexRoute
+  '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/_authenticated/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/_authenticated/admin/markets': typeof AuthenticatedAdminMarketsRoute
+  '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/_authenticated/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/podcast': typeof AuthenticatedAdminPodcastRoute
+  '/_authenticated/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/_authenticated/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/_authenticated/admin/search': typeof AuthenticatedAdminSearchRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -322,16 +399,24 @@ export interface FileRouteTypes {
     | '/admin'
     | '/me'
     | '/events/$id'
+    | '/markets/$id'
     | '/programs/$slug'
+    | '/publications/$slug'
     | '/events/'
+    | '/admin/analytics'
     | '/admin/equipment'
     | '/admin/events'
     | '/admin/grants'
     | '/admin/internships'
     | '/admin/markets'
+    | '/admin/media'
+    | '/admin/notifications'
     | '/admin/partners'
     | '/admin/podcast'
+    | '/admin/programs'
     | '/admin/publications'
+    | '/admin/search'
+    | '/admin/settings'
     | '/admin/surveys'
     | '/admin/users'
     | '/admin/'
@@ -353,16 +438,24 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/me'
     | '/events/$id'
+    | '/markets/$id'
     | '/programs/$slug'
+    | '/publications/$slug'
     | '/events'
+    | '/admin/analytics'
     | '/admin/equipment'
     | '/admin/events'
     | '/admin/grants'
     | '/admin/internships'
     | '/admin/markets'
+    | '/admin/media'
+    | '/admin/notifications'
     | '/admin/partners'
     | '/admin/podcast'
+    | '/admin/programs'
     | '/admin/publications'
+    | '/admin/search'
+    | '/admin/settings'
     | '/admin/surveys'
     | '/admin/users'
     | '/admin'
@@ -386,16 +479,24 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/me'
     | '/events/$id'
+    | '/markets/$id'
     | '/programs/$slug'
+    | '/publications/$slug'
     | '/events/'
+    | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/equipment'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/grants'
     | '/_authenticated/admin/internships'
     | '/_authenticated/admin/markets'
+    | '/_authenticated/admin/media'
+    | '/_authenticated/admin/notifications'
     | '/_authenticated/admin/partners'
     | '/_authenticated/admin/podcast'
+    | '/_authenticated/admin/programs'
     | '/_authenticated/admin/publications'
+    | '/_authenticated/admin/search'
+    | '/_authenticated/admin/settings'
     | '/_authenticated/admin/surveys'
     | '/_authenticated/admin/users'
     | '/_authenticated/admin/'
@@ -409,11 +510,11 @@ export interface RootRouteChildren {
   EquipmentRoute: typeof EquipmentRoute
   GrantsRoute: typeof GrantsRoute
   InternshipsRoute: typeof InternshipsRoute
-  MarketsRoute: typeof MarketsRoute
+  MarketsRoute: typeof MarketsRouteWithChildren
   PartnersRoute: typeof PartnersRoute
   PodcastRoute: typeof PodcastRoute
   ProgramsRoute: typeof ProgramsRouteWithChildren
-  PublicationsRoute: typeof PublicationsRoute
+  PublicationsRoute: typeof PublicationsRouteWithChildren
   ResourcesRoute: typeof ResourcesRoute
   SurveysRoute: typeof SurveysRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
@@ -535,12 +636,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/publications/$slug': {
+      id: '/publications/$slug'
+      path: '/$slug'
+      fullPath: '/publications/$slug'
+      preLoaderRoute: typeof PublicationsSlugRouteImport
+      parentRoute: typeof PublicationsRoute
+    }
     '/programs/$slug': {
       id: '/programs/$slug'
       path: '/$slug'
       fullPath: '/programs/$slug'
       preLoaderRoute: typeof ProgramsSlugRouteImport
       parentRoute: typeof ProgramsRoute
+    }
+    '/markets/$id': {
+      id: '/markets/$id'
+      path: '/$id'
+      fullPath: '/markets/$id'
+      preLoaderRoute: typeof MarketsIdRouteImport
+      parentRoute: typeof MarketsRoute
     }
     '/events/$id': {
       id: '/events/$id'
@@ -584,11 +699,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSurveysRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/search': {
+      id: '/_authenticated/admin/search'
+      path: '/search'
+      fullPath: '/admin/search'
+      preLoaderRoute: typeof AuthenticatedAdminSearchRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/publications': {
       id: '/_authenticated/admin/publications'
       path: '/publications'
       fullPath: '/admin/publications'
       preLoaderRoute: typeof AuthenticatedAdminPublicationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/programs': {
+      id: '/_authenticated/admin/programs'
+      path: '/programs'
+      fullPath: '/admin/programs'
+      preLoaderRoute: typeof AuthenticatedAdminProgramsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/podcast': {
@@ -603,6 +739,20 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/admin/partners'
       preLoaderRoute: typeof AuthenticatedAdminPartnersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/notifications': {
+      id: '/_authenticated/admin/notifications'
+      path: '/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AuthenticatedAdminNotificationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/media': {
+      id: '/_authenticated/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AuthenticatedAdminMediaRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/markets': {
@@ -640,18 +790,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEquipmentRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/analytics': {
+      id: '/_authenticated/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminEquipmentRoute: typeof AuthenticatedAdminEquipmentRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminGrantsRoute: typeof AuthenticatedAdminGrantsRoute
   AuthenticatedAdminInternshipsRoute: typeof AuthenticatedAdminInternshipsRoute
   AuthenticatedAdminMarketsRoute: typeof AuthenticatedAdminMarketsRoute
+  AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
+  AuthenticatedAdminNotificationsRoute: typeof AuthenticatedAdminNotificationsRoute
   AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
   AuthenticatedAdminPodcastRoute: typeof AuthenticatedAdminPodcastRoute
+  AuthenticatedAdminProgramsRoute: typeof AuthenticatedAdminProgramsRoute
   AuthenticatedAdminPublicationsRoute: typeof AuthenticatedAdminPublicationsRoute
+  AuthenticatedAdminSearchRoute: typeof AuthenticatedAdminSearchRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminSurveysRoute: typeof AuthenticatedAdminSurveysRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -659,14 +822,20 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
     AuthenticatedAdminEquipmentRoute: AuthenticatedAdminEquipmentRoute,
     AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
     AuthenticatedAdminGrantsRoute: AuthenticatedAdminGrantsRoute,
     AuthenticatedAdminInternshipsRoute: AuthenticatedAdminInternshipsRoute,
     AuthenticatedAdminMarketsRoute: AuthenticatedAdminMarketsRoute,
+    AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
+    AuthenticatedAdminNotificationsRoute: AuthenticatedAdminNotificationsRoute,
     AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
     AuthenticatedAdminPodcastRoute: AuthenticatedAdminPodcastRoute,
+    AuthenticatedAdminProgramsRoute: AuthenticatedAdminProgramsRoute,
     AuthenticatedAdminPublicationsRoute: AuthenticatedAdminPublicationsRoute,
+    AuthenticatedAdminSearchRoute: AuthenticatedAdminSearchRoute,
+    AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
     AuthenticatedAdminSurveysRoute: AuthenticatedAdminSurveysRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
@@ -690,6 +859,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface MarketsRouteChildren {
+  MarketsIdRoute: typeof MarketsIdRoute
+}
+
+const MarketsRouteChildren: MarketsRouteChildren = {
+  MarketsIdRoute: MarketsIdRoute,
+}
+
+const MarketsRouteWithChildren =
+  MarketsRoute._addFileChildren(MarketsRouteChildren)
+
 interface ProgramsRouteChildren {
   ProgramsSlugRoute: typeof ProgramsSlugRoute
 }
@@ -702,6 +882,18 @@ const ProgramsRouteWithChildren = ProgramsRoute._addFileChildren(
   ProgramsRouteChildren,
 )
 
+interface PublicationsRouteChildren {
+  PublicationsSlugRoute: typeof PublicationsSlugRoute
+}
+
+const PublicationsRouteChildren: PublicationsRouteChildren = {
+  PublicationsSlugRoute: PublicationsSlugRoute,
+}
+
+const PublicationsRouteWithChildren = PublicationsRoute._addFileChildren(
+  PublicationsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -710,11 +902,11 @@ const rootRouteChildren: RootRouteChildren = {
   EquipmentRoute: EquipmentRoute,
   GrantsRoute: GrantsRoute,
   InternshipsRoute: InternshipsRoute,
-  MarketsRoute: MarketsRoute,
+  MarketsRoute: MarketsRouteWithChildren,
   PartnersRoute: PartnersRoute,
   PodcastRoute: PodcastRoute,
   ProgramsRoute: ProgramsRouteWithChildren,
-  PublicationsRoute: PublicationsRoute,
+  PublicationsRoute: PublicationsRouteWithChildren,
   ResourcesRoute: ResourcesRoute,
   SurveysRoute: SurveysRoute,
   UnauthorizedRoute: UnauthorizedRoute,

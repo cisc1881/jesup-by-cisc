@@ -1,60 +1,132 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatches } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { PublicLayout, PageHeader } from "@/components/public-layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { fmtDate } from "@/lib/format";
-import { Download, ExternalLink, FileText } from "lucide-react";
+import { PublicLayout } from "@/components/public-layout";
+import {
+  EmptyState,
+  HorizontalScroll,
+  HorizontalScrollItem,
+  LoadingState,
+  PageContainer,
+} from "@/components/design-system";
+import { PublicationCard, PublicationFilters } from "@/components/publications";
+import {
+  fetchPublicationCategories,
+  fetchPublications,
+  filterPublications,
+} from "@/lib/publications";
+import type { PublicationContentType } from "@/lib/publication-content-types";
+import { BookOpen } from "lucide-react";
 
 export const Route = createFileRoute("/publications")({
-  head: () => ({ meta: [{ title: "Publications · CISC Connect" }, { name: "description", content: "Research briefs, community guides and publications from CISC." }] }),
-  component: PublicationsPage,
+  head: () => ({
+    meta: [
+      { title: "Publications · JESUP" },
+      { name: "description", content: "Research briefs, factsheets, reports, and community guides from CISC." },
+      { property: "og:title", content: "Publications · JESUP" },
+    ],
+  }),
+  component: PublicationsLayout,
 });
 
-function PublicationsPage() {
-  const [q, setQ] = useState("");
-  const { data } = useQuery({
+function PublicationsLayout() {
+  const matches = useMatches();
+  const isChild = matches.some((m) => m.routeId === "/publications/$slug");
+  const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [contentType, setContentType] = useState<PublicationContentType | null>(null);
+
+  const { data: publications, isLoading } = useQuery({
     queryKey: ["publications"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("publications").select("*").order("published_at", { ascending: false, nullsFirst: false });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => fetchPublications(),
   });
-  const filtered = (data ?? []).filter((p) => !q || p.title.toLowerCase().includes(q.toLowerCase()) || (p.category ?? "").toLowerCase().includes(q.toLowerCase()));
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["publication-categories"],
+    queryFn: fetchPublicationCategories,
+  });
+
+  const filtered = useMemo(
+    () => filterPublications(publications ?? [], search, categoryId, contentType),
+    [publications, search, categoryId, contentType],
+  );
+
+  if (isChild) return <Outlet />;
 
   return (
     <PublicLayout>
-      <PageHeader title="Publications Library" description="Reports, briefs, and community-facing guides." />
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <Input placeholder="Search publications…" value={q} onChange={(e) => setQ(e.target.value)} className="mb-6 max-w-sm" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.length === 0 && <p className="text-muted-foreground">No publications yet.</p>}
-          {filtered.map((p) => (
-            <Card key={p.id} className="flex flex-col">
-              <CardContent className="flex flex-1 flex-col p-6">
-                <div className="grid h-11 w-11 place-items-center rounded-lg bg-primary/10 text-primary"><FileText className="h-5 w-5" /></div>
-                {p.category && <Badge variant="secondary" className="mt-3 w-fit">{p.category}</Badge>}
-                <h3 className="mt-2 font-serif text-lg font-semibold text-primary">{p.title}</h3>
-                {p.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-3">{p.description}</p>}
-                {p.published_at && <p className="mt-2 text-xs text-muted-foreground">{fmtDate(p.published_at)}</p>}
-                <div className="mt-4 flex gap-2">
-                  {p.file_url && (
-                    <Button asChild size="sm"><a href={p.file_url} target="_blank" rel="noreferrer"><Download className="mr-1 h-4 w-4" />Download</a></Button>
-                  )}
-                  {p.external_url && (
-                    <Button asChild size="sm" variant="outline"><a href={p.external_url} target="_blank" rel="noreferrer"><ExternalLink className="mr-1 h-4 w-4" />Open</a></Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      <PageContainer size="lg" className="space-y-8 pb-bottom-nav md:pb-[var(--page-py)]">
+        <div>
+          <p className="text-eyebrow grad-gold-text">Research & resources</p>
+          <h1 className="mt-2 text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
+            Publications Library
+          </h1>
+          {publications && publications.length > 0 && (
+            <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+              {publications.length} resource{publications.length === 1 ? "" : "s"} — factsheets, reports, magazines,
+              videos, and extension bulletins.
+            </p>
+          )}
         </div>
-      </div>
+
+        {isLoading ? (
+          <LoadingState label="Loading publications…" />
+        ) : !publications?.length ? (
+          <EmptyState
+            icon={BookOpen}
+            title="Publications"
+            description="Publications will appear here once published."
+          />
+        ) : (
+          <>
+            <PublicationFilters
+              categories={categories}
+              selectedCategoryId={categoryId}
+              onCategoryChange={setCategoryId}
+              selectedContentType={contentType}
+              onContentTypeChange={setContentType}
+              search={search}
+              onSearchChange={setSearch}
+            />
+
+            {filtered.length === 0 ? (
+              <EmptyState
+                icon={BookOpen}
+                title="No matches"
+                description="Try a different search, category, or content type."
+                action={
+                  <button
+                    type="button"
+                    className="text-sm font-semibold text-primary hover:underline"
+                    onClick={() => {
+                      setSearch("");
+                      setCategoryId(null);
+                      setContentType(null);
+                    }}
+                  >
+                    Clear filters
+                  </button>
+                }
+              />
+            ) : (
+              <>
+                <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+                  {filtered.map((publication) => (
+                    <PublicationCard key={publication.id} publication={publication} />
+                  ))}
+                </div>
+                <HorizontalScroll className="sm:hidden">
+                  {filtered.map((publication) => (
+                    <HorizontalScrollItem key={publication.id} width="lg">
+                      <PublicationCard publication={publication} className="w-[85vw]" />
+                    </HorizontalScrollItem>
+                  ))}
+                </HorizontalScroll>
+              </>
+            )}
+          </>
+        )}
+      </PageContainer>
     </PublicLayout>
   );
 }

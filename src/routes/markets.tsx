@@ -1,85 +1,236 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { PublicLayout, PageHeader } from "@/components/public-layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Clock, Calendar as CalIcon, ExternalLink } from "lucide-react";
+import { PublicLayout } from "@/components/public-layout";
+import { PageContainer } from "@/components/design-system";
+import {
+  FeaturedMarketHero,
+  MarketFilters,
+  MarketMapView,
+  MarketSectionRow,
+  MarketsEmptyState,
+  MarketsPageSkeleton,
+  MarketsPullRefresh,
+  type MarketViewMode,
+} from "@/components/markets";
+import { useFavoriteMarkets } from "@/hooks/use-favorite-markets";
+import { useUserLocation } from "@/hooks/use-user-location";
+import {
+  fetchMarketIdsByProductCategory,
+  fetchMarkets,
+  filterMarkets,
+  partitionMarkets,
+  type MarketProductCategory,
+} from "@/lib/markets";
 
 export const Route = createFileRoute("/markets")({
-  head: () => ({ meta: [{ title: "Farmers Markets · CISC Connect" }, { name: "description", content: "Directory of farmers markets served by Tuskegee University's CISC." }] }),
+  head: () => ({
+    meta: [
+      { title: "Farmers Markets · JESUP" },
+      {
+        name: "description",
+        content: "Find farmers markets near you — locally grown food, SNAP/EBT, and community agriculture from CISC.",
+      },
+      { property: "og:title", content: "Farmers Markets · JESUP" },
+    ],
+  }),
   component: MarketsPage,
 });
 
 function MarketsPage() {
-  const [q, setQ] = useState("");
-  const { data: markets, isLoading } = useQuery({
-    queryKey: ["markets"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("markets").select("*").order("name");
-      if (error) throw error;
-      return data;
-    },
+  const [search, setSearch] = useState("");
+  const [productCategory, setProductCategory] = useState<MarketProductCategory | null>(null);
+  const [viewMode, setViewMode] = useState<MarketViewMode>("list");
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const { coords, loading: locating, denied, refresh } = useUserLocation();
+  const { savedIds, toggleSaved, savedCount } = useFavoriteMarkets();
+
+  const {
+    data: markets,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["markets", coords?.lat, coords?.lng],
+    queryFn: () => fetchMarkets({ coords }),
   });
-  const filtered = (markets ?? []).filter((m) =>
-    !q || [m.name, m.city, m.state, m.address].filter(Boolean).some((s) => s!.toLowerCase().includes(q.toLowerCase()))
+
+  const { data: categoryMarketIds } = useQuery({
+    queryKey: ["market-product-category", productCategory],
+    enabled: !!productCategory,
+    queryFn: () => fetchMarketIdsByProductCategory(productCategory!),
+  });
+
+  const filtered = useMemo(
+    () =>
+      filterMarkets(
+        markets ?? [],
+        search,
+        productCategory,
+        showFavoritesOnly,
+        savedIds,
+        productCategory ? categoryMarketIds : undefined,
+      ),
+    [markets, search, productCategory, showFavoritesOnly, savedIds, categoryMarketIds],
   );
+
+  const sections = useMemo(() => partitionMarkets(filtered), [filtered]);
+  const favoriteMarkets = useMemo(
+    () => (markets ?? []).filter((m) => savedIds.has(m.id)),
+    [markets, savedIds],
+  );
+  const showInitialSkeleton = isLoading && !markets?.length;
+
+  const handleRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
+  const clearFilters = useCallback(() => {
+    setSearch("");
+    setProductCategory(null);
+    setShowFavoritesOnly(false);
+    setViewMode("list");
+  }, []);
 
   return (
     <PublicLayout>
-      <PageHeader title="Farmers Market Directory" description="Locally grown, community rooted. Find a market near you." />
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="mb-6 flex flex-wrap gap-3">
-          <Input placeholder="Search markets…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-sm" />
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
-          <div className="space-y-4">
-            {isLoading && <p className="text-muted-foreground">Loading…</p>}
-            {!isLoading && filtered.length === 0 && (
-              <Card><CardContent className="p-8 text-center text-muted-foreground">No markets found.</CardContent></Card>
+      <MarketsPullRefresh onRefresh={handleRefresh} disabled={isFetching}>
+        <PageContainer size="lg" className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]">
+          <header className="space-y-3">
+            <p className="text-eyebrow grad-gold-text">CISC Extension</p>
+            <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
+              Farmers Markets
+            </h1>
+            {markets && markets.length > 0 && (
+              <p className="max-w-2xl text-base text-muted-foreground">
+                {filtered.length} market{filtered.length === 1 ? "" : "s"} — fresh produce, local vendors, and
+                community food access across Alabama.
+                {coords && !denied && " Sorted by distance from you."}
+              </p>
             )}
-            {filtered.map((m) => (
-              <Card key={m.id} className="overflow-hidden">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <h3 className="font-serif text-lg font-bold text-primary">{m.name}</h3>
-                      {m.description && <p className="mt-1 text-sm text-muted-foreground">{m.description}</p>}
-                      <div className="mt-3 space-y-1 text-sm">
-                        {m.address && <div className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" /><span>{[m.address, m.city, m.state].filter(Boolean).join(", ")}</span></div>}
-                        {m.hours && <div className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-accent" /><span>{m.hours}</span></div>}
-                        {m.season && <div className="flex items-start gap-2"><CalIcon className="mt-0.5 h-4 w-4 shrink-0 text-accent" /><span>{m.season}</span></div>}
-                      </div>
-                    </div>
-                    {m.address && (
-                      <Button asChild variant="outline" size="sm">
-                        <a href={`https://maps.google.com/?q=${encodeURIComponent([m.address, m.city, m.state].filter(Boolean).join(", "))}`} target="_blank" rel="noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          </header>
 
-          <Card className="h-fit lg:sticky lg:top-24">
-            <CardContent className="p-0">
-              <div className="grid aspect-square place-items-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/20 lg:aspect-auto lg:h-[500px]">
-                <div className="text-center">
-                  <MapPin className="mx-auto h-10 w-10 text-primary" />
-                  <p className="mt-3 font-serif text-lg font-semibold text-primary">Map view</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Interactive map coming soon</p>
+          {showInitialSkeleton ? (
+            <MarketsPageSkeleton />
+          ) : !markets?.length ? (
+            <MarketsEmptyState variant="empty" />
+          ) : (
+            <>
+              {filtered.length === 0 ? (
+                <>
+                  <MarketFilters
+                    search={search}
+                    onSearchChange={setSearch}
+                    productCategory={productCategory}
+                    onProductCategoryChange={setProductCategory}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    showFavoritesOnly={showFavoritesOnly}
+                    onShowFavoritesOnlyChange={setShowFavoritesOnly}
+                    favoritesCount={savedCount}
+                  />
+                  <MarketsEmptyState
+                    variant={showFavoritesOnly ? "favorites" : "no-results"}
+                    onClearFilters={showFavoritesOnly ? undefined : clearFilters}
+                  />
+                </>
+              ) : (
+                <div className="space-y-10 md:space-y-12">
+                  {sections.featured && viewMode === "list" && !showFavoritesOnly && (
+                    <FeaturedMarketHero market={sections.featured} />
+                  )}
+
+                  <MarketFilters
+                    search={search}
+                    onSearchChange={setSearch}
+                    productCategory={productCategory}
+                    onProductCategoryChange={setProductCategory}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    showFavoritesOnly={showFavoritesOnly}
+                    onShowFavoritesOnlyChange={setShowFavoritesOnly}
+                    favoritesCount={savedCount}
+                  />
+
+                  {viewMode === "map" && (
+                    <MarketMapView
+                      markets={filtered}
+                      userCoords={coords}
+                      onLocate={refresh}
+                      locating={locating}
+                    />
+                  )}
+
+                  {viewMode === "list" && (
+                    <>
+                      {showFavoritesOnly ? (
+                        <MarketSectionRow
+                          title="Favorite Markets"
+                          markets={filtered}
+                          sectionId="favorite-markets"
+                          savedIds={savedIds}
+                          onToggleSaved={toggleSaved}
+                        />
+                      ) : (
+                        <>
+                          {favoriteMarkets.length > 0 && (
+                            <MarketSectionRow
+                              title="Favorite Markets"
+                              markets={favoriteMarkets}
+                              sectionId="favorite-markets"
+                              savedIds={savedIds}
+                              onToggleSaved={toggleSaved}
+                            />
+                          )}
+                          <MarketSectionRow
+                            title="Markets Near Me"
+                            markets={sections.nearMe.slice(0, 12)}
+                            sectionId="markets-near-me"
+                            savedIds={savedIds}
+                            onToggleSaved={toggleSaved}
+                          />
+                          <MarketSectionRow
+                            title="Open Today"
+                            markets={sections.openToday}
+                            sectionId="open-today-markets"
+                            animationOffset={1}
+                            savedIds={savedIds}
+                            onToggleSaved={toggleSaved}
+                          />
+                          <MarketSectionRow
+                            title="This Weekend"
+                            markets={sections.thisWeekend}
+                            sectionId="weekend-markets"
+                            animationOffset={2}
+                            savedIds={savedIds}
+                            onToggleSaved={toggleSaved}
+                          />
+                          <MarketSectionRow
+                            title="Seasonal Markets"
+                            markets={sections.seasonal}
+                            sectionId="seasonal-markets"
+                            animationOffset={3}
+                            savedIds={savedIds}
+                            onToggleSaved={toggleSaved}
+                          />
+                          <MarketSectionRow
+                            title="All Markets"
+                            markets={sections.other.length ? sections.other : filtered}
+                            sectionId="all-markets"
+                            animationOffset={4}
+                            savedIds={savedIds}
+                            onToggleSaved={toggleSaved}
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+              )}
+            </>
+          )}
+        </PageContainer>
+      </MarketsPullRefresh>
     </PublicLayout>
   );
 }

@@ -1,140 +1,236 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { AdminPageHeader, AdminShell } from "@/components/admin-page";
+import { EventFormDialog } from "@/components/admin/event-form-dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { downloadCsv } from "@/lib/csv";
-import { toast } from "sonner";
-import { Pencil, Trash2, Users } from "lucide-react";
+import {
+  checkInRegistration,
+  deleteEvent,
+  duplicateEvent,
+  eventStatusLabel,
+  fetchEventRegistrations,
+  fetchAdminEvents,
+  getEventAnalytics,
+  registrationStatusLabel,
+} from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
+import { toast } from "sonner";
+import { BarChart3, Copy, Pencil, Trash2, UserCheck, Users } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/events")({ component: AdminEvents });
-
-const empty = { title: "", description: "", starts_at: "", ends_at: "", location: "", capacity: "", image_url: "", registration_open: true };
 
 function AdminEvents() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [regsOpen, setRegsOpen] = useState<string | null>(null);
-  const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState<any>(empty);
+  const [analyticsOpen, setAnalyticsOpen] = useState<string | null>(null);
 
-  const { data } = useQuery({
-    queryKey: ["admin-events"],
-    queryFn: async () => (await supabase.from("events").select("*").order("starts_at", { ascending: false })).data ?? [],
-  });
+  const { data } = useQuery({ queryKey: ["admin-events"], queryFn: fetchAdminEvents });
   const rows = (data ?? []).filter((r) => !q || r.title.toLowerCase().includes(q.toLowerCase()));
 
   const { data: regs } = useQuery({
     queryKey: ["event-regs-admin", regsOpen],
     enabled: !!regsOpen,
-    queryFn: async () => (await supabase.from("event_registrations")
-      .select("id,notes,created_at,profiles(full_name,email)")
-      .eq("event_id", regsOpen!)).data ?? [],
+    queryFn: () => fetchEventRegistrations(regsOpen!),
   });
 
-  function openNew() { setEditing(null); setForm(empty); setOpen(true); }
-  function openEdit(r: any) {
-    setEditing(r);
-    setForm({
-      ...empty, ...r,
-      starts_at: r.starts_at ? new Date(r.starts_at).toISOString().slice(0, 16) : "",
-      ends_at: r.ends_at ? new Date(r.ends_at).toISOString().slice(0, 16) : "",
-      capacity: r.capacity ?? "",
-    });
+  const { data: analytics } = useQuery({
+    queryKey: ["event-analytics", analyticsOpen],
+    enabled: !!analyticsOpen,
+    queryFn: () => getEventAnalytics(analyticsOpen!),
+  });
+
+  function openNew() {
+    setEditingId(null);
     setOpen(true);
   }
-  async function save(e: React.FormEvent) {
-    e.preventDefault();
-    const payload: any = { ...form, capacity: form.capacity === "" ? null : Number(form.capacity), ends_at: form.ends_at || null };
-    const res = editing
-      ? await supabase.from("events").update(payload).eq("id", editing.id)
-      : await supabase.from("events").insert(payload);
-    if (res.error) return toast.error(res.error.message);
-    toast.success("Saved"); setOpen(false); qc.invalidateQueries({ queryKey: ["admin-events"] });
+
+  function openEdit(id: string) {
+    setEditingId(id);
+    setOpen(true);
   }
+
   async function del(id: string) {
     if (!confirm("Delete this event?")) return;
-    const { error } = await supabase.from("events").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-events"] });
+    try {
+      await deleteEvent(id);
+      toast.success("Deleted");
+      qc.invalidateQueries({ queryKey: ["admin-events"] });
+      qc.invalidateQueries({ queryKey: ["events"] });
+      qc.invalidateQueries({ queryKey: ["home-page"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Delete failed");
+    }
+  }
+
+  async function duplicate(id: string) {
+    try {
+      await duplicateEvent(id);
+      toast.success("Event duplicated as draft");
+      qc.invalidateQueries({ queryKey: ["admin-events"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Duplicate failed");
+    }
+  }
+
+  async function handleCheckIn(registrationId: string) {
+    if (!regsOpen) return;
+    try {
+      await checkInRegistration(registrationId, regsOpen);
+      toast.success("Checked in");
+      qc.invalidateQueries({ queryKey: ["event-regs-admin", regsOpen] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Check-in failed");
+    }
   }
 
   return (
     <AdminShell>
-      <AdminPageHeader title="Events & Workshops" searchValue={q} onSearchChange={setQ} onNew={openNew}
-        onExport={() => downloadCsv("events", rows, [
-          { header: "Title", get: (r) => r.title }, { header: "Starts", get: (r) => r.starts_at },
-          { header: "Location", get: (r) => r.location }, { header: "Capacity", get: (r) => r.capacity },
-        ])}
+      <AdminPageHeader
+        title="Events & Workshops"
+        description="Manage workshops, conferences, trainings, registrations, and check-in."
+        searchValue={q}
+        onSearchChange={setQ}
+        onNew={openNew}
+        onExport={() =>
+          downloadCsv("events", rows, [
+            { header: "Title", get: (r) => r.title },
+            { header: "Starts", get: (r) => r.startsAt },
+            { header: "Status", get: (r) => eventStatusLabel(r.status) },
+            { header: "Registration", get: (r) => registrationStatusLabel(r.registrationStatus) },
+            { header: "Capacity", get: (r) => r.capacity },
+            { header: "Registered", get: (r) => r.registrationCount },
+            { header: "Featured", get: (r) => (r.isFeatured ? "Yes" : "No") },
+          ])
+        }
       />
-      <Card><CardContent className="p-0">
-        <Table>
-          <TableHeader><TableRow><TableHead>Title</TableHead><TableHead>When</TableHead><TableHead>Location</TableHead><TableHead>Open</TableHead><TableHead className="w-32"></TableHead></TableRow></TableHeader>
-          <TableBody>
-            {rows.length === 0 && <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">No events.</TableCell></TableRow>}
-            {rows.map((r) => (
-              <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.title}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">{fmtDateTime(r.starts_at)}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">{r.location}</TableCell>
-                <TableCell><Badge variant={r.registration_open ? "default" : "secondary"}>{r.registration_open ? "Open" : "Closed"}</Badge></TableCell>
-                <TableCell><div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => setRegsOpen(r.id)}><Users className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => del(r.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                </div></TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent></Card>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{editing ? "Edit" : "New"} event</DialogTitle></DialogHeader>
-          <form onSubmit={save} className="space-y-3">
-            <div><Label>Title *</Label><Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-            <div><Label>Description</Label><Textarea value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Starts *</Label><Input type="datetime-local" required value={form.starts_at} onChange={(e) => setForm({ ...form, starts_at: e.target.value })} /></div>
-              <div><Label>Ends</Label><Input type="datetime-local" value={form.ends_at} onChange={(e) => setForm({ ...form, ends_at: e.target.value })} /></div>
-            </div>
-            <div><Label>Location</Label><Input value={form.location ?? ""} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
-            <div><Label>Capacity</Label><Input type="number" value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} /></div>
-            <div><Label>Image URL</Label><Input value={form.image_url ?? ""} onChange={(e) => setForm({ ...form, image_url: e.target.value })} /></div>
-            <div className="flex items-center gap-2"><Switch checked={form.registration_open} onCheckedChange={(v) => setForm({ ...form, registration_open: v })} /><Label>Registration open</Label></div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">Save</Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!regsOpen} onOpenChange={(v) => !v && setRegsOpen(null)}>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-          <DialogHeader><DialogTitle>Registrations</DialogTitle></DialogHeader>
-          <Button variant="outline" size="sm" onClick={() => downloadCsv("registrations", regs ?? [], [
-            { header: "Name", get: (r: any) => r.profiles?.full_name }, { header: "Email", get: (r: any) => r.profiles?.email },
-            { header: "Notes", get: (r: any) => r.notes }, { header: "Registered", get: (r: any) => r.created_at },
-          ])} className="w-fit">Export CSV</Button>
+      <Card>
+        <CardContent className="p-0">
           <Table>
-            <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Notes</TableHead></TableRow></TableHeader>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>When</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Registration</TableHead>
+                <TableHead>Capacity</TableHead>
+                <TableHead className="w-40"></TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
-              {(regs ?? []).length === 0 && <TableRow><TableCell colSpan={3} className="py-4 text-center text-muted-foreground">No registrations.</TableCell></TableRow>}
-              {(regs ?? []).map((r: any) => (
-                <TableRow key={r.id}><TableCell>{r.profiles?.full_name}</TableCell><TableCell>{r.profiles?.email}</TableCell><TableCell className="text-sm text-muted-foreground">{r.notes}</TableCell></TableRow>
+              {rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">No events.</TableCell>
+                </TableRow>
+              )}
+              {rows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="font-medium">{row.title}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{fmtDateTime(row.startsAt)}</TableCell>
+                  <TableCell><Badge variant={row.status === "published" ? "default" : "secondary"}>{eventStatusLabel(row.status)}</Badge></TableCell>
+                  <TableCell><Badge variant="outline">{registrationStatusLabel(row.registrationStatus)}</Badge></TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {row.registrationCount}{row.capacity != null ? ` / ${row.capacity}` : ""}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" onClick={() => setAnalyticsOpen(row.id)} title="Analytics"><BarChart3 className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => setRegsOpen(row.id)} title="Registrations"><Users className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => duplicate(row.id)} title="Duplicate"><Copy className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => openEdit(row.id)}><Pencil className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => del(row.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <EventFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        eventId={editingId}
+        onSaved={() => {
+          qc.invalidateQueries({ queryKey: ["admin-events"] });
+          qc.invalidateQueries({ queryKey: ["events"] });
+          qc.invalidateQueries({ queryKey: ["home-page"] });
+        }}
+      />
+
+      <Dialog open={!!regsOpen} onOpenChange={(v) => !v && setRegsOpen(null)}>
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+          <DialogHeader><DialogTitle>Registrations & check-in</DialogTitle></DialogHeader>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-fit"
+            onClick={() =>
+              downloadCsv("event-registrations", regs ?? [], [
+                { header: "Name", get: (r) => r.fullName },
+                { header: "Email", get: (r) => r.email },
+                { header: "Status", get: (r) => r.status },
+                { header: "Ticket", get: (r) => r.ticketCode },
+                { header: "Checked in", get: (r) => r.checkedInAt },
+                { header: "Notes", get: (r) => r.notes },
+              ])
+            }
+          >
+            Export CSV
+          </Button>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Ticket</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(regs ?? []).map((reg) => (
+                <TableRow key={reg.id}>
+                  <TableCell>
+                    <div className="font-medium">{reg.fullName}</div>
+                    <div className="text-xs text-muted-foreground">{reg.email}</div>
+                  </TableCell>
+                  <TableCell>{reg.status}</TableCell>
+                  <TableCell className="font-mono text-xs">{reg.ticketCode}</TableCell>
+                  <TableCell>
+                    {!reg.checkedInAt && reg.status === "registered" && (
+                      <Button size="sm" variant="outline" onClick={() => handleCheckIn(reg.id)}>
+                        <UserCheck className="h-4 w-4" /> Check in
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!analyticsOpen} onOpenChange={(v) => !v && setAnalyticsOpen(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Event analytics</DialogTitle></DialogHeader>
+          {analytics && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-lg border p-4"><div className="text-2xl font-bold">{analytics.registered}</div><div className="text-sm text-muted-foreground">Registered</div></div>
+              <div className="rounded-lg border p-4"><div className="text-2xl font-bold">{analytics.waitingList}</div><div className="text-sm text-muted-foreground">Waiting list</div></div>
+              <div className="rounded-lg border p-4"><div className="text-2xl font-bold">{analytics.checkedIn}</div><div className="text-sm text-muted-foreground">Checked in</div></div>
+              <div className="rounded-lg border p-4"><div className="text-2xl font-bold">{analytics.cancelled}</div><div className="text-sm text-muted-foreground">Cancelled</div></div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </AdminShell>

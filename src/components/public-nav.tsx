@@ -4,15 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-
-const links = [
-  { to: "/programs", label: "Programs" },
-  { to: "/events", label: "Events" },
-  { to: "/podcast", label: "Podcast" },
-  { to: "/resources", label: "Resources" },
-  { to: "/partners", label: "Partners" },
-  { to: "/donate", label: "Donate" },
-] as const;
+import { desktopNavLinks } from "@/lib/navigation";
 
 export function PublicNav() {
   const { user, isAdmin } = useAuth();
@@ -35,7 +27,7 @@ export function PublicNav() {
         </Link>
 
         <nav className="ml-2 hidden items-center gap-0.5 md:flex">
-          {links.map((l) => (
+          {desktopNavLinks.map((l) => (
             <Link
               key={l.to}
               to={l.to}
@@ -60,7 +52,7 @@ export function PublicNav() {
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild><Link to="/me">My Profile</Link></DropdownMenuItem>
-                {isAdmin && <DropdownMenuItem asChild><Link to="/admin">Admin Dashboard</Link></DropdownMenuItem>}
+                {isAdmin && <DropdownMenuItem asChild><Link to="/admin">JESUP Command Center</Link></DropdownMenuItem>}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut} className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" /> Sign out

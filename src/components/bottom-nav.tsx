@@ -1,17 +1,17 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, LayoutGrid, Calendar, BookOpen, User } from "lucide-react";
+import { isResourceRoute } from "@/lib/navigation";
 
 const items = [
   { to: "/", label: "Home", icon: Home, match: (p: string) => p === "/" },
   { to: "/programs", label: "Programs", icon: LayoutGrid, match: (p: string) => p.startsWith("/programs") },
   { to: "/events", label: "Events", icon: Calendar, match: (p: string) => p.startsWith("/events") },
-  { to: "/resources", label: "Resources", icon: BookOpen, match: (p: string) => p.startsWith("/resources") || p.startsWith("/publications") || p.startsWith("/grants") || p.startsWith("/internships") || p.startsWith("/equipment") || p.startsWith("/surveys") || p.startsWith("/markets") },
+  { to: "/resources", label: "Resources", icon: BookOpen, match: isResourceRoute },
   { to: "/me", label: "Profile", icon: User, match: (p: string) => p.startsWith("/me") || p.startsWith("/auth") },
 ] as const;
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  // Hide on admin
   if (pathname.startsWith("/admin")) return null;
 
   return (

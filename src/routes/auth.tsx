@@ -8,9 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { resolvePostLoginPathForUser, validateNextPath } from "@/lib/auth-redirect";
 import { toast } from "sonner";
 
-const searchSchema = z.object({ next: z.string().optional() });
+const searchSchema = z.object({
+  next: z
+    .string()
+    .optional()
+    .transform((val) => validateNextPath(val) ?? undefined),
+});
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
@@ -26,10 +32,22 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: (next as any) ?? "/", replace: true });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session?.user) return;
+      const destination = await resolvePostLoginPathForUser(next, data.session.user.id);
+      void navigate({ to: destination as "/", replace: true });
     });
   }, [navigate, next]);
+
+  async function redirectAfterAuth() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      void navigate({ to: "/me", replace: true });
+      return;
+    }
+    const destination = await resolvePostLoginPathForUser(next, user.id);
+    void navigate({ to: destination as "/", replace: true });
+  }
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
@@ -38,7 +56,7 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Welcome back");
-    navigate({ to: (next as any) ?? "/", replace: true });
+    await redirectAfterAuth();
   }
 
   async function signUp(e: React.FormEvent) {
@@ -51,7 +69,7 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Account created — check your email if confirmation is required.");
-    navigate({ to: (next as any) ?? "/", replace: true });
+    await redirectAfterAuth();
   }
 
   async function google() {

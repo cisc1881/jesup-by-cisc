@@ -8,26 +8,28 @@ export function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <PublicNav />
-      <main className="flex-1 pb-24 md:pb-0">{children}</main>
-      <footer className="mt-8 border-t border-border/60 bg-card">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <img src={ciscLogo.url} alt="Carver Integrative Sustainability Center" className="h-14 w-auto rounded-md" loading="lazy" />
-            <div className="text-xs leading-relaxed text-muted-foreground">
-              <div className="text-sm font-black tracking-tight text-foreground">JESUP · The Digital Extension Wagon</div>
-              <div className="mt-1">Powered by the Carver Integrative Sustainability Center</div>
-              <div>A Center of Excellence · Tuskegee University Cooperative Extension</div>
+      <div className="flex flex-1 flex-col pb-bottom-nav md:pb-0">
+        <main className="flex-1">{children}</main>
+        <footer className="mt-8 border-t border-border/60 bg-card">
+          <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+              <img src={ciscLogo.url} alt="Carver Integrative Sustainability Center" className="h-14 w-auto rounded-md" loading="lazy" />
+              <div className="text-xs leading-relaxed text-muted-foreground">
+                <div className="text-sm font-black tracking-tight text-foreground">JESUP · The Digital Extension Wagon</div>
+                <div className="mt-1">Powered by the Carver Integrative Sustainability Center</div>
+                <div>A Center of Excellence · Tuskegee University Cooperative Extension</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              <Link to="/programs" className="hover:text-primary">Programs</Link>
+              <Link to="/events" className="hover:text-primary">Events</Link>
+              <Link to="/podcast" className="hover:text-primary">Podcast</Link>
+              <Link to="/partners" className="hover:text-primary">Partners</Link>
+              <Link to="/donate" className="hover:text-primary">Donate</Link>
             </div>
           </div>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            <Link to="/programs" className="hover:text-primary">Programs</Link>
-            <Link to="/events" className="hover:text-primary">Events</Link>
-            <Link to="/podcast" className="hover:text-primary">Podcast</Link>
-            <Link to="/partners" className="hover:text-primary">Partners</Link>
-            <Link to="/donate" className="hover:text-primary">Donate</Link>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
       <BottomNav />
     </div>
   );
