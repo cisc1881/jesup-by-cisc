@@ -11,6 +11,7 @@ import {
   LayoutGrid,
   MapPin,
   MapPinPlus,
+  MessageSquare,
   RefreshCw,
   Settings,
   Users,
@@ -48,6 +49,7 @@ const METRIC_CARDS: {
   { key: "activeMarkets", label: "Active Markets", icon: MapPin, to: "/admin/markets" },
   { key: "publications", label: "Publications", icon: BookOpen, to: "/admin/publications" },
   { key: "pending2fasApplications", label: "Pending 2FAS Applications", icon: GraduationCap, to: "/admin/2fas/applications" },
+  { key: "newInquiries", label: "New Inquiries", icon: MessageSquare, to: "/admin/inquiries" },
   { key: "eventRegistrations", label: "Event Registrations", icon: ClipboardList, to: "/admin/events" },
 ];
 

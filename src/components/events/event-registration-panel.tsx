@@ -6,6 +6,17 @@ import { registerForEvent } from "@/lib/events";
 import { downloadEventIcs, googleMapsDirectionsUrl, shareEvent } from "@/lib/event-calendar";
 import { useAuth } from "@/hooks/use-auth";
 import { AppButton, AppCard } from "@/components/design-system";
+import { DemographicForm } from "@/components/demographics";
+import {
+  buildEmptyDemographicForm,
+  hasAnyDemographicField,
+  submitMyParticipantDemographics,
+  type DemographicFormData,
+} from "@/lib/demographics";
+import {
+  demographicCompletionQueryKey,
+  eventDemographicAggregatesQueryKey,
+} from "@/lib/query-config";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,6 +41,10 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
   const [notes, setNotes] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [demographicStep, setDemographicStep] = useState(false);
+  const [registrationId, setRegistrationId] = useState<string | null>(null);
+  const [demographicForm, setDemographicForm] = useState<DemographicFormData>(buildEmptyDemographicForm());
+  const [savingDemographics, setSavingDemographics] = useState(false);
 
   const canRegister =
     event.registrationStatus === "open" ||
@@ -45,6 +60,8 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     try {
       const result = await registerForEvent(event.id, user.id, notes, inviteCode);
       toast.success(result.status === "waiting_list" ? "Added to waiting list" : "You're registered!");
+      setRegistrationId(result.id);
+      setDemographicStep(true);
       qc.invalidateQueries({ queryKey: ["event-reg", event.id] });
       qc.invalidateQueries({ queryKey: ["event-count", event.id] });
       qc.invalidateQueries({ queryKey: ["events"] });
@@ -53,6 +70,65 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     } finally {
       setBusy(false);
     }
+  }
+
+  async function handleDemographicSubmit() {
+    if (!registrationId) return;
+    if (!hasAnyDemographicField(demographicForm)) {
+      setDemographicStep(false);
+      return;
+    }
+    setSavingDemographics(true);
+    try {
+      await submitMyParticipantDemographics("registration", registrationId, demographicForm);
+      toast.success("Demographic information saved");
+      void qc.invalidateQueries({ queryKey: eventDemographicAggregatesQueryKey(event.id) });
+      void qc.invalidateQueries({
+        queryKey: demographicCompletionQueryKey("registration", registrationId),
+      });
+      setDemographicStep(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not save demographics");
+    } finally {
+      setSavingDemographics(false);
+    }
+  }
+
+  if (demographicStep && registrationId) {
+    return (
+      <div className="space-y-4">
+        <AppCard variant="lift" padding="md" className="space-y-4">
+          <h2 className="text-xl font-black tracking-[var(--tracking-tight)] text-foreground">
+            Optional demographic information
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Your registration is complete. You may share optional demographic information below or skip this step.
+          </p>
+          <DemographicForm value={demographicForm} onChange={setDemographicForm} idPrefix="reg-demo" />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <AppButton
+              variant="primary"
+              size="lg"
+              shape="pill"
+              className="w-full"
+              onClick={() => void handleDemographicSubmit()}
+              disabled={savingDemographics}
+            >
+              {savingDemographics ? "Saving…" : "Save demographics"}
+            </AppButton>
+            <AppButton
+              variant="outline"
+              size="lg"
+              shape="pill"
+              className="w-full"
+              onClick={() => setDemographicStep(false)}
+            >
+              Skip for now
+            </AppButton>
+          </div>
+        </AppCard>
+      </div>
+    );
   }
 
   return (
@@ -77,6 +153,18 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
             {registration.checked_in_at && (
               <p className="text-sm text-muted-foreground">Checked in {new Date(registration.checked_in_at).toLocaleString()}</p>
             )}
+            <AppButton
+              variant="outline"
+              size="sm"
+              shape="pill"
+              onClick={() => {
+                setRegistrationId(registration.id);
+                setDemographicForm(buildEmptyDemographicForm());
+                setDemographicStep(true);
+              }}
+            >
+              Update optional demographics
+            </AppButton>
           </div>
         ) : !canRegister || event.registrationStatus === "closed" || event.registrationStatus === "sold_out" ? (
           <p className="text-muted-foreground">Registration is closed for this event.</p>

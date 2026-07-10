@@ -10,6 +10,7 @@ import {
   Mic,
   Briefcase,
   Newspaper,
+  MessageSquare,
 } from "lucide-react";
 
 /** Routes that belong under the Resources tab (mobile) and hub page. */
@@ -41,6 +42,7 @@ export type ResourceHubLink = {
 };
 
 export const resourceHubLinks: ResourceHubLink[] = [
+  { to: "/join", icon: MessageSquare, title: "Join / Connect", body: "Connect with CISC programs, partnerships, and opportunities." },
   { to: "/publications", icon: BookOpen, title: "Publications", body: "Research briefs, community guides, and reports." },
   { to: "/markets", icon: MapPin, title: "Farmers markets", body: "Find local markets across Alabama." },
   { to: "/grants", icon: DollarSign, title: "Grants", body: "Funding for community and farm projects." },
@@ -57,6 +59,7 @@ export const resourceHubLinks: ResourceHubLink[] = [
 export const desktopNavLinks = [
   { to: "/programs", label: "Programs" },
   { to: "/events", label: "Events" },
+  { to: "/join", label: "Join / Connect" },
   { to: "/news", label: "News" },
   { to: "/resources", label: "Resources" },
   { to: "/podcasts", label: "Podcasts" },

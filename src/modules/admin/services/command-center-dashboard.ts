@@ -7,6 +7,7 @@ export type CommandCenterMetrics = {
   publications: number;
   pending2fasApplications: number;
   eventRegistrations: number;
+  newInquiries: number;
 };
 
 export type CommandCenterActivityType =
@@ -66,6 +67,7 @@ export async function fetchCommandCenterDashboard(): Promise<CommandCenterDashbo
     publicationsRes,
     pending2fasRes,
     registrationsRes,
+    newInquiriesRes,
     recentRegsRes,
     recent2fasRes,
     recentPubsRes,
@@ -93,6 +95,10 @@ export async function fetchCommandCenterDashboard(): Promise<CommandCenterDashbo
       .from("event_registrations")
       .select("*", { count: "exact", head: true })
       .eq("status", "registered"),
+    supabase
+      .from("inquiries")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "new"),
     supabase
       .from("event_registrations")
       .select("id, created_at, events ( title ), profiles ( full_name )")
@@ -152,6 +158,7 @@ export async function fetchCommandCenterDashboard(): Promise<CommandCenterDashbo
     publications: publicationsRes.count ?? 0,
     pending2fasApplications: pending2fasRes.count ?? 0,
     eventRegistrations: registrationsRes.count ?? 0,
+    newInquiries: newInquiriesRes.count ?? 0,
   };
 
   const activity: CommandCenterActivityItem[] = [];

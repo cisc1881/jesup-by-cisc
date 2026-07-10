@@ -25,6 +25,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               </div>
             </div>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              <Link to="/join" className="hover:text-primary">Join / Connect</Link>
               <Link to="/programs" className="hover:text-primary">Programs</Link>
               <Link to="/events" className="hover:text-primary">Events</Link>
               <Link to="/podcasts" className="hover:text-primary">Podcasts</Link>

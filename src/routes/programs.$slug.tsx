@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PublicLayout } from "@/components/public-layout";
-import { PageContainer } from "@/components/design-system";
+import { AppButton, PageContainer } from "@/components/design-system";
+import { EligibilityBanner } from "@/components/institutions";
 import {
   ProgramCard,
   ProgramContactCard,
@@ -51,12 +52,22 @@ export const Route = createFileRoute("/programs/$slug")({
 
 function ProgramDetail() {
   const { program, related } = Route.useLoaderData();
+  const is2fasProgram = program.slug === "2fas";
 
   return (
     <PublicLayout>
       <ProgramDetailHero program={program} />
 
       <PageContainer size="md" className="pb-bottom-nav md:pb-[var(--page-py)]">
+        {is2fasProgram && (
+          <div className="mb-8 space-y-4">
+            <EligibilityBanner />
+            <AppButton variant="primary" size="md" shape="pill" asChild>
+              <Link to="/internships">View open 2FAS opportunities</Link>
+            </AppButton>
+          </div>
+        )}
+
         <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:gap-12">
           <ProgramContentSections program={program} />
           <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">

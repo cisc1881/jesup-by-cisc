@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { AcademicLevel, InstitutionType } from "@/lib/institutions";
 
 export const TWOFAS_DOCUMENTS_BUCKET = "twofas-documents";
 
@@ -148,6 +149,11 @@ export type TwofasApplication = {
   schoolName: string | null;
   major: string | null;
   graduationYear: number | null;
+  institutionId: string | null;
+  institutionType: InstitutionType | null;
+  is1890LandGrant: boolean | null;
+  academicLevel: AcademicLevel | null;
+  institutionName?: string | null;
   emergencyContact: Record<string, unknown>;
   submittedAt: string | null;
   reviewedAt: string | null;
@@ -173,8 +179,14 @@ export type Submit2FASApplicationInput = {
   schoolName?: string | null;
   major?: string | null;
   graduationYear?: number | null;
+  institutionId?: string | null;
+  institutionType?: InstitutionType | null;
+  is1890LandGrant?: boolean | null;
+  academicLevel?: AcademicLevel | null;
   emergencyContact?: Record<string, unknown>;
 };
+
+export type SubmitInternshipApplicationInput = Submit2FASApplicationInput;
 
 const cohortSelect = "id, name, track, year, description, starts_on, ends_on, is_active, sort_order";
 
@@ -186,7 +198,9 @@ const internshipSelect = `
 const applicationSelect = `
   id, internship_id, user_id, status, cover_letter, resume_url,
   cohort_id, track, school_name, major, graduation_year, emergency_contact,
-  submitted_at, reviewed_at, reviewed_by, created_at, updated_at
+  institution_id, institution_type, is_1890_land_grant, academic_level,
+  submitted_at, reviewed_at, reviewed_by, created_at, updated_at,
+  institutions ( name )
 `;
 
 function mapCohort(row: Record<string, unknown>): TwofasCohort {
@@ -253,6 +267,8 @@ function mapApplicationRow(
     profile?: { full_name: string | null; email: string | null } | null;
   },
 ): TwofasApplication {
+  const institution = row.institutions as { name: string } | null;
+
   return {
     id: row.id as string,
     internshipId: row.internship_id as string,
@@ -265,6 +281,11 @@ function mapApplicationRow(
     schoolName: (row.school_name as string | null) ?? null,
     major: (row.major as string | null) ?? null,
     graduationYear: (row.graduation_year as number | null) ?? null,
+    institutionId: (row.institution_id as string | null) ?? null,
+    institutionType: (row.institution_type as InstitutionType | null) ?? null,
+    is1890LandGrant: (row.is_1890_land_grant as boolean | null) ?? null,
+    academicLevel: (row.academic_level as AcademicLevel | null) ?? null,
+    institutionName: institution?.name ?? null,
     emergencyContact: (row.emergency_contact as Record<string, unknown>) ?? {},
     submittedAt: (row.submitted_at as string | null) ?? null,
     reviewedAt: (row.reviewed_at as string | null) ?? null,
@@ -419,7 +440,50 @@ export async function submit2FASApplication(input: Submit2FASApplicationInput) {
       school_name: input.schoolName || null,
       major: input.major || null,
       graduation_year: input.graduationYear ?? null,
+      institution_id: input.institutionId ?? null,
+      institution_type: input.institutionType ?? null,
+      is_1890_land_grant: input.is1890LandGrant ?? null,
+      academic_level: input.academicLevel ?? null,
       emergency_contact: input.emergencyContact ?? {},
+      submitted_at: now,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw error;
+  return data.id as string;
+}
+
+export async function submitInternshipApplication(input: SubmitInternshipApplicationInput) {
+  const { data: internship, error: internshipError } = await supabase
+    .from("internships")
+    .select("id, is_2fas, is_open, track, cohort_id")
+    .eq("id", input.internshipId)
+    .single();
+
+  if (internshipError) throw internshipError;
+  if (!internship.is_open) throw new Error("Applications are closed for this opportunity.");
+
+  if (internship.is_2fas) {
+    return submit2FASApplication(input);
+  }
+
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("internship_applications")
+    .insert({
+      internship_id: input.internshipId,
+      user_id: input.userId,
+      status: "pending",
+      cover_letter: input.coverLetter || null,
+      resume_url: input.resumeUrl || null,
+      school_name: input.schoolName || null,
+      major: input.major || null,
+      graduation_year: input.graduationYear ?? null,
+      institution_id: input.institutionId ?? null,
+      institution_type: input.institutionType ?? null,
+      is_1890_land_grant: input.is1890LandGrant ?? null,
+      academic_level: input.academicLevel ?? null,
       submitted_at: now,
     })
     .select("id")

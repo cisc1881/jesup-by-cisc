@@ -27,6 +27,12 @@ import {
   update2FASApplicationStatus,
   type ApplicationStatus,
 } from "@/lib/twofas";
+import {
+  ACADEMIC_LEVEL_LABELS,
+  format1890Status,
+  formatInstitutionTypeLabel,
+  resolveSchoolDisplayName,
+} from "@/lib/institutions";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { toast } from "sonner";
 import { Download, Loader2 } from "lucide-react";
@@ -155,17 +161,38 @@ export function TwofasApplicationDetailDialog({
 
             <section className="space-y-2">
               <h3 className="font-semibold">Academic profile</h3>
-              <div className="grid gap-2 text-sm sm:grid-cols-3">
+              <div className="grid gap-3 text-sm sm:grid-cols-2">
                 <div>
-                  <span className="text-muted-foreground">School</span>
-                  <div>{application.schoolName || "—"}</div>
+                  <span className="text-muted-foreground">Institution</span>
+                  <div>
+                    {resolveSchoolDisplayName({
+                      institutionName: application.institutionName,
+                      schoolName: application.schoolName,
+                    })}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Institution type</span>
+                  <div>{formatInstitutionTypeLabel(application.institutionType, { admin: true })}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">1890 status</span>
+                  <div>{format1890Status(application.is1890LandGrant)}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Academic level</span>
+                  <div>
+                    {application.academicLevel
+                      ? ACADEMIC_LEVEL_LABELS[application.academicLevel]
+                      : "—"}
+                  </div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Major</span>
                   <div>{application.major || "—"}</div>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Graduation</span>
+                  <span className="text-muted-foreground">Graduation year</span>
                   <div>{application.graduationYear ?? "—"}</div>
                 </div>
               </div>

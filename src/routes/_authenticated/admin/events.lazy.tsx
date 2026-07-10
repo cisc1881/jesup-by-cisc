@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { AdminPageHeader, AdminShell } from "@/components/admin-page";
@@ -22,7 +22,7 @@ import {
 import { fmtDateTime } from "@/lib/format";
 import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
-import { BarChart3, Copy, Pencil, Trash2, UserCheck, Users } from "lucide-react";
+import { BarChart3, ClipboardCheck, Copy, FileText, ImageIcon, Pencil, Trash2, UserCheck, Users } from "lucide-react";
 
 export const Route = createLazyFileRoute("/_authenticated/admin/events")({
   component: AdminEvents,
@@ -50,6 +50,21 @@ function EventRowActions({
       </Button>
       <Button size="icon" variant="ghost" className="h-10 w-10" onClick={onRegistrations} aria-label={`Registrations for ${row.title}`}>
         <Users className="h-4 w-4" />
+      </Button>
+      <Button size="icon" variant="ghost" className="h-10 w-10" asChild>
+        <Link to="/admin/events/$eventId/gallery" params={{ eventId: row.id }} aria-label={`Gallery for ${row.title}`}>
+          <ImageIcon className="h-4 w-4" />
+        </Link>
+      </Button>
+      <Button size="icon" variant="ghost" className="h-10 w-10" asChild>
+        <Link to="/admin/events/$eventId/evaluations" params={{ eventId: row.id }} aria-label={`Evaluations for ${row.title}`}>
+          <FileText className="h-4 w-4" />
+        </Link>
+      </Button>
+      <Button size="icon" variant="ghost" className="h-10 w-10" asChild>
+        <Link to="/admin/events/$eventId/attendance" params={{ eventId: row.id }} aria-label={`Attendance for ${row.title}`}>
+          <ClipboardCheck className="h-4 w-4" />
+        </Link>
       </Button>
       <Button size="icon" variant="ghost" className="h-10 w-10" onClick={onDuplicate} aria-label={`Duplicate ${row.title}`}>
         <Copy className="h-4 w-4" />
@@ -128,6 +143,8 @@ function AdminEvents() {
       await checkInRegistration(registrationId, regsOpen);
       toast.success("Checked in");
       qc.invalidateQueries({ queryKey: ["event-regs-admin", regsOpen] });
+      qc.invalidateQueries({ queryKey: ["admin-event-attendance", regsOpen] });
+      qc.invalidateQueries({ queryKey: ["admin-event-attendance-summary", regsOpen] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Check-in failed");
     }

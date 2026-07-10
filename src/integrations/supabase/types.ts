@@ -187,28 +187,49 @@ export type Database = {
       }
       event_gallery: {
         Row: {
+          alt_text: string | null
           caption: string | null
           created_at: string
           event_id: string
           id: string
           image_url: string
+          is_cover: boolean
+          is_public_approved: boolean
+          photo_release_status: string | null
+          photographer_or_source: string | null
           sort_order: number
+          source: string
+          uploaded_by: string | null
         }
         Insert: {
+          alt_text?: string | null
           caption?: string | null
           created_at?: string
           event_id: string
           id?: string
           image_url: string
+          is_cover?: boolean
+          is_public_approved?: boolean
+          photo_release_status?: string | null
+          photographer_or_source?: string | null
           sort_order?: number
+          source?: string
+          uploaded_by?: string | null
         }
         Update: {
+          alt_text?: string | null
           caption?: string | null
           created_at?: string
           event_id?: string
           id?: string
           image_url?: string
+          is_cover?: boolean
+          is_public_approved?: boolean
+          photo_release_status?: string | null
+          photographer_or_source?: string | null
           sort_order?: number
+          source?: string
+          uploaded_by?: string | null
         }
         Relationships: []
       }
@@ -561,13 +582,17 @@ export type Database = {
       }
       internship_applications: {
         Row: {
+          academic_level: Database["public"]["Enums"]["academic_level"] | null
           cohort_id: string | null
           cover_letter: string | null
           created_at: string
           emergency_contact: Json
           graduation_year: number | null
           id: string
+          institution_id: string | null
+          institution_type: Database["public"]["Enums"]["institution_type"] | null
           internship_id: string
+          is_1890_land_grant: boolean | null
           major: string | null
           resume_url: string | null
           reviewed_at: string | null
@@ -580,13 +605,17 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          academic_level?: Database["public"]["Enums"]["academic_level"] | null
           cohort_id?: string | null
           cover_letter?: string | null
           created_at?: string
           emergency_contact?: Json
           graduation_year?: number | null
           id?: string
+          institution_id?: string | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           internship_id: string
+          is_1890_land_grant?: boolean | null
           major?: string | null
           resume_url?: string | null
           reviewed_at?: string | null
@@ -599,13 +628,17 @@ export type Database = {
           user_id: string
         }
         Update: {
+          academic_level?: Database["public"]["Enums"]["academic_level"] | null
           cohort_id?: string | null
           cover_letter?: string | null
           created_at?: string
           emergency_contact?: Json
           graduation_year?: number | null
           id?: string
+          institution_id?: string | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           internship_id?: string
+          is_1890_land_grant?: boolean | null
           major?: string | null
           resume_url?: string | null
           reviewed_at?: string | null
@@ -1968,30 +2001,51 @@ export type Database = {
       }
       profiles: {
         Row: {
+          academic_level: Database["public"]["Enums"]["academic_level"] | null
           affiliation: string | null
           created_at: string
           email: string | null
+          expected_graduation_year: number | null
           full_name: string | null
           id: string
+          institution_id: string | null
+          institution_type: Database["public"]["Enums"]["institution_type"] | null
+          is_1890_land_grant: boolean | null
+          major_or_interest: string | null
           phone: string | null
+          school_name: string | null
           updated_at: string
         }
         Insert: {
+          academic_level?: Database["public"]["Enums"]["academic_level"] | null
           affiliation?: string | null
           created_at?: string
           email?: string | null
+          expected_graduation_year?: number | null
           full_name?: string | null
           id: string
+          institution_id?: string | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
+          is_1890_land_grant?: boolean | null
+          major_or_interest?: string | null
           phone?: string | null
+          school_name?: string | null
           updated_at?: string
         }
         Update: {
+          academic_level?: Database["public"]["Enums"]["academic_level"] | null
           affiliation?: string | null
           created_at?: string
           email?: string | null
+          expected_graduation_year?: number | null
           full_name?: string | null
           id?: string
+          institution_id?: string | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
+          is_1890_land_grant?: boolean | null
+          major_or_interest?: string | null
           phone?: string | null
+          school_name?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -2463,6 +2517,525 @@ export type Database = {
           },
         ]
       }
+      event_attendance: {
+        Row: {
+          attendance_method: Database["public"]["Enums"]["attendance_method"] | null
+          checked_in_at: string | null
+          checked_in_by: string | null
+          created_at: string
+          evaluation_completed_at: string | null
+          event_id: string
+          id: string
+          notes: string | null
+          registration_id: string | null
+          status: Database["public"]["Enums"]["attendance_status"]
+          updated_at: string
+          walk_in_id: string | null
+        }
+        Insert: {
+          attendance_method?: Database["public"]["Enums"]["attendance_method"] | null
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          created_at?: string
+          evaluation_completed_at?: string | null
+          event_id: string
+          id?: string
+          notes?: string | null
+          registration_id?: string | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          updated_at?: string
+          walk_in_id?: string | null
+        }
+        Update: {
+          attendance_method?: Database["public"]["Enums"]["attendance_method"] | null
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          created_at?: string
+          evaluation_completed_at?: string | null
+          event_id?: string
+          id?: string
+          notes?: string | null
+          registration_id?: string | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          updated_at?: string
+          walk_in_id?: string | null
+        }
+        Relationships: []
+      }
+      event_evaluation_answers: {
+        Row: {
+          created_at: string
+          id: string
+          question_id: string
+          response_id: string
+          value_json: Json | null
+          value_number: number | null
+          value_text: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          question_id: string
+          response_id: string
+          value_json?: Json | null
+          value_number?: number | null
+          value_text?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          question_id?: string
+          response_id?: string
+          value_json?: Json | null
+          value_number?: number | null
+          value_text?: string | null
+        }
+        Relationships: []
+      }
+      event_evaluation_questions: {
+        Row: {
+          created_at: string
+          evaluation_id: string
+          help_text: string | null
+          id: string
+          is_default: boolean
+          is_demographic: boolean
+          is_required: boolean
+          options: Json | null
+          prompt: string
+          question_type: Database["public"]["Enums"]["evaluation_question_type"]
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          evaluation_id: string
+          help_text?: string | null
+          id?: string
+          is_default?: boolean
+          is_demographic?: boolean
+          is_required?: boolean
+          options?: Json | null
+          prompt: string
+          question_type: Database["public"]["Enums"]["evaluation_question_type"]
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          evaluation_id?: string
+          help_text?: string | null
+          id?: string
+          is_default?: boolean
+          is_demographic?: boolean
+          is_required?: boolean
+          options?: Json | null
+          prompt?: string
+          question_type?: Database["public"]["Enums"]["evaluation_question_type"]
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      event_evaluation_responses: {
+        Row: {
+          access_token_hash: string | null
+          attendance_id: string | null
+          created_at: string
+          evaluation_id: string
+          event_id: string
+          id: string
+          is_complete: boolean
+          registration_id: string | null
+          submitted_at: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          access_token_hash?: string | null
+          attendance_id?: string | null
+          created_at?: string
+          evaluation_id: string
+          event_id: string
+          id?: string
+          is_complete?: boolean
+          registration_id?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          access_token_hash?: string | null
+          attendance_id?: string | null
+          created_at?: string
+          evaluation_id?: string
+          event_id?: string
+          id?: string
+          is_complete?: boolean
+          registration_id?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      event_evaluations: {
+        Row: {
+          closes_at: string | null
+          created_at: string
+          event_id: string
+          id: string
+          is_active: boolean
+          is_required: boolean
+          opens_at: string | null
+          qualtrics_url: string | null
+          reminder_sent_at: string | null
+          response_mode: Database["public"]["Enums"]["evaluation_response_mode"]
+          title: string
+          updated_at: string
+          use_native_form: boolean
+        }
+        Insert: {
+          closes_at?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          opens_at?: string | null
+          qualtrics_url?: string | null
+          reminder_sent_at?: string | null
+          response_mode?: Database["public"]["Enums"]["evaluation_response_mode"]
+          title?: string
+          updated_at?: string
+          use_native_form?: boolean
+        }
+        Update: {
+          closes_at?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          opens_at?: string | null
+          qualtrics_url?: string | null
+          reminder_sent_at?: string | null
+          response_mode?: Database["public"]["Enums"]["evaluation_response_mode"]
+          title?: string
+          updated_at?: string
+          use_native_form?: boolean
+        }
+        Relationships: []
+      }
+      event_gallery_submissions: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string
+          event_id: string
+          gallery_id: string | null
+          has_permission_confirmed: boolean
+          id: string
+          image_url: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["gallery_submission_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          event_id: string
+          gallery_id?: string | null
+          has_permission_confirmed?: boolean
+          id?: string
+          image_url: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["gallery_submission_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          event_id?: string
+          gallery_id?: string | null
+          has_permission_confirmed?: boolean
+          id?: string
+          image_url?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["gallery_submission_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      event_walk_ins: {
+        Row: {
+          attendance_type: Database["public"]["Enums"]["attendance_status"]
+          county: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          event_id: string
+          full_name: string
+          id: string
+          organization_or_school: string | null
+          phone: string | null
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          attendance_type?: Database["public"]["Enums"]["attendance_status"]
+          county?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          event_id: string
+          full_name: string
+          id?: string
+          organization_or_school?: string | null
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attendance_type?: Database["public"]["Enums"]["attendance_status"]
+          county?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          event_id?: string
+          full_name?: string
+          id?: string
+          organization_or_school?: string | null
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inquiries: {
+        Row: {
+          assigned_to: string | null
+          city: string | null
+          consent_contact: boolean
+          county: string | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          inquiry_type: Database["public"]["Enums"]["inquiry_type"]
+          institution_id: string | null
+          institution_type: Database["public"]["Enums"]["institution_type"] | null
+          last_name: string
+          message: string | null
+          newsletter_opt_in: boolean
+          organization_or_school: string | null
+          phone: string | null
+          preferred_contact: Database["public"]["Enums"]["preferred_contact_method"]
+          program_id: string | null
+          state: string | null
+          status: Database["public"]["Enums"]["inquiry_status"]
+          submitted_at: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          city?: string | null
+          consent_contact?: boolean
+          county?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          inquiry_type: Database["public"]["Enums"]["inquiry_type"]
+          institution_id?: string | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
+          last_name: string
+          message?: string | null
+          newsletter_opt_in?: boolean
+          organization_or_school?: string | null
+          phone?: string | null
+          preferred_contact?: Database["public"]["Enums"]["preferred_contact_method"]
+          program_id?: string | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["inquiry_status"]
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          city?: string | null
+          consent_contact?: boolean
+          county?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          inquiry_type?: Database["public"]["Enums"]["inquiry_type"]
+          institution_id?: string | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
+          last_name?: string
+          message?: string | null
+          newsletter_opt_in?: boolean
+          organization_or_school?: string | null
+          phone?: string | null
+          preferred_contact?: Database["public"]["Enums"]["preferred_contact_method"]
+          program_id?: string | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["inquiry_status"]
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      inquiry_notes: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          inquiry_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          inquiry_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          inquiry_id?: string
+        }
+        Relationships: []
+      }
+      institutions: {
+        Row: {
+          created_at: string
+          id: string
+          institution_type: Database["public"]["Enums"]["institution_type"]
+          is_1890_land_grant: boolean
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+          state: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          institution_type?: Database["public"]["Enums"]["institution_type"]
+          is_1890_land_grant?: boolean
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          state?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          institution_type?: Database["public"]["Enums"]["institution_type"]
+          is_1890_land_grant?: boolean
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          state?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      participant_demographics: {
+        Row: {
+          academic_level: Database["public"]["Enums"]["academic_level"] | null
+          age_range: string | null
+          beginning_farmer: boolean | null
+          consent_demographics: boolean
+          county: string | null
+          created_at: string
+          disability_status: string | null
+          ethnicity: string | null
+          farmer_producer_status: string | null
+          gender: string | null
+          id: string
+          institution_id: string | null
+          limited_resource_producer: boolean | null
+          race: string | null
+          rural_urban: string | null
+          source_id: string
+          source_type: Database["public"]["Enums"]["demographic_source_type"]
+          state: string | null
+          updated_at: string
+          user_id: string | null
+          veteran_status: string | null
+        }
+        Insert: {
+          academic_level?: Database["public"]["Enums"]["academic_level"] | null
+          age_range?: string | null
+          beginning_farmer?: boolean | null
+          consent_demographics?: boolean
+          county?: string | null
+          created_at?: string
+          disability_status?: string | null
+          ethnicity?: string | null
+          farmer_producer_status?: string | null
+          gender?: string | null
+          id?: string
+          institution_id?: string | null
+          limited_resource_producer?: boolean | null
+          race?: string | null
+          rural_urban?: string | null
+          source_id: string
+          source_type: Database["public"]["Enums"]["demographic_source_type"]
+          state?: string | null
+          updated_at?: string
+          user_id?: string | null
+          veteran_status?: string | null
+        }
+        Update: {
+          academic_level?: Database["public"]["Enums"]["academic_level"] | null
+          age_range?: string | null
+          beginning_farmer?: boolean | null
+          consent_demographics?: boolean
+          county?: string | null
+          created_at?: string
+          disability_status?: string | null
+          ethnicity?: string | null
+          farmer_producer_status?: string | null
+          gender?: string | null
+          id?: string
+          institution_id?: string | null
+          limited_resource_producer?: boolean | null
+          race?: string | null
+          rural_urban?: string | null
+          source_id?: string
+          source_type?: Database["public"]["Enums"]["demographic_source_type"]
+          state?: string | null
+          updated_at?: string
+          user_id?: string | null
+          veteran_status?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -2538,6 +3111,7 @@ export type Database = {
       }
     }
     Enums: {
+      academic_level: "high_school" | "undergraduate" | "graduate" | "recent_graduate" | "other"
       app_role: "admin" | "user"
       application_status:
         | "pending"
@@ -2549,6 +3123,14 @@ export type Database = {
         | "active"
         | "completed"
         | "withdrawn"
+      attendance_method: "qr" | "manual" | "csv_import" | "walk_in"
+      attendance_status:
+        | "registered"
+        | "checked_in"
+        | "attended"
+        | "virtual"
+        | "no_show"
+        | "cancelled"
       milestone_status: "pending" | "in_progress" | "completed" | "waived"
       twofas_document_type: "resume" | "transcript" | "portfolio" | "other"
       twofas_track: "high_school" | "undergraduate" | "graduate" | "fellow"
@@ -2558,9 +3140,40 @@ export type Database = {
         | "denied"
         | "checked_out"
         | "returned"
+      demographic_source_type: "registration" | "walk_in" | "evaluation" | "attendance"
+      evaluation_question_type:
+        | "rating"
+        | "single_choice"
+        | "multi_choice"
+        | "short_text"
+        | "long_text"
+        | "yes_no"
+        | "number"
+        | "demographic"
+        | "consent"
+      evaluation_response_mode: "anonymous" | "identified"
       event_registration_record_status: "registered" | "waiting_list" | "cancelled"
       event_registration_status: "open" | "closed" | "waiting_list" | "sold_out" | "invite_only"
       event_status: "draft" | "published" | "archived"
+      gallery_submission_status: "pending" | "approved" | "rejected"
+      inquiry_status: "new" | "contacted" | "in_progress" | "resolved" | "closed"
+      inquiry_type:
+        | "join_program"
+        | "request_info"
+        | "partnership"
+        | "student_opportunity"
+        | "farmer_producer"
+        | "volunteer"
+        | "general"
+      institution_type:
+        | "land_grant_1890"
+        | "four_year"
+        | "community_college"
+        | "high_school"
+        | "technical_school"
+        | "recent_graduate"
+        | "not_enrolled"
+        | "other"
       market_announcement_type: "general" | "closure" | "weather" | "seasonal"
       market_product_category:
         | "fruit"
@@ -2594,6 +3207,9 @@ export type Database = {
         | "publication_added"
         | "equipment_request"
         | "grant_deadline"
+        | "inquiry_received"
+        | "evaluation_submitted"
+      preferred_contact_method: "email" | "phone" | "either"
       publication_content_type:
         | "factsheet"
         | "report"
@@ -2730,6 +3346,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      academic_level: ["high_school", "undergraduate", "graduate", "recent_graduate", "other"],
       app_role: ["admin", "user"],
       application_status: [
         "pending",
@@ -2742,6 +3359,8 @@ export const Constants = {
         "completed",
         "withdrawn",
       ],
+      attendance_method: ["qr", "manual", "csv_import", "walk_in"],
+      attendance_status: ["registered", "checked_in", "attended", "virtual", "no_show", "cancelled"],
       milestone_status: ["pending", "in_progress", "completed", "waived"],
       twofas_document_type: ["resume", "transcript", "portfolio", "other"],
       twofas_track: ["high_school", "undergraduate", "graduate", "fellow"],
@@ -2752,9 +3371,43 @@ export const Constants = {
         "checked_out",
         "returned",
       ],
+      demographic_source_type: ["registration", "walk_in", "evaluation", "attendance"],
+      evaluation_question_type: [
+        "rating",
+        "single_choice",
+        "multi_choice",
+        "short_text",
+        "long_text",
+        "yes_no",
+        "number",
+        "demographic",
+        "consent",
+      ],
+      evaluation_response_mode: ["anonymous", "identified"],
       event_registration_record_status: ["registered", "waiting_list", "cancelled"],
       event_registration_status: ["open", "closed", "waiting_list", "sold_out", "invite_only"],
       event_status: ["draft", "published", "archived"],
+      gallery_submission_status: ["pending", "approved", "rejected"],
+      inquiry_status: ["new", "contacted", "in_progress", "resolved", "closed"],
+      inquiry_type: [
+        "join_program",
+        "request_info",
+        "partnership",
+        "student_opportunity",
+        "farmer_producer",
+        "volunteer",
+        "general",
+      ],
+      institution_type: [
+        "land_grant_1890",
+        "four_year",
+        "community_college",
+        "high_school",
+        "technical_school",
+        "recent_graduate",
+        "not_enrolled",
+        "other",
+      ],
       market_announcement_type: ["general", "closure", "weather", "seasonal"],
       market_product_category: [
         "fruit",
@@ -2790,7 +3443,10 @@ export const Constants = {
         "publication_added",
         "equipment_request",
         "grant_deadline",
+        "inquiry_received",
+        "evaluation_submitted",
       ],
+      preferred_contact_method: ["email", "phone", "either"],
       publication_content_type: [
         "factsheet",
         "report",

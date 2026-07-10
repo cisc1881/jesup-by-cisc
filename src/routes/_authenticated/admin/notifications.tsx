@@ -77,8 +77,13 @@ function AdminNotifications() {
     type: keyof typeof DEFAULT_ACTION_URLS | null,
     id: string,
     isRead: boolean,
+    entityId: string | null,
   ) {
     if (!isRead && user) void handleMarkRead(id);
+    if (type === "inquiry_received" && entityId) {
+      navigate({ to: "/admin/inquiries", search: { id: entityId } });
+      return;
+    }
     const target = actionUrl ?? (type ? DEFAULT_ACTION_URLS[type] : "/admin");
     navigate({ to: target });
   }
@@ -131,7 +136,7 @@ function AdminNotifications() {
               <button
                 type="button"
                 className="min-w-0 flex-1 text-left"
-                onClick={() => openNotification(n.actionUrl, n.notificationType, n.id, n.isRead)}
+                onClick={() => openNotification(n.actionUrl, n.notificationType, n.id, n.isRead, n.entityId)}
               >
                 <div className="flex flex-wrap items-center gap-2">
                   {!n.isRead && <span className="h-2 w-2 rounded-full bg-primary" />}

@@ -2,9 +2,9 @@
 
 **Document status:** Release readiness reference  
 **Version:** 1.0-beta  
-**Last updated:** July 9, 2026  
+**Last updated:** July 10, 2026  
 **Target audience:** CISC staff, developers, and demo presenters  
-**Companion docs:** [Product Spec](./JESUP_PRODUCT_SPEC_V1.md) · [Deployment Guide](./DEPLOYMENT_GUIDE.md) · [QA Report](./VERSION_1_QA_REPORT.md)
+**Companion docs:** [Product Spec](./JESUP_PRODUCT_SPEC_V1.md) · [Deployment Guide](./DEPLOYMENT_GUIDE.md) · [Sprint 9 QA Report](./SPRINT_9_QA_REPORT.md) · [Sprint 9 Release Notes](./SPRINT_9_RELEASE_NOTES.md)
 
 ---
 
@@ -12,9 +12,9 @@
 
 JESUP V1 Beta is a **client-demo-ready** digital Extension platform: mobile-first public modules, a full JESUP Command Center for CISC staff, Supabase-backed CMS with RLS, universal search, and the 2FAS application review pipeline. The beta is suitable for **controlled demos and internal pilot** — not yet a full public production launch without completing demo content seeding and production infrastructure verification.
 
-**Suggested release name:** JESUP V1.0 Beta  
-**Suggested git tag:** `v1.0.0-beta.1`  
-**Suggested release branch:** `release/v1.0.0-beta.1`
+**Suggested release name:** JESUP V1.0 Beta 2  
+**Suggested git tag:** `v1.0.0-beta.2`  
+**Suggested release branch:** `release/v1.0.0-beta.2`
 
 ---
 
@@ -71,8 +71,41 @@ JESUP V1 Beta is a **client-demo-ready** digital Extension platform: mobile-firs
 | Users & Roles | `/admin/users`, `/admin/roles` | ✅ Admin grant/revoke |
 | Notifications | `/admin/notifications` | ✅ In-app center |
 | Analytics / Reports | `/admin/analytics`, `/admin/reports` | ✅ Basic dashboards |
+| Event Reports | `/admin/reports/events` | ✅ Sprint 9H — filters, exports, print, snapshots |
+| Inquiries | `/admin/inquiries` | ✅ Sprint 9B — assignment, notes, status |
+| Event attendance | `/admin/events/$eventId/attendance` | ✅ Sprint 9D |
+| Event evaluations | `/admin/events/$eventId/evaluations` | ✅ Sprint 9E |
+| Event gallery | `/admin/events/$eventId/gallery` | ✅ Sprint 9G |
+| Gallery moderation | `/admin/events/gallery` | ✅ Sprint 9G |
 | Settings | `/admin/settings` | ✅ Platform settings |
 | Admin Search | `/admin/search` | ✅ Unified search cache |
+
+### Sprint 9 — Public engagement (Phases 9A–9I)
+
+| Phase | Feature | Status | Key routes / libs |
+|-------|---------|--------|-------------------|
+| **9A** | Engagement foundation | ✅ | Migrations: inquiries, attendance, evaluations, gallery, demographics |
+| **9B** | Public inquiries | ✅ | `/join`, `/admin/inquiries` |
+| **9C** | Open institution eligibility | ✅ | Institution picker, 2FAS open filter |
+| **9D** | Attendance & walk-ins | ✅ | `/admin/events/$eventId/attendance`, `attendance.ts` |
+| **9E** | Native evaluations | ✅ | `/events/$id/evaluation`, `evaluations.ts` |
+| **9F** | Demographics & aggregates | ✅ | `demographics.ts`, aggregate RPCs |
+| **9G** | Gallery & moderation | ✅ | Gallery admin, `/admin/events/gallery`, photo submit |
+| **9H** | Event reporting | ✅ | `/admin/reports/events`, `event-reporting.ts` |
+| **9I** | Release readiness | ✅ | Security docs, QA report, demo script |
+
+**Sprint 9 companion docs:**
+- [SPRINT_9_RELEASE_NOTES.md](./SPRINT_9_RELEASE_NOTES.md)
+- [SPRINT_9_QA_REPORT.md](./SPRINT_9_QA_REPORT.md)
+- [SPRINT_9_SECURITY_REVIEW.md](./SPRINT_9_SECURITY_REVIEW.md)
+- [SPRINT_9_MIGRATION_STATUS.md](./SPRINT_9_MIGRATION_STATUS.md)
+- [SPRINT_9_KNOWN_ISSUES.md](./SPRINT_9_KNOWN_ISSUES.md)
+- [SPRINT_9_DEMO_SCRIPT.md](./SPRINT_9_DEMO_SCRIPT.md)
+
+**Explicitly not built in Sprint 9:**
+- ❌ QR camera scanner
+- ❌ AI-generated report narrative
+- ❌ Server-generated PDF infrastructure
 
 ### 2FAS pipeline (Phase 4A)
 
@@ -137,52 +170,39 @@ After seeding, confirm universal search returns results for: **2FAS**, **BTW**, 
 
 ## 3. Supabase migration status
 
-### Migration inventory (22 files)
+### Migration inventory (28 files + Sprint 9)
 
 Apply **in chronological order** via Supabase SQL Editor or `supabase db push` (if CLI linked).
 
 | # | Migration file | Domain |
 |---|----------------|--------|
-| 1 | `20260708002046_a2d8bf82-*.sql` | Initial schema |
-| 2 | `20260708002127_3b1bae91-*.sql` | Initial schema (continued) |
-| 3 | `20260708002908_9a88d345-*.sql` | Initial schema (continued) |
-| 4 | `20260708114742_2447323a-*.sql` | Early platform tables |
-| 5 | `20260708120000_event_registration_count_rpc.sql` | Event registration RPC |
-| 6 | `20260708143000_storage_buckets.sql` | Core storage buckets |
-| 7 | `20260708170000_programs_management.sql` | Programs CMS |
-| 8 | `20260708180000_programs_phase2b.sql` | Programs Phase 2B |
-| 9 | `20260708190000_publications_phase2c.sql` | Publications Phase 2C |
-| 10 | `20260708200000_fix_has_role_anon_rls.sql` | RLS security fix |
-| 11 | `20260708210000_program_categories_seed.sql` | Program category seeds |
-| 12 | `20260708220000_program_categories_trim.sql` | Category cleanup |
-| 13 | `20260708230000_events_phase3a.sql` | Events Phase 3A |
-| 14 | `20260708231000_event_categories_seed.sql` | Event category seeds |
-| 15 | `20260708232000_fix_category_admin_rls.sql` | Category admin RLS |
-| 16 | `20260708300000_markets_phase3b.sql` | Markets Phase 3B |
-| 17 | `20260708310000_platform_architecture.sql` | CMS platform, media, junction tables |
-| 18 | `20260709120000_twofas_foundation.sql` | 2FAS schema + `twofas-documents` bucket |
-| 19 | `20260709143000_notification_center.sql` | Notifications |
-| 20 | `20260709150000_podcast_module.sql` | Podcast episodes |
-| 21 | `20260709160000_partners_module.sql` | Partners module |
-| 22 | `20260709170000_news_module.sql` | News articles |
+| 1–22 | *(see prior inventory)* | V1 foundation modules |
+| 23 | `20260710120000_public_engagement_reporting.sql` | Sprint 9A foundation |
+| 24 | `20260710120100_notification_type_extensions.sql` | Sprint 9 notifications |
+| 25 | `20260710120200_inquiry_notification_trigger.sql` | Sprint 9B inquiries |
+| 26 | `20260710130000_demographic_aggregate_reporting.sql` | Sprint 9F demographics |
+| 27 | `20260710140000_event_gallery_storage_and_cover.sql` | Sprint 9G gallery |
+| 28 | `20260710150000_event_report_snapshots.sql` | Sprint 9H reporting |
+
+Full Sprint 9 details: [SPRINT_9_MIGRATION_STATUS.md](./SPRINT_9_MIGRATION_STATUS.md)
 
 ### Environment status
 
 | Environment | Expected state | Verification |
 |-------------|----------------|--------------|
-| **Development** (`trffktqewlrzziowmspd`) | All 22 migrations applied | Re-run spot checks on `events`, `twofas_cohorts`, `news_articles`, `podcast_episodes` |
-| **Production** | Separate project recommended | Apply all 22 migrations before beta deploy |
+| **Development** | All 28 migrations applied | Verified July 10, 2026 |
+| **Production** | Separate project recommended | Apply all 28 migrations before beta.2 deploy |
 | **TypeScript types** | `src/integrations/supabase/types.ts` | Must match live schema after every migration |
 
 ### Pre-deploy migration checklist
 
-- [ ] All 22 migration files applied in order with no errors
+- [ ] All 28 migration files applied in order with no errors
+- [ ] Sprint 9 RPCs verified: `get_event_demographic_aggregates`, `set_event_gallery_cover`
+- [ ] `event_report_snapshots` table exists with admin RLS
+- [ ] Participant `event-images` storage path policies active
 - [ ] `has_role()` RLS function works for admin users
-- [ ] Storage buckets exist: `news-images`, `partner-logos`, `program-images`, `event-images`, `market-images`, `publication-files`, `podcast-audio`, `twofas-documents`, `resumes`, `media-assets`
-- [ ] Event images bucket CORS and upload limits verified in dashboard
 - [ ] At least one admin user in `user_roles` (`role = 'admin'`)
-- [ ] `get_event_registration_count` RPC returns expected values
-- [ ] Run `supabase db lint` (or manual RLS audit) on production project
+- [ ] Run smoke test per [SPRINT_9_DEMO_SCRIPT.md](./SPRINT_9_DEMO_SCRIPT.md)
 
 ---
 
@@ -232,6 +252,16 @@ Reference: `.env.example` in project root.
 ## 5. Pre-demo QA checklist
 
 Run this checklist **on the target demo environment** (staging or production) within 24 hours of the presentation.
+
+### Sprint 9 demo flow (required for beta.2)
+
+- [ ] **Join inquiry** — Submit at `/join`; appears in `/admin/inquiries`
+- [ ] **Event registration** — Register on published event
+- [ ] **Attendance** — Check in + walk-in at `/admin/events/$eventId/attendance`
+- [ ] **Evaluation** — Complete at `/events/$id/evaluation`
+- [ ] **Demographics** — Aggregate cards show suppression on admin pages
+- [ ] **Photo submit** — Attendee submits; admin approves at `/admin/events/gallery`
+- [ ] **Event report** — Generate, save draft, finalize, print at `/admin/reports/events`
 
 ### Demo flow (end-to-end)
 
@@ -317,6 +347,11 @@ npm run build
 - [ ] Production URL loads Home without blank page or Supabase env error
 - [ ] `/auth` login works against production Supabase
 - [ ] `/admin` accessible for admin user
+- [ ] Public inquiry submission works
+- [ ] Attendance check-in works
+- [ ] Native evaluation submission works
+- [ ] Participant photo upload works (storage policy)
+- [ ] Event report snapshot save works
 - [ ] At least one image loads from Supabase Storage
 - [ ] Universal search returns results
 - [ ] No mixed-content warnings (all assets HTTPS)
@@ -335,15 +370,15 @@ Full procedures: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
 | Item | Recommendation |
 |------|----------------|
-| **Semantic version** | `1.0.0-beta.1` |
-| **Git tag** | `v1.0.0-beta.1` |
-| **Release title** | JESUP V1.0 Beta — Digital Extension Wagon |
-| **Release notes focus** | Command Center, 2FAS review, CMS modules, mobile-first public experience |
-| **Next tag after content seed** | `v1.0.0-beta.2` (content-only) or `v1.0.0-rc.1` (after full QA pass) |
+| **Semantic version** | `1.0.0-beta.2` |
+| **Git tag** | `v1.0.0-beta.2` |
+| **Release title** | JESUP V1.0 Beta 2 — Sprint 9 Engagement & Reporting |
+| **Release notes focus** | Inquiries, attendance, evaluations, demographics, gallery, event reports |
+| **Previous tag** | `v1.0.0-beta.1` |
 
 ```bash
-git tag -a v1.0.0-beta.1 -m "JESUP V1.0 Beta — first client-demo release"
-git push origin v1.0.0-beta.1
+git tag -a v1.0.0-beta.2 -m "Sprint 9 complete: engagement, attendance, evaluations, demographics, gallery, reporting, and release hardening"
+git push origin v1.0.0-beta.2
 ```
 
 ---
@@ -380,10 +415,14 @@ Issues below are **accepted for V1 beta** unless marked as demo-blocking.
 | Admin form dialogs not lazy-loaded | Heavy dialogs load with route chunk |
 | Geolocation denial UX on Markets | No inline permission-denied message |
 | Event calendar day cells not linkable | Calendar is display-only |
-| Email/push notification delivery | In-app only; `channel = email` scaffolded |
-| Ask JESUP AI | Not built (Phase 3) |
-| 2FAS student portal (`/me/2fas`) | Not built (Phase 2) |
-| QR event check-in scanner | Table exists; UI not built |
+| QR event check-in scanner | Table exists; UI not built — **deferred Sprint 9** |
+| AI report narrative | Manual narrative fields only — **deferred Sprint 9** |
+| Server-generated PDF | Browser print only — **deferred Sprint 9** |
+| Email/push notification delivery | In-app only |
+| Public `event-images` bucket | See [SPRINT_9_KNOWN_ISSUES.md](./SPRINT_9_KNOWN_ISSUES.md) |
+| Event deletion vs report history | Export/finalize before delete |
+
+Full list: [SPRINT_9_KNOWN_ISSUES.md](./SPRINT_9_KNOWN_ISSUES.md)
 
 ---
 
@@ -429,4 +468,4 @@ Ordered by impact for CISC staff and demo → production transition.
 
 ---
 
-*This checklist reflects the codebase and documentation as of July 9, 2026. Update after each beta iteration.*
+*This checklist reflects the codebase and documentation as of July 10, 2026. Sprint 9 complete.*

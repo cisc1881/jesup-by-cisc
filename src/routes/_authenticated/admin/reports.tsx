@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { CommandCenterContentShell, CommandCenterPageHeader } from "@/modules/admin";
 import { fetchAnalyticsSummary } from "@/modules/analytics";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LayoutGrid,
@@ -41,6 +42,11 @@ function AdminReports() {
       <CommandCenterPageHeader
         title="Reports"
         description="Platform-wide metrics and reporting across all JESUP modules."
+        actions={
+          <Button variant="outline" asChild>
+            <Link to="/admin/reports/events">Event Reports</Link>
+          </Button>
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -63,10 +69,22 @@ function AdminReports() {
 
       <Card className="mt-8">
         <CardContent className="p-6">
+          <h2 className="font-semibold text-foreground">Event reporting</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Build printable event reports with attendance, evaluation, demographic aggregates, gallery documentation, and CSV exports.
+          </p>
+          <Button className="mt-4" variant="outline" asChild>
+            <Link to="/admin/reports/events">Open Event Reports</Link>
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-4">
+        <CardContent className="p-6">
           <h2 className="font-semibold text-foreground">Reporting roadmap</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Future reports will include engagement trends, content performance, geographic reach,
-            registration funnels, and AI-generated insights for Cooperative Extension leadership.
+            registration funnels, and leadership insights for Cooperative Extension.
           </p>
         </CardContent>
       </Card>

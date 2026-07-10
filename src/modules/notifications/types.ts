@@ -4,7 +4,9 @@ export type NotificationType =
   | "event_near_capacity"
   | "publication_added"
   | "equipment_request"
-  | "grant_deadline";
+  | "grant_deadline"
+  | "inquiry_received"
+  | "evaluation_submitted";
 
 export type NotificationPriority = "low" | "normal" | "high" | "urgent";
 
@@ -39,6 +41,8 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   publication_added: "Publication",
   equipment_request: "Equipment request",
   grant_deadline: "Grant deadline",
+  inquiry_received: "Public inquiry",
+  evaluation_submitted: "Evaluation submitted",
 };
 
 export const DEFAULT_ACTION_URLS: Record<NotificationType, string> = {
@@ -48,4 +52,6 @@ export const DEFAULT_ACTION_URLS: Record<NotificationType, string> = {
   publication_added: "/admin/publications",
   equipment_request: "/admin/equipment",
   grant_deadline: "/admin/grants",
+  inquiry_received: "/admin/inquiries",
+  evaluation_submitted: "/admin/events",
 };

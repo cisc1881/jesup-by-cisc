@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer } from "@/components/design-system";
+import { EvaluationCta } from "@/components/evaluations/evaluation-cta";
+import { EventPhotoSubmitButton } from "@/components/events/event-photo-submit-dialog";
 import {
   EventAgenda,
   EventDescription,
@@ -73,19 +75,14 @@ function EventDetailPage() {
             <EventAgenda event={event} />
             <EventSpeakers event={event} />
             <EventGallery event={event} />
-            {(event.lat != null || event.location) && <EventMapView events={[event]} />}
-            <EventRelatedSections event={event} />
-            {event.survey?.isActive && event.survey.qualtricsUrl && (
-              <div className="rounded-3xl border border-border/60 bg-card p-6 shadow-token-soft">
-                <h2 className="text-xl font-black text-foreground">{event.survey.title}</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Share your feedback after attending this event.</p>
-                <AppButton variant="primary" size="lg" shape="pill" className="mt-4" asChild>
-                  <a href={event.survey.qualtricsUrl} target="_blank" rel="noreferrer">
-                    Take survey
-                  </a>
-                </AppButton>
+            {user && (
+              <div className="flex justify-start">
+                <EventPhotoSubmitButton eventId={event.id} eventTitle={event.title} userId={user.id} />
               </div>
             )}
+            {(event.lat != null || event.location) && <EventMapView events={[event]} />}
+            <EventRelatedSections event={event} />
+            <EvaluationCta event={event} />
           </div>
 
           <div className="lg:sticky lg:top-24">

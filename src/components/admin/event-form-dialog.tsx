@@ -13,7 +13,9 @@ import {
   uploadEventImage,
   type EventFormData,
 } from "@/lib/events";
+import { Link } from "@tanstack/react-router";
 import { AttachmentPicker } from "@/components/admin/attachment-picker";
+import { EvaluationConfigPanel } from "@/components/admin/evaluation-config-panel";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -36,7 +38,6 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
   const [form, setForm] = useState<EventFormData>(emptyEventForm());
   const [saving, setSaving] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
-  const [uploadingGallery, setUploadingGallery] = useState(false);
   const [newCategory, setNewCategory] = useState("");
 
   const { data: categories = [], refetch: refetchCategories } = useQuery({
@@ -101,22 +102,6 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
     }
   }
 
-  async function handleGalleryUpload(file: File) {
-    setUploadingGallery(true);
-    try {
-      const url = await uploadEventImage(file, "gallery");
-      setForm((f) => ({
-        ...f,
-        gallery: [...f.gallery, { imageUrl: url, caption: "", sortOrder: f.gallery.length }],
-      }));
-      toast.success("Gallery image uploaded");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setUploadingGallery(false);
-    }
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -147,7 +132,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
               <TabsTrigger value="gallery">Gallery</TabsTrigger>
               <TabsTrigger value="relations">Relations</TabsTrigger>
               <TabsTrigger value="registration">Registration</TabsTrigger>
-              <TabsTrigger value="survey">Survey</TabsTrigger>
+              <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
             </TabsList>
 
             <TabsContent value="basics" className="space-y-4 pt-4">
@@ -287,18 +272,22 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
             </TabsContent>
 
             <TabsContent value="gallery" className="space-y-4 pt-4">
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm">
-                {uploadingGallery ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                Upload image
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleGalleryUpload(e.target.files[0])} />
-              </label>
-              {form.gallery.map((image, index) => (
-                <div key={index} className="flex gap-3 rounded-lg border p-3">
-                  <img src={image.imageUrl} alt="" className="h-16 w-16 rounded object-cover" />
-                  <Input className="flex-1" value={image.caption ?? ""} placeholder="Caption" onChange={(e) => setForm((f) => ({ ...f, gallery: f.gallery.map((g, i) => i === index ? { ...g, caption: e.target.value } : g) }))} />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setForm((f) => ({ ...f, gallery: f.gallery.filter((_, i) => i !== index) }))}><Trash2 className="h-4 w-4" /></Button>
+              {eventId ? (
+                <div className="rounded-lg border p-4 space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Manage gallery images, cover selection, metadata, and participant submissions on the dedicated gallery page.
+                  </p>
+                  <Button type="button" variant="outline" asChild>
+                    <Link to="/admin/events/$eventId/gallery" params={{ eventId }}>
+                      Open gallery manager
+                    </Link>
+                  </Button>
                 </div>
-              ))}
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Save the event first, then use the gallery manager to upload and organize photos.
+                </p>
+              )}
             </TabsContent>
 
             <TabsContent value="relations" className="space-y-4 pt-4">
@@ -333,16 +322,8 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
               </div>
             </TabsContent>
 
-            <TabsContent value="survey" className="space-y-4 pt-4">
-              <div>
-                <Label>Survey title</Label>
-                <Input value={form.surveyTitle} onChange={(e) => setForm((f) => ({ ...f, surveyTitle: e.target.value }))} />
-              </div>
-              <div>
-                <Label>Qualtrics URL</Label>
-                <Input value={form.surveyUrl} onChange={(e) => setForm((f) => ({ ...f, surveyUrl: e.target.value }))} />
-              </div>
-              <div className="flex items-center gap-2"><Switch checked={form.surveyActive} onCheckedChange={(v) => setForm((f) => ({ ...f, surveyActive: v }))} /><Label>Survey active</Label></div>
+            <TabsContent value="evaluation" className="space-y-4 pt-4">
+              <EvaluationConfigPanel eventId={eventId} />
             </TabsContent>
           </Tabs>
 

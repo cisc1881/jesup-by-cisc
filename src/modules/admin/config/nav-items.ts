@@ -25,6 +25,8 @@ import {
   Activity,
   Shield,
   Home,
+  MessageSquare,
+  FileText,
 } from "lucide-react";
 import type { ModuleId } from "@/modules/core";
 
@@ -72,6 +74,7 @@ export const COMMAND_CENTER_NAV: CommandCenterNavItem[] = [
   { moduleId: "equipment", to: "/admin/equipment", label: "Equipment", icon: Package, group: "operations" },
   { moduleId: "grants", to: "/admin/grants", label: "Grants", icon: DollarSign, group: "operations" },
   { moduleId: "surveys", to: "/admin/surveys", label: "Surveys", icon: ClipboardList, group: "operations" },
+  { moduleId: "dashboard", to: "/admin/inquiries", label: "Inquiries", icon: MessageSquare, group: "operations" },
 
   { moduleId: "volunteers", to: "/admin/volunteers", label: "Volunteers", icon: HeartHandshake, group: "community" },
   { moduleId: "members", to: "/admin/members", label: "Members", icon: UserCircle, group: "community" },
@@ -79,6 +82,7 @@ export const COMMAND_CENTER_NAV: CommandCenterNavItem[] = [
   { moduleId: "counties", to: "/admin/counties", label: "Counties", icon: Map, group: "community" },
 
   { moduleId: "reports", to: "/admin/reports", label: "Reports", icon: BarChart3, group: "analytics" },
+  { moduleId: "reports", to: "/admin/reports/events", label: "Event Reports", icon: FileText, group: "analytics" },
   { moduleId: "notifications", to: "/admin/notifications", label: "Notifications", icon: Bell, group: "analytics" },
   { moduleId: "activity", to: "/admin/activity", label: "Activity", icon: Activity, group: "analytics" },
   { moduleId: "search", to: "/admin/search", label: "Search", icon: Search, group: "analytics" },

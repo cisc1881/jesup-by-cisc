@@ -48,8 +48,17 @@ export function NotificationBellDropdown() {
     qc.invalidateQueries({ queryKey: ["notifications-center"] });
   }
 
-  function openNotification(actionUrl: string | null, type: keyof typeof DEFAULT_ACTION_URLS | null, id: string) {
+  function openNotification(
+    actionUrl: string | null,
+    type: keyof typeof DEFAULT_ACTION_URLS | null,
+    id: string,
+    entityId: string | null,
+  ) {
     if (user) void handleMarkRead(id);
+    if (type === "inquiry_received" && entityId) {
+      navigate({ to: "/admin/inquiries", search: { id: entityId } });
+      return;
+    }
     const target = actionUrl ?? (type ? DEFAULT_ACTION_URLS[type] : "/admin/notifications");
     navigate({ to: target });
   }
@@ -93,7 +102,7 @@ export function NotificationBellDropdown() {
                 "w-full border-b px-4 py-3 text-left transition hover:bg-secondary/60",
                 !n.isRead && "bg-primary/5",
               )}
-              onClick={() => openNotification(n.actionUrl, n.notificationType, n.id)}
+              onClick={() => openNotification(n.actionUrl, n.notificationType, n.id, n.entityId)}
             >
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm font-medium leading-snug">{n.title}</p>

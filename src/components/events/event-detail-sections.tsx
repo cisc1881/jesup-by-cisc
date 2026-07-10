@@ -1,6 +1,14 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import type { EventAttachment, EventDetail } from "@/lib/events";
+import { galleryImageAlt } from "@/lib/event-gallery";
 import { AppBadge, AppCard, SectionHeader } from "@/components/design-system";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { fmtDateTime } from "@/lib/format";
 import { Calendar, MapPin } from "lucide-react";
 
@@ -130,19 +138,52 @@ export function EventSpeakers({ event }: { event: EventDetail }) {
 }
 
 export function EventGallery({ event }: { event: EventDetail }) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   if (event.gallery.length === 0) return null;
+
+  const activeImage = activeIndex != null ? event.gallery[activeIndex] : null;
+
   return (
     <section aria-labelledby="event-gallery-heading" className="space-y-4">
       <SectionHeader title="Gallery" titleId="event-gallery-heading" />
       <div className="gold-divider" />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {event.gallery.map((image) => (
+        {event.gallery.map((image, index) => (
           <figure key={image.id} className="overflow-hidden rounded-2xl shadow-token-soft">
-            <img src={image.imageUrl} alt={image.caption ?? ""} className="aspect-[4/3] w-full object-cover" loading="lazy" />
-            {image.caption && <figcaption className="px-3 py-2 text-sm text-muted-foreground">{image.caption}</figcaption>}
+            <button
+              type="button"
+              className="block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              onClick={() => setActiveIndex(index)}
+              aria-label={`View larger: ${galleryImageAlt(image)}`}
+            >
+              <img
+                src={image.imageUrl}
+                alt={galleryImageAlt(image)}
+                className="aspect-[4/3] w-full object-cover transition hover:opacity-95"
+                loading={index < 3 ? "eager" : "lazy"}
+              />
+            </button>
+            {image.caption && (
+              <figcaption className="px-3 py-2 text-sm text-muted-foreground">{image.caption}</figcaption>
+            )}
           </figure>
         ))}
       </div>
+
+      <Dialog open={activeIndex != null} onOpenChange={(open) => !open && setActiveIndex(null)}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{activeImage?.caption || "Event photo"}</DialogTitle>
+          </DialogHeader>
+          {activeImage && (
+            <img
+              src={activeImage.imageUrl}
+              alt={galleryImageAlt(activeImage)}
+              className="max-h-[75vh] w-full rounded-lg object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
