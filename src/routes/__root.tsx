@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "@/components/ui/sonner";
 import { OfflineBanner } from "@/components/offline-banner";
+import { JesupSplashGate } from "@/components/branding";
 
 function NotFoundComponent() {
   return (
@@ -109,9 +110,11 @@ function RootComponent() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <OfflineBanner />
-        <Outlet />
-        <Toaster richColors position="top-center" className="sm:!top-4 sm:!right-4 sm:!left-auto" />
+        <JesupSplashGate>
+          <OfflineBanner />
+          <Outlet />
+          <Toaster richColors position="top-center" className="sm:!top-4 sm:!right-4 sm:!left-auto" />
+        </JesupSplashGate>
       </QueryClientProvider>
     </ThemeProvider>
   );

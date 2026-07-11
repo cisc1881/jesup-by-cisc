@@ -1,0 +1,167 @@
+/* JESUP opening splash — timing tuned for ~2.2s total (hold + exit). */
+
+.jesup-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.jesup-splash__backdrop {
+  opacity: 0;
+  animation: splash-bg-in 0.5s ease-out forwards;
+}
+
+.jesup-splash--tone-dark .jesup-splash__backdrop {
+  background: linear-gradient(
+    165deg,
+    oklch(0.24 0.1 22) 0%,
+    oklch(0.32 0.13 22) 38%,
+    oklch(0.4 0.16 22) 72%,
+    oklch(0.3 0.12 22) 100%
+  );
+}
+
+.jesup-splash--tone-light .jesup-splash__backdrop {
+  background: linear-gradient(
+    180deg,
+    var(--background) 0%,
+    color-mix(in oklch, var(--muted) 30%, var(--background)) 55%,
+    color-mix(in oklch, var(--primary) 6%, var(--background)) 100%
+  );
+}
+
+.jesup-splash--tone-dark .jesup-logo-mark__glow {
+  animation: splash-logo-glow-dark 0.65s ease-out 0.4s forwards;
+}
+
+.jesup-splash__logo-wrap {
+  opacity: 0;
+  transform: scale(0.92);
+  animation: splash-logo-scale 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
+
+.jesup-logo-mark__glow {
+  filter: drop-shadow(0 0 0 transparent);
+  animation: splash-logo-glow 0.65s ease-out 0.4s forwards;
+}
+
+.jesup-splash__wordmark {
+  opacity: 0;
+  animation: splash-wordmark-in 0.45s ease-out 0.35s forwards;
+}
+
+.jesup-splash__gold-line {
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0.85;
+  animation: splash-line-draw 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+}
+
+.jesup-splash__subtitle {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: splash-subtitle-in 0.5s ease-out 0.8s forwards;
+}
+
+.jesup-splash__attribution {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: splash-subtitle-in 0.45s ease-out 0.95s forwards;
+}
+
+.jesup-splash--exiting {
+  animation: splash-exit 0.45s ease-in forwards;
+}
+
+.jesup-splash--exiting .jesup-splash__backdrop,
+.jesup-splash--exiting .jesup-splash__content,
+.jesup-splash--exiting .jesup-splash__video {
+  animation: none;
+}
+
+@keyframes splash-bg-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splash-logo-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes splash-logo-glow-dark {
+  from {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  to {
+    filter: drop-shadow(0 16px 40px color-mix(in oklch, var(--primary-foreground) 22%, transparent));
+  }
+}
+
+@keyframes splash-logo-glow {
+  from {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  to {
+    filter: drop-shadow(0 14px 36px color-mix(in oklch, var(--primary) 28%, transparent));
+  }
+}
+
+@keyframes splash-wordmark-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes splash-line-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 0.85;
+  }
+}
+
+@keyframes splash-subtitle-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes splash-exit {
+  from {
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
