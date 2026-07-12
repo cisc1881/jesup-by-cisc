@@ -16,7 +16,7 @@ import { Briefcase } from "lucide-react";
 export const Route = createFileRoute("/internships")({
   head: () => ({
     meta: [
-      { title: "Internships · CISC Connect" },
+      { title: "Internships · JESUP" },
       { name: "description", content: "Open internship positions at CISC." },
     ],
   }),

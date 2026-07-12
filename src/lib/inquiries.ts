@@ -197,29 +197,28 @@ export async function submitInquiry(input: SubmitInquiryInput) {
     throw new Error("Consent to be contacted is required.");
   }
 
-  const payload = {
-    user_id: input.userId ?? null,
-    first_name: input.firstName.trim(),
-    last_name: input.lastName.trim(),
-    email: input.email.trim(),
-    phone: input.phone?.trim() || null,
-    preferred_contact: input.preferredContact ?? "either",
-    organization_or_school: input.organizationOrSchool?.trim() || null,
-    institution_id: input.institutionId ?? null,
-    institution_type: input.institutionType ?? null,
-    city: input.city?.trim() || null,
-    state: input.state?.trim() || null,
-    county: input.county?.trim() || null,
-    inquiry_type: input.inquiryType,
-    program_id: input.programId ?? null,
-    message: input.message?.trim() || null,
-    consent_contact: true,
-    newsletter_opt_in: Boolean(input.newsletterOptIn),
-  };
-
-  const { data, error } = await supabase.from("inquiries").insert(payload).select("id").single();
+  const { data, error } = await supabase.rpc("submit_public_inquiry", {
+    p_first_name: input.firstName.trim(),
+    p_last_name: input.lastName.trim(),
+    p_email: input.email.trim(),
+    p_inquiry_type: input.inquiryType,
+    p_consent_contact: true,
+    p_phone: input.phone?.trim() || null,
+    p_preferred_contact: input.preferredContact ?? "either",
+    p_organization_or_school: input.organizationOrSchool?.trim() || null,
+    p_institution_id: input.institutionId ?? null,
+    p_institution_type: input.institutionType ?? null,
+    p_city: input.city?.trim() || null,
+    p_state: input.state?.trim() || null,
+    p_county: input.county?.trim() || null,
+    p_program_id: input.programId ?? null,
+    p_message: input.message?.trim() || null,
+    p_newsletter_opt_in: Boolean(input.newsletterOptIn),
+    p_user_id: input.userId ?? null,
+  });
   if (error) throw error;
-  return data.id as string;
+  if (!data) throw new Error("Inquiry was not created.");
+  return data as string;
 }
 
 export async function listAdminInquiries(options?: InquiryFilters) {
@@ -314,14 +313,29 @@ export async function addInquiryNote(inquiryId: string, authorId: string, body: 
 export async function listInquiryNotes(inquiryId: string) {
   const { data, error } = await supabase
     .from("inquiry_notes")
-    .select("id, inquiry_id, author_id, body, created_at, profiles ( full_name, email )")
+    .select("id, inquiry_id, author_id, body, created_at")
     .eq("inquiry_id", inquiryId)
     .order("created_at", { ascending: true });
 
   if (error) throw error;
 
-  return (data ?? []).map((row) => {
-    const profile = row.profiles as { full_name: string | null; email: string | null } | null;
+  const rows = data ?? [];
+  const authorIds = [...new Set(rows.map((row) => row.author_id as string))];
+
+  const profileById = new Map<string, { full_name: string | null; email: string | null }>();
+  if (authorIds.length > 0) {
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .in("id", authorIds);
+    if (profilesError) throw profilesError;
+    for (const profile of profiles ?? []) {
+      profileById.set(profile.id, profile);
+    }
+  }
+
+  return rows.map((row) => {
+    const profile = profileById.get(row.author_id as string);
     return {
       id: row.id as string,
       inquiryId: row.inquiry_id as string,

@@ -2,9 +2,9 @@
 
 **Document status:** Release readiness reference  
 **Version:** 1.0-beta  
-**Last updated:** July 10, 2026  
+**Last updated:** July 11, 2026  
 **Target audience:** CISC staff, developers, and demo presenters  
-**Companion docs:** [Product Spec](./JESUP_PRODUCT_SPEC_V1.md) · [Deployment Guide](./DEPLOYMENT_GUIDE.md) · [Sprint 9 QA Report](./SPRINT_9_QA_REPORT.md) · [Sprint 9 Release Notes](./SPRINT_9_RELEASE_NOTES.md)
+**Companion docs:** [Product Spec](./JESUP_PRODUCT_SPEC_V1.md) · [Deployment Guide](./DEPLOYMENT_GUIDE.md) · [Sprint 9 QA Report](./SPRINT_9_QA_REPORT.md) · [Sprint 9 Release Notes](./SPRINT_9_RELEASE_NOTES.md) · [Production Readiness Review](./PRODUCTION_READINESS_REVIEW.md)
 
 ---
 
@@ -12,9 +12,39 @@
 
 JESUP V1 Beta is a **client-demo-ready** digital Extension platform: mobile-first public modules, a full JESUP Command Center for CISC staff, Supabase-backed CMS with RLS, universal search, and the 2FAS application review pipeline. The beta is suitable for **controlled demos and internal pilot** — not yet a full public production launch without completing demo content seeding and production infrastructure verification.
 
-**Suggested release name:** JESUP V1.0 Beta 2  
-**Suggested git tag:** `v1.0.0-beta.2`  
-**Suggested release branch:** `release/v1.0.0-beta.2`
+**Suggested release name:** JESUP V1.0 Beta 3  
+**Release candidate tag:** `v1.0.0-beta.3`  
+**Prior tag:** `v1.0.0-beta.2` — superseded (do not deploy to production)  
+**Suggested release branch:** `release/v1.0.0-beta.3`
+
+### Production readiness (July 11, 2026)
+
+| Document | Purpose | Status |
+|----------|---------|--------|
+| [STAGING_DEMO_RESULTS.md](./STAGING_DEMO_RESULTS.md) | Demo script execution record | ✅ Complete — all 16 steps pass (July 11, 2026) |
+| [DEMO_SEED_DATA.md](./DEMO_SEED_DATA.md) | Idempotent demo seed SQL | ✅ Applied |
+| [PRODUCTION_READINESS_REVIEW.md](./PRODUCTION_READINESS_REVIEW.md) | Go/no-go assessment | **GO WITH CONDITIONS** — deploy `v1.0.0-beta.3` |
+| [PRODUCTION_MIGRATION_PLAN.md](./PRODUCTION_MIGRATION_PLAN.md) | Sprint 9 migration order + verification | Ready for ops |
+| [PRODUCTION_SMOKE_TEST.md](./PRODUCTION_SMOKE_TEST.md) | Post-deploy smoke test | Ready to run |
+| [PRODUCTION_ROLLBACK_PLAN.md](./PRODUCTION_ROLLBACK_PLAN.md) | Incident + rollback procedures | Ready |
+
+**Deployment decision:** **GO WITH CONDITIONS** — use **`v1.0.0-beta.3`** as production candidate. Deploy after backup, 29 migrations, smoke test, ops sign-off.
+
+### v1.0.0-beta.3 release candidate
+
+| Item | Status |
+|------|--------|
+| Homepage failure isolation | ✅ |
+| Public inquiry RPC | ✅ |
+| Attendance/check-in correction | ✅ |
+| Inquiry note correction | ✅ |
+| Offline banner fix | ✅ |
+| Admin `<Outlet />` child routes | ✅ |
+| Gallery E2E (steps 11–13) | ✅ |
+| Sprint 9 demo (13/13) | ✅ |
+| RLS verification (`scripts/sprint9_rls_verify.mjs`) | ✅ 21/21 |
+| Optional FK migration | ⏳ SQL Editor apply pending |
+| `npm run build` | ✅ Pass |
 
 ---
 
@@ -191,7 +221,8 @@ Full Sprint 9 details: [SPRINT_9_MIGRATION_STATUS.md](./SPRINT_9_MIGRATION_STATU
 | Environment | Expected state | Verification |
 |-------------|----------------|--------------|
 | **Development** | All 28 migrations applied | Verified July 10, 2026 |
-| **Production** | Separate project recommended | Apply all 28 migrations before beta.2 deploy |
+| **Staging** | `v1.0.0-beta.3` RC | Demo + RLS verified — see [STAGING_DEMO_RESULTS.md](./STAGING_DEMO_RESULTS.md) |
+| **Production** | Separate project recommended | Apply 29 migrations (+ optional FK) — see [PRODUCTION_MIGRATION_PLAN.md](./PRODUCTION_MIGRATION_PLAN.md) |
 | **TypeScript types** | `src/integrations/supabase/types.ts` | Must match live schema after every migration |
 
 ### Pre-deploy migration checklist
@@ -202,7 +233,8 @@ Full Sprint 9 details: [SPRINT_9_MIGRATION_STATUS.md](./SPRINT_9_MIGRATION_STATU
 - [ ] Participant `event-images` storage path policies active
 - [ ] `has_role()` RLS function works for admin users
 - [ ] At least one admin user in `user_roles` (`role = 'admin'`)
-- [ ] Run smoke test per [SPRINT_9_DEMO_SCRIPT.md](./SPRINT_9_DEMO_SCRIPT.md)
+- [ ] Run smoke test per [PRODUCTION_SMOKE_TEST.md](./PRODUCTION_SMOKE_TEST.md)
+- [x] Complete staging demo per [STAGING_DEMO_RESULTS.md](./STAGING_DEMO_RESULTS.md)
 
 ---
 
@@ -255,13 +287,14 @@ Run this checklist **on the target demo environment** (staging or production) wi
 
 ### Sprint 9 demo flow (required for beta.2)
 
-- [ ] **Join inquiry** — Submit at `/join`; appears in `/admin/inquiries`
-- [ ] **Event registration** — Register on published event
-- [ ] **Attendance** — Check in + walk-in at `/admin/events/$eventId/attendance`
-- [ ] **Evaluation** — Complete at `/events/$id/evaluation`
-- [ ] **Demographics** — Aggregate cards show suppression on admin pages
-- [ ] **Photo submit** — Attendee submits; admin approves at `/admin/events/gallery`
-- [ ] **Event report** — Generate, save draft, finalize, print at `/admin/reports/events`
+- [x] **Join inquiry** — Submit at `/join`; appears in `/admin/inquiries`
+- [x] **Event registration** — Register on published event
+- [x] **Attendance** — Check in + walk-in at `/admin/events/$eventId/attendance`
+- [x] **Evaluation** — Complete at `/events/$id/evaluation`
+- [x] **Demographics** — Aggregate cards show suppression on admin pages
+- [x] **Photo submit** — Attendee submits; admin approves at `/admin/events/gallery`
+- [x] **Public gallery** — Approved image visible on event detail page (signed-out)
+- [x] **Event report** — Generate, save draft, finalize, print at `/admin/reports/events`
 
 ### Demo flow (end-to-end)
 
@@ -344,6 +377,7 @@ npm run build
 
 ### Post-deploy smoke test
 
+- [ ] Run full checklist in [PRODUCTION_SMOKE_TEST.md](./PRODUCTION_SMOKE_TEST.md)
 - [ ] Production URL loads Home without blank page or Supabase env error
 - [ ] `/auth` login works against production Supabase
 - [ ] `/admin` accessible for admin user
@@ -359,10 +393,11 @@ npm run build
 ### Rollback plan
 
 - [ ] Previous Worker version tagged and available in Cloudflare dashboard
-- [ ] Database migrations are forward-only — document any manual rollback SQL if needed
-- [ ] Keep development Supabase project unchanged as fallback demo environment
+- [ ] Database backup taken before migration window
+- [ ] Incident contacts filled in [PRODUCTION_ROLLBACK_PLAN.md](./PRODUCTION_ROLLBACK_PLAN.md)
+- [ ] Database migrations are forward-only — restore-from-backup preferred over manual drops
 
-Full procedures: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
+Full procedures: [PRODUCTION_ROLLBACK_PLAN.md](./PRODUCTION_ROLLBACK_PLAN.md) · [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
 ---
 
@@ -370,16 +405,18 @@ Full procedures: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
 | Item | Recommendation |
 |------|----------------|
-| **Semantic version** | `1.0.0-beta.2` |
-| **Git tag** | `v1.0.0-beta.2` |
-| **Release title** | JESUP V1.0 Beta 2 — Sprint 9 Engagement & Reporting |
-| **Release notes focus** | Inquiries, attendance, evaluations, demographics, gallery, event reports |
-| **Previous tag** | `v1.0.0-beta.1` |
+| **Semantic version** | `1.0.0-beta.3` |
+| **Git tag** | `v1.0.0-beta.3` |
+| **Release title** | JESUP V1.0 Beta 3 — Sprint 9 validated release candidate |
+| **Release notes focus** | Post-beta.2 fixes + full demo validation + RLS verification |
+| **Previous tag** | `v1.0.0-beta.2` (superseded) |
 
 ```bash
-git tag -a v1.0.0-beta.2 -m "Sprint 9 complete: engagement, attendance, evaluations, demographics, gallery, reporting, and release hardening"
-git push origin v1.0.0-beta.2
+git tag -a v1.0.0-beta.3 -m "JESUP v1.0.0-beta.3 - Sprint 9 validated release candidate"
+git push origin v1.0.0-beta.3
 ```
+
+**Do not move or overwrite `v1.0.0-beta.2`.**
 
 ---
 
@@ -468,4 +505,4 @@ Ordered by impact for CISC staff and demo → production transition.
 
 ---
 
-*This checklist reflects the codebase and documentation as of July 10, 2026. Sprint 9 complete.*
+*This checklist reflects the codebase as of July 11, 2026. Release candidate: **`v1.0.0-beta.3`**. See [PRODUCTION_READINESS_REVIEW.md](./PRODUCTION_READINESS_REVIEW.md).*

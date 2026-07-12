@@ -4,7 +4,7 @@ import { fetchFeaturedPodcastEpisode } from "@/lib/podcasts";
 import { fetchPartners } from "@/lib/partners";
 import { fetchPublications } from "@/lib/publications";
 import { fetchHomePrograms } from "./programs-source";
-import { DEFAULT_IMPACT_METRICS, fetchHomeSectionMeta } from "./section-config";
+import { DEFAULT_IMPACT_METRICS, fetchHomeSectionMeta, DEFAULT_SECTION_META } from "./section-config";
 import type {
   HomeCta,
   HomeEvent,
@@ -18,6 +18,48 @@ import type {
 } from "./types";
 
 const now = () => new Date().toISOString();
+
+const EMPTY_HOME_NEWS: { featured: HomeNewsArticle | null; latest: HomeNewsArticle[] } = {
+  featured: null,
+  latest: [],
+};
+
+function defaultHomeImpactStats(): HomeImpactStat[] {
+  return DEFAULT_IMPACT_METRICS.map((metric) => ({
+    id: metric.id,
+    label: metric.label,
+    value: 0,
+  }));
+}
+
+/** Run a home section query without failing the entire page. */
+async function safeHomeSection<T>(section: string, fallback: T, query: () => Promise<T>): Promise<T> {
+  try {
+    return await query();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn(`[home] ${section} unavailable`, error);
+    }
+    return fallback;
+  }
+}
+
+export function createEmptyHomePageData(): HomePageData {
+  return {
+    heroSlides: [],
+    programs: [],
+    events: [],
+    publications: [],
+    featuredPodcast: null,
+    featuredNews: null,
+    latestNews: [],
+    partners: [],
+    markets: [],
+    impactStats: defaultHomeImpactStats(),
+    sections: DEFAULT_SECTION_META,
+    cta: null,
+  };
+}
 
 async function countTable(table: "events" | "publications" | "markets" | "partners", filter?: { column: string; op: string; value: unknown }) {
   let query = supabase.from(table).select("*", { count: "exact", head: true });
@@ -312,19 +354,29 @@ export function pickNearestMarket(markets: HomeMarket[], coords: { lat: number; 
 }
 
 export async function fetchHomePageData(): Promise<HomePageData> {
-  const [heroSlides, programs, events, publications, featuredPodcast, homeNews, partners, markets, impactStats, sections] =
-    await Promise.all([
-      fetchHomeHeroSlides(),
-      fetchHomePrograms(6),
-      fetchHomeEvents(),
-      fetchHomePublications(),
-      fetchFeaturedPodcast(),
-      fetchHomeNews(4),
-      fetchHomePartners(6),
-      fetchHomeMarkets(),
-      fetchHomeImpactStats(),
-      fetchHomeSectionMeta(),
-    ]);
+  const [
+    heroSlides,
+    programs,
+    events,
+    publications,
+    featuredPodcast,
+    homeNews,
+    partners,
+    markets,
+    impactStats,
+    sections,
+  ] = await Promise.all([
+    safeHomeSection("heroSlides", [], fetchHomeHeroSlides),
+    safeHomeSection("programs", [], () => fetchHomePrograms(6)),
+    safeHomeSection("events", [], fetchHomeEvents),
+    safeHomeSection("publications", [], fetchHomePublications),
+    safeHomeSection<HomePodcastEpisode | null>("featuredPodcast", null, fetchFeaturedPodcast),
+    safeHomeSection("news", EMPTY_HOME_NEWS, () => fetchHomeNews(4)),
+    safeHomeSection("partners", [], () => fetchHomePartners(6)),
+    safeHomeSection<HomeMarket[]>("markets", [], fetchHomeMarkets),
+    safeHomeSection("impactStats", defaultHomeImpactStats(), fetchHomeImpactStats),
+    safeHomeSection("sections", DEFAULT_SECTION_META, fetchHomeSectionMeta),
+  ]);
 
   return {
     heroSlides,

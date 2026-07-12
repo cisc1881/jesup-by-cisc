@@ -1,4 +1,4 @@
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createLazyFileRoute, Link, Outlet, useMatches } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { AdminPageHeader, AdminShell } from "@/components/admin-page";
@@ -79,7 +79,18 @@ function EventRowActions({
   );
 }
 
+const EVENTS_CHILD_ROUTE_IDS = new Set([
+  "/_authenticated/admin/events/gallery",
+  "/_authenticated/admin/events/$eventId/attendance",
+  "/_authenticated/admin/events/$eventId/evaluations",
+  "/_authenticated/admin/events/$eventId/gallery",
+]);
+
 function AdminEvents() {
+  const matches = useMatches();
+  const isChild = matches.some((m) => EVENTS_CHILD_ROUTE_IDS.has(m.routeId));
+  if (isChild) return <Outlet />;
+
   const qc = useQueryClient();
   const { confirmAndDelete, dialog } = useAdminDelete();
   const [q, setQ] = useState("");
@@ -294,7 +305,16 @@ function AdminEvents() {
                     <div className="font-medium">{reg.fullName}</div>
                     <div className="text-xs text-muted-foreground">{reg.email}</div>
                   </TableCell>
-                  <TableCell>{reg.status}</TableCell>
+                  <TableCell>
+                    {reg.checkedInAt ? (
+                      <span className="text-primary">Checked in</span>
+                    ) : (
+                      reg.status
+                    )}
+                    {reg.checkedInAt && (
+                      <div className="text-xs text-muted-foreground">{fmtDateTime(reg.checkedInAt)}</div>
+                    )}
+                  </TableCell>
                   <TableCell className="font-mono text-xs">{reg.ticketCode}</TableCell>
                   <TableCell>
                     {!reg.checkedInAt && reg.status === "registered" && (

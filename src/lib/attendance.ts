@@ -343,14 +343,23 @@ async function syncLegacyCheckin(
     .eq("id", registrationId);
   if (regError) throw regError;
 
-  const { error: checkinError } = await supabase.from("event_checkins").insert({
-    registration_id: registrationId,
-    event_id: eventId,
-    checked_in_at: checkedInAt,
-    checked_in_by: adminUserId,
-    method: "manual",
-  });
-  if (checkinError) throw checkinError;
+  const { data: existingCheckin, error: lookupError } = await supabase
+    .from("event_checkins")
+    .select("id")
+    .eq("registration_id", registrationId)
+    .maybeSingle();
+  if (lookupError) throw lookupError;
+
+  if (!existingCheckin) {
+    const { error: checkinError } = await supabase.from("event_checkins").insert({
+      registration_id: registrationId,
+      event_id: eventId,
+      checked_in_at: checkedInAt,
+      checked_in_by: adminUserId,
+      method: "manual",
+    });
+    if (checkinError) throw checkinError;
+  }
 }
 
 export async function updateAttendanceNotes(

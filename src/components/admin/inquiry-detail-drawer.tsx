@@ -63,7 +63,7 @@ export function InquiryDetailDrawer({
   const [noteBody, setNoteBody] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const { data: notes = [], refetch: refetchNotes } = useQuery({
+  const { data: notes = [] } = useQuery({
     queryKey: ["inquiry-notes", inquiry?.id],
     enabled: open && !!inquiry?.id,
     queryFn: () => listInquiryNotes(inquiry!.id),
@@ -98,11 +98,17 @@ export function InquiryDetailDrawer({
 
   async function submitNote() {
     if (!inquiry || !user || !noteBody.trim()) return;
+    const body = noteBody.trim();
     setSaving(true);
     try {
-      await addInquiryNote(inquiry.id, user.id, noteBody);
+      await addInquiryNote(inquiry.id, user.id, body);
+      const refreshed = await listInquiryNotes(inquiry.id);
+      const saved = refreshed.some((note) => note.body === body && note.authorId === user.id);
+      if (!saved) {
+        throw new Error("Note saved but could not be loaded. Confirm admin profile access.");
+      }
       setNoteBody("");
-      await refetchNotes();
+      qc.setQueryData(["inquiry-notes", inquiry.id], refreshed);
       toast.success("Note added");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to add note");

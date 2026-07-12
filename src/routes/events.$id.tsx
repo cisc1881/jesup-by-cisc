@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatches } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer } from "@/components/design-system";
@@ -34,6 +34,10 @@ export const Route = createFileRoute("/events/$id")({
 });
 
 function EventDetailPage() {
+  const matches = useMatches();
+  const isChild = matches.some((m) => m.routeId === "/events/$id/evaluation");
+  if (isChild) return <Outlet />;
+
   const { id } = Route.useParams();
   const { user } = useAuth();
   const { event } = Route.useLoaderData();

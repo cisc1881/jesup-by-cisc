@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { PublicLayout } from "@/components/public-layout";
-import { PageContainer } from "@/components/design-system";
+import { PageContainer, AppButton } from "@/components/design-system";
 import { useHomeData } from "@/hooks/use-home-data";
 import {
   CommunityImpactSection,
@@ -15,7 +15,7 @@ import {
   StrategicPartnersHomeSection,
   UpcomingEventsSection,
 } from "@/components/home";
-import { fetchHomePageData, DEFAULT_SECTION_META } from "@/lib/home";
+import { fetchHomePageData, createEmptyHomePageData, DEFAULT_SECTION_META } from "@/lib/home";
 import { buildPageHead } from "@/lib/seo";
 import { HOME_PAGE_QUERY_KEY } from "@/lib/query-config";
 
@@ -28,13 +28,55 @@ export const Route = createFileRoute("/")({
       path: "/",
     }),
   loader: async ({ context: { queryClient } }) => {
-    return queryClient.ensureQueryData({
-      queryKey: HOME_PAGE_QUERY_KEY,
-      queryFn: fetchHomePageData,
-    });
+    try {
+      return await queryClient.ensureQueryData({
+        queryKey: HOME_PAGE_QUERY_KEY,
+        queryFn: fetchHomePageData,
+      });
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.warn("[home] loader failed; using empty homepage defaults", error);
+      }
+      const fallback = createEmptyHomePageData();
+      queryClient.setQueryData(HOME_PAGE_QUERY_KEY, fallback);
+      return fallback;
+    }
   },
+  errorComponent: HomeRouteError,
   component: Home,
 });
+
+function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
+  const router = useRouter();
+
+  return (
+    <PublicLayout>
+      <PageContainer size="md" className="py-16 text-center">
+        <h1 className="text-2xl font-bold text-foreground">Home is partially unavailable</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Some sections could not be loaded. You can retry or continue browsing other pages.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <AppButton
+            type="button"
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
+          >
+            Try again
+          </AppButton>
+          <AppButton type="button" variant="outline" onClick={() => router.navigate({ to: "/programs" })}>
+            Browse programs
+          </AppButton>
+        </div>
+        {import.meta.env.DEV ? (
+          <p className="mt-6 text-left text-xs text-muted-foreground">{error.message}</p>
+        ) : null}
+      </PageContainer>
+    </PublicLayout>
+  );
+}
 
 function Home() {
   const { data, isLoading } = useHomeData();

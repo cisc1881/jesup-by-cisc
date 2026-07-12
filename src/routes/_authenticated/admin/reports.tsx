@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatches } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { CommandCenterContentShell, CommandCenterPageHeader } from "@/modules/admin";
 import { fetchAnalyticsSummary } from "@/modules/analytics";
@@ -32,6 +32,10 @@ const METRICS = [
 ];
 
 function AdminReports() {
+  const matches = useMatches();
+  const isChild = matches.some((m) => m.routeId === "/_authenticated/admin/reports/events");
+  if (isChild) return <Outlet />;
+
   const { data: summary, isLoading } = useQuery({
     queryKey: ["analytics-summary"],
     queryFn: fetchAnalyticsSummary,
