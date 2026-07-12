@@ -2,7 +2,9 @@
 
 **Release:** `v1.0.0-beta.3`  
 **Date:** July 11, 2026  
-**Scope:** Application deploy + 29 required database migrations (+ optional FK)
+**Scope:** Application deploy + 29 required database migrations (+ optional FK)  
+**Production Supabase:** `annwryirualnxsrnupjm` (region `us-east-1`)  
+**Production URL:** `https://jesup.cisc1881.org`
 
 ---
 

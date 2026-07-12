@@ -49,7 +49,7 @@ JESUP V1 Beta is a **client-demo-ready** digital Extension platform: mobile-firs
 | Step | Status |
 |------|--------|
 | Preflight (`769e921`, clean tree, build) | ✅ |
-| Production target confirmed | ❌ Blocked |
+| Production target confirmed | ✅ `annwryirualnxsrnupjm` / `https://jesup.cisc1881.org` |
 | Database backup | ❌ Not taken |
 | Migrations applied (0/29) | ❌ Not started |
 | Cloudflare deploy | ❌ Not started |

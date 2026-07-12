@@ -4,7 +4,7 @@
 **Release candidate:** `v1.0.0-beta.3`  
 **Commit:** `769e921`  
 **Prepared by:** Cursor agent (ops preparation run)  
-**Final decision:** **DEPLOYMENT BLOCKED**
+**Final decision:** **DEPLOYMENT BLOCKED** (database preparation in progress)
 
 ---
 
@@ -18,24 +18,22 @@ Code and release artifacts are ready (`769e921`, tag `v1.0.0-beta.3`, build pass
 
 ## 1. Production target identification
 
-| Item | Finding | Confirmed? |
-|------|---------|------------|
-| **Hosting provider** | **Cloudflare Workers** (Nitro build target) | ✅ Documented |
-| **Worker name** | `cisc1881-jesup-by-cisc` (from `.output/server/wrangler.json`) | ✅ Build artifact |
-| **Deploy command** | `npx nitro deploy --prebuilt` (post-`npm run build`) | ✅ Documented |
-| **Alt workflow** | Lovable Cloud publish (preview/staging) | ✅ Documented |
-| **GitHub Actions** | None configured | ✅ Verified |
-| **Production app URL** | Candidates: `https://jesup.cisc1881.org`, `https://jesup.cisc.edu` — both return **403** to automated fetch; no live deploy mapping in repo | ❌ **Unconfirmed** |
-| **Production branch** | `cursor/initial-jesup-import` (GitHub default) | ✅ |
-| **Production Supabase ref** | **Not documented in repo** | ❌ **Unconfirmed** |
-| **Connected Supabase (local `.env`)** | `trffktqewlrzziowmspd` | ⚠️ **Development** (per `STAGING_DEMO_RESULTS.md`) |
-| **Incident contact** | Empty in `PRODUCTION_ROLLBACK_PLAN.md` | ❌ **Missing** |
+| Item | Value | Confirmed? |
+|------|-------|------------|
+| **Development Supabase** | `trffktqewlrzziowmspd` | ✅ (Lovable / local — not production) |
+| **Production Supabase** | `annwryirualnxsrnupjm` | ✅ Confirmed July 11, 2026 |
+| **Region** | `us-east-1` | ✅ |
+| **Production URL** | `https://jesup.cisc1881.org` | ✅ Canonical |
+| **Hosting provider** | Cloudflare Workers (`cisc1881-jesup-by-cisc`) | ✅ Documented |
+| **Deploy command** | `npx nitro deploy --prebuilt` | ✅ Documented |
+| **Production branch** | `cursor/initial-jesup-import` | ✅ |
+| **Incident contact** | Empty in `PRODUCTION_ROLLBACK_PLAN.md` | ❌ **Required before migrate** |
 
-### Stop condition triggered
+### Current phase
 
-> **Production target is unclear** — cannot confirm separate production Supabase project or live production URL.
+**DATABASE PREPARATION** — production target confirmed. Migrations and app deploy **not started**.
 
-**Do not apply migrations or deploy against `trffktqewlrzziowmspd` without explicit ops confirmation that it is the intended production project.**
+**Do not migrate or deploy against `trffktqewlrzziowmspd` for production work.**
 
 ---
 

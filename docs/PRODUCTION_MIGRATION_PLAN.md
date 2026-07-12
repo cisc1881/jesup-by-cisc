@@ -1,9 +1,23 @@
 # Production Migration Plan — JESUP v1.0.0-beta.3
 
 **Release candidate:** `v1.0.0-beta.3`  
-**Date:** July 11, 2026  
+**Date:** July 11, 2026 (updated — production target confirmed)  
 **Apply to:** Production Supabase project only (manual ops)  
 **Do not auto-apply:** Migrations require backup + ops sign-off
+
+---
+
+## Production environment (confirmed)
+
+| Item | Value |
+|------|-------|
+| **Development Supabase** | `trffktqewlrzziowmspd` — Lovable / local dev (**do not migrate or deploy against this for production**) |
+| **Production Supabase** | `annwryirualnxsrnupjm` |
+| **Region** | `us-east-1` |
+| **Production URL** | `https://jesup.cisc1881.org` |
+| **Production API URL** | `https://annwryirualnxsrnupjm.supabase.co` |
+
+**Important:** Do **not** change `supabase/config.toml` `project_id` (remains dev for Lovable). Production CLI work uses `supabase link --project-ref annwryirualnxsrnupjm`, which stores link metadata under `supabase/.temp/` (gitignored).
 
 ---
 
@@ -72,7 +86,94 @@ Apply **in this exact sequence** via Supabase SQL Editor:
 30. 20260711193000_inquiry_notes_author_profile_fkey.sql
 ```
 
-**Not a production migration:** `supabase/seed/sprint9_demo_seed.sql` — development/staging demo content only.
+**Not a production migration:** `supabase/seed/sprint9_demo_seed.sql` — development/staging demo content only. **Never run on `annwryirualnxsrnupjm`.**
+
+---
+
+## Pre-migration gates (all required before migration #1)
+
+Do **not** apply any migration until every item below is complete:
+
+| # | Gate | Owner | Status |
+|---|------|-------|--------|
+| 1 | **Production database backup** taken and timestamp recorded | Ops / DBA | ☐ |
+| 2 | **Database password** confirmed (Supabase → Project Settings → Database) | Ops / DBA | ☐ |
+| 3 | **Supabase CLI authenticated** (`supabase login`) | Ops | ☐ |
+| 4 | **Production project linked** (`supabase link --project-ref annwryirualnxsrnupjm`) | Ops | ☐ |
+| 5 | **Migration plan reviewed** (this document, 29 required + optional #30) | Tech lead | ☐ |
+| 6 | **Incident contacts filled** in [PRODUCTION_ROLLBACK_PLAN.md](./PRODUCTION_ROLLBACK_PLAN.md) | CISC | ☐ |
+
+### Stop conditions (do not migrate)
+
+- Any gate above is incomplete
+- Backup cannot be confirmed
+- Linked project ref is not `annwryirualnxsrnupjm`
+- Accidentally linked to `trffktqewlrzziowmspd` (development)
+- Migration verification fails on any step
+- Attempting to run `supabase/seed/sprint9_demo_seed.sql` on production
+
+---
+
+## Supabase CLI — login, link, and verification
+
+Run from the repo root. **Do not modify** `supabase/config.toml` (Lovable dev connection).
+
+```bash
+cd /Users/mauriceantoine/Projects/jesup-by-cisc
+
+# 1. Authenticate (opens browser)
+npx supabase login
+
+# 2. Link to PRODUCTION only (prompts for database password)
+npx supabase link --project-ref annwryirualnxsrnupjm
+
+# 3. Confirm linked project (must show annwryirualnxsrnupjm)
+npx supabase projects list
+
+# 4. Dry-run pending migrations (inspect only — do not push until backup confirmed)
+npx supabase db push --dry-run
+```
+
+**Apply one migration at a time (recommended for first production apply):**
+
+```bash
+# Option A — SQL Editor (Supabase Dashboard → annwryirualnxsrnupjm → SQL Editor)
+# Paste one file from supabase/migrations/ in order; run verification query; proceed.
+
+# Option B — CLI push (after backup + gates; applies all pending in order)
+npx supabase db push
+```
+
+**Post-link verification (no secrets printed):**
+
+```bash
+# Confirm migration history on production
+npx supabase migration list
+
+# RLS verification (requires temporary .env pointing at production publishable key)
+# node scripts/sprint9_rls_verify.mjs
+```
+
+---
+
+## Database backup instructions
+
+**Before migration #1** on project `annwryirualnxsrnupjm`:
+
+1. Open [Supabase Dashboard](https://supabase.com/dashboard/project/annwryirualnxsrnupjm)
+2. Go to **Project Settings → Database → Backups**
+3. Confirm **Point-in-Time Recovery** status (plan-dependent)
+4. If available: note latest automatic backup timestamp
+5. For Pro/Team: trigger manual backup or document PITR restore point
+6. Record in migration log:
+   - Backup timestamp (UTC)
+   - Method (automatic / manual / PITR)
+   - Operator name
+   - Backup ID or snapshot reference (if shown)
+
+**Restoration:** Supabase Dashboard → Database → Backups → Restore (or PITR). See [PRODUCTION_ROLLBACK_PLAN.md](./PRODUCTION_ROLLBACK_PLAN.md). Restoring replaces all data after the backup point.
+
+**Do not delete or overwrite existing backups.**
 
 ---
 
@@ -204,3 +305,19 @@ Documented in [DEMO_SEED_DATA.md](./DEMO_SEED_DATA.md).
 | 28 | 20260710150000 | | | | ✅ | ☐ | |
 | 29 | 20260711180000 | | | | ✅ | ☐ | beta.3 demo fixes |
 | 30 | 20260711193000 | | | | ☐ | ☐ | Optional FK |
+
+---
+
+## Rollback checkpoints
+
+| After step | If failure | Action |
+|------------|------------|--------|
+| Backup | Backup not confirmed | **Stop** — do not migrate |
+| Migrations 1–22 | SQL error | **Stop** — fix or restore from backup |
+| Migrations 23–29 | Partial apply | **Stop** — assess state; restore if inconsistent |
+| Optional #30 | FK orphan rows | **Skip** FK; client works without it |
+| Post-migrate | RLS test fails | **Stop deploy** — forward fix or restore |
+
+**Never:** `supabase db reset`, `DROP SCHEMA`, or global trigger disable on production.
+
+---

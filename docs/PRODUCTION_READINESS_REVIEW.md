@@ -16,8 +16,8 @@
 | Build (`npm run build`) | ✅ Pass (July 11, 2026, beta.3 RC) |
 | Dev migrations (29 required) | ✅ Applied |
 | Optional FK migration | ⏳ SQL ready; manual apply pending |
-| Production migrations | ⏳ Blocked — production project not confirmed |
-| Production deployment | ❌ **DEPLOYMENT BLOCKED** — see [PRODUCTION_DEPLOYMENT_REPORT.md](./PRODUCTION_DEPLOYMENT_REPORT.md) |
+| Production migrations | ⏳ Pending — project `annwryirualnxsrnupjm` confirmed; backup + gates required |
+| Production deployment | ❌ **Not started** — database prep phase; see [PRODUCTION_DEPLOYMENT_REPORT.md](./PRODUCTION_DEPLOYMENT_REPORT.md) |
 | Live demo (13/13 runnable steps) | ✅ Pass — July 11, 2026 |
 | RLS verification (automated) | ✅ Pass — 21/21 |
 | Security (RLS + static audit) | ✅ Sound for beta |
@@ -45,7 +45,18 @@ Sprint 9 validated on local dev. **Use `v1.0.0-beta.3` as the production candida
 
 ---
 
-## v1.0.0-beta.3 release candidate
+## Production environment (confirmed July 11, 2026)
+
+| Item | Value |
+|------|-------|
+| Development Supabase | `trffktqewlrzziowmspd` (Lovable — do not use for production migrations) |
+| Production Supabase | `annwryirualnxsrnupjm` |
+| Region | `us-east-1` |
+| Production URL | `https://jesup.cisc1881.org` |
+
+Database preparation runbook: [PRODUCTION_MIGRATION_PLAN.md](./PRODUCTION_MIGRATION_PLAN.md)
+
+---
 
 ### Fixes since v1.0.0-beta.2
 
@@ -144,7 +155,7 @@ No SERVICE_ROLE strings in client assets
 
 Preflight passed for release candidate `769e921` / `v1.0.0-beta.3`. Deploy not started because:
 
-- Production Supabase project ref is **not confirmed** (connected env = dev `trffktqewlrzziowmspd`)
+- Production Supabase project ref is **confirmed**: `annwryirualnxsrnupjm` (dev remains `trffktqewlrzziowmspd`)
 - Production URL is **not confirmed** (`jesup.cisc1881.org` / `jesup.cisc.edu` unreachable to automated check)
 - Production database backup **not taken**
 - Incident contacts **not filled**
