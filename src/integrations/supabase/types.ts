@@ -3277,6 +3277,28 @@ export type Database = {
         Args: { p_access_token: string; p_answers: Json; p_response_id: string }
         Returns: undefined
       }
+      submit_public_inquiry: {
+        Args: {
+          p_city?: string
+          p_consent_contact: boolean
+          p_county?: string
+          p_email: string
+          p_first_name: string
+          p_inquiry_type: Database["public"]["Enums"]["inquiry_type"]
+          p_institution_id?: string
+          p_institution_type?: Database["public"]["Enums"]["institution_type"]
+          p_last_name: string
+          p_message?: string
+          p_newsletter_opt_in?: boolean
+          p_organization_or_school?: string
+          p_phone?: string
+          p_preferred_contact?: Database["public"]["Enums"]["preferred_contact_method"]
+          p_program_id?: string
+          p_state?: string
+          p_user_id?: string
+        }
+        Returns: string
+      }
       upsert_anonymous_evaluation_demographics: {
         Args: {
           p_academic_level?: Database["public"]["Enums"]["academic_level"]
