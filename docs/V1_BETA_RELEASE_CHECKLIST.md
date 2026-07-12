@@ -26,7 +26,7 @@ JESUP V1 Beta is a **client-demo-ready** digital Extension platform: mobile-firs
 | [PRODUCTION_READINESS_REVIEW.md](./PRODUCTION_READINESS_REVIEW.md) | Go/no-go assessment | **GO WITH CONDITIONS** — deploy `v1.0.0-beta.3` |
 | [PRODUCTION_MIGRATION_PLAN.md](./PRODUCTION_MIGRATION_PLAN.md) | Sprint 9 migration order + verification | Ready for ops |
 | [PRODUCTION_SMOKE_TEST.md](./PRODUCTION_SMOKE_TEST.md) | Post-deploy smoke test | Ready to run |
-| [PRODUCTION_ROLLBACK_PLAN.md](./PRODUCTION_ROLLBACK_PLAN.md) | Incident + rollback procedures | Ready |
+| [PRODUCTION_DEPLOYMENT_REPORT.md](./PRODUCTION_DEPLOYMENT_REPORT.md) | Production deploy execution record | **DEPLOYMENT BLOCKED** — ops input required |
 
 **Deployment decision:** **GO WITH CONDITIONS** — use **`v1.0.0-beta.3`** as production candidate. Deploy after backup, 29 migrations, smoke test, ops sign-off.
 
@@ -44,7 +44,19 @@ JESUP V1 Beta is a **client-demo-ready** digital Extension platform: mobile-firs
 | Sprint 9 demo (13/13) | ✅ |
 | RLS verification (`scripts/sprint9_rls_verify.mjs`) | ✅ 21/21 |
 | Optional FK migration | ⏳ SQL Editor apply pending |
-| `npm run build` | ✅ Pass |
+### Production deployment (July 11, 2026)
+
+| Step | Status |
+|------|--------|
+| Preflight (`769e921`, clean tree, build) | ✅ |
+| Production target confirmed | ❌ Blocked |
+| Database backup | ❌ Not taken |
+| Migrations applied (0/29) | ❌ Not started |
+| Cloudflare deploy | ❌ Not started |
+| Smoke test | ❌ Not run |
+| **Final decision** | **DEPLOYMENT BLOCKED** |
+
+See [PRODUCTION_DEPLOYMENT_REPORT.md](./PRODUCTION_DEPLOYMENT_REPORT.md).
 
 ---
 

@@ -4,7 +4,7 @@
 **Prior tag:** `v1.0.0-beta.2` — superseded  
 **Review date:** July 11, 2026  
 **Scope:** Sprint 9 — Public engagement, attendance, evaluations, demographics, gallery, reporting + post-beta.2 fixes  
-**Tag status:** `v1.0.0-beta.3` pending push
+**Tag status:** `v1.0.0-beta.3` pushed · **Production deploy:** BLOCKED (July 11, 2026)
 
 ---
 
@@ -16,7 +16,8 @@
 | Build (`npm run build`) | ✅ Pass (July 11, 2026, beta.3 RC) |
 | Dev migrations (29 required) | ✅ Applied |
 | Optional FK migration | ⏳ SQL ready; manual apply pending |
-| Production migrations | ⏳ Not applied — manual ops required |
+| Production migrations | ⏳ Blocked — production project not confirmed |
+| Production deployment | ❌ **DEPLOYMENT BLOCKED** — see [PRODUCTION_DEPLOYMENT_REPORT.md](./PRODUCTION_DEPLOYMENT_REPORT.md) |
 | Live demo (13/13 runnable steps) | ✅ Pass — July 11, 2026 |
 | RLS verification (automated) | ✅ Pass — 21/21 |
 | Security (RLS + static audit) | ✅ Sound for beta |
@@ -134,6 +135,22 @@ npm run build — ✅ PASS (July 11, 2026, v1.0.0-beta.3 RC)
 Nitro worker bundle generated successfully
 No SERVICE_ROLE strings in client assets
 ```
+
+---
+
+## Production deployment status (July 11, 2026)
+
+**Decision:** **DEPLOYMENT BLOCKED**
+
+Preflight passed for release candidate `769e921` / `v1.0.0-beta.3`. Deploy not started because:
+
+- Production Supabase project ref is **not confirmed** (connected env = dev `trffktqewlrzziowmspd`)
+- Production URL is **not confirmed** (`jesup.cisc1881.org` / `jesup.cisc.edu` unreachable to automated check)
+- Production database backup **not taken**
+- Incident contacts **not filled**
+- Cloudflare Worker deploy credentials **not available** in agent environment
+
+Full report: [PRODUCTION_DEPLOYMENT_REPORT.md](./PRODUCTION_DEPLOYMENT_REPORT.md)
 
 ---
 
