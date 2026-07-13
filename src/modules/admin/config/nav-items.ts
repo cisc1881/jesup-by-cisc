@@ -80,6 +80,8 @@ export const COMMAND_CENTER_NAV: CommandCenterNavItem[] = [
   { moduleId: "members", to: "/admin/members", label: "Members", icon: UserCircle, group: "community" },
   { moduleId: "organizations", to: "/admin/organizations", label: "Organizations", icon: Building2, group: "community" },
   { moduleId: "counties", to: "/admin/counties", label: "Counties", icon: Map, group: "community" },
+  { moduleId: "counties", to: "/admin/weather/counties", label: "County Emergency Directory", icon: Shield, group: "community" },
+  { moduleId: "notifications", to: "/admin/weather/notifications", label: "Weather Notifications", icon: Bell, group: "community" },
 
   { moduleId: "reports", to: "/admin/reports", label: "Reports", icon: BarChart3, group: "analytics" },
   { moduleId: "reports", to: "/admin/reports/events", label: "Event Reports", icon: FileText, group: "analytics" },

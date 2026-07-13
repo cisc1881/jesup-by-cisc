@@ -9,6 +9,7 @@ import {
   HomeCtaSection,
   HomeHero,
   HomeQuickActionsSection,
+  HomeWeatherSection,
   LatestPublicationsSection,
   NewsHomeSection,
   FarmersMarketsHomeSection,
@@ -87,6 +88,7 @@ function Home() {
       <HomeHero slides={data?.heroSlides ?? []} />
 
       <PageContainer size="lg" className="space-y-[var(--space-10)] pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-[var(--space-12)] sm:pt-[var(--space-8)]">
+        <HomeWeatherSection />
         <HomeQuickActionsSection />
         <FeaturedProgramsSection programs={data?.programs ?? []} meta={sections.programs} isLoading={isLoading} />
         <UpcomingEventsSection events={data?.events ?? []} meta={sections.events} isLoading={isLoading} />

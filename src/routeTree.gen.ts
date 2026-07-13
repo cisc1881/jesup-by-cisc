@@ -38,8 +38,10 @@ import { Route as MarketsIdRouteImport } from './routes/markets.$id'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated/me.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as EventsIdEvaluationRouteImport } from './routes/events.$id.evaluation'
+import { Route as AuthenticatedMeWeatherAlertsRouteImport } from './routes/_authenticated/me.weather-alerts'
 import { Route as AuthenticatedAdminVolunteersRouteImport } from './routes/_authenticated/admin/volunteers'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSurveysRouteImport } from './routes/_authenticated/admin/surveys'
@@ -66,6 +68,8 @@ import { Route as AuthenticatedAdminEquipmentRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminCountiesRouteImport } from './routes/_authenticated/admin/counties'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
+import { Route as AuthenticatedAdminWeatherNotificationsRouteImport } from './routes/_authenticated/admin/weather/notifications'
+import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/_authenticated/admin/weather/counties'
 import { Route as AuthenticatedAdminReportsEventsRouteImport } from './routes/_authenticated/admin/reports.events'
 import { Route as AuthenticatedAdminEventsGalleryRouteImport } from './routes/_authenticated/admin/events.gallery'
 import { Route as AuthenticatedAdmin2fasApplicationsRouteImport } from './routes/_authenticated/admin/2fas/applications'
@@ -217,6 +221,11 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMeIndexRoute = AuthenticatedMeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedMeRoute,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -227,6 +236,12 @@ const EventsIdEvaluationRoute = EventsIdEvaluationRouteImport.update({
   path: '/evaluation',
   getParentRoute: () => EventsIdRoute,
 } as any)
+const AuthenticatedMeWeatherAlertsRoute =
+  AuthenticatedMeWeatherAlertsRouteImport.update({
+    id: '/weather-alerts',
+    path: '/weather-alerts',
+    getParentRoute: () => AuthenticatedMeRoute,
+  } as any)
 const AuthenticatedAdminVolunteersRoute =
   AuthenticatedAdminVolunteersRouteImport.update({
     id: '/volunteers',
@@ -395,6 +410,26 @@ const AuthenticatedAdminActivityRoute =
     path: '/activity',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminWeatherNotificationsRoute =
+  AuthenticatedAdminWeatherNotificationsRouteImport.update({
+    id: '/weather/notifications',
+    path: '/weather/notifications',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/admin/weather/notifications.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedAdminWeatherCountiesRoute =
+  AuthenticatedAdminWeatherCountiesRouteImport.update({
+    id: '/weather/counties',
+    path: '/weather/counties',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/admin/weather/counties.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const AuthenticatedAdminReportsEventsRoute =
   AuthenticatedAdminReportsEventsRouteImport.update({
     id: '/events',
@@ -468,7 +503,7 @@ export interface FileRoutesByFullPath {
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
-  '/me': typeof AuthenticatedMeRoute
+  '/me': typeof AuthenticatedMeRouteWithChildren
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
   '/news/$slug': typeof NewsSlugRoute
@@ -503,11 +538,15 @@ export interface FileRoutesByFullPath {
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/me/': typeof AuthenticatedMeIndexRoute
   '/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
+  '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
+  '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
@@ -531,7 +570,6 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/me': typeof AuthenticatedMeRoute
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
   '/news/$slug': typeof NewsSlugRoute
@@ -566,11 +604,15 @@ export interface FileRoutesByTo {
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/me': typeof AuthenticatedMeIndexRoute
   '/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
+  '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
+  '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
@@ -597,7 +639,7 @@ export interface FileRoutesById {
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
-  '/_authenticated/me': typeof AuthenticatedMeRoute
+  '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
   '/news/$slug': typeof NewsSlugRoute
@@ -632,11 +674,15 @@ export interface FileRoutesById {
   '/_authenticated/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/_authenticated/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
   '/_authenticated/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/_authenticated/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
   '/_authenticated/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
+  '/_authenticated/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
+  '/_authenticated/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
   '/_authenticated/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/_authenticated/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/_authenticated/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
@@ -698,11 +744,15 @@ export interface FileRouteTypes {
     | '/admin/surveys'
     | '/admin/users'
     | '/admin/volunteers'
+    | '/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/admin/'
+    | '/me/'
     | '/admin/2fas/applications'
     | '/admin/events/gallery'
     | '/admin/reports/events'
+    | '/admin/weather/counties'
+    | '/admin/weather/notifications'
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
@@ -726,7 +776,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/surveys'
     | '/unauthorized'
-    | '/me'
     | '/events/$id'
     | '/markets/$id'
     | '/news/$slug'
@@ -761,11 +810,15 @@ export interface FileRouteTypes {
     | '/admin/surveys'
     | '/admin/users'
     | '/admin/volunteers'
+    | '/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/admin'
+    | '/me'
     | '/admin/2fas/applications'
     | '/admin/events/gallery'
     | '/admin/reports/events'
+    | '/admin/weather/counties'
+    | '/admin/weather/notifications'
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
@@ -826,11 +879,15 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/surveys'
     | '/_authenticated/admin/users'
     | '/_authenticated/admin/volunteers'
+    | '/_authenticated/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/_authenticated/admin/'
+    | '/_authenticated/me/'
     | '/_authenticated/admin/2fas/applications'
     | '/_authenticated/admin/events/gallery'
     | '/_authenticated/admin/reports/events'
+    | '/_authenticated/admin/weather/counties'
+    | '/_authenticated/admin/weather/notifications'
     | '/_authenticated/admin/events/$eventId/attendance'
     | '/_authenticated/admin/events/$eventId/evaluations'
     | '/_authenticated/admin/events/$eventId/gallery'
@@ -1065,6 +1122,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/me/': {
+      id: '/_authenticated/me/'
+      path: '/'
+      fullPath: '/me/'
+      preLoaderRoute: typeof AuthenticatedMeIndexRouteImport
+      parentRoute: typeof AuthenticatedMeRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -1078,6 +1142,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/events/$id/evaluation'
       preLoaderRoute: typeof EventsIdEvaluationRouteImport
       parentRoute: typeof EventsIdRoute
+    }
+    '/_authenticated/me/weather-alerts': {
+      id: '/_authenticated/me/weather-alerts'
+      path: '/weather-alerts'
+      fullPath: '/me/weather-alerts'
+      preLoaderRoute: typeof AuthenticatedMeWeatherAlertsRouteImport
+      parentRoute: typeof AuthenticatedMeRoute
     }
     '/_authenticated/admin/volunteers': {
       id: '/_authenticated/admin/volunteers'
@@ -1261,6 +1332,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/weather/notifications': {
+      id: '/_authenticated/admin/weather/notifications'
+      path: '/weather/notifications'
+      fullPath: '/admin/weather/notifications'
+      preLoaderRoute: typeof AuthenticatedAdminWeatherNotificationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/weather/counties': {
+      id: '/_authenticated/admin/weather/counties'
+      path: '/weather/counties'
+      fullPath: '/admin/weather/counties'
+      preLoaderRoute: typeof AuthenticatedAdminWeatherCountiesRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/reports/events': {
       id: '/_authenticated/admin/reports/events'
       path: '/events'
@@ -1372,6 +1457,8 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminVolunteersRoute: typeof AuthenticatedAdminVolunteersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdmin2fasApplicationsRoute: typeof AuthenticatedAdmin2fasApplicationsRoute
+  AuthenticatedAdminWeatherCountiesRoute: typeof AuthenticatedAdminWeatherCountiesRoute
+  AuthenticatedAdminWeatherNotificationsRoute: typeof AuthenticatedAdminWeatherNotificationsRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
@@ -1405,6 +1492,10 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
     AuthenticatedAdmin2fasApplicationsRoute:
       AuthenticatedAdmin2fasApplicationsRoute,
+    AuthenticatedAdminWeatherCountiesRoute:
+      AuthenticatedAdminWeatherCountiesRoute,
+    AuthenticatedAdminWeatherNotificationsRoute:
+      AuthenticatedAdminWeatherNotificationsRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =
@@ -1412,14 +1503,28 @@ const AuthenticatedAdminRouteRouteWithChildren =
     AuthenticatedAdminRouteRouteChildren,
   )
 
+interface AuthenticatedMeRouteChildren {
+  AuthenticatedMeWeatherAlertsRoute: typeof AuthenticatedMeWeatherAlertsRoute
+  AuthenticatedMeIndexRoute: typeof AuthenticatedMeIndexRoute
+}
+
+const AuthenticatedMeRouteChildren: AuthenticatedMeRouteChildren = {
+  AuthenticatedMeWeatherAlertsRoute: AuthenticatedMeWeatherAlertsRoute,
+  AuthenticatedMeIndexRoute: AuthenticatedMeIndexRoute,
+}
+
+const AuthenticatedMeRouteWithChildren = AuthenticatedMeRoute._addFileChildren(
+  AuthenticatedMeRouteChildren,
+)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
-  AuthenticatedMeRoute: typeof AuthenticatedMeRoute
+  AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
-  AuthenticatedMeRoute: AuthenticatedMeRoute,
+  AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

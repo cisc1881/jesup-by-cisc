@@ -112,11 +112,15 @@ Participant files in `event-images/submissions/` persist after app rollback. Mod
 
 | Role | Name | Email | Phone |
 |------|------|-------|-------|
-| Incident commander | | | |
+| **Incident commander** | Maurice Antoine | info@accessfarmtotable.com | |
+| **Primary contact** | Maurice Antoine | info@accessfarmtotable.com | |
+| **Backup contact** | Mo Antoine | mantoine@tuskegee.edu | |
 | Technical lead | | | |
 | Supabase / DBA | | | |
 | Cloudflare / hosting | | | |
 | CISC product owner | | | |
+
+**Filled:** July 11, 2026 — Incident commander, primary, and backup contacts assigned.
 
 ---
 

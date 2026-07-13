@@ -21,6 +21,14 @@ export function createAppQueryClient() {
 }
 
 export const HOME_PAGE_QUERY_KEY = ["home-page"] as const;
+
+export const WEATHER_CENTER_QUERY_KEY = ["weather-center"] as const;
+
+export function weatherCenterQueryKey(lat: number, lon: number) {
+  return [...WEATHER_CENTER_QUERY_KEY, lat.toFixed(4), lon.toFixed(4)] as const;
+}
+
+export const WEATHER_GEOCODE_QUERY_KEY = ["weather-geocode"] as const;
 export const UNIVERSAL_SEARCH_QUERY_KEY = ["universal-search"] as const;
 
 export function universalSearchQueryKey(query: string) {
