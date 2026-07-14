@@ -5,7 +5,6 @@ import type {
   WeatherAlertDeliveryStatus,
   WeatherNotificationPreferences,
 } from "./types";
-import { sendWebPushToSubscription } from "./web-push";
 import { buildAlertPushPayload, buildDevelopmentServerTestPayload } from "./push-payload";
 import {
   classifyPushStatusCode,
@@ -128,6 +127,10 @@ export async function deliverAlertToUserDevices(
   alert: MappedNwsAlertForDelivery,
   options?: { test?: boolean },
 ): Promise<MultiDeviceDeliveryResult> {
+  // `web-push` depends on Node crypto. Keep it out of the application's eager
+  // SSR module graph so Cloudflare can start and render public pages. The
+  // implementation is loaded only when a server-side delivery is requested.
+  const { sendWebPushToSubscription } = await import("./web-push");
   const subscriptions = await listActiveSubscriptionsForUser(db, userId);
   if (subscriptions.length === 0) {
     await recordProcessedAlertForUser(db, userId, alert, "failed", {
