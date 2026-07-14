@@ -13,7 +13,6 @@ REVOKE ALL ON FUNCTION public.trg_notify_equipment_request() FROM PUBLIC, anon, 
 REVOKE ALL ON FUNCTION public.enforce_event_capacity() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.trg_notify_publication_added() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.trg_notify_grant_deadline() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.enforce_equipment_availability() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.trg_notify_event_registration() FROM PUBLIC, anon, authenticated;
 
 -- Internal helper SECURITY DEFINER functions (not intended for direct RPC calls)
@@ -37,7 +36,6 @@ GRANT ALL ON FUNCTION public.trg_notify_equipment_request() TO service_role;
 GRANT ALL ON FUNCTION public.enforce_event_capacity() TO service_role;
 GRANT ALL ON FUNCTION public.trg_notify_publication_added() TO service_role;
 GRANT ALL ON FUNCTION public.trg_notify_grant_deadline() TO service_role;
-GRANT ALL ON FUNCTION public.enforce_equipment_availability() TO service_role;
 GRANT ALL ON FUNCTION public.trg_notify_event_registration() TO service_role;
 GRANT ALL ON FUNCTION public.create_admin_notification(public.notification_type, text, text, text, public.notification_priority, text, uuid) TO service_role;
 GRANT ALL ON FUNCTION public.event_demographic_rows(uuid) TO service_role;
