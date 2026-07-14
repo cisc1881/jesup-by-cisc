@@ -323,6 +323,7 @@ function JoinPage() {
                 <div className="space-y-2">
                   <Label htmlFor="inquiryType">Inquiry type *</Label>
                   <Select
+                    name="inquiryType"
                     value={form.inquiryType}
                     onValueChange={(v) => setField("inquiryType", v as InquiryType)}
                   >
@@ -354,6 +355,7 @@ function JoinPage() {
                   <div className="space-y-2">
                     <Label htmlFor="programId">Program of interest</Label>
                     <Select
+                      name="programId"
                       value={form.programId || "none"}
                       onValueChange={(v) => setField("programId", v === "none" ? "" : v)}
                     >
@@ -444,6 +446,7 @@ function JoinPage() {
                 <div className="space-y-2">
                   <Label htmlFor="preferredContact">Preferred contact method</Label>
                   <Select
+                    name="preferredContact"
                     value={form.preferredContact}
                     onValueChange={(v) => setField("preferredContact", v as PreferredContactMethod)}
                   >
@@ -491,6 +494,7 @@ function JoinPage() {
                   <div className="space-y-2">
                     <Label htmlFor="state">State</Label>
                     <Select
+                      name="state"
                       value={form.state || "none"}
                       onValueChange={(v) => setField("state", v === "none" ? "" : v)}
                     >
@@ -534,6 +538,7 @@ function JoinPage() {
                 <div className="flex items-start gap-3">
                   <Checkbox
                     id="consentContact"
+                    name="consentContact"
                     checked={form.consentContact}
                     onCheckedChange={(checked) => setField("consentContact", checked === true)}
                     aria-invalid={!!errors.consentContact}
@@ -551,6 +556,7 @@ function JoinPage() {
                 <div className="flex items-start gap-3">
                   <Checkbox
                     id="newsletterOptIn"
+                    name="newsletterOptIn"
                     checked={form.newsletterOptIn}
                     onCheckedChange={(checked) => setField("newsletterOptIn", checked === true)}
                   />

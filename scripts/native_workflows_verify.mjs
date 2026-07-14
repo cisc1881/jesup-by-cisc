@@ -18,6 +18,7 @@ function loadEnv() {
     ) {
       value = value.slice(1, -1);
     }
+    value = value.trim();
     if (!process.env[key]) process.env[key] = value;
   }
 }
