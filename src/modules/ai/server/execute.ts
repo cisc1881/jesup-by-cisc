@@ -12,6 +12,7 @@ export type ExecuteJESUPRequest = {
   config: AiProviderConfig;
   search?: AiSearch;
   client?: AiProviderClient;
+  timeoutMs?: number;
 };
 
 export type ExecuteJESUPResult = AiCompletionResult & { context: AiRagContext };
@@ -28,11 +29,14 @@ export async function executeJESUPRequest(input: ExecuteJESUPRequest): Promise<E
     sourceCount: context.sources.length,
   });
   const startedAt = Date.now();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), input.timeoutMs ?? 20_000);
 
   try {
     const result = await client.complete({
       systemPrompt: `${JESUP_SYSTEM_PROMPT}\n\nJESUP CONTEXT:\n${context.promptContext}`,
       messages: [{ role: "user", content: context.query }],
+      signal: controller.signal,
     });
     await completeAiInteraction(input.db, interactionId, result, Date.now() - startedAt);
     return { ...result, context };
@@ -40,5 +44,7 @@ export async function executeJESUPRequest(input: ExecuteJESUPRequest): Promise<E
     const errorCode = error instanceof Error ? error.name : "UnknownAiError";
     await failAiInteraction(input.db, interactionId, errorCode, Date.now() - startedAt);
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
 }

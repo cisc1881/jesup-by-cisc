@@ -6,6 +6,7 @@ export type AiCompletionRequest = {
   messages: AiMessage[];
   maxTokens?: number;
   temperature?: number;
+  signal?: AbortSignal;
 };
 export type AiCompletionResult = {
   content: string;
@@ -28,6 +29,7 @@ function createOpenAiClient(config: AiProviderConfig): AiProviderClient {
     async complete(request) {
       const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
+        signal: request.signal,
         headers: { Authorization: `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           model: config.model,
@@ -66,6 +68,7 @@ function createAnthropicClient(config: AiProviderConfig): AiProviderClient {
     async complete(request) {
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
+        signal: request.signal,
         headers: {
           "x-api-key": config.apiKey,
           "anthropic-version": "2023-06-01",

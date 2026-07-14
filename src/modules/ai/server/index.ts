@@ -13,6 +13,12 @@ export {
   type AiProviderClient,
 } from "./proxy";
 export { executeJESUPRequest, type ExecuteJESUPRequest, type ExecuteJESUPResult } from "./execute";
+export { askJESUPServerFn } from "./server-fn";
+export {
+  loadAiProviderConfig,
+  validateAiRuntimeSettings,
+  type AiRuntimeSettings,
+} from "./settings";
 export {
   normalizeQuestion,
   retrieveJESUPContext,

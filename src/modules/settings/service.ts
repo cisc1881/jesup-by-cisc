@@ -31,7 +31,7 @@ export type QualtricsSettings = {
 
 export type AiSettings = {
   enabled: boolean;
-  provider: string | null;
+  provider: "openai" | "anthropic" | null;
 };
 
 export type EmailSettings = {
@@ -80,7 +80,7 @@ export async function fetchPlatformSettings(): Promise<PlatformSettings> {
     const key = row.key as PlatformSettingKey;
     if (key in settings) {
       (settings as Record<string, unknown>)[key] = {
-        ...(settings as Record<string, unknown>)[key] as object,
+        ...((settings as Record<string, unknown>)[key] as object),
         ...(row.value as object),
       };
     }
@@ -92,17 +92,35 @@ export async function savePlatformSetting<K extends PlatformSettingKey>(
   key: K,
   value: PlatformSettings[K],
 ) {
-  const { error } = await supabase
-    .from("platform_settings")
-    .upsert({ key, value: value as unknown as Record<string, unknown>, updated_at: new Date().toISOString() });
+  const { error } = await supabase.from("platform_settings").upsert({
+    key,
+    value: value as unknown as Record<string, unknown>,
+    updated_at: new Date().toISOString(),
+  });
   if (error) throw error;
 }
 
 export const SETTINGS_SECTIONS = [
-  { key: "organization" as const, label: "Organization Profile", description: "CISC and Tuskegee University identity" },
-  { key: "brand" as const, label: "Brand Assets", description: "Colors, logos, and visual identity" },
-  { key: "homepage" as const, label: "Homepage", description: "Hero, sections, and featured content" },
-  { key: "navigation" as const, label: "Navigation", description: "Public site navigation and menus" },
+  {
+    key: "organization" as const,
+    label: "Organization Profile",
+    description: "CISC and Tuskegee University identity",
+  },
+  {
+    key: "brand" as const,
+    label: "Brand Assets",
+    description: "Colors, logos, and visual identity",
+  },
+  {
+    key: "homepage" as const,
+    label: "Homepage",
+    description: "Hero, sections, and featured content",
+  },
+  {
+    key: "navigation" as const,
+    label: "Navigation",
+    description: "Public site navigation and menus",
+  },
   { key: "maps" as const, label: "Google Maps", description: "Map provider and API configuration" },
   { key: "qualtrics" as const, label: "Qualtrics", description: "Survey integration settings" },
   { key: "ai" as const, label: "AI", description: "AI services and provider configuration" },
