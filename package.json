@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "verify:native-workflows": "node scripts/native_workflows_verify.mjs",
     "generate:vapid-keys": "node scripts/generate-vapid-keys.mjs",
     "poll:weather-alerts": "tsx --env-file=.env scripts/run-weather-alert-poll.ts"
   },
