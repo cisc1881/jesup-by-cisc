@@ -9,7 +9,7 @@ export const JESUP_DEFAULT_SOCIAL_IMAGE = "/social/jesup-social-share.png";
 /** Public site origin for canonical URLs and JSON-LD. Override with VITE_SITE_URL in production. */
 export const JESUP_SITE_URL =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_SITE_URL) ||
-  "https://jesup.cisc.edu";
+  "https://jesup.cisc1881.org";
 
 export type PageSeoInput = {
   title: string;
