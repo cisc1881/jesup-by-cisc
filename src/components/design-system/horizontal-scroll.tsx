@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type HorizontalScrollProps = {
@@ -15,16 +15,22 @@ const gaps = {
 };
 
 export function HorizontalScroll({ children, className, gap = "md", "aria-label": ariaLabel }: HorizontalScrollProps) {
+  const itemCount = Children.count(children);
+  const canScroll = itemCount > 1;
+
   return (
     <div
       role="region"
       aria-label={ariaLabel}
       className={cn(
-        "-mx-[var(--page-px)] flex snap-x snap-mandatory overflow-x-auto px-[var(--page-px)] pb-1",
-        "scrollbar-none [&::-webkit-scrollbar]:hidden",
+        "flex pb-1",
+        canScroll
+          ? "-mx-[var(--page-px)] snap-x snap-mandatory overflow-x-auto overscroll-x-contain px-[var(--page-px)] scrollbar-none [&::-webkit-scrollbar]:hidden"
+          : "max-w-full touch-pan-y overflow-x-hidden",
         gaps[gap],
         className,
       )}
+      data-scrollable={canScroll ? "true" : "false"}
     >
       {children}
     </div>

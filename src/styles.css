@@ -193,12 +193,14 @@
   * { border-color: var(--color-border); }
   html {
     overflow-x: clip;
+    overscroll-behavior-x: none;
     font-size: calc(100% * var(--user-text-scale, 1));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   body {
     overflow-x: clip;
+    overscroll-behavior-x: none;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
