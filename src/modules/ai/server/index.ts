@@ -34,3 +34,4 @@ export {
   type AiSearch,
 } from "./rag";
 export { generateFactsheetDraft, parseFactsheetDraft, type FactsheetDraft } from "./factsheet";
+export { generateSurveySummary, parseSurveySummary, type SurveySummary } from "./survey-summary";
