@@ -35,19 +35,6 @@ export function PublicNav() {
           />
         </Link>
 
-        <nav className="ml-2 hidden items-center gap-0.5 md:flex">
-          {desktopNavLinks.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className="rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
-              activeProps={{ className: "text-primary bg-secondary" }}
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-
         <div className="ml-auto flex items-center gap-2">
           <Button
             asChild
@@ -112,6 +99,48 @@ export function PublicNav() {
             </Button>
           )}
         </div>
+      </div>
+      <div className="hidden border-t border-border/50 bg-card/90 md:block">
+        <nav
+          className="mx-auto flex h-12 max-w-7xl items-center gap-1 overflow-x-auto px-4 sm:px-6"
+          aria-label="Main navigation"
+        >
+          <Link
+            to="/"
+            className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
+            activeOptions={{ exact: true }}
+            activeProps={{ className: "bg-secondary text-primary" }}
+          >
+            Home
+          </Link>
+          {desktopNavLinks.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
+              activeProps={{ className: "bg-secondary text-primary" }}
+            >
+              {l.label}
+            </Link>
+          ))}
+          {user && (
+            <Link
+              to="/me"
+              className="ml-auto shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
+              activeProps={{ className: "bg-secondary text-primary" }}
+            >
+              My Profile
+            </Link>
+          )}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="shrink-0 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground transition hover:bg-primary/90"
+            >
+              Admin
+            </Link>
+          )}
+        </nav>
       </div>
     </header>
   );
