@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import type { EventDetail } from "@/lib/events";
 import { registerForEvent } from "@/lib/events";
+import { triggerEmailDelivery } from "@/lib/email-delivery";
 import { downloadEventIcs, googleMapsDirectionsUrl, shareEvent } from "@/lib/event-calendar";
 import { useAuth } from "@/hooks/use-auth";
 import { AppButton, AppCard } from "@/components/design-system";
@@ -61,6 +62,7 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     setBusy(true);
     try {
       const result = await registerForEvent(event.id, user.id, notes, inviteCode);
+      triggerEmailDelivery();
       toast.success(
         result.status === "waiting_list" ? "Added to waiting list" : "You're registered!",
       );

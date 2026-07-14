@@ -12,6 +12,7 @@ import {
 } from "@/components/institutions";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile } from "@/lib/profile";
+import { triggerEmailDelivery } from "@/lib/email-delivery";
 import {
   listInstitutions,
   resolveInstitutionFields,
@@ -136,6 +137,7 @@ export function InternshipApplicationForm({
               }
             : {},
       });
+      triggerEmailDelivery();
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["my-apps", user.id] }),

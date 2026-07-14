@@ -34,6 +34,7 @@ import {
   type InquiryType,
   type PreferredContactMethod,
 } from "@/lib/inquiries";
+import { triggerEmailDelivery } from "@/lib/email-delivery";
 import { MY_INQUIRIES_QUERY_KEY } from "@/lib/query-config";
 import { listPageHead } from "@/lib/seo";
 import { toast } from "sonner";
@@ -218,6 +219,7 @@ function JoinPage() {
         newsletterOptIn: form.newsletterOptIn,
         userId: user?.id ?? null,
       });
+      triggerEmailDelivery();
       setReferenceId(id);
       setForm(initialForm);
       if (user?.id) {
