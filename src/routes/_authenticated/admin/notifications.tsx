@@ -16,7 +16,9 @@ import { fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/admin/notifications")({ component: AdminNotifications });
+export const Route = createFileRoute("/_authenticated/admin/notifications")({
+  component: AdminNotifications,
+});
 
 type FilterMode = "all" | "unread";
 
@@ -94,11 +96,16 @@ function AdminNotifications() {
         title="Notification Center"
         description="In-app alerts for Command Center activity. Email, SMS, and push delivery coming later."
         actions={
-          unreadCount > 0 ? (
-            <Button variant="outline" size="sm" onClick={() => void handleMarkAllRead()}>
-              Mark all as read
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/admin/email-deliveries">Email delivery</Link>
             </Button>
-          ) : undefined
+            {unreadCount > 0 && (
+              <Button variant="outline" size="sm" onClick={() => void handleMarkAllRead()}>
+                Mark all as read
+              </Button>
+            )}
+          </div>
         }
       />
 
@@ -136,7 +143,9 @@ function AdminNotifications() {
               <button
                 type="button"
                 className="min-w-0 flex-1 text-left"
-                onClick={() => openNotification(n.actionUrl, n.notificationType, n.id, n.isRead, n.entityId)}
+                onClick={() =>
+                  openNotification(n.actionUrl, n.notificationType, n.id, n.isRead, n.entityId)
+                }
               >
                 <div className="flex flex-wrap items-center gap-2">
                   {!n.isRead && <span className="h-2 w-2 rounded-full bg-primary" />}
@@ -146,7 +155,10 @@ function AdminNotifications() {
                       {NOTIFICATION_TYPE_LABELS[n.notificationType]}
                     </Badge>
                   )}
-                  <Badge variant={PRIORITY_VARIANT[n.priority] ?? "secondary"} className="text-[10px] uppercase">
+                  <Badge
+                    variant={PRIORITY_VARIANT[n.priority] ?? "secondary"}
+                    className="text-[10px] uppercase"
+                  >
                     {n.priority}
                   </Badge>
                 </div>
@@ -161,7 +173,10 @@ function AdminNotifications() {
                 )}
                 <Button variant="ghost" size="sm" asChild>
                   <Link
-                    to={n.actionUrl ?? (n.notificationType ? DEFAULT_ACTION_URLS[n.notificationType] : "/admin")}
+                    to={
+                      n.actionUrl ??
+                      (n.notificationType ? DEFAULT_ACTION_URLS[n.notificationType] : "/admin")
+                    }
                   >
                     Open
                   </Link>

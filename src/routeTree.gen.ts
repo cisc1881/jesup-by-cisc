@@ -67,6 +67,7 @@ import { Route as AuthenticatedAdminInquiriesRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminGrantsRouteImport } from './routes/_authenticated/admin/grants'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin/events'
 import { Route as AuthenticatedAdminEquipmentRouteImport } from './routes/_authenticated/admin/equipment'
+import { Route as AuthenticatedAdminEmailDeliveriesRouteImport } from './routes/_authenticated/admin/email-deliveries'
 import { Route as AuthenticatedAdminCountiesRouteImport } from './routes/_authenticated/admin/counties'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
@@ -405,6 +406,12 @@ const AuthenticatedAdminEquipmentRoute =
     path: '/equipment',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminEmailDeliveriesRoute =
+  AuthenticatedAdminEmailDeliveriesRouteImport.update({
+    id: '/email-deliveries',
+    path: '/email-deliveries',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminCountiesRoute =
   AuthenticatedAdminCountiesRouteImport.update({
     id: '/counties',
@@ -529,6 +536,7 @@ export interface FileRoutesByFullPath {
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
+  '/admin/email-deliveries': typeof AuthenticatedAdminEmailDeliveriesRoute
   '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/admin/events': typeof AuthenticatedAdminEventsRouteWithChildren
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
@@ -597,6 +605,7 @@ export interface FileRoutesByTo {
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
+  '/admin/email-deliveries': typeof AuthenticatedAdminEmailDeliveriesRoute
   '/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/admin/events': typeof AuthenticatedAdminEventsRouteWithChildren
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
@@ -669,6 +678,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/counties': typeof AuthenticatedAdminCountiesRoute
+  '/_authenticated/admin/email-deliveries': typeof AuthenticatedAdminEmailDeliveriesRoute
   '/_authenticated/admin/equipment': typeof AuthenticatedAdminEquipmentRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRouteWithChildren
   '/_authenticated/admin/grants': typeof AuthenticatedAdminGrantsRoute
@@ -741,6 +751,7 @@ export interface FileRouteTypes {
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
+    | '/admin/email-deliveries'
     | '/admin/equipment'
     | '/admin/events'
     | '/admin/grants'
@@ -809,6 +820,7 @@ export interface FileRouteTypes {
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
+    | '/admin/email-deliveries'
     | '/admin/equipment'
     | '/admin/events'
     | '/admin/grants'
@@ -880,6 +892,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/activity'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/counties'
+    | '/_authenticated/admin/email-deliveries'
     | '/_authenticated/admin/equipment'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/grants'
@@ -1350,6 +1363,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEquipmentRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/email-deliveries': {
+      id: '/_authenticated/admin/email-deliveries'
+      path: '/email-deliveries'
+      fullPath: '/admin/email-deliveries'
+      preLoaderRoute: typeof AuthenticatedAdminEmailDeliveriesRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/counties': {
       id: '/_authenticated/admin/counties'
       path: '/counties'
@@ -1471,6 +1491,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminActivityRoute: typeof AuthenticatedAdminActivityRoute
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminCountiesRoute: typeof AuthenticatedAdminCountiesRoute
+  AuthenticatedAdminEmailDeliveriesRoute: typeof AuthenticatedAdminEmailDeliveriesRoute
   AuthenticatedAdminEquipmentRoute: typeof AuthenticatedAdminEquipmentRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRouteWithChildren
   AuthenticatedAdminGrantsRoute: typeof AuthenticatedAdminGrantsRoute
@@ -1505,6 +1526,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminActivityRoute: AuthenticatedAdminActivityRoute,
     AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
     AuthenticatedAdminCountiesRoute: AuthenticatedAdminCountiesRoute,
+    AuthenticatedAdminEmailDeliveriesRoute:
+      AuthenticatedAdminEmailDeliveriesRoute,
     AuthenticatedAdminEquipmentRoute: AuthenticatedAdminEquipmentRoute,
     AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRouteWithChildren,
     AuthenticatedAdminGrantsRoute: AuthenticatedAdminGrantsRoute,

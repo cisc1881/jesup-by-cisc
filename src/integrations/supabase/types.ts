@@ -226,6 +226,65 @@ export type Database = {
         }
         Relationships: []
       }
+      email_deliveries: {
+        Row: {
+          action_url: string | null
+          attempts: number
+          body: string
+          created_at: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          notification_id: string | null
+          provider_message_id: string | null
+          recipient: string
+          sent_at: string | null
+          status: Database["public"]["Enums"]["email_delivery_status"]
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          action_url?: string | null
+          attempts?: number
+          body: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          notification_id?: string | null
+          provider_message_id?: string | null
+          recipient: string
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["email_delivery_status"]
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          action_url?: string | null
+          attempts?: number
+          body?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          notification_id?: string | null
+          provider_message_id?: string | null
+          recipient?: string
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["email_delivery_status"]
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_deliveries_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       equipment_checkouts: {
         Row: {
           checkout_date: string
@@ -3933,6 +3992,10 @@ export type Database = {
       }
     }
     Functions: {
+      claim_email_deliveries: {
+        Args: { p_limit?: number }
+        Returns: Database["public"]["Tables"]["email_deliveries"]["Row"][]
+      }
       create_admin_notification: {
         Args: {
           p_action_url?: string
@@ -4179,6 +4242,7 @@ export type Database = {
       }
     }
     Enums: {
+      email_delivery_status: "pending" | "processing" | "sent" | "failed"
       academic_level:
         | "high_school"
         | "undergraduate"
@@ -4423,6 +4487,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      email_delivery_status: ["pending", "processing", "sent", "failed"],
       academic_level: [
         "high_school",
         "undergraduate",
