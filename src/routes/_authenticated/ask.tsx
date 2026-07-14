@@ -50,15 +50,25 @@ function AskJESUPPage() {
         content: message.content.slice(0, message.role === "user" ? 240 : 2_000),
       }));
       const result = await askJESUPServerFn({ data: { question: normalized, history } });
+      const assistantId = crypto.randomUUID();
       setMessages((current) => [
         ...current,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: result.answer,
-          sources: result.sources,
-        },
+        { id: assistantId, role: "assistant", content: "", sources: result.sources },
       ]);
+      const reader = result.stream.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value: chunk } = await reader.read();
+        if (done) break;
+        const text = decoder.decode(chunk, { stream: true });
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId
+              ? { ...message, content: `${message.content}${text}` }
+              : message,
+          ),
+        );
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Ask JESUP could not answer right now.");
     } finally {

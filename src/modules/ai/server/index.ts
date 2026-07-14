@@ -15,8 +15,10 @@ export {
 export {
   buildConversationMessages,
   executeJESUPRequest,
+  executeJESUPStream,
   type ExecuteJESUPRequest,
   type ExecuteJESUPResult,
+  type ExecuteJESUPStreamResult,
 } from "./execute";
 export {
   loadAiProviderConfig,

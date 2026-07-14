@@ -18,7 +18,15 @@ export type AiCompletionResult = {
 
 export interface AiProviderClient {
   complete(request: AiCompletionRequest): Promise<AiCompletionResult>;
+  stream(request: AiCompletionRequest): Promise<AiCompletionStream>;
 }
+
+export type AiCompletionStream = {
+  stream: ReadableStream<Uint8Array>;
+  provider: AiProviderConfig["provider"];
+  model: string;
+  requestId: string | null;
+};
 
 export function createAiProviderClient(config: AiProviderConfig): AiProviderClient {
   return config.provider === "openai" ? createOpenAiClient(config) : createAnthropicClient(config);
@@ -58,6 +66,34 @@ function createOpenAiClient(config: AiProviderConfig): AiProviderClient {
           inputTokens: asNullableNumber(usage.input_tokens),
           outputTokens: asNullableNumber(usage.output_tokens),
         },
+      };
+    },
+    async stream(request) {
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        signal: request.signal,
+        headers: { Authorization: `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: config.model,
+          instructions: request.systemPrompt,
+          input: request.messages,
+          max_output_tokens: request.maxTokens ?? config.maxTokens,
+          temperature: request.temperature ?? config.temperature,
+          stream: true,
+        }),
+      });
+      if (!response.ok) {
+        const body = (await response.json()) as Record<string, unknown>;
+        throw providerError("openai", response.status, body);
+      }
+      if (!response.body) throw new Error("OpenAI returned an empty stream.");
+      return {
+        stream: extractSseText(response.body, (event) =>
+          event.type === "response.output_text.delta" ? String(event.delta ?? "") : "",
+        ),
+        provider: "openai",
+        model: config.model,
+        requestId: response.headers.get("x-request-id"),
       };
     },
   };
@@ -102,7 +138,92 @@ function createAnthropicClient(config: AiProviderConfig): AiProviderClient {
         },
       };
     },
+    async stream(request) {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        signal: request.signal,
+        headers: {
+          "x-api-key": config.apiKey,
+          "anthropic-version": "2023-06-01",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: config.model,
+          system: request.systemPrompt,
+          messages: request.messages,
+          max_tokens: request.maxTokens ?? config.maxTokens,
+          temperature: request.temperature ?? config.temperature,
+          stream: true,
+        }),
+      });
+      if (!response.ok) {
+        const body = (await response.json()) as Record<string, unknown>;
+        throw providerError("anthropic", response.status, body);
+      }
+      if (!response.body) throw new Error("Anthropic returned an empty stream.");
+      return {
+        stream: extractSseText(response.body, (event) => {
+          const delta = asRecord(event.delta);
+          return event.type === "content_block_delta" && delta.type === "text_delta"
+            ? String(delta.text ?? "")
+            : "";
+        }),
+        provider: "anthropic",
+        model: config.model,
+        requestId: response.headers.get("request-id"),
+      };
+    },
   };
+}
+
+export function extractSseText(
+  input: ReadableStream<Uint8Array>,
+  selectText: (event: Record<string, unknown>) => string,
+): ReadableStream<Uint8Array> {
+  const reader = input.getReader();
+  const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
+  let buffer = "";
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      while (true) {
+        const boundary = buffer.indexOf("\n\n");
+        if (boundary >= 0) {
+          const block = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          const data = block
+            .split("\n")
+            .filter((line) => line.startsWith("data:"))
+            .map((line) => line.slice(5).trimStart())
+            .join("\n");
+          if (!data || data === "[DONE]") continue;
+          try {
+            const text = selectText(JSON.parse(data) as Record<string, unknown>);
+            if (text) {
+              controller.enqueue(encoder.encode(text));
+              return;
+            }
+          } catch {
+            // Ignore malformed provider events and continue reading.
+          }
+          continue;
+        }
+
+        const { done, value } = await reader.read();
+        if (done) {
+          buffer += decoder.decode();
+          controller.close();
+          return;
+        }
+        buffer += decoder.decode(value, { stream: true });
+        buffer = buffer.replace(/\r\n/g, "\n");
+      }
+    },
+    cancel(reason) {
+      return reader.cancel(reason);
+    },
+  });
 }
 
 function asRecord(value: unknown): Record<string, unknown> {

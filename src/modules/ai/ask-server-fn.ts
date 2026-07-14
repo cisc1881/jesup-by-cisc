@@ -33,14 +33,15 @@ export const askJESUPServerFn = createServerFn({ method: "POST" })
       );
     }
 
-    const [{ supabaseAdmin }, { loadAiProviderConfig }, { executeJESUPRequest }] =
-      await Promise.all([
+    const [{ supabaseAdmin }, { loadAiProviderConfig }, { executeJESUPStream }] = await Promise.all(
+      [
         import("@/integrations/supabase/client.server"),
         import("./server/settings"),
         import("./server/execute"),
-      ]);
+      ],
+    );
     const config = await loadAiProviderConfig(supabaseAdmin);
-    const result = await executeJESUPRequest({
+    const result = await executeJESUPStream({
       db: supabaseAdmin,
       userId: context.userId,
       question: data.question,
@@ -56,5 +57,5 @@ export const askJESUPServerFn = createServerFn({ method: "POST" })
       );
     });
 
-    return { answer: result.content, sources: result.context.sources };
+    return { stream: result.stream, sources: result.context.sources };
   });
