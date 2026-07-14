@@ -62,7 +62,10 @@ import {
   Printer,
   RefreshCw,
   Save,
+  Sparkles,
 } from "lucide-react";
+import { buildImpactReportContext } from "@/modules/ai/impact-report-context";
+import { generateImpactReportServerFn } from "@/modules/ai/impact-report-server-fn";
 
 export const Route = createFileRoute("/_authenticated/admin/reports/events")({
   component: AdminEventReportsPage,
@@ -76,6 +79,7 @@ function AdminEventReportsPage() {
   const [narrative, setNarrative] = useState<ReportNarrativeFields>(EMPTY_NARRATIVE_FIELDS);
   const [activeSnapshotId, setActiveSnapshotId] = useState<string | null>(null);
   const [multiSelect, setMultiSelect] = useState<string[]>([]);
+  const [isGeneratingNarrative, setIsGeneratingNarrative] = useState(false);
 
   const { data: options } = useQuery({
     queryKey: ["report-filter-options"],
@@ -114,8 +118,7 @@ function AdminEventReportsPage() {
     isFetching,
   } = useQuery({
     queryKey: reportFiltersQueryKey(queryFilters),
-    queryFn: () =>
-      buildEventReportPreview(queryFilters, narrative, activeSnapshot ?? undefined),
+    queryFn: () => buildEventReportPreview(queryFilters, narrative, activeSnapshot ?? undefined),
     enabled:
       (effectiveEventIds.length > 0 || !!filters.dateFrom || !!filters.programId) &&
       !(activeSnapshot?.status === "final" && activeSnapshot.metricsSnapshot),
@@ -125,7 +128,11 @@ function AdminEventReportsPage() {
     activeSnapshot?.status === "final" && activeSnapshot.metricsSnapshot
       ? {
           ...activeSnapshot.metricsSnapshot,
-          narrativeFields: { ...EMPTY_NARRATIVE_FIELDS, ...activeSnapshot.narrativeFields, ...narrative },
+          narrativeFields: {
+            ...EMPTY_NARRATIVE_FIELDS,
+            ...activeSnapshot.narrativeFields,
+            ...narrative,
+          },
           snapshotId: activeSnapshot.id,
           snapshotStatus: activeSnapshot.status,
           isFrozenSnapshot: true,
@@ -206,6 +213,22 @@ function AdminEventReportsPage() {
     toast.success("Draft loaded");
   }
 
+  async function generateNarrative() {
+    if (!report || report.isFrozenSnapshot) return;
+    setIsGeneratingNarrative(true);
+    try {
+      const generated = await generateImpactReportServerFn({
+        data: { metricsContext: buildImpactReportContext(report) },
+      });
+      setNarrative((current) => ({ ...current, ...generated }));
+      toast.success("AI narrative added for review. Save the draft when ready.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not generate report narrative");
+    } finally {
+      setIsGeneratingNarrative(false);
+    }
+  }
+
   const attendanceChartData = report
     ? [
         { status: "Registered", count: report.attendance.registrations },
@@ -250,11 +273,15 @@ function AdminEventReportsPage() {
                     setMultiSelect([]);
                   }}
                 >
-                  <SelectTrigger><SelectValue placeholder="Select event" /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select event" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
                     {(options?.events ?? []).map((e) => (
-                      <SelectItem key={e.id} value={e.id}>{e.title}</SelectItem>
+                      <SelectItem key={e.id} value={e.id}>
+                        {e.title}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -304,13 +331,19 @@ function AdminEventReportsPage() {
                 <Label>Program</Label>
                 <Select
                   value={filters.programId ?? "all"}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, programId: v === "all" ? undefined : v }))}
+                  onValueChange={(v) =>
+                    setFilters((f) => ({ ...f, programId: v === "all" ? undefined : v }))
+                  }
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All programs</SelectItem>
                     {(options?.programs ?? []).map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -320,13 +353,19 @@ function AdminEventReportsPage() {
                 <Label>Category</Label>
                 <Select
                   value={filters.categoryId ?? "all"}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, categoryId: v === "all" ? undefined : v }))}
+                  onValueChange={(v) =>
+                    setFilters((f) => ({ ...f, categoryId: v === "all" ? undefined : v }))
+                  }
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All categories</SelectItem>
                     {(options?.categories ?? []).map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -336,13 +375,19 @@ function AdminEventReportsPage() {
                 <Label>County</Label>
                 <Select
                   value={filters.county ?? "all"}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, county: v === "all" ? undefined : v }))}
+                  onValueChange={(v) =>
+                    setFilters((f) => ({ ...f, county: v === "all" ? undefined : v }))
+                  }
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All counties</SelectItem>
                     {(options?.counties ?? []).map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -379,7 +424,12 @@ function AdminEventReportsPage() {
               ).map(([key, label]) => (
                 <div key={key}>
                   <Label htmlFor={`narrative-${key}`}>{label}</Label>
-                  {key.includes("Notes") || key.includes("Goals") || key.includes("Quotes") || key.includes("Purpose") || key.includes("recommendations") || key.includes("Follow") ? (
+                  {key.includes("Notes") ||
+                  key.includes("Goals") ||
+                  key.includes("Quotes") ||
+                  key.includes("Purpose") ||
+                  key.includes("recommendations") ||
+                  key.includes("Follow") ? (
                     <Textarea
                       id={`narrative-${key}`}
                       rows={2}
@@ -409,7 +459,8 @@ function AdminEventReportsPage() {
 
           {draftsError && (
             <p className="text-sm text-muted-foreground">
-              Saved report drafts are unavailable. Confirm the event report snapshots migration is applied.
+              Saved report drafts are unavailable. Confirm the event report snapshots migration is
+              applied.
             </p>
           )}
           {drafts.length > 0 && (
@@ -438,8 +489,29 @@ function AdminEventReportsPage() {
 
         <div className="space-y-6">
           <div className="no-print flex flex-wrap gap-2">
-            <Button type="button" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending || !report}>
-              {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void generateNarrative()}
+              disabled={!report || report.isFrozenSnapshot || isGeneratingNarrative}
+            >
+              {isGeneratingNarrative ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              Draft narrative with AI
+            </Button>
+            <Button
+              type="button"
+              onClick={() => saveMutation.mutate()}
+              disabled={saveMutation.isPending || !report}
+            >
+              {saveMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
               Save draft
             </Button>
             <Button
@@ -462,7 +534,9 @@ function AdminEventReportsPage() {
               type="button"
               variant="outline"
               onClick={() => reopenMutation.mutate()}
-              disabled={reopenMutation.isPending || !activeSnapshotId || activeSnapshot?.status !== "final"}
+              disabled={
+                reopenMutation.isPending || !activeSnapshotId || activeSnapshot?.status !== "final"
+              }
             >
               Reopen draft
             </Button>
@@ -479,7 +553,9 @@ function AdminEventReportsPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={() => report && downloadReportCsv("event-summary", exportEventSummaryCsv(report))}
+                  onClick={() =>
+                    report && downloadReportCsv("event-summary", exportEventSummaryCsv(report))
+                  }
                 >
                   Summary CSV
                 </DropdownMenuItem>
@@ -506,7 +582,10 @@ function AdminEventReportsPage() {
                 <DropdownMenuItem
                   onClick={async () => {
                     if (!report) return;
-                    downloadReportCsv("event-evaluations", await exportEventEvaluationCsv(report.eventIds));
+                    downloadReportCsv(
+                      "event-evaluations",
+                      await exportEventEvaluationCsv(report.eventIds),
+                    );
                   }}
                 >
                   Evaluation CSV
@@ -525,7 +604,10 @@ function AdminEventReportsPage() {
                 <DropdownMenuItem
                   onClick={async () => {
                     if (!report) return;
-                    downloadReportCsv("event-gallery", await exportEventGalleryListCsv(report.eventIds));
+                    downloadReportCsv(
+                      "event-gallery",
+                      await exportEventGalleryListCsv(report.eventIds),
+                    );
                   }}
                 >
                   Gallery CSV
@@ -545,7 +627,8 @@ function AdminEventReportsPage() {
               <CardContent className="flex flex-col items-center gap-3 p-10 text-center">
                 <FileText className="h-10 w-10 text-muted-foreground" />
                 <p className="text-muted-foreground">
-                  Select an event, multiple events, or apply date/program filters to generate a report.
+                  Select an event, multiple events, or apply date/program filters to generate a
+                  report.
                 </p>
               </CardContent>
             </Card>
@@ -554,14 +637,36 @@ function AdminEventReportsPage() {
           {report && (
             <>
               <div className="no-print grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <Card><CardContent className="p-4"><div className="text-sm text-muted-foreground">Registrations</div><div className="text-2xl font-bold">{report.attendance.registrations}</div></CardContent></Card>
-                <Card><CardContent className="p-4"><div className="text-sm text-muted-foreground">Attendance rate</div><div className="text-2xl font-bold">{report.attendance.attendanceRate}%</div></CardContent></Card>
-                <Card><CardContent className="p-4"><div className="text-sm text-muted-foreground">Evaluations</div><div className="text-2xl font-bold">{report.evaluation.completedResponses}</div></CardContent></Card>
-                <Card><CardContent className="p-4"><div className="text-sm text-muted-foreground">Gallery images</div><div className="text-2xl font-bold">{report.gallery.approvedImages}</div></CardContent></Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-sm text-muted-foreground">Registrations</div>
+                    <div className="text-2xl font-bold">{report.attendance.registrations}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-sm text-muted-foreground">Attendance rate</div>
+                    <div className="text-2xl font-bold">{report.attendance.attendanceRate}%</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-sm text-muted-foreground">Evaluations</div>
+                    <div className="text-2xl font-bold">{report.evaluation.completedResponses}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-sm text-muted-foreground">Gallery images</div>
+                    <div className="text-2xl font-bold">{report.gallery.approvedImages}</div>
+                  </CardContent>
+                </Card>
               </div>
 
               <Card className="no-print">
-                <CardHeader><CardTitle className="text-base">Attendance status</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-base">Attendance status</CardTitle>
+                </CardHeader>
                 <CardContent>
                   <ChartContainer
                     config={{ count: { label: "Participants", color: "hsl(var(--primary))" } }}
