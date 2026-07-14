@@ -273,6 +273,7 @@ export function ProgramFormDialog({ open, onOpenChange, programId, onSaved }: Pr
             <TabsContent value="media" className="mt-4 space-y-4">
               <div>
                 <Label>Hero / cover image</Label>
+                <p className="mb-2 text-xs text-muted-foreground">Recommended: 1600 × 1200 px. Featured hero artwork should be 2400 × 1350 px.</p>
                 {form.coverImageUrl && (
                   <img src={form.coverImageUrl} alt="" className="mb-2 h-32 w-full rounded-xl object-cover" />
                 )}
@@ -291,6 +292,7 @@ export function ProgramFormDialog({ open, onOpenChange, programId, onSaved }: Pr
 
               <div>
                 <Label>Program logo (optional)</Label>
+                <p className="mb-2 text-xs text-muted-foreground">Recommended: 1200 × 600 px.</p>
                 {form.logoUrl && (
                   <img src={form.logoUrl} alt="" className="mb-2 h-20 w-20 rounded-xl border object-contain p-2" />
                 )}
@@ -304,6 +306,7 @@ export function ProgramFormDialog({ open, onOpenChange, programId, onSaved }: Pr
 
               <div>
                 <Label>Gallery images</Label>
+                <p className="mb-2 text-xs text-muted-foreground">Recommended: 1600 × 1200 px.</p>
                 <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {form.gallery.map((image, index) => (
                     <div key={`${image.imageUrl}-${index}`} className="relative overflow-hidden rounded-xl border">

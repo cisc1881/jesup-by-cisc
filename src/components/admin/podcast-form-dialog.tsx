@@ -157,6 +157,7 @@ export function PodcastFormDialog({ open, onOpenChange, episodeId, onSaved }: Po
             <TabsContent value="media" className="mt-4 space-y-3">
               <div>
                 <Label>Cover image</Label>
+                <p className="mb-2 text-xs text-muted-foreground">Recommended: 3000 × 3000 px.</p>
                 {form.coverUrl && (
                   <img src={form.coverUrl} alt="" className="mb-3 h-32 w-32 rounded-xl object-cover" />
                 )}

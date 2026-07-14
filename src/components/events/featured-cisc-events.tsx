@@ -51,8 +51,8 @@ export function FeaturedCiscEvents() {
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
           Event details reflect official materials from CISC and Tuskegee University. Artwork is
-          AI-generated and illustrative; follow each event link for registration and schedule
-          updates.
+          AI-generated and illustrative. The links below provide official background and schedule
+          information; registration for published JESUP events stays inside the app.
         </p>
       </div>
       <div className="grid gap-5 lg:grid-cols-3">

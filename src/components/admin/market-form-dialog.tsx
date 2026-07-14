@@ -238,6 +238,7 @@ export function MarketFormDialog({ open, onOpenChange, marketId, onSaved }: Mark
                 </div>
                 <div className="sm:col-span-2">
                   <Label>Cover image</Label>
+                  <p className="mt-1 text-xs text-muted-foreground">Recommended: 2000 × 1250 px.</p>
                   <div className="mt-2 flex flex-wrap items-center gap-3">
                     {form.coverImageUrl && (
                       <img src={form.coverImageUrl} alt="" className="h-20 w-32 rounded-lg object-cover" />

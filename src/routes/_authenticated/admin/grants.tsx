@@ -236,10 +236,11 @@ function AdminGrants() {
               />
             </div>
             <div>
-              <Label>Application URL</Label>
+              <Label>Official information URL</Label>
               <Input
                 value={form.url ?? ""}
                 onChange={(e) => setForm({ ...form, url: e.target.value })}
+                placeholder="Used for source details only; applications begin inside JESUP"
               />
             </div>
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90">

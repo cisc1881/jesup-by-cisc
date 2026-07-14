@@ -215,14 +215,15 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                   </Select>
                 </div>
                 <div>
-                  <Label>External URL</Label>
-                  <Input value={form.externalUrl} onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))} />
+                  <Label>Official information URL</Label>
+                  <Input value={form.externalUrl} onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))} placeholder="Background information only; registration stays inside JESUP" />
                 </div>
                 <div className="flex items-center gap-2"><Switch checked={form.isActive} onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))} /><Label>Active</Label></div>
                 <div className="flex items-center gap-2"><Switch checked={form.isFeatured} onCheckedChange={(v) => setForm((f) => ({ ...f, isFeatured: v }))} /><Label>Featured</Label></div>
               </div>
               <div>
                 <Label>Cover image</Label>
+                <p className="mt-1 text-xs text-muted-foreground">Recommended: 2000 × 1250 px.</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
                   <Input value={form.coverImageUrl} onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))} />
                   <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm">

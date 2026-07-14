@@ -46,6 +46,7 @@ export const Route = createFileRoute("/join")({
       ? (search.inquiryType as InquiryType)
       : undefined,
     programId: typeof search.programId === "string" ? search.programId : undefined,
+    message: typeof search.message === "string" ? search.message.slice(0, 1000) : undefined,
   }),
   head: () =>
     listPageHead({
@@ -105,6 +106,7 @@ function JoinPage() {
     ...initialForm,
     inquiryType: search.inquiryType ?? "",
     programId: search.programId ?? "",
+    message: search.message ?? "",
   }));
   const [errors, setErrors] = useState<Partial<Record<keyof FormState | "submit", string>>>({});
   const [busy, setBusy] = useState(false);

@@ -293,6 +293,7 @@ export function EventGalleryTab({ eventId }: EventGalleryTabProps) {
           <div aria-live="polite" className="text-sm text-muted-foreground">
             {statusMessage}
           </div>
+          <p className="text-xs text-muted-foreground">Recommended gallery size: 1600 × 1200 px. Use 2000 × 1250 px when selecting an image as the event cover.</p>
 
           {pendingUploads.length > 0 && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

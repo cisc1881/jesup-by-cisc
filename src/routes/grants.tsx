@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PublicLayout, PageHeader } from "@/components/public-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtDate } from "@/lib/format";
-import { ExternalLink, DollarSign } from "lucide-react";
+import { ExternalLink, DollarSign, MessageSquareText } from "lucide-react";
 
 import { listPageHead } from "@/lib/seo";
 
@@ -47,9 +47,18 @@ function GrantsPage() {
                     {g.deadline && <span className="text-muted-foreground">Deadline: {fmtDate(g.deadline)}</span>}
                   </div>
                 </div>
-                {g.url && (
-                  <Button asChild><a href={g.url} target="_blank" rel="noreferrer"><ExternalLink className="mr-1 h-4 w-4" />Apply</a></Button>
-                )}
+                <div className="flex shrink-0 flex-col items-start gap-2">
+                  <Button asChild>
+                    <Link to="/join" search={{ inquiryType: "general", message: `I am interested in applying for the ${g.title} grant opportunity.` }}>
+                      <MessageSquareText className="mr-1 h-4 w-4" />Start application inquiry
+                    </Link>
+                  </Button>
+                  {g.url && (
+                    <a href={g.url} target="_blank" rel="noreferrer" className="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-foreground hover:underline">
+                      <ExternalLink className="mr-1 h-3.5 w-3.5" />Official opportunity details
+                    </a>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

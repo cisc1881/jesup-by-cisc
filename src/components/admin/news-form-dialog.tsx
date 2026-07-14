@@ -227,6 +227,7 @@ export function NewsFormDialog({ open, onOpenChange, articleId, onSaved }: NewsF
             <TabsContent value="media" className="mt-4 space-y-3">
               <div>
                 <Label>Cover image URL</Label>
+                <p className="mb-2 text-xs text-muted-foreground">Recommended: 2000 × 1250 px.</p>
                 <Input
                   value={form.coverImageUrl}
                   onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}

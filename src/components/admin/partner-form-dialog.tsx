@@ -240,6 +240,7 @@ export function PartnerFormDialog({ open, onOpenChange, partnerId, onSaved }: Pa
             <TabsContent value="media" className="mt-4 space-y-3">
               <div>
                 <Label>Logo</Label>
+                <p className="mb-2 text-xs text-muted-foreground">Recommended: 1200 × 600 px with a transparent or simple background.</p>
                 {form.logoUrl && (
                   <img src={form.logoUrl} alt="" className="mb-3 h-20 max-w-[200px] rounded-lg object-contain" />
                 )}
