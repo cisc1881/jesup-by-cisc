@@ -40,3 +40,4 @@ export {
   parseImpactReportNarrative,
   type ImpactReportNarrative,
 } from "./impact-report";
+export { generateGrantDraft, parseGrantDraft, type GrantDraft } from "./grant-assistant";
