@@ -2,8 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { checkRateLimit } from "@/lib/weather/rate-limit";
-import { executeJESUPRequest } from "./execute";
-import { loadAiProviderConfig } from "./settings";
 
 const askJESUPSchema = z.object({
   question: z.string().trim().min(2, "Question is too short.").max(240, "Question is too long."),
@@ -26,7 +24,12 @@ export const askJESUPServerFn = createServerFn({ method: "POST" })
       );
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [{ supabaseAdmin }, { loadAiProviderConfig }, { executeJESUPRequest }] =
+      await Promise.all([
+        import("@/integrations/supabase/client.server"),
+        import("./server/settings"),
+        import("./server/execute"),
+      ]);
     const config = await loadAiProviderConfig(supabaseAdmin);
     const result = await executeJESUPRequest({
       db: supabaseAdmin,
@@ -43,8 +46,5 @@ export const askJESUPServerFn = createServerFn({ method: "POST" })
       );
     });
 
-    return {
-      answer: result.content,
-      sources: result.context.sources,
-    };
+    return { answer: result.content, sources: result.context.sources };
   });

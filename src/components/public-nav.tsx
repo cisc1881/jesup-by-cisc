@@ -1,7 +1,14 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Search, User as UserIcon } from "lucide-react";
+import { LogOut, Search, Sparkles, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { desktopNavLinks } from "@/lib/navigation";
@@ -19,10 +26,16 @@ export function PublicNav() {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-card/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center gap-2.5">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl grad-crimson text-white text-[13px] font-black tracking-tight shadow-[var(--shadow-crimson)]">J</span>
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl grad-crimson text-white text-[13px] font-black tracking-tight shadow-[var(--shadow-crimson)]">
+            J
+          </span>
           <div className="flex min-w-0 flex-col leading-none">
-            <span className="truncate text-[15px] font-black tracking-tight text-foreground">JESUP</span>
-            <span className="hidden truncate text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:inline">Digital Extension Wagon</span>
+            <span className="truncate text-[15px] font-black tracking-tight text-foreground">
+              JESUP
+            </span>
+            <span className="hidden truncate text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:inline">
+              Digital Extension Wagon
+            </span>
           </div>
         </Link>
 
@@ -40,7 +53,13 @@ export function PublicNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
-          <Button asChild variant="outline" size="icon" className="rounded-full" aria-label="Search JESUP">
+          <Button
+            asChild
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            aria-label="Search JESUP"
+          >
             <Link to="/search">
               <Search className="h-4 w-4" />
             </Link>
@@ -56,8 +75,20 @@ export function PublicNav() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link to="/me">My Profile</Link></DropdownMenuItem>
-                {isAdmin && <DropdownMenuItem asChild><Link to="/admin">JESUP Command Center</Link></DropdownMenuItem>}
+                <DropdownMenuItem asChild>
+                  <Link to="/ask">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Ask JESUP
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/me">My Profile</Link>
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">JESUP Command Center</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut} className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" /> Sign out
@@ -65,7 +96,11 @@ export function PublicNav() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild size="sm" className="rounded-full grad-crimson text-white shadow-[var(--shadow-crimson)] hover:opacity-95">
+            <Button
+              asChild
+              size="sm"
+              className="rounded-full grad-crimson text-white shadow-[var(--shadow-crimson)] hover:opacity-95"
+            >
               <Link to="/auth">Sign in</Link>
             </Button>
           )}

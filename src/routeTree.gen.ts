@@ -37,6 +37,7 @@ import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as MarketsIdRouteImport } from './routes/markets.$id'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
+import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated/me.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -214,6 +215,11 @@ const EventsIdRoute = EventsIdRouteImport.update({
 const AuthenticatedMeRoute = AuthenticatedMeRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
+  id: '/ask',
+  path: '/ask',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -503,6 +509,7 @@ export interface FileRoutesByFullPath {
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/ask': typeof AuthenticatedAskRoute
   '/me': typeof AuthenticatedMeRouteWithChildren
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
@@ -570,6 +577,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/ask': typeof AuthenticatedAskRoute
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
   '/news/$slug': typeof NewsSlugRoute
@@ -639,6 +647,7 @@ export interface FileRoutesById {
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/ask': typeof AuthenticatedAskRoute
   '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
@@ -709,6 +718,7 @@ export interface FileRouteTypes {
     | '/surveys'
     | '/unauthorized'
     | '/admin'
+    | '/ask'
     | '/me'
     | '/events/$id'
     | '/markets/$id'
@@ -776,6 +786,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/surveys'
     | '/unauthorized'
+    | '/ask'
     | '/events/$id'
     | '/markets/$id'
     | '/news/$slug'
@@ -844,6 +855,7 @@ export interface FileRouteTypes {
     | '/surveys'
     | '/unauthorized'
     | '/_authenticated/admin'
+    | '/_authenticated/ask'
     | '/_authenticated/me'
     | '/events/$id'
     | '/markets/$id'
@@ -1113,6 +1125,13 @@ declare module '@tanstack/react-router' {
       path: '/me'
       fullPath: '/me'
       preLoaderRoute: typeof AuthenticatedMeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ask': {
+      id: '/_authenticated/ask'
+      path: '/ask'
+      fullPath: '/ask'
+      preLoaderRoute: typeof AuthenticatedAskRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
@@ -1519,11 +1538,13 @@ const AuthenticatedMeRouteWithChildren = AuthenticatedMeRoute._addFileChildren(
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
 }
 
