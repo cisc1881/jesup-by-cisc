@@ -266,7 +266,7 @@ Full Sprint 9 details: [SPRINT_9_MIGRATION_STATUS.md](./SPRINT_9_MIGRATION_STATU
 
 | Variable | Scope | Description |
 |----------|-------|-------------|
-| `VITE_SITE_URL` | Client + build | Canonical domain (e.g. `https://jesup.cisc.edu`) for SEO/JSON-LD |
+| `VITE_SITE_URL` | Client + build | Canonical domain (`https://jesup.cisc1881.org`) for SEO/JSON-LD |
 
 ### Optional (server-only)
 

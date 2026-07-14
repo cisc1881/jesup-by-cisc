@@ -25,7 +25,7 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
     const imports = [
       ["programs", starterPrograms],
       ["events", starterEvents],
-      // ["news_articles", starterNews], // table not present in schema
+      ["news_articles", starterNews],
       ["markets", starterMarkets],
       ["partners", starterPartners],
       ["podcast_episodes", starterPodcasts],

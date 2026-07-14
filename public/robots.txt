@@ -5,4 +5,4 @@ Disallow: /me/
 Disallow: /auth
 Disallow: /unauthorized
 
-Sitemap: https://jesup.cisc.edu/sitemap.xml
+Sitemap: https://jesup.cisc1881.org/sitemap.xml
