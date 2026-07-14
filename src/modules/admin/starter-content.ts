@@ -86,6 +86,7 @@ export const starterPrograms = [
     objectives_html:
       "<ul><li>Translate research for public use.</li><li>Elevate regional priorities and lived experience.</li><li>Support informed policy dialogue.</li></ul>",
     cover_image_url: COVERS.economic,
+    metadata: { image_note: "AI-generated illustrative image" },
     website_url: "https://cisc1881.org/programs-projects/african-americans-in-the-black-belt/",
     is_active: true,
     is_featured: false,
@@ -103,6 +104,7 @@ export const starterPrograms = [
     objectives_html:
       "<ul><li>Build career-ready agricultural skills.</li><li>Connect learners with mentors and field experiences.</li><li>Strengthen the pipeline of agriculture and food-system professionals.</li></ul>",
     cover_image_url: COVERS.community,
+    metadata: { image_note: "AI-generated illustrative image" },
     website_url: "https://cisc1881.org/fellowships-internships-jobs/",
     is_active: true,
     is_featured: false,
@@ -184,6 +186,7 @@ export const starterEvents = [
     ends_at: "2027-05-07T17:00:00-05:00",
     location: "Tuskegee University CISC and CFSRPES",
     image_url: COVERS.community,
+    metadata: { image_note: "AI-generated illustrative image" },
     external_url:
       "https://cisc1881.org/programs-projects/environment-economics-and-energy-academy-eee-academy/",
     status: "published",
@@ -202,6 +205,7 @@ export const starterEvents = [
     ends_at: "2026-03-31T17:00:00-05:00",
     location: "New Orleans, Louisiana",
     image_url: COVERS.extension,
+    metadata: { image_note: "AI-generated illustrative image" },
     external_url:
       "https://cisc1881.org/news/2026-ard-research-symposium-recap-advancing-research-collaboration-and-impact/",
     status: "published",
@@ -360,6 +364,10 @@ export const starterMarkets = [
     hours: "Tuesday, Thursday, and Saturday, 5:30 AM–2:00 PM",
     season: "Year-round; confirm holiday hours",
     image_url: COVERS.economic,
+    metadata: {
+      image_note: "AI-generated illustrative image",
+      source: "City of Montgomery",
+    },
     website_url: "https://www.montgomeryal.gov/live/community/montgomery-curb-market",
     phone: "334-625-4636",
     accepts_credit: true,
@@ -377,6 +385,10 @@ export const starterMarkets = [
     hours: "Daily; confirm current hours with the market",
     season: "Year-round",
     image_url: COVERS.community,
+    metadata: {
+      image_note: "AI-generated illustrative image",
+      source: "Sweet Creek Farm Market",
+    },
     website_url: "https://sweetcreekfarmmarket.com",
     phone: "334-280-3276",
     accepts_credit: true,
