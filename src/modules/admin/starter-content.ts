@@ -3,7 +3,12 @@ import type { Database } from "@/integrations/supabase/types";
 type Insert<Table extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][Table]["Insert"];
 
-const CONTACT = { contact_email: "cisc@tuskegee.edu", contact_phone: "334-724-4967" };
+const CONTACT = {
+  contact_email: "cisc@tuskegee.edu",
+  contact_phone: "334-724-4967",
+  website_url: null,
+  registration_url: null,
+};
 const COVERS = {
   community: "/starter/community-extension.jpg",
   economic: "/starter/economic-development.jpg",
@@ -20,7 +25,7 @@ const HEROES = {
 export const starterPrograms = [
   {
     slug: "small-farm-rural-development",
-    name: "Small Farm and Rural Development",
+    name: "Small Farm and Rural Development Program",
     tagline: "Practical partnerships for resilient farms and rural communities",
     short:
       "Technical assistance, collaboration, and economic-development pathways for small and underserved producers.",
@@ -29,17 +34,88 @@ export const starterPrograms = [
     objectives_html:
       "<ul><li>Strengthen small-farm profitability and resilience.</li><li>Expand access to technical assistance and partner networks.</li><li>Support value addition, markets, and rural enterprise development.</li></ul>",
     cover_image_url: COVERS.community,
-    metadata: { hero_image_url: HEROES.community, image_note: "AI-generated illustrative image" },
-    website_url:
-      "https://cisc1881.org/programs-projects/small-farm-and-rural-development-program-3/",
+    metadata: {
+      hero_image_url: HEROES.community,
+      image_note: "AI-generated illustrative image",
+      source_url:
+        "https://cisc1881.org/programs-projects/small-farm-and-rural-development-program-3/",
+    },
     is_active: true,
     is_featured: true,
-    sort_order: 1,
+    sort_order: 6,
+    ...CONTACT,
+  },
+  {
+    slug: "black-harvest-series",
+    name: "Black Harvest Series",
+    tagline: "Community knowledge, culture, and food-system conversations",
+    short:
+      "A CISC series elevating Black agricultural knowledge, community voices, and food-system leadership.",
+    description_html:
+      "<p>The Black Harvest Series creates space for learning and dialogue centered on agriculture, culture, history, and community-led solutions.</p>",
+    objectives_html:
+      "<ul><li>Elevate community and producer voices.</li><li>Connect agricultural history with present-day practice.</li><li>Share knowledge through accessible public programming.</li></ul>",
+    cover_image_url: COVERS.community,
+    metadata: { image_note: "AI-generated illustrative image" },
+    is_active: true,
+    is_featured: false,
+    sort_order: 2,
+    ...CONTACT,
+  },
+  {
+    slug: "black-belt-marketing-innovation-center",
+    name: "Black Belt Marketing and Innovation Center",
+    tagline: "Connecting regional enterprise, markets, and innovation",
+    short:
+      "Market development and innovation support for producers, entrepreneurs, and Black Belt communities.",
+    description_html:
+      "<p>The Black Belt Marketing and Innovation Center supports practical pathways from ideas and production to stronger markets and sustainable regional enterprise.</p>",
+    objectives_html:
+      "<ul><li>Strengthen market readiness.</li><li>Support value-added enterprise.</li><li>Connect producers and entrepreneurs with useful resources.</li></ul>",
+    cover_image_url: COVERS.economic,
+    metadata: { hero_image_url: HEROES.economic, image_note: "AI-generated illustrative image" },
+    is_active: true,
+    is_featured: true,
+    sort_order: 3,
+    ...CONTACT,
+  },
+  {
+    slug: "cisc-dialogue-model",
+    name: "CISC Dialogue Model",
+    tagline: "Structured conversation for community-centered solutions",
+    short:
+      "A collaborative model for listening, learning, and developing responses with communities and partners.",
+    description_html:
+      "<p>The CISC Dialogue Model brings stakeholders together to understand priorities, share experience, and shape practical next steps.</p>",
+    objectives_html:
+      "<ul><li>Center community knowledge.</li><li>Build shared understanding.</li><li>Turn dialogue into coordinated action.</li></ul>",
+    cover_image_url: COVERS.community,
+    metadata: { image_note: "AI-generated illustrative image" },
+    is_active: true,
+    is_featured: false,
+    sort_order: 4,
+    ...CONTACT,
+  },
+  {
+    slug: "family-inc-x-cisc",
+    name: "Family INC. x CISC",
+    tagline: "Partnership for families, opportunity, and community resilience",
+    short:
+      "A collaborative initiative connecting families and communities with learning, resources, and opportunity.",
+    description_html:
+      "<p>Family INC. x CISC combines partnership, outreach, and community engagement to support stronger families and resilient communities.</p>",
+    objectives_html:
+      "<ul><li>Connect families with relevant resources.</li><li>Expand community learning opportunities.</li><li>Strengthen collaborative service.</li></ul>",
+    cover_image_url: COVERS.community,
+    metadata: { image_note: "AI-generated illustrative image" },
+    is_active: true,
+    is_featured: false,
+    sort_order: 5,
     ...CONTACT,
   },
   {
     slug: "environment-economics-energy-academy",
-    name: "Environment, Economics, and Energy Academy",
+    name: "Environment, Economics, and Energy Academy (EEE Academy)",
     tagline: "Powering people, growing prosperity, building resilient communities",
     short:
       "Practical learning connecting environmental stewardship, economic opportunity, energy access, and community leadership.",
@@ -48,31 +124,15 @@ export const starterPrograms = [
     objectives_html:
       "<ul><li>Build environmental awareness and stewardship.</li><li>Explore rural prosperity and local enterprise.</li><li>Connect energy empowerment with community resilience.</li><li>Develop leadership and planning skills.</li></ul>",
     cover_image_url: COVERS.economic,
-    metadata: { hero_image_url: HEROES.economic, image_note: "AI-generated illustrative image" },
-    website_url:
-      "https://cisc1881.org/programs-projects/environment-economics-and-energy-academy-eee-academy/",
+    metadata: {
+      hero_image_url: HEROES.economic,
+      image_note: "AI-generated illustrative image",
+      source_url:
+        "https://cisc1881.org/programs-projects/environment-economics-and-energy-academy-eee-academy/",
+    },
     is_active: true,
     is_featured: true,
-    sort_order: 2,
-    ...CONTACT,
-  },
-  {
-    slug: "black-belt-food-corridor",
-    name: "Black Belt Food Corridor",
-    tagline: "Growing opportunity across local food systems",
-    short:
-      "Support for farmers, food producers, gardens, stewardship, food access, and community-scale innovation.",
-    description_html:
-      "<p>The Black Belt Food Corridor responds to the needs of farmers, small food producers, community gardens, and school gardens across Alabama’s Black Belt.</p>",
-    objectives_html:
-      "<ul><li>Advance farmer economic opportunities.</li><li>Increase production and improve stewardship.</li><li>Reduce food waste and expand food access.</li></ul>",
-    cover_image_url: COVERS.extension,
-    metadata: { hero_image_url: HEROES.extension, image_note: "AI-generated illustrative image" },
-    website_url:
-      "https://cisc1881.org/programs-projects/black-belt-food-corridor-mini-grant-program/",
-    is_active: true,
-    is_featured: true,
-    sort_order: 3,
+    sort_order: 1,
     ...CONTACT,
   },
   {
@@ -86,32 +146,137 @@ export const starterPrograms = [
     objectives_html:
       "<ul><li>Translate research for public use.</li><li>Elevate regional priorities and lived experience.</li><li>Support informed policy dialogue.</li></ul>",
     cover_image_url: COVERS.economic,
-    metadata: { image_note: "AI-generated illustrative image" },
-    website_url: "https://cisc1881.org/programs-projects/african-americans-in-the-black-belt/",
+    metadata: {
+      image_note: "AI-generated illustrative image",
+      source_url: "https://cisc1881.org/programs-projects/african-americans-in-the-black-belt/",
+    },
     is_active: true,
     is_featured: false,
-    sort_order: 4,
+    sort_order: 7,
     ...CONTACT,
   },
   {
-    slug: "2fas",
-    name: "2FAS: Future Farmers and Agricultural Specialists",
-    tagline: "Developing the next generation of agricultural leaders",
+    slug: "tuaic",
+    name: "TUAIC (Tuskegee University Agricultural Innovation Center)",
+    tagline: "Agricultural innovation, learning, and community development",
     short:
-      "Internships, fellowships, mentoring, career readiness, research exposure, and experiential learning.",
+      "A Tuskegee University center connecting agricultural innovation with education and community impact.",
     description_html:
-      "<p>2FAS creates pathways for students and early-career professionals to learn from farmers, researchers, Extension educators, agencies, and community organizations.</p>",
+      "<p>TUAIC supports teaching, applied learning, food-system innovation, and community development through Tuskegee University’s land-grant mission.</p>",
     objectives_html:
-      "<ul><li>Build career-ready agricultural skills.</li><li>Connect learners with mentors and field experiences.</li><li>Strengthen the pipeline of agriculture and food-system professionals.</li></ul>",
-    cover_image_url: COVERS.community,
-    metadata: { image_note: "AI-generated illustrative image" },
-    website_url: "https://cisc1881.org/fellowships-internships-jobs/",
+      "<ul><li>Advance practical agricultural innovation.</li><li>Create hands-on learning opportunities.</li><li>Support community-scale food-system development.</li></ul>",
+    cover_image_url: COVERS.extension,
+    metadata: { hero_image_url: HEROES.extension, image_note: "AI-generated illustrative image" },
     is_active: true,
-    is_featured: false,
-    sort_order: 5,
+    is_featured: true,
+    sort_order: 8,
+    ...CONTACT,
+  },
+  {
+    slug: "value-addition-technology",
+    name: "Value Addition & Technology",
+    tagline: "Tools and knowledge that move ideas toward market",
+    short:
+      "Applied technology, product development, and value-addition support for producers and rural enterprises.",
+    description_html:
+      "<p>Value Addition & Technology helps participants explore tools, processes, and strategies that can improve products, operations, and market opportunity.</p>",
+    objectives_html:
+      "<ul><li>Build value-added production knowledge.</li><li>Connect participants with appropriate technology.</li><li>Support enterprise and market readiness.</li></ul>",
+    cover_image_url: COVERS.livestock,
+    metadata: { hero_image_url: HEROES.livestock, image_note: "AI-generated illustrative image" },
+    is_active: true,
+    is_featured: true,
+    sort_order: 9,
     ...CONTACT,
   },
 ] satisfies Insert<"programs">[];
+
+export const starterPodcasts = [
+  {
+    slug: "2fas-podcast",
+    title: "2FAS Podcast",
+    description:
+      "Conversations about student pathways, professional development, agriculture, food systems, and the next generation of leaders.",
+    category: "2FAS",
+    cover_url: COVERS.community,
+    is_published: true,
+    is_featured: true,
+    published_at: "2026-07-01T12:00:00Z",
+  },
+  {
+    slug: "earth2tu",
+    title: "Earth2TU",
+    description:
+      "Tuskegee-centered conversations connecting environmental stewardship, agriculture, sustainability, and community life.",
+    category: "Environment",
+    cover_url: COVERS.extension,
+    is_published: true,
+    is_featured: false,
+    published_at: "2026-06-15T12:00:00Z",
+  },
+  {
+    slug: "growing-the-green",
+    title: "Growing the Green",
+    description:
+      "Practical conversations about rural prosperity, green enterprise, energy, and sustainable economic opportunity.",
+    category: "Economic Development",
+    cover_url: COVERS.economic,
+    is_published: true,
+    is_featured: false,
+    published_at: "2026-06-01T12:00:00Z",
+  },
+] satisfies Insert<"podcast_episodes">[];
+
+export const starterInternships = [
+  {
+    slug: "cisc-hbcu-graduate-fellowship-program",
+    title: "CISC HBCU Graduate Fellowship Program",
+    description:
+      "A graduate fellowship pathway connecting HBCU scholars with food, agriculture, sustainability, research, and professional development.",
+    department: "CISC · 2FAS",
+    requirements_html:
+      "<p>Submit your interest and qualifications through JESUP. Program staff will review eligibility and follow up inside the application workflow.</p>",
+    track: "fellow",
+    is_2fas: true,
+    is_open: true,
+  },
+  {
+    slug: "sei-high-school",
+    title: "SEI High School",
+    description:
+      "A structured summer experience introducing high-school participants to agriculture, sustainability, careers, and Tuskegee’s land-grant mission.",
+    department: "Summer Experience Internship · 2FAS",
+    requirements_html:
+      "<p>Students apply directly through JESUP. Eligibility details and supporting information are collected in the application.</p>",
+    track: "high_school",
+    is_2fas: true,
+    is_open: true,
+  },
+  {
+    slug: "sei-undergraduates",
+    title: "SEI Undergraduates",
+    description:
+      "An undergraduate summer experience combining mentoring, applied learning, professional development, and exposure to agricultural careers.",
+    department: "Summer Experience Internship · 2FAS",
+    requirements_html:
+      "<p>Undergraduate applicants submit their information and materials directly through JESUP for review.</p>",
+    track: "undergraduate",
+    is_2fas: true,
+    is_open: true,
+  },
+  {
+    slug: "graduate-extension-interns-fellows",
+    title: "Graduate Extension Interns/Fellows",
+    description:
+      "Graduate-level Extension experience involving mentoring, field engagement, community service, and applied professional learning.",
+    department: "Cooperative Extension · 2FAS",
+    requirements_html:
+      "<p>Graduate applicants apply through JESUP and provide the information needed for program review and placement.</p>",
+    track: "graduate",
+    is_2fas: true,
+    is_open: true,
+  },
+] satisfies Insert<"internships">[];
 
 export const starterEvents = [
   {

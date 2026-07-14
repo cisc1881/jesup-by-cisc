@@ -183,7 +183,7 @@ export function CommandCenterDashboard() {
 
   async function importStarterContent() {
     const confirmed = window.confirm(
-      "Import 5 programs, 5 events, 5 news articles, 5 markets, and 5 partners? Existing records with the same slug will be skipped.",
+      "Synchronize the official CISC starter set: 9 programs, 5 events, 5 news articles, 5 markets, 5 partners, 3 podcasts, and 4 2FAS opportunities? Existing matching records will be updated.",
     );
     if (!confirmed) return;
 
@@ -198,12 +198,14 @@ export function CommandCenterDashboard() {
         qc.invalidateQueries({ queryKey: ["news"] }),
         qc.invalidateQueries({ queryKey: ["markets"] }),
         qc.invalidateQueries({ queryKey: ["partners"] }),
+        qc.invalidateQueries({ queryKey: ["podcasts"] }),
+        qc.invalidateQueries({ queryKey: ["internships"] }),
         qc.invalidateQueries({ queryKey: ["home-page"] }),
       ]);
       toast.success(
         total > 0
-          ? `Imported ${total} CISC starter records.`
-          : "CISC starter content is already imported.",
+          ? `Synchronized ${total} CISC starter records.`
+          : "CISC starter content is already synchronized.",
       );
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Starter content import failed.");

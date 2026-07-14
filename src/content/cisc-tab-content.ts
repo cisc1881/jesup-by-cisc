@@ -16,12 +16,12 @@ export const CISC_TAB_CONTENT: Record<string, CiscTabStory> = {
     summary:
       "CISC serves small, underserved, beginning, women, and veteran farmers, ranchers, landowners, cooperatives, and rural communities through farmer-centered research, education, and outreach.",
     highlights: [
-      "Small Farm and Rural Development",
-      "Environment, Economics, and Energy Academy",
-      "Black Belt food systems and community development",
+      "Environment, Economics, and Energy Academy (EEE Academy)",
+      "Black Belt Marketing and Innovation Center",
+      "Small Farm and Rural Development Program",
     ],
     sourceUrl: "https://cisc1881.org/programs-projects/",
-    sourceLabel: "Explore CISC programs",
+    sourceLabel: "View the informational source",
   },
   "/events": {
     eyebrow: "Learn together",
@@ -82,13 +82,9 @@ export const CISC_TAB_CONTENT: Record<string, CiscTabStory> = {
     title: "Conversations for the next generation of agriculture",
     summary:
       "The 2FAS Podcast and CISC network programming share perspectives from students, farmers, researchers, Extension professionals, and community leaders working across food, agriculture, and sustainability.",
-    highlights: [
-      "Student and professional pathways",
-      "Farmer and community voices",
-      "Research translated for public use",
-    ],
+    highlights: ["2FAS Podcast", "Earth2TU", "Growing the Green"],
     sourceUrl: "https://cisc1881.org/programs-projects/2faspodcast/",
-    sourceLabel: "Visit the 2FAS Podcast",
+    sourceLabel: "View the informational source",
   },
   "/partners": {
     eyebrow: "Stronger together",
@@ -177,11 +173,11 @@ export const CISC_TAB_CONTENT: Record<string, CiscTabStory> = {
     summary:
       "CISC student pathways include paid undergraduate summer experiences, graduate Extension internships and fellowships, mentoring, career readiness, research exposure, and hands-on work with farmers and agricultural professionals.",
     highlights: [
-      "Eight-week undergraduate summer experience",
-      "Graduate Extension mentoring and field work",
-      "HBCU food and agriculture fellowship pathways",
+      "CISC HBCU Graduate Fellowship Program",
+      "SEI High School and SEI Undergraduates",
+      "Graduate Extension Interns/Fellows",
     ],
     sourceUrl: "https://cisc1881.org/fellowships-internships-jobs/",
-    sourceLabel: "Explore official CISC opportunities",
+    sourceLabel: "View the informational source",
   },
 };
