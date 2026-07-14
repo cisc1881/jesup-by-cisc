@@ -95,7 +95,16 @@ function AdminMedia() {
               <label className="inline-flex min-h-[44px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed px-4 py-2 text-sm hover:bg-secondary/60">
                 {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                 Upload file
-                <input type="file" className="sr-only" onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleUpload(f); }} />
+                <input
+                  id="media-library-upload"
+                  name="mediaFile"
+                  type="file"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void handleUpload(f);
+                  }}
+                />
               </label>
             </div>
           </div>
