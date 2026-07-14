@@ -27,8 +27,8 @@ Deno.serve(async (request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  const siteUrl = Deno.env.get("SITE_URL") ?? "https://jesup.cisc1881.org";
-  if (!supabaseUrl || !serviceRoleKey || !resendApiKey) {
+  const siteUrl = Deno.env.get("SITE_URL");
+  if (!supabaseUrl || !serviceRoleKey || !resendApiKey || !siteUrl) {
     return new Response(JSON.stringify({ error: "Email delivery is not configured" }), {
       status: 503,
       headers: jsonHeaders,
