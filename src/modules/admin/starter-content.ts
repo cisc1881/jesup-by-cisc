@@ -576,6 +576,8 @@ export const starterPartners = [
     description:
       "CAENS prepares students and serves communities through agriculture, environment, nutrition, research, and Cooperative Extension.",
     category: "University",
+    logo_url:
+      "https://www.tuskegee.edu/_files/images/logos/TU_logo_horizontal_transparent_red.png",
     website_url: "https://www.tuskegee.edu/caens",
     partnership_areas: ["Research", "Education", "Extension", "Student development"],
     social_links: {},
@@ -588,6 +590,8 @@ export const starterPartners = [
     name: "United States Department of Agriculture",
     short_description: "Federal programs, research, technical assistance, and producer support.",
     category: "Government",
+    logo_url:
+      "https://www.climatehubs.usda.gov/sites/default/files/styles/large/public/USDA_logo.jpg?itok=9xfuvZcL",
     website_url: "https://www.usda.gov",
     partnership_areas: ["Small farms", "Natural resources", "Rural development", "Research"],
     social_links: {},
@@ -600,6 +604,7 @@ export const starterPartners = [
     name: "Alabama Department of Agriculture and Industries",
     short_description: "State agriculture services, market information, and producer resources.",
     category: "Government",
+    logo_url: "https://agi.alabama.gov/wp-content/uploads/2025/02/AGI-2020-HEADER-COLOR-Web.png",
     website_url: "https://agi.alabama.gov",
     partnership_areas: ["Farmers markets", "Producer services", "Food systems"],
     social_links: {},
@@ -612,6 +617,8 @@ export const starterPartners = [
     name: "Heart of Alabama Food Bank",
     short_description: "Regional hunger-relief and food-access partner serving central Alabama.",
     category: "Community",
+    logo_url:
+      "https://hafb.org/wp-content/uploads/2024/12/hafb-40th-horizontal-with-main-full-color-rgb-900px-w-144ppi.png",
     website_url: "https://hafb.org",
     partnership_areas: ["Food access", "Black Belt Food Corridor", "Community partnerships"],
     social_links: {},
@@ -625,6 +632,8 @@ export const starterPartners = [
     short_description:
       "An inter-institutional network supporting food-systems scholarship, mentorship, and collaboration.",
     category: "Academic Network",
+    logo_url:
+      "https://asi.ucdavis.edu/sites/g/files/dgvnsk5751/files/media/images/Horizontal-Lockup_Color.jpg",
     website_url: "https://asi.ucdavis.edu/programs/infas",
     partnership_areas: [
       "HBCU fellowship",
