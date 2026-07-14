@@ -23,6 +23,7 @@ import {
 } from "../config/nav-items";
 import { NotificationBellDropdown } from "./notification-bell-dropdown";
 import { GlobalSearchDialog } from "@/components/search/global-search-dialog";
+import { JesupLogoMark } from "@/components/branding";
 
 export function CommandCenterLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -36,8 +37,16 @@ export function CommandCenterLayout() {
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md grad-crimson text-white font-black">
                 J
               </span>
-              <span className="font-black tracking-tight text-sm text-foreground group-data-[collapsible=icon]:hidden">
-                {COMMAND_CENTER_TITLE}
+              <span className="group-data-[collapsible=icon]:hidden">
+                <JesupLogoMark
+                  size="sm"
+                  tone="on-light"
+                  className="items-start"
+                  imageClassName="h-8 max-w-[8.5rem]"
+                />
+                <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  Command Center
+                </span>
               </span>
             </Link>
           </SidebarHeader>
@@ -51,7 +60,9 @@ export function CommandCenterLayout() {
                   <SidebarGroupContent>
                     <SidebarMenu>
                       {items.map((item) => {
-                        const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
+                        const active = item.exact
+                          ? pathname === item.to
+                          : pathname.startsWith(item.to);
                         return (
                           <SidebarMenuItem key={item.to}>
                             <SidebarMenuButton asChild isActive={active}>
@@ -96,7 +107,9 @@ export function CommandCenterLayout() {
         <div className="flex flex-1 flex-col">
           <header className="flex h-14 items-center gap-3 border-b bg-background px-4">
             <SidebarTrigger />
-            <div className="font-black tracking-tight text-sm text-foreground">{COMMAND_CENTER_TITLE}</div>
+            <div className="font-black tracking-tight text-sm text-foreground">
+              {COMMAND_CENTER_TITLE}
+            </div>
             <div className="ml-auto flex items-center gap-2">
               <GlobalSearchDialog />
               <NotificationBellDropdown />

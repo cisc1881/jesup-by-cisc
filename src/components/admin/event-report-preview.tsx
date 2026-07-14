@@ -5,6 +5,7 @@ import {
   groupDemographicAggregates,
 } from "@/lib/demographics";
 import { fmtDate, fmtDateTime } from "@/lib/format";
+import { JesupLogoMark } from "@/components/branding";
 import { galleryImageAlt } from "@/lib/event-gallery";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,7 +34,9 @@ function Section({
 }) {
   return (
     <section className={`report-section break-inside-avoid-page ${className ?? ""}`}>
-      <h2 className="report-section-title mb-3 font-serif text-xl font-bold text-primary">{title}</h2>
+      <h2 className="report-section-title mb-3 font-serif text-xl font-bold text-primary">
+        {title}
+      </h2>
       {children}
     </section>
   );
@@ -44,9 +47,17 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
   const demographicGroups = groupDemographicAggregates(report.demographics.rows);
 
   return (
-    <div id="event-report-print-root" className="event-report-preview space-y-8 rounded-2xl bg-card p-6 shadow-token-soft print:rounded-none print:shadow-none print:p-0">
+    <div
+      id="event-report-print-root"
+      className="event-report-preview space-y-8 rounded-2xl bg-card p-6 shadow-token-soft print:rounded-none print:shadow-none print:p-0"
+    >
       <header className="report-cover border-b border-primary/20 pb-6 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">JESUP · CISC</p>
+        <JesupLogoMark
+          size="md"
+          tone="on-light"
+          className="mb-3"
+          imageClassName="h-12 max-w-[12rem]"
+        />
         <h1 className="mt-2 font-serif text-3xl font-black text-primary">
           {n.reportTitle || "Event Report"}
         </h1>
@@ -59,9 +70,7 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
         {n.reportDate && (
           <p className="text-sm text-muted-foreground">Report date: {fmtDate(n.reportDate)}</p>
         )}
-        {report.isFrozenSnapshot && (
-          <Badge className="mt-3 print:hidden">Finalized snapshot</Badge>
-        )}
+        {report.isFrozenSnapshot && <Badge className="mt-3 print:hidden">Finalized snapshot</Badge>}
       </header>
 
       {showAdminNote && report.isMultiEvent && (
@@ -79,7 +88,9 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
               {event.endsAt ? ` – ${fmtDateTime(event.endsAt)}` : ""}
             </p>
             {event.location && <p className="text-sm text-muted-foreground">{event.location}</p>}
-            {event.categoryName && <p className="text-sm text-muted-foreground">Category: {event.categoryName}</p>}
+            {event.categoryName && (
+              <p className="text-sm text-muted-foreground">Category: {event.categoryName}</p>
+            )}
           </div>
         ))}
         {n.eventPurpose && (
@@ -91,13 +102,14 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
       </Section>
 
       <Section title="Program goals">
-        <p className="whitespace-pre-wrap text-sm text-foreground/90">
-          {n.programGoals || "—"}
-        </p>
+        <p className="whitespace-pre-wrap text-sm text-foreground/90">{n.programGoals || "—"}</p>
       </Section>
 
       <Section title="Event date, location, format, and audience">
-        <MetricRow label="Delivery format" value={report.programsPartners.deliveryFormat ?? "Not specified"} />
+        <MetricRow
+          label="Delivery format"
+          value={report.programsPartners.deliveryFormat ?? "Not specified"}
+        />
         <MetricRow label="Event category" value={report.programsPartners.eventCategory ?? "—"} />
         <MetricRow label="Eligible participants" value={report.attendance.eligibleParticipants} />
         <MetricRow label="Counties served" value={report.geography.countiesServed} />
@@ -125,8 +137,14 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
       </Section>
 
       <Section title="Institution participation">
-        <MetricRow label="Institutions represented" value={report.institutions.institutionsRepresented} />
-        <MetricRow label="1890 institutions represented" value={report.institutions.landGrant1890Represented} />
+        <MetricRow
+          label="Institutions represented"
+          value={report.institutions.institutionsRepresented}
+        />
+        <MetricRow
+          label="1890 institutions represented"
+          value={report.institutions.landGrant1890Represented}
+        />
       </Section>
 
       <Section title="Participant demographic aggregates">
@@ -208,7 +226,9 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
 
       <Section title="Selected participant comments">
         {n.selectedParticipantQuotes ? (
-          <p className="whitespace-pre-wrap text-sm text-foreground/90">{n.selectedParticipantQuotes}</p>
+          <p className="whitespace-pre-wrap text-sm text-foreground/90">
+            {n.selectedParticipantQuotes}
+          </p>
         ) : report.evaluation.openTextSamples.length > 0 ? (
           <ul className="list-disc space-y-2 pl-5 text-sm text-foreground/90">
             {report.evaluation.openTextSamples.map((sample, index) => (
@@ -234,7 +254,9 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
                   loading="lazy"
                 />
                 {item.caption && (
-                  <figcaption className="px-2 py-1 text-xs text-muted-foreground">{item.caption}</figcaption>
+                  <figcaption className="px-2 py-1 text-xs text-muted-foreground">
+                    {item.caption}
+                  </figcaption>
                 )}
               </figure>
             ))}
@@ -244,7 +266,9 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
 
       <Section title="Recommendations and follow-up">
         <h3 className="font-medium">Recommendations</h3>
-        <p className="mb-4 whitespace-pre-wrap text-sm text-foreground/90">{n.recommendations || "—"}</p>
+        <p className="mb-4 whitespace-pre-wrap text-sm text-foreground/90">
+          {n.recommendations || "—"}
+        </p>
         <h3 className="font-medium">Follow-up actions</h3>
         <p className="whitespace-pre-wrap text-sm text-foreground/90">{n.followUpActions || "—"}</p>
         {n.additionalComments && (
@@ -256,7 +280,10 @@ export function EventReportPreviewPanel({ report, showAdminNote = true }: EventR
       </Section>
 
       <footer className="report-footer border-t border-primary/20 pt-4 text-center text-xs text-muted-foreground">
-        <p>JESUP · Carver Integrative Sustainability Center · Tuskegee University Cooperative Extension</p>
+        <p>
+          JESUP · Carver Integrative Sustainability Center · Tuskegee University Cooperative
+          Extension
+        </p>
         <p className="mt-1">Generated {fmtDateTime(report.generatedAt)}</p>
       </footer>
     </div>
