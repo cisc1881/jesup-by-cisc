@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { downloadCsv } from "@/lib/csv";
+import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
 import { Pencil, Trash2 } from "lucide-react";
 import { fmtDate } from "@/lib/format";
@@ -24,6 +25,7 @@ const empty = { name: "", description: "", category: "", quantity_total: 1, imag
 
 function AdminEquipment() {
   const qc = useQueryClient();
+  const { confirmAndDelete, dialog } = useAdminDelete();
   const [tab, setTab] = useState("inventory");
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
@@ -53,11 +55,16 @@ function AdminEquipment() {
     if (res.error) return toast.error(res.error.message);
     toast.success("Saved"); setOpen(false); qc.invalidateQueries({ queryKey: ["admin-equipment"] });
   }
-  async function del(id: string) {
-    if (!confirm("Delete?")) return;
-    const { error } = await supabase.from("equipment").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-equipment"] });
+  async function del(id: string, name: string) {
+    await confirmAndDelete({
+      entityLabel: "equipment item",
+      itemName: name,
+      onDelete: async () => {
+        const { error } = await supabase.from("equipment").delete().eq("id", id);
+        if (error) throw error;
+      },
+      onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-equipment"] }),
+    });
   }
   async function updateReq(id: string, status: string) {
     const { error } = await supabase.from("equipment_checkouts").update({ status: status as any }).eq("id", id);
@@ -94,7 +101,7 @@ function AdminEquipment() {
                     <TableCell>{r.quantity_total}</TableCell>
                     <TableCell><div className="flex gap-1">
                       <Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => del(r.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => del(r.id, r.name)} aria-label={`Delete ${r.name}`}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div></TableCell>
                   </TableRow>
                 ))}
@@ -157,6 +164,7 @@ function AdminEquipment() {
           </form>
         </DialogContent>
       </Dialog>
+      {dialog}
     </AdminShell>
   );
 }

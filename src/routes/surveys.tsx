@@ -6,8 +6,15 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { ClipboardList, ExternalLink } from "lucide-react";
 
+import { listPageHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/surveys")({
-  head: () => ({ meta: [{ title: "Surveys · CISC Connect" }, { name: "description", content: "Help shape CISC programs by taking a short survey." }] }),
+  head: () =>
+    listPageHead({
+      title: "Surveys",
+      description: "Help shape CISC programs by taking a short survey.",
+      path: "/surveys",
+    }),
   component: SurveysPage,
 });
 

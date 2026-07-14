@@ -12,9 +12,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Package } from "lucide-react";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/equipment")({
-  head: () => ({ meta: [{ title: "Equipment Checkout · CISC Connect" }, { name: "description", content: "Reserve equipment for your community project." }] }),
+  head: () => listPageHead({ title: "Equipment Checkout", description: "Reserve equipment for your community project through JESUP.", path: "/equipment" }),
   component: EquipmentPage,
 });
 
