@@ -10,4 +10,4 @@ export { CommunityImpactSection } from "./community-impact-section";
 export { StrategicPartnersHomeSection } from "./strategic-partners-home-section";
 export { NewsHomeSection } from "./news-home-section";
 export { HomeCtaSection } from "./home-cta-section";
-export { HomeWeatherSection } from "./home-weather-section";
+export { HomeWeatherSection, WeatherResourceCenter } from "./home-weather-section";

@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import ciscLogo from "@/assets/cisc-logo.png.asset.json";
 import { JesupLogoMark } from "@/components/branding";
 import { CiscTabStory } from "@/components/cisc-tab-story";
+import { FloatingUtilityDock } from "@/components/floating-utility-dock";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
@@ -65,6 +66,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
           </div>
         </footer>
       </div>
+      <FloatingUtilityDock />
       <BottomNav />
     </div>
   );
