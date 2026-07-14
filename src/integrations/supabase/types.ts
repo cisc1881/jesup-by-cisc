@@ -3945,6 +3945,18 @@ export type Database = {
         }
         Returns: string
       }
+      create_user_notification: {
+        Args: {
+          p_action_url?: string
+          p_body?: string
+          p_entity_id?: string
+          p_entity_type?: string
+          p_title: string
+          p_type: Database["public"]["Enums"]["notification_type"]
+          p_user_id: string
+        }
+        Returns: string
+      }
       create_anonymous_evaluation_response: {
         Args: { p_evaluation_id: string }
         Returns: {
@@ -4270,6 +4282,7 @@ export type Database = {
         | "grant_deadline"
         | "inquiry_received"
         | "evaluation_submitted"
+        | "internship_application"
       preferred_contact_method: "email" | "phone" | "either"
       publication_content_type:
         | "factsheet"
@@ -4537,6 +4550,7 @@ export const Constants = {
         "grant_deadline",
         "inquiry_received",
         "evaluation_submitted",
+        "internship_application",
       ],
       preferred_contact_method: ["email", "phone", "either"],
       publication_content_type: [

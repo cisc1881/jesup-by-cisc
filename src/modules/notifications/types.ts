@@ -6,7 +6,8 @@ export type NotificationType =
   | "equipment_request"
   | "grant_deadline"
   | "inquiry_received"
-  | "evaluation_submitted";
+  | "evaluation_submitted"
+  | "internship_application";
 
 export type NotificationPriority = "low" | "normal" | "high" | "urgent";
 
@@ -43,6 +44,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   grant_deadline: "Grant deadline",
   inquiry_received: "Public inquiry",
   evaluation_submitted: "Evaluation submitted",
+  internship_application: "Internship application",
 };
 
 export const DEFAULT_ACTION_URLS: Record<NotificationType, string> = {
@@ -54,4 +56,5 @@ export const DEFAULT_ACTION_URLS: Record<NotificationType, string> = {
   grant_deadline: "/admin/grants",
   inquiry_received: "/admin/inquiries",
   evaluation_submitted: "/admin/events",
+  internship_application: "/admin/internships",
 };

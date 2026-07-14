@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Search, Sparkles, User as UserIcon } from "lucide-react";
+import { Bell, LogOut, Search, Sparkles, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -79,6 +79,12 @@ export function PublicNav() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/me">My Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/me/notifications">
+                    <Bell className="mr-2 h-4 w-4" />
+                    Notifications
+                  </Link>
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem asChild>
