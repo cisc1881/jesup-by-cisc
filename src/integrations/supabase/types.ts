@@ -4067,6 +4067,10 @@ export type Database = {
           ticket_code: string
         }[]
       }
+      submit_internship_application: {
+        Args: { p_application: Json }
+        Returns: string
+      }
       set_event_gallery_cover: {
         Args: { p_event_id: string; p_gallery_id: string }
         Returns: {

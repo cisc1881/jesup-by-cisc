@@ -188,7 +188,8 @@ export type Submit2FASApplicationInput = {
 
 export type SubmitInternshipApplicationInput = Submit2FASApplicationInput;
 
-const cohortSelect = "id, name, track, year, description, starts_on, ends_on, is_active, sort_order";
+const cohortSelect =
+  "id, name, track, year, description, starts_on, ends_on, is_active, sort_order";
 
 const internshipSelect = `
   id, slug, title, description, department, deadline, is_open,
@@ -303,7 +304,9 @@ async function fetchInternshipMap(ids: string[]) {
   if (ids.length === 0) return new Map<string, TwofasInternship>();
   const { data, error } = await supabase.from("internships").select(internshipSelect).in("id", ids);
   if (error) throw error;
-  return new Map((data ?? []).map((row) => [row.id, mapInternship(row as Record<string, unknown>)]));
+  return new Map(
+    (data ?? []).map((row) => [row.id, mapInternship(row as Record<string, unknown>)]),
+  );
 }
 
 async function fetchCohortMap(ids: string[]) {
@@ -341,7 +344,11 @@ async function seedStudentMilestonesForApplication(applicationId: string, cohort
 }
 
 export async function list2FASCohorts(options?: { activeOnly?: boolean; track?: TwofasTrack }) {
-  let query = supabase.from("twofas_cohorts").select(cohortSelect).order("year", { ascending: false }).order("sort_order");
+  let query = supabase
+    .from("twofas_cohorts")
+    .select(cohortSelect)
+    .order("year", { ascending: false })
+    .order("sort_order");
   if (options?.activeOnly !== false) query = query.eq("is_active", true);
   if (options?.track) query = query.eq("track", options.track);
 
@@ -367,7 +374,9 @@ export async function list2FASInternships(options?: { openOnly?: boolean }) {
 export async function get2FASApplication(applicationId: string): Promise<TwofasApplication | null> {
   const { data: row, error } = await supabase
     .from("internship_applications")
-    .select(`${applicationSelect}, profiles ( full_name, email ), internships ( ${internshipSelect} ), twofas_cohorts ( ${cohortSelect} )`)
+    .select(
+      `${applicationSelect}, profiles ( full_name, email ), internships ( ${internshipSelect} ), twofas_cohorts ( ${cohortSelect} )`,
+    )
     .eq("id", applicationId)
     .maybeSingle();
 
@@ -387,11 +396,17 @@ export async function get2FASApplication(applicationId: string): Promise<TwofasA
   const [mentorRes, milestones, documents] = await Promise.all([
     supabase
       .from("twofas_mentor_assignments")
-      .select("id, application_id, mentor_id, assigned_at, assigned_by, notes, twofas_mentors ( id, user_id, full_name, email, bio, expertise, is_active )")
+      .select(
+        "id, application_id, mentor_id, assigned_at, assigned_by, notes, twofas_mentors ( id, user_id, full_name, email, bio, expertise, is_active )",
+      )
       .eq("application_id", applicationId)
       .maybeSingle(),
     list2FASMilestones(applicationId),
-    supabase.from("twofas_documents").select("*").eq("application_id", applicationId).order("created_at", { ascending: false }),
+    supabase
+      .from("twofas_documents")
+      .select("*")
+      .eq("application_id", applicationId)
+      .order("created_at", { ascending: false }),
   ]);
 
   if (mentorRes.error) throw mentorRes.error;
@@ -411,32 +426,31 @@ export async function get2FASApplication(applicationId: string): Promise<TwofasA
   }
 
   application.milestones = milestones;
-  application.documents = (documents.data ?? []).map((doc) => mapDocument(doc as Record<string, unknown>));
+  application.documents = (documents.data ?? []).map((doc) =>
+    mapDocument(doc as Record<string, unknown>),
+  );
   return application;
 }
 
 export async function submit2FASApplication(input: Submit2FASApplicationInput) {
-  const { data: internship, error: internshipError } = await supabase
-    .from("internships")
-    .select("id, is_2fas, is_open, track, cohort_id")
-    .eq("id", input.internshipId)
-    .single();
+  return submitNativeInternshipApplication(input);
+}
 
-  if (internshipError) throw internshipError;
-  if (!internship.is_2fas) throw new Error("This opportunity is not part of the 2FAS program.");
-  if (!internship.is_open) throw new Error("Applications are closed for this opportunity.");
+export async function submitInternshipApplication(input: SubmitInternshipApplicationInput) {
+  return submitNativeInternshipApplication(input);
+}
 
-  const now = new Date().toISOString();
-  const { data, error } = await supabase
-    .from("internship_applications")
-    .insert({
+async function submitNativeInternshipApplication(input: SubmitInternshipApplicationInput) {
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user || auth.user.id !== input.userId) {
+    throw new Error("Sign in is required to apply.");
+  }
+
+  const { data, error } = await supabase.rpc("submit_internship_application", {
+    p_application: {
       internship_id: input.internshipId,
-      user_id: input.userId,
-      status: "pending",
       cover_letter: input.coverLetter || null,
       resume_url: input.resumeUrl || null,
-      cohort_id: input.cohortId ?? internship.cohort_id ?? null,
-      track: input.track ?? internship.track ?? null,
       school_name: input.schoolName || null,
       major: input.major || null,
       graduation_year: input.graduationYear ?? null,
@@ -445,52 +459,12 @@ export async function submit2FASApplication(input: Submit2FASApplicationInput) {
       is_1890_land_grant: input.is1890LandGrant ?? null,
       academic_level: input.academicLevel ?? null,
       emergency_contact: input.emergencyContact ?? {},
-      submitted_at: now,
-    })
-    .select("id")
-    .single();
+    },
+  });
 
   if (error) throw error;
-  return data.id as string;
-}
-
-export async function submitInternshipApplication(input: SubmitInternshipApplicationInput) {
-  const { data: internship, error: internshipError } = await supabase
-    .from("internships")
-    .select("id, is_2fas, is_open, track, cohort_id")
-    .eq("id", input.internshipId)
-    .single();
-
-  if (internshipError) throw internshipError;
-  if (!internship.is_open) throw new Error("Applications are closed for this opportunity.");
-
-  if (internship.is_2fas) {
-    return submit2FASApplication(input);
-  }
-
-  const now = new Date().toISOString();
-  const { data, error } = await supabase
-    .from("internship_applications")
-    .insert({
-      internship_id: input.internshipId,
-      user_id: input.userId,
-      status: "pending",
-      cover_letter: input.coverLetter || null,
-      resume_url: input.resumeUrl || null,
-      school_name: input.schoolName || null,
-      major: input.major || null,
-      graduation_year: input.graduationYear ?? null,
-      institution_id: input.institutionId ?? null,
-      institution_type: input.institutionType ?? null,
-      is_1890_land_grant: input.is1890LandGrant ?? null,
-      academic_level: input.academicLevel ?? null,
-      submitted_at: now,
-    })
-    .select("id")
-    .single();
-
-  if (error) throw error;
-  return data.id as string;
+  if (!data) throw new Error("Application was not created.");
+  return data as string;
 }
 
 export async function listMy2FASApplications(userId: string) {
@@ -503,14 +477,16 @@ export async function listMy2FASApplications(userId: string) {
 
   if (error) throw error;
 
-  const cohortIds = [...new Set((data ?? []).map((row) => row.cohort_id).filter(Boolean))] as string[];
+  const cohortIds = [
+    ...new Set((data ?? []).map((row) => row.cohort_id).filter(Boolean)),
+  ] as string[];
   const cohortMap = await fetchCohortMap(cohortIds);
 
   return (data ?? []).map((row) => {
     const internshipRaw = row.internships as Record<string, unknown>;
     return mapApplicationRow(row as Record<string, unknown>, {
       internship: mapInternship(internshipRaw),
-      cohort: row.cohort_id ? cohortMap.get(row.cohort_id) ?? null : null,
+      cohort: row.cohort_id ? (cohortMap.get(row.cohort_id) ?? null) : null,
     });
   });
 }
@@ -522,7 +498,9 @@ export async function listAdmin2FASApplications(options?: {
 }) {
   let query = supabase
     .from("internship_applications")
-    .select(`${applicationSelect}, profiles ( full_name, email ), internships!inner ( ${internshipSelect} )`)
+    .select(
+      `${applicationSelect}, profiles ( full_name, email ), internships!inner ( ${internshipSelect} )`,
+    )
     .eq("internships.is_2fas", true)
     .order("created_at", { ascending: false });
 
@@ -533,7 +511,9 @@ export async function listAdmin2FASApplications(options?: {
   const { data, error } = await query;
   if (error) throw error;
 
-  const cohortIds = [...new Set((data ?? []).map((row) => row.cohort_id).filter(Boolean))] as string[];
+  const cohortIds = [
+    ...new Set((data ?? []).map((row) => row.cohort_id).filter(Boolean)),
+  ] as string[];
   const cohortMap = await fetchCohortMap(cohortIds);
 
   return (data ?? []).map((row) => {
@@ -541,7 +521,7 @@ export async function listAdmin2FASApplications(options?: {
     const profile = row.profiles as { full_name: string | null; email: string | null } | null;
     return mapApplicationRow(row as Record<string, unknown>, {
       internship: mapInternship(internshipRaw),
-      cohort: row.cohort_id ? cohortMap.get(row.cohort_id) ?? null : null,
+      cohort: row.cohort_id ? (cohortMap.get(row.cohort_id) ?? null) : null,
       profile,
     });
   });
@@ -576,7 +556,11 @@ export async function update2FASApplicationStatus(
   }
 }
 
-export async function assign2FASMentor(applicationId: string, mentorId: string, assignedBy?: string | null) {
+export async function assign2FASMentor(
+  applicationId: string,
+  mentorId: string,
+  assignedBy?: string | null,
+) {
   const { error } = await supabase.from("twofas_mentor_assignments").upsert(
     {
       application_id: applicationId,
@@ -657,14 +641,17 @@ export async function upload2FASDocument(
     .eq("id", applicationId)
     .single();
   if (appError) throw appError;
-  if (application.user_id !== userId) throw new Error("You can only upload documents to your own application.");
+  if (application.user_id !== userId)
+    throw new Error("You can only upload documents to your own application.");
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const filePath = `${userId}/${applicationId}/${Date.now()}-${safeName}`;
 
-  const { error: uploadError } = await supabase.storage.from(TWOFAS_DOCUMENTS_BUCKET).upload(filePath, file, {
-    upsert: false,
-  });
+  const { error: uploadError } = await supabase.storage
+    .from(TWOFAS_DOCUMENTS_BUCKET)
+    .upload(filePath, file, {
+      upsert: false,
+    });
   if (uploadError) throw uploadError;
 
   const { data, error } = await supabase
@@ -689,13 +676,17 @@ export function get2FASDocumentPublicUrl(filePath: string) {
 }
 
 export async function get2FASDocumentSignedUrl(filePath: string, expiresIn = 300) {
-  const { data, error } = await supabase.storage.from(TWOFAS_DOCUMENTS_BUCKET).createSignedUrl(filePath, expiresIn);
+  const { data, error } = await supabase.storage
+    .from(TWOFAS_DOCUMENTS_BUCKET)
+    .createSignedUrl(filePath, expiresIn);
   if (error) throw error;
   return data.signedUrl;
 }
 
 export async function get2FASResumeSignedUrl(path: string, expiresIn = 300) {
-  const { data, error } = await supabase.storage.from(RESUMES_BUCKET).createSignedUrl(path, expiresIn);
+  const { data, error } = await supabase.storage
+    .from(RESUMES_BUCKET)
+    .createSignedUrl(path, expiresIn);
   if (error) throw error;
   return data.signedUrl;
 }

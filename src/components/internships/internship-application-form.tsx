@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +48,7 @@ export function InternshipApplicationForm({
   onSuccess,
 }: InternshipApplicationFormProps) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [cover, setCover] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [institution, setInstitution] = useState<InstitutionSelection>(emptyInstitution);
@@ -100,6 +101,7 @@ export function InternshipApplicationForm({
     if (!user || busy) return;
 
     setBusy(true);
+    let uploadedResumePath: string | null = null;
     try {
       let resumeUrl: string | null = null;
       if (file) {
@@ -107,6 +109,7 @@ export function InternshipApplicationForm({
         const upload = await supabase.storage.from("resumes").upload(path, file);
         if (upload.error) throw upload.error;
         resumeUrl = path;
+        uploadedResumePath = path;
       }
 
       const graduationYear = academic.graduationYear.trim()
@@ -134,6 +137,12 @@ export function InternshipApplicationForm({
             : {},
       });
 
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["my-apps", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["my-internship-application-ids", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["admin-2fas-applications"] }),
+      ]);
+
       toast.success("Application submitted!");
       setCover("");
       setFile(null);
@@ -141,6 +150,9 @@ export function InternshipApplicationForm({
       setEmergencyPhone("");
       onSuccess?.();
     } catch (err) {
+      if (uploadedResumePath) {
+        await supabase.storage.from("resumes").remove([uploadedResumePath]);
+      }
       toast.error(err instanceof Error ? err.message : "Unable to submit application.");
     } finally {
       setBusy(false);
