@@ -43,13 +43,15 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
   const [busy, setBusy] = useState(false);
   const [demographicStep, setDemographicStep] = useState(false);
   const [registrationId, setRegistrationId] = useState<string | null>(null);
-  const [demographicForm, setDemographicForm] = useState<DemographicFormData>(buildEmptyDemographicForm());
+  const [demographicForm, setDemographicForm] = useState<DemographicFormData>(
+    buildEmptyDemographicForm(),
+  );
   const [savingDemographics, setSavingDemographics] = useState(false);
 
   const canRegister =
     event.registrationStatus === "open" ||
     event.registrationStatus === "waiting_list" ||
-    (event.registrationStatus === "invite_only" && inviteCode);
+    event.registrationStatus === "invite_only";
 
   async function handleRegister() {
     if (!user) {
@@ -59,12 +61,18 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     setBusy(true);
     try {
       const result = await registerForEvent(event.id, user.id, notes, inviteCode);
-      toast.success(result.status === "waiting_list" ? "Added to waiting list" : "You're registered!");
+      toast.success(
+        result.status === "waiting_list" ? "Added to waiting list" : "You're registered!",
+      );
       setRegistrationId(result.id);
       setDemographicStep(true);
-      qc.invalidateQueries({ queryKey: ["event-reg", event.id] });
-      qc.invalidateQueries({ queryKey: ["event-count", event.id] });
-      qc.invalidateQueries({ queryKey: ["events"] });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["event-reg", event.id] }),
+        qc.invalidateQueries({ queryKey: ["event-count", event.id] }),
+        qc.invalidateQueries({ queryKey: ["events"] }),
+        qc.invalidateQueries({ queryKey: ["my-regs", user.id] }),
+        qc.invalidateQueries({ queryKey: ["command-center-dashboard"] }),
+      ]);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Registration failed");
     } finally {
@@ -102,9 +110,14 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
             Optional demographic information
           </h2>
           <p className="text-sm text-muted-foreground">
-            Your registration is complete. You may share optional demographic information below or skip this step.
+            Your registration is complete. You may share optional demographic information below or
+            skip this step.
           </p>
-          <DemographicForm value={demographicForm} onChange={setDemographicForm} idPrefix="reg-demo" />
+          <DemographicForm
+            value={demographicForm}
+            onChange={setDemographicForm}
+            idPrefix="reg-demo"
+          />
           <div className="flex flex-col gap-2 sm:flex-row">
             <AppButton
               variant="primary"
@@ -134,11 +147,15 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
   return (
     <div className="space-y-4">
       <AppCard variant="lift" padding="md" className="space-y-4">
-        <h2 className="text-xl font-black tracking-[var(--tracking-tight)] text-foreground">Registration</h2>
+        <h2 className="text-xl font-black tracking-[var(--tracking-tight)] text-foreground">
+          Registration
+        </h2>
         {registration ? (
           <div className="space-y-3">
             <p className="font-semibold text-green-700">
-              {registration.status === "waiting_list" ? "You're on the waiting list." : "✓ You're registered."}
+              {registration.status === "waiting_list"
+                ? "You're on the waiting list."
+                : "✓ You're registered."}
             </p>
             {registration.ticket_code && (
               <div className="rounded-2xl border border-dashed border-border bg-secondary/40 p-4">
@@ -146,12 +163,16 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
                   <QrCode className="h-4 w-4" />
                   Digital ticket
                 </div>
-                <p className="mt-2 font-mono text-lg font-bold tracking-widest text-foreground">{registration.ticket_code}</p>
+                <p className="mt-2 font-mono text-lg font-bold tracking-widest text-foreground">
+                  {registration.ticket_code}
+                </p>
                 <p className="mt-2 text-xs text-muted-foreground">Show this code at check-in.</p>
               </div>
             )}
             {registration.checked_in_at && (
-              <p className="text-sm text-muted-foreground">Checked in {new Date(registration.checked_in_at).toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">
+                Checked in {new Date(registration.checked_in_at).toLocaleString()}
+              </p>
             )}
             <AppButton
               variant="outline"
@@ -166,7 +187,9 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
               Update optional demographics
             </AppButton>
           </div>
-        ) : !canRegister || event.registrationStatus === "closed" || event.registrationStatus === "sold_out" ? (
+        ) : !canRegister ||
+          event.registrationStatus === "closed" ||
+          event.registrationStatus === "sold_out" ? (
           <p className="text-muted-foreground">Registration is closed for this event.</p>
         ) : event.spotsRemaining === 0 && event.registrationStatus !== "waiting_list" ? (
           <p className="text-muted-foreground">This event is at capacity.</p>
@@ -175,7 +198,11 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
             {event.registrationStatus === "invite_only" && (
               <div>
                 <Label>Invite code</Label>
-                <Input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} placeholder="Enter invite code" />
+                <Input
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value)}
+                  placeholder="Enter invite code"
+                />
               </div>
             )}
             <div>
@@ -186,7 +213,14 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
                 placeholder="Dietary restrictions, accessibility needs, etc."
               />
             </div>
-            <AppButton variant="primary" size="lg" shape="pill" className="w-full" onClick={handleRegister} disabled={busy}>
+            <AppButton
+              variant="primary"
+              size="lg"
+              shape="pill"
+              className="w-full"
+              onClick={handleRegister}
+              disabled={busy}
+            >
               {busy ? "Registering…" : user ? "Register" : "Sign in to register"}
             </AppButton>
           </div>

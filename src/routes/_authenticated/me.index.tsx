@@ -49,7 +49,7 @@ function MePage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("event_registrations")
-        .select("id, notes, created_at, events(id,title,starts_at,location)")
+        .select("id, notes, status, ticket_code, created_at, events(id,title,starts_at,location)")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -131,8 +131,14 @@ function MePage() {
             {(!regs || regs.length === 0) && (
               <p className="text-muted-foreground">No registrations yet.</p>
             )}
-            {regs?.map((r: any) => (
-              <RegistrationDemographicsCard key={r.id} registrationId={r.id} event={r.events} />
+            {regs?.map((registration) => (
+              <RegistrationDemographicsCard
+                key={registration.id}
+                registrationId={registration.id}
+                registrationStatus={registration.status}
+                ticketCode={registration.ticket_code}
+                event={registration.events}
+              />
             ))}
           </TabsContent>
           <TabsContent value="evaluations" className="mt-4 space-y-6">
@@ -301,9 +307,13 @@ function MePage() {
 
 function RegistrationDemographicsCard({
   registrationId,
+  registrationStatus,
+  ticketCode,
   event,
 }: {
   registrationId: string;
+  registrationStatus: "registered" | "waiting_list" | "cancelled";
+  ticketCode: string | null;
   event: { id: string; title: string; starts_at: string; location: string | null };
 }) {
   const qc = useQueryClient();
@@ -336,17 +346,31 @@ function RegistrationDemographicsCard({
   return (
     <Card>
       <CardContent className="space-y-3 p-4">
-        <Link
-          to="/events/$id"
-          params={{ id: event.id }}
-          className="font-serif text-lg font-semibold text-primary hover:underline"
-        >
-          {event.title}
-        </Link>
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <Link
+            to="/events/$id"
+            params={{ id: event.id }}
+            className="font-serif text-lg font-semibold text-primary hover:underline"
+          >
+            {event.title}
+          </Link>
+          <Badge>
+            {registrationStatus === "waiting_list"
+              ? "Waiting list"
+              : registrationStatus === "cancelled"
+                ? "Cancelled"
+                : "Registered"}
+          </Badge>
+        </div>
         <p className="text-sm text-muted-foreground">
           {fmtDateTime(event.starts_at)}
           {event.location ? ` · ${event.location}` : ""}
         </p>
+        {ticketCode && registrationStatus !== "cancelled" && (
+          <p className="text-sm text-muted-foreground">
+            Ticket: <span className="font-mono font-semibold text-foreground">{ticketCode}</span>
+          </p>
+        )}
         <p className="text-sm text-muted-foreground">
           Optional demographics: submission status is not displayed for privacy. You may update your
           responses at any time.

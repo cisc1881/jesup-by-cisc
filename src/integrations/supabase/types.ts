@@ -283,8 +283,7 @@ export type Database = {
       event_attendance: {
         Row: {
           attendance_method:
-            | Database["public"]["Enums"]["attendance_method"]
-            | null
+            Database["public"]["Enums"]["attendance_method"] | null
           checked_in_at: string | null
           checked_in_by: string | null
           created_at: string
@@ -299,8 +298,7 @@ export type Database = {
         }
         Insert: {
           attendance_method?:
-            | Database["public"]["Enums"]["attendance_method"]
-            | null
+            Database["public"]["Enums"]["attendance_method"] | null
           checked_in_at?: string | null
           checked_in_by?: string | null
           created_at?: string
@@ -315,8 +313,7 @@ export type Database = {
         }
         Update: {
           attendance_method?:
-            | Database["public"]["Enums"]["attendance_method"]
-            | null
+            Database["public"]["Enums"]["attendance_method"] | null
           checked_in_at?: string | null
           checked_in_by?: string | null
           created_at?: string
@@ -1372,8 +1369,7 @@ export type Database = {
           inquiry_type: Database["public"]["Enums"]["inquiry_type"]
           institution_id: string | null
           institution_type:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           last_name: string
           message: string | null
           newsletter_opt_in: boolean
@@ -1399,8 +1395,7 @@ export type Database = {
           inquiry_type: Database["public"]["Enums"]["inquiry_type"]
           institution_id?: string | null
           institution_type?:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           last_name: string
           message?: string | null
           newsletter_opt_in?: boolean
@@ -1426,8 +1421,7 @@ export type Database = {
           inquiry_type?: Database["public"]["Enums"]["inquiry_type"]
           institution_id?: string | null
           institution_type?:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           last_name?: string
           message?: string | null
           newsletter_opt_in?: boolean
@@ -1550,8 +1544,7 @@ export type Database = {
           id: string
           institution_id: string | null
           institution_type:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           internship_id: string
           is_1890_land_grant: boolean | null
           major: string | null
@@ -1575,8 +1568,7 @@ export type Database = {
           id?: string
           institution_id?: string | null
           institution_type?:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           internship_id: string
           is_1890_land_grant?: boolean | null
           major?: string | null
@@ -1600,8 +1592,7 @@ export type Database = {
           id?: string
           institution_id?: string | null
           institution_type?:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           internship_id?: string
           is_1890_land_grant?: boolean | null
           major?: string | null
@@ -2425,8 +2416,7 @@ export type Database = {
           id: string
           metadata: Json
           notification_type:
-            | Database["public"]["Enums"]["notification_type"]
-            | null
+            Database["public"]["Enums"]["notification_type"] | null
           priority: Database["public"]["Enums"]["notification_priority"]
           read_at: string | null
           status: Database["public"]["Enums"]["notification_status"]
@@ -2444,8 +2434,7 @@ export type Database = {
           id?: string
           metadata?: Json
           notification_type?:
-            | Database["public"]["Enums"]["notification_type"]
-            | null
+            Database["public"]["Enums"]["notification_type"] | null
           priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
@@ -2463,8 +2452,7 @@ export type Database = {
           id?: string
           metadata?: Json
           notification_type?:
-            | Database["public"]["Enums"]["notification_type"]
-            | null
+            Database["public"]["Enums"]["notification_type"] | null
           priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
@@ -2813,8 +2801,7 @@ export type Database = {
           id: string
           institution_id: string | null
           institution_type:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           is_1890_land_grant: boolean | null
           major_or_interest: string | null
           phone: string | null
@@ -2831,8 +2818,7 @@ export type Database = {
           id: string
           institution_id?: string | null
           institution_type?:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           is_1890_land_grant?: boolean | null
           major_or_interest?: string | null
           phone?: string | null
@@ -2849,8 +2835,7 @@ export type Database = {
           id?: string
           institution_id?: string | null
           institution_type?:
-            | Database["public"]["Enums"]["institution_type"]
-            | null
+            Database["public"]["Enums"]["institution_type"] | null
           is_1890_land_grant?: boolean | null
           major_or_interest?: string | null
           phone?: string | null
@@ -3299,8 +3284,7 @@ export type Database = {
           category: string | null
           category_id: string | null
           content_type:
-            | Database["public"]["Enums"]["publication_content_type"]
-            | null
+            Database["public"]["Enums"]["publication_content_type"] | null
           cover_image_url: string | null
           created_at: string
           description: string | null
@@ -3320,8 +3304,7 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           content_type?:
-            | Database["public"]["Enums"]["publication_content_type"]
-            | null
+            Database["public"]["Enums"]["publication_content_type"] | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -3341,8 +3324,7 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           content_type?:
-            | Database["public"]["Enums"]["publication_content_type"]
-            | null
+            Database["public"]["Enums"]["publication_content_type"] | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -4073,6 +4055,18 @@ export type Database = {
         Args: { p_attendance_id: string }
         Returns: undefined
       }
+      register_for_event: {
+        Args: {
+          p_event_id: string
+          p_invite_code?: string
+          p_notes?: string
+        }
+        Returns: {
+          id: string
+          status: Database["public"]["Enums"]["event_registration_record_status"]
+          ticket_code: string
+        }[]
+      }
       set_event_gallery_cover: {
         Args: { p_event_id: string; p_gallery_id: string }
         Returns: {
@@ -4196,16 +4190,9 @@ export type Database = {
         | "no_show"
         | "cancelled"
       checkout_status:
-        | "pending"
-        | "approved"
-        | "denied"
-        | "checked_out"
-        | "returned"
+        "pending" | "approved" | "denied" | "checked_out" | "returned"
       demographic_source_type:
-        | "registration"
-        | "walk_in"
-        | "evaluation"
-        | "attendance"
+        "registration" | "walk_in" | "evaluation" | "attendance"
       evaluation_question_type:
         | "rating"
         | "single_choice"
@@ -4218,24 +4205,14 @@ export type Database = {
         | "consent"
       evaluation_response_mode: "anonymous" | "identified"
       event_registration_record_status:
-        | "registered"
-        | "waiting_list"
-        | "cancelled"
+        "registered" | "waiting_list" | "cancelled"
       event_registration_status:
-        | "open"
-        | "closed"
-        | "waiting_list"
-        | "sold_out"
-        | "invite_only"
+        "open" | "closed" | "waiting_list" | "sold_out" | "invite_only"
       event_report_status: "draft" | "final"
       event_status: "draft" | "published" | "archived"
       gallery_submission_status: "pending" | "approved" | "rejected"
       inquiry_status:
-        | "new"
-        | "contacted"
-        | "in_progress"
-        | "resolved"
-        | "closed"
+        "new" | "contacted" | "in_progress" | "resolved" | "closed"
       inquiry_type:
         | "join_program"
         | "request_info"
@@ -4302,18 +4279,9 @@ export type Database = {
       twofas_document_type: "resume" | "transcript" | "portfolio" | "other"
       twofas_track: "high_school" | "undergraduate" | "graduate" | "fellow"
       weather_alert_delivery_status:
-        | "pending"
-        | "sent"
-        | "suppressed"
-        | "failed"
-        | "test"
-        | "expired"
+        "pending" | "sent" | "suppressed" | "failed" | "test" | "expired"
       weather_delayed_delivery_status:
-        | "pending"
-        | "sent"
-        | "expired"
-        | "failed"
-        | "suppressed"
+        "pending" | "sent" | "expired" | "failed" | "suppressed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4329,12 +4297,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4356,13 +4324,12 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4381,13 +4348,12 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4406,13 +4372,12 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4425,11 +4390,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 export const EVENT_IMAGES_BUCKET = "event-images";
 
 export type EventStatus = "draft" | "published" | "archived";
-export type EventRegistrationStatus = "open" | "closed" | "waiting_list" | "sold_out" | "invite_only";
+export type EventRegistrationStatus =
+  "open" | "closed" | "waiting_list" | "sold_out" | "invite_only";
 export type EventRegistrationRecordStatus = "registered" | "waiting_list" | "cancelled";
 
 export type EventCategory = {
@@ -157,7 +158,11 @@ export type EventRegistrationRow = {
 };
 
 export function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export function registrationStatusLabel(status: EventRegistrationStatus) {
@@ -182,7 +187,9 @@ export function eventStatusLabel(status: EventStatus) {
 
 export async function uploadEventImage(file: File, prefix = "covers") {
   const path = `${prefix}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const { error } = await supabase.storage.from(EVENT_IMAGES_BUCKET).upload(path, file, { upsert: true });
+  const { error } = await supabase.storage
+    .from(EVENT_IMAGES_BUCKET)
+    .upload(path, file, { upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from(EVENT_IMAGES_BUCKET).getPublicUrl(path);
   return data.publicUrl;
@@ -199,7 +206,9 @@ async function fetchRegistrationCounts(eventIds: string[]) {
   if (eventIds.length === 0) return new Map<string, number>();
   const entries = await Promise.all(
     eventIds.map(async (id) => {
-      const { data, error } = await supabase.rpc("get_event_registration_count", { p_event_id: id });
+      const { data, error } = await supabase.rpc("get_event_registration_count", {
+        p_event_id: id,
+      });
       if (error) throw error;
       return [id, Number(data ?? 0)] as const;
     }),
@@ -208,7 +217,8 @@ async function fetchRegistrationCounts(eventIds: string[]) {
 }
 
 function mapListRow(row: Record<string, unknown>, registrationCount = 0): EventListItem {
-  const category = row.event_categories as { id: string; name: string; slug: string } | null | undefined;
+  const category = row.event_categories as
+    { id: string; name: string; slug: string } | null | undefined;
   const capacity = (row.capacity as number | null) ?? null;
   const registrationStatus = (row.registration_status as EventRegistrationStatus) ?? "open";
   return {
@@ -288,7 +298,11 @@ export async function fetchEvents(options?: {
 
 export async function fetchEventById(idOrSlug: string): Promise<EventDetail | null> {
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
-  let query = supabase.from("events").select(`${listSelect}, timezone, invite_code, metadata`).eq("is_active", true).eq("status", "published");
+  let query = supabase
+    .from("events")
+    .select(`${listSelect}, timezone, metadata`)
+    .eq("is_active", true)
+    .eq("status", "published");
   query = isUuid ? query.eq("id", idOrSlug) : query.eq("slug", idOrSlug);
 
   const { data: row, error } = await query.maybeSingle();
@@ -298,45 +312,64 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
   const eventId = row.id as string;
   const countMap = await fetchRegistrationCounts([eventId]);
 
-  const [sessionsRes, speakersRes, galleryRes, partnersRes, programsRes, publicationsRes, podcastsRes, grantsRes, surveyRes] =
-    await Promise.all([
-      supabase.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
-      supabase.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
-      supabase
-        .from("event_gallery")
-        .select("*")
-        .eq("event_id", eventId)
-        .eq("is_public_approved", true)
-        .order("sort_order"),
-      supabase
-        .from("event_partners")
-        .select("sort_order, sponsorship_level, partners ( id, name, slug, logo_url, website_url )")
-        .eq("event_id", eventId)
-        .order("sort_order"),
-      supabase
-        .from("program_events")
-        .select("sort_order, programs ( id, name, slug )")
-        .eq("event_id", eventId)
-        .order("sort_order"),
-      supabase
-        .from("publication_events")
-        .select("sort_order, publications ( id, title, slug )")
-        .eq("event_id", eventId)
-        .order("sort_order"),
-      supabase
-        .from("event_podcast_episodes")
-        .select("sort_order, podcast_episodes ( id, title, slug, guest )")
-        .eq("event_id", eventId)
-        .order("sort_order"),
-      supabase
-        .from("event_grants")
-        .select("sort_order, grants ( id, title, funder )")
-        .eq("event_id", eventId)
-        .order("sort_order"),
-      supabase.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
-    ]);
+  const [
+    sessionsRes,
+    speakersRes,
+    galleryRes,
+    partnersRes,
+    programsRes,
+    publicationsRes,
+    podcastsRes,
+    grantsRes,
+    surveyRes,
+  ] = await Promise.all([
+    supabase.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
+    supabase.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
+    supabase
+      .from("event_gallery")
+      .select("*")
+      .eq("event_id", eventId)
+      .eq("is_public_approved", true)
+      .order("sort_order"),
+    supabase
+      .from("event_partners")
+      .select("sort_order, sponsorship_level, partners ( id, name, slug, logo_url, website_url )")
+      .eq("event_id", eventId)
+      .order("sort_order"),
+    supabase
+      .from("program_events")
+      .select("sort_order, programs ( id, name, slug )")
+      .eq("event_id", eventId)
+      .order("sort_order"),
+    supabase
+      .from("publication_events")
+      .select("sort_order, publications ( id, title, slug )")
+      .eq("event_id", eventId)
+      .order("sort_order"),
+    supabase
+      .from("event_podcast_episodes")
+      .select("sort_order, podcast_episodes ( id, title, slug, guest )")
+      .eq("event_id", eventId)
+      .order("sort_order"),
+    supabase
+      .from("event_grants")
+      .select("sort_order, grants ( id, title, funder )")
+      .eq("event_id", eventId)
+      .order("sort_order"),
+    supabase.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
+  ]);
 
-  for (const res of [sessionsRes, speakersRes, galleryRes, partnersRes, programsRes, publicationsRes, podcastsRes, grantsRes, surveyRes]) {
+  for (const res of [
+    sessionsRes,
+    speakersRes,
+    galleryRes,
+    partnersRes,
+    programsRes,
+    publicationsRes,
+    podcastsRes,
+    grantsRes,
+    surveyRes,
+  ]) {
     if (res.error) throw res.error;
   }
 
@@ -350,7 +383,7 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
   return {
     ...base,
     timezone: (row.timezone as string | null) ?? null,
-    inviteCode: (row.invite_code as string | null) ?? null,
+    inviteCode: null,
     metadata: (row.metadata as Record<string, unknown>) ?? {},
     sessions: (sessionsRes.data ?? []).map((s) => ({
       id: s.id,
@@ -378,7 +411,13 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
       isCover: g.is_cover,
     })),
     sponsors: (partnersRes.data ?? []).map((item) => {
-      const partner = item.partners as { id: string; name: string; slug: string; logo_url: string | null; website_url: string | null };
+      const partner = item.partners as {
+        id: string;
+        name: string;
+        slug: string;
+        logo_url: string | null;
+        website_url: string | null;
+      };
       return {
         id: partner.id,
         title: partner.name,
@@ -407,7 +446,12 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
       };
     }),
     podcasts: (podcastsRes.data ?? []).map((item) => {
-      const ep = item.podcast_episodes as { id: string; title: string; slug: string; guest: string | null };
+      const ep = item.podcast_episodes as {
+        id: string;
+        title: string;
+        slug: string;
+        guest: string | null;
+      };
       return {
         id: ep.id,
         title: ep.title,
@@ -417,7 +461,12 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
       };
     }),
     partners: (partnersRes.data ?? []).map((item) => {
-      const partner = item.partners as { id: string; name: string; slug: string; logo_url: string | null };
+      const partner = item.partners as {
+        id: string;
+        name: string;
+        slug: string;
+        logo_url: string | null;
+      };
       return {
         id: partner.id,
         title: partner.name,
@@ -466,7 +515,9 @@ export function partitionEvents(events: EventListItem[], now = Date.now()) {
     events.find((e) => e.isFeatured && new Date(e.startsAt).getTime() >= now) ??
     events.find((e) => new Date(e.startsAt).getTime() >= now) ??
     null;
-  const upcoming = events.filter((e) => new Date(e.startsAt).getTime() >= now && e.id !== featured?.id);
+  const upcoming = events.filter(
+    (e) => new Date(e.startsAt).getTime() >= now && e.id !== featured?.id,
+  );
   const weekEnd = now + 7 * 24 * 60 * 60 * 1000;
   const monthEnd = now + 30 * 24 * 60 * 60 * 1000;
   const thisWeek = upcoming.filter((e) => new Date(e.startsAt).getTime() <= weekEnd);
@@ -480,7 +531,10 @@ export function partitionEvents(events: EventListItem[], now = Date.now()) {
 }
 
 export async function fetchAdminEvents(): Promise<EventAdminRow[]> {
-  const { data, error } = await supabase.from("events").select(`${listSelect}, created_at`).order("starts_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("events")
+    .select(`${listSelect}, created_at`)
+    .order("starts_at", { ascending: false });
   if (error) throw error;
   const rows = data ?? [];
   const countMap = await fetchRegistrationCounts(rows.map((r) => r.id));
@@ -531,21 +585,46 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
   const { data: row, error } = await supabase.from("events").select("*").eq("id", eventId).single();
   if (error) throw error;
 
-  const [programsRes, pubsRes, podcastsRes, partnersRes, grantsRes, sessionsRes, speakersRes, galleryRes, surveyRes, evaluationRes] =
-    await Promise.all([
-      supabase.from("program_events").select("program_id").eq("event_id", eventId),
-      supabase.from("publication_events").select("publication_id").eq("event_id", eventId),
-      supabase.from("event_podcast_episodes").select("podcast_episode_id").eq("event_id", eventId),
-      supabase.from("event_partners").select("partner_id").eq("event_id", eventId),
-      supabase.from("event_grants").select("grant_id").eq("event_id", eventId),
-      supabase.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
-      supabase.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
-      supabase.from("event_gallery").select("*").eq("event_id", eventId).order("sort_order"),
-      supabase.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
-      supabase.from("event_evaluations").select("title, qualtrics_url, is_active").eq("event_id", eventId).maybeSingle(),
-    ]);
+  const [
+    programsRes,
+    pubsRes,
+    podcastsRes,
+    partnersRes,
+    grantsRes,
+    sessionsRes,
+    speakersRes,
+    galleryRes,
+    surveyRes,
+    evaluationRes,
+  ] = await Promise.all([
+    supabase.from("program_events").select("program_id").eq("event_id", eventId),
+    supabase.from("publication_events").select("publication_id").eq("event_id", eventId),
+    supabase.from("event_podcast_episodes").select("podcast_episode_id").eq("event_id", eventId),
+    supabase.from("event_partners").select("partner_id").eq("event_id", eventId),
+    supabase.from("event_grants").select("grant_id").eq("event_id", eventId),
+    supabase.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
+    supabase.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
+    supabase.from("event_gallery").select("*").eq("event_id", eventId).order("sort_order"),
+    supabase.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
+    supabase
+      .from("event_evaluations")
+      .select("title, qualtrics_url, is_active")
+      .eq("event_id", eventId)
+      .maybeSingle(),
+  ]);
 
-  for (const res of [programsRes, pubsRes, podcastsRes, partnersRes, grantsRes, sessionsRes, speakersRes, galleryRes, surveyRes, evaluationRes]) {
+  for (const res of [
+    programsRes,
+    pubsRes,
+    podcastsRes,
+    partnersRes,
+    grantsRes,
+    sessionsRes,
+    speakersRes,
+    galleryRes,
+    surveyRes,
+    evaluationRes,
+  ]) {
     if (res.error) throw res.error;
   }
 
@@ -621,7 +700,11 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
   if (form.programIds.length) {
     inserts.push(
       supabase.from("program_events").insert(
-        form.programIds.map((programId, index) => ({ event_id: eventId, program_id: programId, sort_order: index })),
+        form.programIds.map((programId, index) => ({
+          event_id: eventId,
+          program_id: programId,
+          sort_order: index,
+        })),
       ),
     );
   }
@@ -650,14 +733,22 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
   if (form.partnerIds.length) {
     inserts.push(
       supabase.from("event_partners").insert(
-        form.partnerIds.map((partnerId, index) => ({ event_id: eventId, partner_id: partnerId, sort_order: index })),
+        form.partnerIds.map((partnerId, index) => ({
+          event_id: eventId,
+          partner_id: partnerId,
+          sort_order: index,
+        })),
       ),
     );
   }
   if (form.grantIds.length) {
     inserts.push(
       supabase.from("event_grants").insert(
-        form.grantIds.map((grantId, index) => ({ event_id: eventId, grant_id: grantId, sort_order: index })),
+        form.grantIds.map((grantId, index) => ({
+          event_id: eventId,
+          grant_id: grantId,
+          sort_order: index,
+        })),
       ),
     );
   }
@@ -714,7 +805,8 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
 
 export async function saveEvent(eventId: string | null, form: EventFormData) {
   const slug = form.slug.trim() || slugify(form.title);
-  const registrationOpen = form.registrationStatus === "open" || form.registrationStatus === "waiting_list";
+  const registrationOpen =
+    form.registrationStatus === "open" || form.registrationStatus === "waiting_list";
   const payload = {
     slug,
     title: form.title,
@@ -769,7 +861,9 @@ export async function deleteEvent(eventId: string) {
 export async function fetchEventRegistrations(eventId: string): Promise<EventRegistrationRow[]> {
   const { data, error } = await supabase
     .from("event_registrations")
-    .select("id, user_id, notes, status, ticket_code, checked_in_at, created_at, profiles ( full_name, email )")
+    .select(
+      "id, user_id, notes, status, ticket_code, checked_in_at, created_at, profiles ( full_name, email )",
+    )
     .eq("event_id", eventId)
     .order("created_at", { ascending: false });
   if (error) throw error;
@@ -813,31 +907,35 @@ export async function fetchUserEventRegistration(eventId: string, userId: string
   return data;
 }
 
-export async function registerForEvent(eventId: string, userId: string, notes?: string, inviteCode?: string) {
-  const { data: event, error: eventError } = await supabase
-    .from("events")
-    .select("invite_code, registration_status")
-    .eq("id", eventId)
-    .single();
-  if (eventError) throw eventError;
+export async function registerForEvent(
+  eventId: string,
+  userId: string,
+  notes?: string,
+  inviteCode?: string,
+) {
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user || auth.user.id !== userId) throw new Error("Sign in is required to register");
 
-  if (event.registration_status === "invite_only" && event.invite_code && inviteCode !== event.invite_code) {
-    throw new Error("Invalid invite code");
-  }
-
-  const { data, error } = await supabase
-    .from("event_registrations")
-    .insert({ event_id: eventId, user_id: userId, notes: notes || null })
-    .select("id, status, ticket_code")
-    .single();
+  const { data, error } = await supabase.rpc("register_for_event", {
+    p_event_id: eventId,
+    p_notes: notes || undefined,
+    p_invite_code: inviteCode || undefined,
+  });
   if (error) throw error;
-  return data;
+  if (!data?.[0]) throw new Error("Registration was not created");
+  return data[0];
 }
 
 export async function getEventAnalytics(eventId: string) {
   const [regs, checkins] = await Promise.all([
-    supabase.from("event_registrations").select("status", { count: "exact" }).eq("event_id", eventId),
-    supabase.from("event_checkins").select("id", { count: "exact", head: true }).eq("event_id", eventId),
+    supabase
+      .from("event_registrations")
+      .select("status", { count: "exact" })
+      .eq("event_id", eventId),
+    supabase
+      .from("event_checkins")
+      .select("id", { count: "exact", head: true })
+      .eq("event_id", eventId),
   ]);
   if (regs.error) throw regs.error;
   if (checkins.error) throw checkins.error;
