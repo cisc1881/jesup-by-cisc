@@ -14,185 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      ai_interactions: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          duration_ms: number | null
-          error_code: string | null
-          feature: string
-          id: string
-          input_tokens: number | null
-          metadata: Json
-          model: string
-          output_tokens: number | null
-          provider: string
-          request_id: string | null
-          status: Database["public"]["Enums"]["ai_interaction_status"]
-          user_id: string | null
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          duration_ms?: number | null
-          error_code?: string | null
-          feature: string
-          id?: string
-          input_tokens?: number | null
-          metadata?: Json
-          model: string
-          output_tokens?: number | null
-          provider: string
-          request_id?: string | null
-          status?: Database["public"]["Enums"]["ai_interaction_status"]
-          user_id?: string | null
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          duration_ms?: number | null
-          error_code?: string | null
-          feature?: string
-          id?: string
-          input_tokens?: number | null
-          metadata?: Json
-          model?: string
-          output_tokens?: number | null
-          provider?: string
-          request_id?: string | null
-          status?: Database["public"]["Enums"]["ai_interaction_status"]
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      content_tag_links: {
-        Row: {
-          created_at: string
-          entity_id: string
-          entity_type: string
-          id: string
-          tag_id: string
-        }
-        Insert: {
-          created_at?: string
-          entity_id: string
-          entity_type: string
-          id?: string
-          tag_id: string
-        }
-        Update: {
-          created_at?: string
-          entity_id?: string
-          entity_type?: string
-          id?: string
-          tag_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "content_tag_links_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "content_tags"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      content_tags: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-          slug: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          slug: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          slug?: string
-        }
-        Relationships: []
-      }
-      county_emergency_contacts: {
-        Row: {
-          agency_name: string
-          alert_signup_url: string | null
-          alternate_phone: string | null
-          archived_at: string | null
-          county_name: string
-          created_at: string
-          emergency_kit_guidance: string | null
-          household_storm_protocol: string | null
-          id: string
-          is_active: boolean
-          notes: string | null
-          primary_phone: string | null
-          shelter_info_url: string | null
-          source_name: string | null
-          source_url: string | null
-          state_code: string
-          state_name: string
-          updated_at: string
-          verification_status: string
-          verified_date: string | null
-          weather_radio_guidance: string | null
-          website_url: string | null
-        }
-        Insert: {
-          agency_name: string
-          alert_signup_url?: string | null
-          alternate_phone?: string | null
-          archived_at?: string | null
-          county_name: string
-          created_at?: string
-          emergency_kit_guidance?: string | null
-          household_storm_protocol?: string | null
-          id?: string
-          is_active?: boolean
-          notes?: string | null
-          primary_phone?: string | null
-          shelter_info_url?: string | null
-          source_name?: string | null
-          source_url?: string | null
-          state_code: string
-          state_name: string
-          updated_at?: string
-          verification_status?: string
-          verified_date?: string | null
-          weather_radio_guidance?: string | null
-          website_url?: string | null
-        }
-        Update: {
-          agency_name?: string
-          alert_signup_url?: string | null
-          alternate_phone?: string | null
-          archived_at?: string | null
-          county_name?: string
-          created_at?: string
-          emergency_kit_guidance?: string | null
-          household_storm_protocol?: string | null
-          id?: string
-          is_active?: boolean
-          notes?: string | null
-          primary_phone?: string | null
-          shelter_info_url?: string | null
-          source_name?: string | null
-          source_url?: string | null
-          state_code?: string
-          state_name?: string
-          updated_at?: string
-          verification_status?: string
-          verified_date?: string | null
-          weather_radio_guidance?: string | null
-          website_url?: string | null
-        }
-        Relationships: []
-      }
       equipment: {
         Row: {
           category: string | null
@@ -225,65 +46,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      email_deliveries: {
-        Row: {
-          action_url: string | null
-          attempts: number
-          body: string
-          created_at: string
-          id: string
-          last_error: string | null
-          next_attempt_at: string
-          notification_id: string | null
-          provider_message_id: string | null
-          recipient: string
-          sent_at: string | null
-          status: Database["public"]["Enums"]["email_delivery_status"]
-          subject: string
-          updated_at: string
-        }
-        Insert: {
-          action_url?: string | null
-          attempts?: number
-          body: string
-          created_at?: string
-          id?: string
-          last_error?: string | null
-          next_attempt_at?: string
-          notification_id?: string | null
-          provider_message_id?: string | null
-          recipient: string
-          sent_at?: string | null
-          status?: Database["public"]["Enums"]["email_delivery_status"]
-          subject: string
-          updated_at?: string
-        }
-        Update: {
-          action_url?: string | null
-          attempts?: number
-          body?: string
-          created_at?: string
-          id?: string
-          last_error?: string | null
-          next_attempt_at?: string
-          notification_id?: string | null
-          provider_message_id?: string | null
-          recipient?: string
-          sent_at?: string | null
-          status?: Database["public"]["Enums"]["email_delivery_status"]
-          subject?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "email_deliveries_notification_id_fkey"
-            columns: ["notification_id"]
-            isOneToOne: false
-            referencedRelation: "notifications"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       equipment_checkouts: {
         Row: {
@@ -342,7 +104,8 @@ export type Database = {
       event_attendance: {
         Row: {
           attendance_method:
-            Database["public"]["Enums"]["attendance_method"] | null
+            | Database["public"]["Enums"]["attendance_method"]
+            | null
           checked_in_at: string | null
           checked_in_by: string | null
           created_at: string
@@ -357,7 +120,8 @@ export type Database = {
         }
         Insert: {
           attendance_method?:
-            Database["public"]["Enums"]["attendance_method"] | null
+            | Database["public"]["Enums"]["attendance_method"]
+            | null
           checked_in_at?: string | null
           checked_in_by?: string | null
           created_at?: string
@@ -372,7 +136,8 @@ export type Database = {
         }
         Update: {
           attendance_method?:
-            Database["public"]["Enums"]["attendance_method"] | null
+            | Database["public"]["Enums"]["attendance_method"]
+            | null
           checked_in_at?: string | null
           checked_in_by?: string | null
           created_at?: string
@@ -1428,7 +1193,8 @@ export type Database = {
           inquiry_type: Database["public"]["Enums"]["inquiry_type"]
           institution_id: string | null
           institution_type:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           last_name: string
           message: string | null
           newsletter_opt_in: boolean
@@ -1454,7 +1220,8 @@ export type Database = {
           inquiry_type: Database["public"]["Enums"]["inquiry_type"]
           institution_id?: string | null
           institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           last_name: string
           message?: string | null
           newsletter_opt_in?: boolean
@@ -1480,7 +1247,8 @@ export type Database = {
           inquiry_type?: Database["public"]["Enums"]["inquiry_type"]
           institution_id?: string | null
           institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           last_name?: string
           message?: string | null
           newsletter_opt_in?: boolean
@@ -1534,13 +1302,6 @@ export type Database = {
           inquiry_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "inquiry_notes_author_profile_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "inquiry_notes_inquiry_id_fkey"
             columns: ["inquiry_id"]
@@ -1603,7 +1364,8 @@ export type Database = {
           id: string
           institution_id: string | null
           institution_type:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           internship_id: string
           is_1890_land_grant: boolean | null
           major: string | null
@@ -1627,7 +1389,8 @@ export type Database = {
           id?: string
           institution_id?: string | null
           institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           internship_id: string
           is_1890_land_grant?: boolean | null
           major?: string | null
@@ -1651,7 +1414,8 @@ export type Database = {
           id?: string
           institution_id?: string | null
           institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           internship_id?: string
           is_1890_land_grant?: boolean | null
           major?: string | null
@@ -2159,281 +1923,6 @@ export type Database = {
         }
         Relationships: []
       }
-      media_assets: {
-        Row: {
-          alt_text: string | null
-          asset_type: Database["public"]["Enums"]["media_asset_type"]
-          bucket: string | null
-          caption: string | null
-          created_at: string
-          created_by: string | null
-          file_size: number | null
-          id: string
-          is_active: boolean
-          metadata: Json
-          mime_type: string | null
-          module_context: string | null
-          name: string
-          storage_path: string | null
-          tags: string[]
-          updated_at: string
-          url: string
-        }
-        Insert: {
-          alt_text?: string | null
-          asset_type?: Database["public"]["Enums"]["media_asset_type"]
-          bucket?: string | null
-          caption?: string | null
-          created_at?: string
-          created_by?: string | null
-          file_size?: number | null
-          id?: string
-          is_active?: boolean
-          metadata?: Json
-          mime_type?: string | null
-          module_context?: string | null
-          name: string
-          storage_path?: string | null
-          tags?: string[]
-          updated_at?: string
-          url: string
-        }
-        Update: {
-          alt_text?: string | null
-          asset_type?: Database["public"]["Enums"]["media_asset_type"]
-          bucket?: string | null
-          caption?: string | null
-          created_at?: string
-          created_by?: string | null
-          file_size?: number | null
-          id?: string
-          is_active?: boolean
-          metadata?: Json
-          mime_type?: string | null
-          module_context?: string | null
-          name?: string
-          storage_path?: string | null
-          tags?: string[]
-          updated_at?: string
-          url?: string
-        }
-        Relationships: []
-      }
-      news_articles: {
-        Row: {
-          author: string | null
-          category: string | null
-          content_html: string | null
-          cover_image_url: string | null
-          created_at: string
-          id: string
-          is_featured: boolean
-          is_published: boolean
-          published_at: string | null
-          reading_time_minutes: number | null
-          seo_description: string | null
-          seo_title: string | null
-          slug: string
-          sort_order: number
-          summary: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          author?: string | null
-          category?: string | null
-          content_html?: string | null
-          cover_image_url?: string | null
-          created_at?: string
-          id?: string
-          is_featured?: boolean
-          is_published?: boolean
-          published_at?: string | null
-          reading_time_minutes?: number | null
-          seo_description?: string | null
-          seo_title?: string | null
-          slug: string
-          sort_order?: number
-          summary?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          author?: string | null
-          category?: string | null
-          content_html?: string | null
-          cover_image_url?: string | null
-          created_at?: string
-          id?: string
-          is_featured?: boolean
-          is_published?: boolean
-          published_at?: string | null
-          reading_time_minutes?: number | null
-          seo_description?: string | null
-          seo_title?: string | null
-          slug?: string
-          sort_order?: number
-          summary?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      news_events: {
-        Row: {
-          event_id: string
-          news_article_id: string
-          sort_order: number
-        }
-        Insert: {
-          event_id: string
-          news_article_id: string
-          sort_order?: number
-        }
-        Update: {
-          event_id?: string
-          news_article_id?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "news_events_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "news_events_news_article_id_fkey"
-            columns: ["news_article_id"]
-            isOneToOne: false
-            referencedRelation: "news_articles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      news_partners: {
-        Row: {
-          news_article_id: string
-          partner_id: string
-          sort_order: number
-        }
-        Insert: {
-          news_article_id: string
-          partner_id: string
-          sort_order?: number
-        }
-        Update: {
-          news_article_id?: string
-          partner_id?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "news_partners_news_article_id_fkey"
-            columns: ["news_article_id"]
-            isOneToOne: false
-            referencedRelation: "news_articles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "news_partners_partner_id_fkey"
-            columns: ["partner_id"]
-            isOneToOne: false
-            referencedRelation: "partners"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      news_programs: {
-        Row: {
-          news_article_id: string
-          program_id: string
-          sort_order: number
-        }
-        Insert: {
-          news_article_id: string
-          program_id: string
-          sort_order?: number
-        }
-        Update: {
-          news_article_id?: string
-          program_id?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "news_programs_news_article_id_fkey"
-            columns: ["news_article_id"]
-            isOneToOne: false
-            referencedRelation: "news_articles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "news_programs_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      news_publications: {
-        Row: {
-          news_article_id: string
-          publication_id: string
-          sort_order: number
-        }
-        Insert: {
-          news_article_id: string
-          publication_id: string
-          sort_order?: number
-        }
-        Update: {
-          news_article_id?: string
-          publication_id?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "news_publications_news_article_id_fkey"
-            columns: ["news_article_id"]
-            isOneToOne: false
-            referencedRelation: "news_articles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "news_publications_publication_id_fkey"
-            columns: ["publication_id"]
-            isOneToOne: false
-            referencedRelation: "publications"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      news_tags: {
-        Row: {
-          news_article_id: string
-          tag: string
-        }
-        Insert: {
-          news_article_id: string
-          tag: string
-        }
-        Update: {
-          news_article_id?: string
-          tag?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "news_tags_news_article_id_fkey"
-            columns: ["news_article_id"]
-            isOneToOne: false
-            referencedRelation: "news_articles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       notification_reads: {
         Row: {
           id: string
@@ -2475,7 +1964,8 @@ export type Database = {
           id: string
           metadata: Json
           notification_type:
-            Database["public"]["Enums"]["notification_type"] | null
+            | Database["public"]["Enums"]["notification_type"]
+            | null
           priority: Database["public"]["Enums"]["notification_priority"]
           read_at: string | null
           status: Database["public"]["Enums"]["notification_status"]
@@ -2493,7 +1983,8 @@ export type Database = {
           id?: string
           metadata?: Json
           notification_type?:
-            Database["public"]["Enums"]["notification_type"] | null
+            | Database["public"]["Enums"]["notification_type"]
+            | null
           priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
@@ -2511,7 +2002,8 @@ export type Database = {
           id?: string
           metadata?: Json
           notification_type?:
-            Database["public"]["Enums"]["notification_type"] | null
+            | Database["public"]["Enums"]["notification_type"]
+            | null
           priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
@@ -2600,159 +2092,45 @@ export type Database = {
           },
         ]
       }
-      partner_podcast_episodes: {
-        Row: {
-          partner_id: string
-          podcast_episode_id: string
-          sort_order: number
-        }
-        Insert: {
-          partner_id: string
-          podcast_episode_id: string
-          sort_order?: number
-        }
-        Update: {
-          partner_id?: string
-          podcast_episode_id?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "partner_podcast_episodes_partner_id_fkey"
-            columns: ["partner_id"]
-            isOneToOne: false
-            referencedRelation: "partners"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "partner_podcast_episodes_podcast_episode_id_fkey"
-            columns: ["podcast_episode_id"]
-            isOneToOne: false
-            referencedRelation: "podcast_episodes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      partner_publications: {
-        Row: {
-          partner_id: string
-          publication_id: string
-          sort_order: number
-        }
-        Insert: {
-          partner_id: string
-          publication_id: string
-          sort_order?: number
-        }
-        Update: {
-          partner_id?: string
-          publication_id?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "partner_publications_partner_id_fkey"
-            columns: ["partner_id"]
-            isOneToOne: false
-            referencedRelation: "partners"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "partner_publications_publication_id_fkey"
-            columns: ["publication_id"]
-            isOneToOne: false
-            referencedRelation: "publications"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       partners: {
         Row: {
-          address: string | null
           category: string | null
           created_at: string
           description: string | null
-          email: string | null
           id: string
-          is_featured: boolean
           is_published: boolean
           logo_url: string | null
-          mission: string | null
           name: string
-          notes: string | null
-          partnership_areas: string[]
-          phone: string | null
-          short_description: string | null
           slug: string
-          social_links: Json
           sort_order: number
           updated_at: string
           website_url: string | null
         }
         Insert: {
-          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
-          email?: string | null
           id?: string
-          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
-          mission?: string | null
           name: string
-          notes?: string | null
-          partnership_areas?: string[]
-          phone?: string | null
-          short_description?: string | null
           slug: string
-          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
         }
         Update: {
-          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
-          email?: string | null
           id?: string
-          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
-          mission?: string | null
           name?: string
-          notes?: string | null
-          partnership_areas?: string[]
-          phone?: string | null
-          short_description?: string | null
           slug?: string
-          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
-        }
-        Relationships: []
-      }
-      platform_settings: {
-        Row: {
-          key: string
-          updated_at: string
-          updated_by: string | null
-          value: Json
-        }
-        Insert: {
-          key: string
-          updated_at?: string
-          updated_by?: string | null
-          value?: Json
-        }
-        Update: {
-          key?: string
-          updated_at?: string
-          updated_by?: string | null
-          value?: Json
         }
         Relationships: []
       }
@@ -2810,45 +2188,6 @@ export type Database = {
         }
         Relationships: []
       }
-      processed_weather_alerts: {
-        Row: {
-          created_at: string
-          delivery_status: Database["public"]["Enums"]["weather_alert_delivery_status"]
-          event_name: string
-          expires_at: string
-          failure_reason: string | null
-          id: string
-          nws_alert_id: string
-          sent_at: string | null
-          severity: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          delivery_status?: Database["public"]["Enums"]["weather_alert_delivery_status"]
-          event_name: string
-          expires_at: string
-          failure_reason?: string | null
-          id?: string
-          nws_alert_id: string
-          sent_at?: string | null
-          severity: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          delivery_status?: Database["public"]["Enums"]["weather_alert_delivery_status"]
-          event_name?: string
-          expires_at?: string
-          failure_reason?: string | null
-          id?: string
-          nws_alert_id?: string
-          sent_at?: string | null
-          severity?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           academic_level: Database["public"]["Enums"]["academic_level"] | null
@@ -2860,7 +2199,8 @@ export type Database = {
           id: string
           institution_id: string | null
           institution_type:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           is_1890_land_grant: boolean | null
           major_or_interest: string | null
           phone: string | null
@@ -2877,7 +2217,8 @@ export type Database = {
           id: string
           institution_id?: string | null
           institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           is_1890_land_grant?: boolean | null
           major_or_interest?: string | null
           phone?: string | null
@@ -2894,7 +2235,8 @@ export type Database = {
           id?: string
           institution_id?: string | null
           institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+            | Database["public"]["Enums"]["institution_type"]
+            | null
           is_1890_land_grant?: boolean | null
           major_or_interest?: string | null
           phone?: string | null
@@ -3343,7 +2685,8 @@ export type Database = {
           category: string | null
           category_id: string | null
           content_type:
-            Database["public"]["Enums"]["publication_content_type"] | null
+            | Database["public"]["Enums"]["publication_content_type"]
+            | null
           cover_image_url: string | null
           created_at: string
           description: string | null
@@ -3363,7 +2706,8 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           content_type?:
-            Database["public"]["Enums"]["publication_content_type"] | null
+            | Database["public"]["Enums"]["publication_content_type"]
+            | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -3383,7 +2727,8 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           content_type?:
-            Database["public"]["Enums"]["publication_content_type"] | null
+            | Database["public"]["Enums"]["publication_content_type"]
+            | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -3407,54 +2752,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      push_subscriptions: {
-        Row: {
-          auth: string
-          created_at: string
-          device_label: string | null
-          endpoint: string
-          failure_count: number
-          id: string
-          is_active: boolean
-          last_success_at: string | null
-          p256dh: string
-          revoked_at: string | null
-          updated_at: string
-          user_agent: string | null
-          user_id: string
-        }
-        Insert: {
-          auth: string
-          created_at?: string
-          device_label?: string | null
-          endpoint: string
-          failure_count?: number
-          id?: string
-          is_active?: boolean
-          last_success_at?: string | null
-          p256dh: string
-          revoked_at?: string | null
-          updated_at?: string
-          user_agent?: string | null
-          user_id: string
-        }
-        Update: {
-          auth?: string
-          created_at?: string
-          device_label?: string | null
-          endpoint?: string
-          failure_count?: number
-          id?: string
-          is_active?: boolean
-          last_success_at?: string | null
-          p256dh?: string
-          revoked_at?: string | null
-          updated_at?: string
-          user_agent?: string | null
-          user_id?: string
-        }
-        Relationships: []
       }
       surveys: {
         Row: {
@@ -3760,168 +3057,6 @@ export type Database = {
         }
         Relationships: []
       }
-      weather_alert_delayed_deliveries: {
-        Row: {
-          created_at: string
-          event_name: string
-          expires_at: string
-          failure_reason: string | null
-          id: string
-          nws_alert_id: string
-          scheduled_for: string
-          severity: string
-          status: Database["public"]["Enums"]["weather_delayed_delivery_status"]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          event_name: string
-          expires_at: string
-          failure_reason?: string | null
-          id?: string
-          nws_alert_id: string
-          scheduled_for: string
-          severity: string
-          status?: Database["public"]["Enums"]["weather_delayed_delivery_status"]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          event_name?: string
-          expires_at?: string
-          failure_reason?: string | null
-          id?: string
-          nws_alert_id?: string
-          scheduled_for?: string
-          severity?: string
-          status?: Database["public"]["Enums"]["weather_delayed_delivery_status"]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      weather_alert_poll_runs: {
-        Row: {
-          alerts_fetched: number
-          created_at: string
-          deliveries_delayed: number
-          deliveries_failed: number
-          deliveries_sent: number
-          deliveries_suppressed: number
-          error_message: string | null
-          finished_at: string | null
-          groups_polled: number
-          id: string
-          started_at: string
-          status: string
-          trigger_source: string
-          triggered_by: string | null
-        }
-        Insert: {
-          alerts_fetched?: number
-          created_at?: string
-          deliveries_delayed?: number
-          deliveries_failed?: number
-          deliveries_sent?: number
-          deliveries_suppressed?: number
-          error_message?: string | null
-          finished_at?: string | null
-          groups_polled?: number
-          id?: string
-          started_at?: string
-          status?: string
-          trigger_source?: string
-          triggered_by?: string | null
-        }
-        Update: {
-          alerts_fetched?: number
-          created_at?: string
-          deliveries_delayed?: number
-          deliveries_failed?: number
-          deliveries_sent?: number
-          deliveries_suppressed?: number
-          error_message?: string | null
-          finished_at?: string | null
-          groups_polled?: number
-          id?: string
-          started_at?: string
-          status?: string
-          trigger_source?: string
-          triggered_by?: string | null
-        }
-        Relationships: []
-      }
-      weather_notification_preferences: {
-        Row: {
-          alerts_enabled: boolean
-          county_name: string | null
-          created_at: string
-          daily_forecast_enabled: boolean
-          emergencies_enabled: boolean
-          enabled: boolean
-          id: string
-          last_alert_checked_at: string | null
-          latitude_bucket: number | null
-          location_source: string | null
-          longitude_bucket: number | null
-          quiet_hours_enabled: boolean
-          quiet_hours_end: string | null
-          quiet_hours_start: string | null
-          state_code: string | null
-          timezone: string
-          updated_at: string
-          user_id: string
-          warnings_enabled: boolean
-          watches_enabled: boolean
-        }
-        Insert: {
-          alerts_enabled?: boolean
-          county_name?: string | null
-          created_at?: string
-          daily_forecast_enabled?: boolean
-          emergencies_enabled?: boolean
-          enabled?: boolean
-          id?: string
-          last_alert_checked_at?: string | null
-          latitude_bucket?: number | null
-          location_source?: string | null
-          longitude_bucket?: number | null
-          quiet_hours_enabled?: boolean
-          quiet_hours_end?: string | null
-          quiet_hours_start?: string | null
-          state_code?: string | null
-          timezone?: string
-          updated_at?: string
-          user_id: string
-          warnings_enabled?: boolean
-          watches_enabled?: boolean
-        }
-        Update: {
-          alerts_enabled?: boolean
-          county_name?: string | null
-          created_at?: string
-          daily_forecast_enabled?: boolean
-          emergencies_enabled?: boolean
-          enabled?: boolean
-          id?: string
-          last_alert_checked_at?: string | null
-          latitude_bucket?: number | null
-          location_source?: string | null
-          longitude_bucket?: number | null
-          quiet_hours_enabled?: boolean
-          quiet_hours_end?: string | null
-          quiet_hours_start?: string | null
-          state_code?: string | null
-          timezone?: string
-          updated_at?: string
-          user_id?: string
-          warnings_enabled?: boolean
-          watches_enabled?: boolean
-        }
-        Relationships: []
-      }
     }
     Views: {
       program_podcasts: {
@@ -3992,10 +3127,6 @@ export type Database = {
       }
     }
     Functions: {
-      claim_email_deliveries: {
-        Args: { p_limit?: number }
-        Returns: Database["public"]["Tables"]["email_deliveries"]["Row"][]
-      }
       create_admin_notification: {
         Args: {
           p_action_url?: string
@@ -4005,18 +3136,6 @@ export type Database = {
           p_priority?: Database["public"]["Enums"]["notification_priority"]
           p_title: string
           p_type: Database["public"]["Enums"]["notification_type"]
-        }
-        Returns: string
-      }
-      create_user_notification: {
-        Args: {
-          p_action_url?: string
-          p_body?: string
-          p_entity_id?: string
-          p_entity_type?: string
-          p_title: string
-          p_type: Database["public"]["Enums"]["notification_type"]
-          p_user_id: string
         }
         Returns: string
       }
@@ -4130,22 +3249,6 @@ export type Database = {
         Args: { p_attendance_id: string }
         Returns: undefined
       }
-      register_for_event: {
-        Args: {
-          p_event_id: string
-          p_invite_code?: string
-          p_notes?: string
-        }
-        Returns: {
-          id: string
-          status: Database["public"]["Enums"]["event_registration_record_status"]
-          ticket_code: string
-        }[]
-      }
-      submit_internship_application: {
-        Args: { p_application: Json }
-        Returns: string
-      }
       set_event_gallery_cover: {
         Args: { p_event_id: string; p_gallery_id: string }
         Returns: {
@@ -4242,14 +3345,12 @@ export type Database = {
       }
     }
     Enums: {
-      email_delivery_status: "pending" | "processing" | "sent" | "failed"
       academic_level:
         | "high_school"
         | "undergraduate"
         | "graduate"
         | "recent_graduate"
         | "other"
-      ai_interaction_status: "started" | "completed" | "failed" | "blocked"
       app_role: "admin" | "user"
       application_status:
         | "pending"
@@ -4270,9 +3371,16 @@ export type Database = {
         | "no_show"
         | "cancelled"
       checkout_status:
-        "pending" | "approved" | "denied" | "checked_out" | "returned"
+        | "pending"
+        | "approved"
+        | "denied"
+        | "checked_out"
+        | "returned"
       demographic_source_type:
-        "registration" | "walk_in" | "evaluation" | "attendance"
+        | "registration"
+        | "walk_in"
+        | "evaluation"
+        | "attendance"
       evaluation_question_type:
         | "rating"
         | "single_choice"
@@ -4285,14 +3393,24 @@ export type Database = {
         | "consent"
       evaluation_response_mode: "anonymous" | "identified"
       event_registration_record_status:
-        "registered" | "waiting_list" | "cancelled"
+        | "registered"
+        | "waiting_list"
+        | "cancelled"
       event_registration_status:
-        "open" | "closed" | "waiting_list" | "sold_out" | "invite_only"
+        | "open"
+        | "closed"
+        | "waiting_list"
+        | "sold_out"
+        | "invite_only"
       event_report_status: "draft" | "final"
       event_status: "draft" | "published" | "archived"
       gallery_submission_status: "pending" | "approved" | "rejected"
       inquiry_status:
-        "new" | "contacted" | "in_progress" | "resolved" | "closed"
+        | "new"
+        | "contacted"
+        | "in_progress"
+        | "resolved"
+        | "closed"
       inquiry_type:
         | "join_program"
         | "request_info"
@@ -4323,15 +3441,6 @@ export type Database = {
         | "value_added"
         | "prepared_foods"
         | "crafts"
-      media_asset_type:
-        | "image"
-        | "video"
-        | "pdf"
-        | "magazine_cover"
-        | "factsheet"
-        | "audio"
-        | "logo"
-        | "document"
       milestone_status: "pending" | "in_progress" | "completed" | "waived"
       notification_audience: "admin" | "user"
       notification_channel: "in_app" | "email" | "sms" | "push"
@@ -4346,7 +3455,6 @@ export type Database = {
         | "grant_deadline"
         | "inquiry_received"
         | "evaluation_submitted"
-        | "internship_application"
       preferred_contact_method: "email" | "phone" | "either"
       publication_content_type:
         | "factsheet"
@@ -4359,10 +3467,6 @@ export type Database = {
         | "extension_bulletin"
       twofas_document_type: "resume" | "transcript" | "portfolio" | "other"
       twofas_track: "high_school" | "undergraduate" | "graduate" | "fellow"
-      weather_alert_delivery_status:
-        "pending" | "sent" | "suppressed" | "failed" | "test" | "expired"
-      weather_delayed_delivery_status:
-        "pending" | "sent" | "expired" | "failed" | "suppressed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4378,12 +3482,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4405,12 +3509,13 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4429,12 +3534,13 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4453,12 +3559,13 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4471,11 +3578,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never) = never,
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4487,7 +3594,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      email_delivery_status: ["pending", "processing", "sent", "failed"],
       academic_level: [
         "high_school",
         "undergraduate",
@@ -4495,7 +3601,6 @@ export const Constants = {
         "recent_graduate",
         "other",
       ],
-      ai_interaction_status: ["started", "completed", "failed", "blocked"],
       app_role: ["admin", "user"],
       application_status: [
         "pending",
@@ -4591,16 +3696,6 @@ export const Constants = {
         "prepared_foods",
         "crafts",
       ],
-      media_asset_type: [
-        "image",
-        "video",
-        "pdf",
-        "magazine_cover",
-        "factsheet",
-        "audio",
-        "logo",
-        "document",
-      ],
       milestone_status: ["pending", "in_progress", "completed", "waived"],
       notification_audience: ["admin", "user"],
       notification_channel: ["in_app", "email", "sms", "push"],
@@ -4615,7 +3710,6 @@ export const Constants = {
         "grant_deadline",
         "inquiry_received",
         "evaluation_submitted",
-        "internship_application",
       ],
       preferred_contact_method: ["email", "phone", "either"],
       publication_content_type: [
@@ -4630,21 +3724,6 @@ export const Constants = {
       ],
       twofas_document_type: ["resume", "transcript", "portfolio", "other"],
       twofas_track: ["high_school", "undergraduate", "graduate", "fellow"],
-      weather_alert_delivery_status: [
-        "pending",
-        "sent",
-        "suppressed",
-        "failed",
-        "test",
-        "expired",
-      ],
-      weather_delayed_delivery_status: [
-        "pending",
-        "sent",
-        "expired",
-        "failed",
-        "suppressed",
-      ],
     },
   },
 } as const
