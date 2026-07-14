@@ -229,7 +229,16 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                   <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm">
                     {uploadingCover ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                     Upload
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleCoverUpload(e.target.files[0])} />
+                    <input
+                      id="event-cover-upload"
+                      name="eventCover"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) =>
+                        e.target.files?.[0] && handleCoverUpload(e.target.files[0])
+                      }
+                    />
                   </label>
                 </div>
               </div>
