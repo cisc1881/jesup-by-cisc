@@ -4,6 +4,7 @@ export const JESUP_SITE_NAME = "JESUP";
 export const JESUP_SITE_TAGLINE = "The Digital Extension Wagon";
 export const JESUP_DEFAULT_DESCRIPTION =
   "Programs, workshops, publications, and opportunities from the Carver Integrative Sustainability Center at Tuskegee University.";
+export const JESUP_DEFAULT_SOCIAL_IMAGE = "/social/jesup-social-share.png";
 
 /** Public site origin for canonical URLs and JSON-LD. Override with VITE_SITE_URL in production. */
 export const JESUP_SITE_URL =
@@ -25,11 +26,16 @@ function absoluteUrl(path: string) {
   return `${JESUP_SITE_URL.replace(/\/$/, "")}${normalized}`;
 }
 
+function absoluteMediaUrl(url: string) {
+  return new URL(url, `${JESUP_SITE_URL.replace(/\/$/, "")}/`).toString();
+}
+
 export function buildPageHead(input: PageSeoInput) {
   const title = input.title.includes("JESUP") ? input.title : `${input.title} · JESUP`;
   const description = input.description?.trim() || JESUP_DEFAULT_DESCRIPTION;
   const canonical = input.path ? absoluteUrl(input.path) : undefined;
   const ogType = input.type ?? "website";
+  const socialImage = absoluteMediaUrl(input.imageUrl || JESUP_DEFAULT_SOCIAL_IMAGE);
 
   const meta: Array<Record<string, string>> = [
     { title },
@@ -38,18 +44,18 @@ export function buildPageHead(input: PageSeoInput) {
     { property: "og:description", content: description },
     { property: "og:type", content: ogType },
     { property: "og:site_name", content: JESUP_SITE_NAME },
-    { name: "twitter:card", content: input.imageUrl ? "summary_large_image" : "summary" },
+    { property: "og:image", content: socialImage },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:alt", content: `${JESUP_SITE_NAME} by CISC` },
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
+    { name: "twitter:image", content: socialImage },
   ];
 
   if (input.noindex) {
     meta.push({ name: "robots", content: "noindex, nofollow" });
-  }
-
-  if (input.imageUrl) {
-    meta.push({ property: "og:image", content: input.imageUrl });
-    meta.push({ name: "twitter:image", content: input.imageUrl });
   }
 
   if (canonical) {

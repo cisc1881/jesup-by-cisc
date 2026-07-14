@@ -18,14 +18,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { fmtDate } from "@/lib/format";
 import { Briefcase } from "lucide-react";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/internships")({
-  head: () => ({
-    meta: [
-      { title: "Internships · JESUP" },
-      { name: "description", content: "Open internship positions at CISC." },
-    ],
-  }),
+  head: () => listPageHead({ title: "Internships", description: "Open internship positions and student opportunities at CISC.", path: "/internships" }),
   component: InternshipsPage,
 });
 

@@ -2,17 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PublicLayout } from "@/components/public-layout";
 import { Heart, GraduationCap, Sprout, FlaskConical, ArrowRight } from "lucide-react";
 import donateHero from "@/assets/jesup/donate-hero.jpg";
+import { buildPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/donate")({
-  head: () => ({
-    meta: [
-      { title: "Donate · JESUP" },
-      { name: "description", content: "Support the Carver Integrative Sustainability Center and the communities we serve." },
-      { property: "og:title", content: "Give to JESUP" },
-      { property: "og:description", content: "Every gift powers programs, students, and research across the Black Belt." },
-      { property: "og:image", content: donateHero },
-    ],
-  }),
+  head: () => buildPageHead({ title: "Give to JESUP", description: "Every gift powers CISC programs, students, research, and communities across the Black Belt.", path: "/donate", imageUrl: donateHero }),
   component: DonatePage,
 });
 

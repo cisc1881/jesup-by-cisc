@@ -17,19 +17,10 @@ import {
 } from "@/components/events";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { fetchEventCategories, fetchEvents, filterEvents, partitionEvents } from "@/lib/events";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/events/")({
-  head: () => ({
-    meta: [
-      { title: "Events · JESUP" },
-      {
-        name: "description",
-        content:
-          "Workshops, conferences, trainings, and community events from CISC at Tuskegee University.",
-      },
-      { property: "og:title", content: "Events · JESUP" },
-    ],
-  }),
+  head: () => listPageHead({ title: "Events", description: "Workshops, conferences, trainings, and community events from CISC at Tuskegee University.", path: "/events" }),
   component: EventsPage,
 });
 

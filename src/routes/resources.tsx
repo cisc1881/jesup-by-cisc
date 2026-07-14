@@ -2,16 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublicLayout, PageHeader } from "@/components/public-layout";
 import { ArrowRight } from "lucide-react";
 import { resourceHubLinks } from "@/lib/navigation";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/resources")({
-  head: () => ({
-    meta: [
-      { title: "Resources · JESUP" },
-      { name: "description", content: "Publications, farmers markets, grants, equipment, surveys, partners, donations, podcast, and more." },
-      { property: "og:title", content: "Resources · JESUP" },
-      { property: "og:description", content: "Every CISC resource, one tap away." },
-    ],
-  }),
+  head: () => listPageHead({ title: "Resources", description: "Publications, farmers markets, grants, equipment, surveys, partners, donations, podcasts, and more.", path: "/resources" }),
   component: Resources,
 });
 

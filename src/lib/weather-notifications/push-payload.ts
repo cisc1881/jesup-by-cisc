@@ -55,7 +55,7 @@ export function buildAlertPushPayload(
       `${alert.severity.charAt(0).toUpperCase()}${alert.severity.slice(1)} weather alert for your area.`,
       MAX_PUSH_BODY_LENGTH,
     ),
-    icon: "/favicon.ico",
+    icon: "/icons/icon-192.png",
     tag: `jesup-weather-${alert.id}`.slice(0, 64),
     url: validateNotificationUrl(options?.url ?? "/"),
     ...(options?.test ? { test: true } : {}),
@@ -66,7 +66,7 @@ export function buildDevelopmentServerTestPayload(): WeatherPushPayload {
   return {
     title: "Development only — JESUP server push test",
     body: "This is a development server push test. No live NWS alert was sent.",
-    icon: "/favicon.ico",
+    icon: "/icons/icon-192.png",
     tag: "jesup-weather-dev-server-test",
     url: "/me/weather-alerts",
     test: true,

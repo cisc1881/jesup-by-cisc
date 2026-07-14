@@ -17,15 +17,10 @@ import {
 } from "@/lib/publications";
 import type { PublicationContentType } from "@/lib/publication-content-types";
 import { BookOpen } from "lucide-react";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/publications")({
-  head: () => ({
-    meta: [
-      { title: "Publications · JESUP" },
-      { name: "description", content: "Research briefs, factsheets, reports, and community guides from CISC." },
-      { property: "og:title", content: "Publications · JESUP" },
-    ],
-  }),
+  head: () => listPageHead({ title: "Publications", description: "Research briefs, factsheets, reports, and community guides from CISC.", path: "/publications" }),
   component: PublicationsLayout,
 });
 

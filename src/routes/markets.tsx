@@ -22,18 +22,10 @@ import {
   partitionMarkets,
   type MarketProductCategory,
 } from "@/lib/markets";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/markets")({
-  head: () => ({
-    meta: [
-      { title: "Farmers Markets · JESUP" },
-      {
-        name: "description",
-        content: "Find farmers markets near you — locally grown food, SNAP/EBT, and community agriculture from CISC.",
-      },
-      { property: "og:title", content: "Farmers Markets · JESUP" },
-    ],
-  }),
+  head: () => listPageHead({ title: "Farmers Markets", description: "Find farmers markets near you — locally grown food, SNAP/EBT, and community agriculture from CISC.", path: "/markets" }),
   component: MarketsPage,
 });
 

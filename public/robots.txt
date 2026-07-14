@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /me/
+Disallow: /auth
+Disallow: /unauthorized
+
+Sitemap: https://jesup.cisc.edu/sitemap.xml

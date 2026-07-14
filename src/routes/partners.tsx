@@ -18,19 +18,10 @@ import {
   sortPartners,
   type PartnerSortMode,
 } from "@/lib/partners";
+import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/partners")({
-  head: () => ({
-    meta: [
-      { title: "Strategic Partners · JESUP" },
-      {
-        name: "description",
-        content:
-          "Universities, federal agencies, foundations, and community organizations collaborating with CISC through JESUP.",
-      },
-      { property: "og:title", content: "Strategic Partners · JESUP" },
-    ],
-  }),
+  head: () => listPageHead({ title: "Strategic Partners", description: "Universities, federal agencies, foundations, and community organizations collaborating with CISC through JESUP.", path: "/partners" }),
   component: PartnersLayout,
 });
 
