@@ -59,7 +59,7 @@ export function HomeWeatherSection() {
               Use my location
             </AppButton>
             <AppButton asChild variant="ghost" size="sm">
-              <Link to="/resources" hash="weather-emergency">Weather resources</Link>
+              <Link to="/weather">Weather resources</Link>
             </AppButton>
           </div>
         </div>

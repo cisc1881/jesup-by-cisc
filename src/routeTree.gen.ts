@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SurveysRouteImport } from './routes/surveys'
 import { Route as SearchRouteImport } from './routes/search'
@@ -80,6 +81,11 @@ import { Route as AuthenticatedAdminEventsEventIdGalleryRouteImport } from './ro
 import { Route as AuthenticatedAdminEventsEventIdEvaluationsRouteImport } from './routes/_authenticated/admin/events.$eventId.evaluations'
 import { Route as AuthenticatedAdminEventsEventIdAttendanceRouteImport } from './routes/_authenticated/admin/events.$eventId.attendance'
 
+const WeatherRoute = WeatherRouteImport.update({
+  id: '/weather',
+  path: '/weather',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
@@ -522,6 +528,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/weather': typeof WeatherRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/ask': typeof AuthenticatedAskRoute
   '/me': typeof AuthenticatedMeRouteWithChildren
@@ -593,6 +600,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/weather': typeof WeatherRoute
   '/ask': typeof AuthenticatedAskRoute
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
@@ -664,6 +672,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/weather': typeof WeatherRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/ask': typeof AuthenticatedAskRoute
   '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
@@ -737,6 +746,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/surveys'
     | '/unauthorized'
+    | '/weather'
     | '/admin'
     | '/ask'
     | '/me'
@@ -808,6 +818,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/surveys'
     | '/unauthorized'
+    | '/weather'
     | '/ask'
     | '/events/$id'
     | '/markets/$id'
@@ -878,6 +889,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/surveys'
     | '/unauthorized'
+    | '/weather'
     | '/_authenticated/admin'
     | '/_authenticated/ask'
     | '/_authenticated/me'
@@ -951,12 +963,20 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SurveysRoute: typeof SurveysRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
+  WeatherRoute: typeof WeatherRoute
   EventsIdRoute: typeof EventsIdRouteWithChildren
   EventsIndexRoute: typeof EventsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/weather': {
+      id: '/weather'
+      path: '/weather'
+      fullPath: '/weather'
+      preLoaderRoute: typeof WeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unauthorized': {
       id: '/unauthorized'
       path: '/unauthorized'
@@ -1697,6 +1717,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SurveysRoute: SurveysRoute,
   UnauthorizedRoute: UnauthorizedRoute,
+  WeatherRoute: WeatherRoute,
   EventsIdRoute: EventsIdRouteWithChildren,
   EventsIndexRoute: EventsIndexRoute,
 }

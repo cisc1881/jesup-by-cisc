@@ -3,7 +3,6 @@ import { PublicLayout, PageHeader } from "@/components/public-layout";
 import { ArrowRight } from "lucide-react";
 import { resourceHubLinks } from "@/lib/navigation";
 import { listPageHead } from "@/lib/seo";
-import { WeatherResourceCenter } from "@/components/home";
 
 export const Route = createFileRoute("/resources")({
   head: () => listPageHead({ title: "Resources", description: "Publications, farmers markets, grants, equipment, surveys, partners, donations, podcasts, and more.", path: "/resources" }),
@@ -15,14 +14,6 @@ function Resources() {
     <PublicLayout>
       <PageHeader eyebrow="One tap away" title="Resources" description="Everything CISC offers — organized, searchable, and ready when you are." />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-        <section id="weather-emergency" className="mb-10 scroll-mt-28" aria-labelledby="weather-emergency-title">
-          <div className="mb-5 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Local readiness</p>
-            <h2 id="weather-emergency-title" className="mt-2 text-3xl font-black tracking-tight">Local weather and emergency resources</h2>
-            <p className="mt-2 text-muted-foreground">Detailed forecasts, alerts, preparedness contacts, radar, and agricultural guidance for your location.</p>
-          </div>
-          <WeatherResourceCenter />
-        </section>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {resourceHubLinks.map((c) => (
             <Link key={c.to} to={c.to} className="group flex items-start gap-4 rounded-3xl bg-card p-6 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]">

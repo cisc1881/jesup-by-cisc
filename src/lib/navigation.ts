@@ -27,6 +27,7 @@ export const RESOURCE_ROUTES = [
   "/podcasts",
   "/news",
   "/internships",
+  "/weather",
 ] as const;
 
 export function isResourceRoute(pathname: string) {
@@ -43,7 +44,7 @@ export type ResourceHubLink = {
 };
 
 export const resourceHubLinks: ResourceHubLink[] = [
-  { to: "/resources#weather-emergency", icon: CloudSun, title: "Weather & emergency", body: "Detailed forecasts, alerts, local contacts, radar, and preparedness guidance." },
+  { to: "/weather", icon: CloudSun, title: "Weather & emergency", body: "Detailed forecasts, alerts, local contacts, radar, and preparedness guidance." },
   { to: "/join", icon: MessageSquare, title: "Join / Connect", body: "Connect with CISC programs, partnerships, and opportunities." },
   { to: "/publications", icon: BookOpen, title: "Publications", body: "Research briefs, community guides, and reports." },
   { to: "/markets", icon: MapPin, title: "Farmers markets", body: "Find local markets across Alabama." },
