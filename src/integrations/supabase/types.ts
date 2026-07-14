@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_interactions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          duration_ms: number | null
+          error_code: string | null
+          feature: string
+          id: string
+          input_tokens: number | null
+          metadata: Json
+          model: string
+          output_tokens: number | null
+          provider: string
+          request_id: string | null
+          status: Database["public"]["Enums"]["ai_interaction_status"]
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error_code?: string | null
+          feature: string
+          id?: string
+          input_tokens?: number | null
+          metadata?: Json
+          model: string
+          output_tokens?: number | null
+          provider: string
+          request_id?: string | null
+          status?: Database["public"]["Enums"]["ai_interaction_status"]
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error_code?: string | null
+          feature?: string
+          id?: string
+          input_tokens?: number | null
+          metadata?: Json
+          model?: string
+          output_tokens?: number | null
+          provider?: string
+          request_id?: string | null
+          status?: Database["public"]["Enums"]["ai_interaction_status"]
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       content_tag_links: {
         Row: {
           created_at: string
@@ -4124,6 +4175,7 @@ export type Database = {
         | "graduate"
         | "recent_graduate"
         | "other"
+      ai_interaction_status: "started" | "completed" | "failed" | "blocked"
       app_role: "admin" | "user"
       application_status:
         | "pending"
@@ -4396,6 +4448,7 @@ export const Constants = {
         "recent_graduate",
         "other",
       ],
+      ai_interaction_status: ["started", "completed", "failed", "blocked"],
       app_role: ["admin", "user"],
       application_status: [
         "pending",
