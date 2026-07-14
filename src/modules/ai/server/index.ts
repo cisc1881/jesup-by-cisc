@@ -12,7 +12,12 @@ export {
   type AiMessage,
   type AiProviderClient,
 } from "./proxy";
-export { executeJESUPRequest, type ExecuteJESUPRequest, type ExecuteJESUPResult } from "./execute";
+export {
+  buildConversationMessages,
+  executeJESUPRequest,
+  type ExecuteJESUPRequest,
+  type ExecuteJESUPResult,
+} from "./execute";
 export {
   loadAiProviderConfig,
   validateAiRuntimeSettings,

@@ -45,7 +45,11 @@ function AskJESUPPage() {
     setIsSending(true);
 
     try {
-      const result = await askJESUPServerFn({ data: { question: normalized } });
+      const history = messages.slice(-6).map((message) => ({
+        role: message.role,
+        content: message.content.slice(0, message.role === "user" ? 240 : 2_000),
+      }));
+      const result = await askJESUPServerFn({ data: { question: normalized, history } });
       setMessages((current) => [
         ...current,
         {
