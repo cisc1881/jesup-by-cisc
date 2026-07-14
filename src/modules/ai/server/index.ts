@@ -33,3 +33,4 @@ export {
   type AiRagContext,
   type AiSearch,
 } from "./rag";
+export { generateFactsheetDraft, parseFactsheetDraft, type FactsheetDraft } from "./factsheet";

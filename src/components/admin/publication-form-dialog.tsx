@@ -18,22 +18,36 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { fmtDateTime } from "@/lib/format";
+import type { FactsheetDraft } from "@/modules/ai/server/factsheet";
 
 type PublicationFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   publicationId: string | null;
   onSaved: () => void;
+  initialDraft?: FactsheetDraft | null;
 };
 
-export function PublicationFormDialog({ open, onOpenChange, publicationId, onSaved }: PublicationFormDialogProps) {
+export function PublicationFormDialog({
+  open,
+  onOpenChange,
+  publicationId,
+  onSaved,
+  initialDraft,
+}: PublicationFormDialogProps) {
   const [form, setForm] = useState<PublicationFormData>(emptyPublicationForm());
   const [saving, setSaving] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
@@ -51,12 +65,19 @@ export function PublicationFormDialog({ open, onOpenChange, publicationId, onSav
     queryFn: async () => {
       const [programs, events, podcasts] = await Promise.all([
         supabase.from("programs").select("id, name").eq("is_active", true).order("name"),
-        supabase.from("events").select("id, title, starts_at").order("starts_at", { ascending: false }),
+        supabase
+          .from("events")
+          .select("id, title, starts_at")
+          .order("starts_at", { ascending: false }),
         supabase.from("podcast_episodes").select("id, title, guest").order("title"),
       ]);
       return {
         programs: (programs.data ?? []).map((p) => ({ id: p.id, label: p.name })),
-        events: (events.data ?? []).map((e) => ({ id: e.id, label: e.title, hint: fmtDateTime(e.starts_at) })),
+        events: (events.data ?? []).map((e) => ({
+          id: e.id,
+          label: e.title,
+          hint: fmtDateTime(e.starts_at),
+        })),
         podcasts: (podcasts.data ?? []).map((p) => ({ id: p.id, label: p.title, hint: p.guest })),
       };
     },
@@ -65,8 +86,18 @@ export function PublicationFormDialog({ open, onOpenChange, publicationId, onSav
   useEffect(() => {
     if (!open) return;
     if (!publicationId) {
-      setForm(emptyPublicationForm());
-      setTagInput("");
+      const next = emptyPublicationForm();
+      if (initialDraft) {
+        next.title = initialDraft.title;
+        next.slug = slugify(initialDraft.title);
+        next.description = initialDraft.description;
+        next.author = initialDraft.author;
+        next.tags = initialDraft.tags;
+        next.contentType = "factsheet";
+        next.isActive = false;
+      }
+      setForm(next);
+      setTagInput(initialDraft?.tags.join(", ") ?? "");
       return;
     }
     fetchAdminPublicationForm(publicationId)
@@ -75,13 +106,16 @@ export function PublicationFormDialog({ open, onOpenChange, publicationId, onSav
         setTagInput(data.tags.join(", "));
       })
       .catch((err) => toast.error(err.message));
-  }, [open, publicationId]);
+  }, [open, publicationId, initialDraft]);
 
   function syncTags(value: string) {
     setTagInput(value);
     setForm((f) => ({
       ...f,
-      tags: value.split(",").map((t) => t.trim()).filter(Boolean),
+      tags: value
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
     }));
   }
 
@@ -146,44 +180,74 @@ export function PublicationFormDialog({ open, onOpenChange, publicationId, onSav
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Label>Slug</Label>
-                  <Input value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} />
+                  <Input
+                    value={form.slug}
+                    onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label>Author</Label>
-                  <Input value={form.author} onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))} />
+                  <Input
+                    value={form.author}
+                    onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
+                  />
                 </div>
               </div>
               <div>
                 <Label>Description</Label>
-                <Textarea rows={4} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+                <Textarea
+                  rows={4}
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Label>Content type</Label>
                   <Select
                     value={form.contentType || undefined}
-                    onValueChange={(v) => setForm((f) => ({ ...f, contentType: v as PublicationFormData["contentType"] }))}
+                    onValueChange={(v) =>
+                      setForm((f) => ({
+                        ...f,
+                        contentType: v as PublicationFormData["contentType"],
+                      }))
+                    }
                   >
-                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
                     <SelectContent>
                       {PUBLICATION_CONTENT_TYPES.map((t) => (
-                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                        <SelectItem key={t.value} value={t.value}>
+                          {t.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Published date</Label>
-                  <Input type="date" value={form.publishedAt} onChange={(e) => setForm((f) => ({ ...f, publishedAt: e.target.value }))} />
+                  <Input
+                    type="date"
+                    value={form.publishedAt}
+                    onChange={(e) => setForm((f) => ({ ...f, publishedAt: e.target.value }))}
+                  />
                 </div>
               </div>
               <div>
                 <Label>Category</Label>
-                <Select value={form.categoryId || undefined} onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                <Select
+                  value={form.categoryId || undefined}
+                  onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -199,20 +263,32 @@ export function PublicationFormDialog({ open, onOpenChange, publicationId, onSav
                       }
                     }}
                   />
-                  <Button type="button" variant="outline" onClick={addCategory}>Add</Button>
+                  <Button type="button" variant="outline" onClick={addCategory}>
+                    Add
+                  </Button>
                 </div>
               </div>
               <div>
                 <Label>Tags (comma-separated)</Label>
-                <Input value={tagInput} onChange={(e) => syncTags(e.target.value)} placeholder="agriculture, youth, research" />
+                <Input
+                  value={tagInput}
+                  onChange={(e) => syncTags(e.target.value)}
+                  placeholder="agriculture, youth, research"
+                />
               </div>
               <div className="flex flex-wrap gap-6">
                 <label className="flex items-center gap-2">
-                  <Switch checked={form.isFeatured} onCheckedChange={(v) => setForm((f) => ({ ...f, isFeatured: v }))} />
+                  <Switch
+                    checked={form.isFeatured}
+                    onCheckedChange={(v) => setForm((f) => ({ ...f, isFeatured: v }))}
+                  />
                   <span className="text-sm">Feature on Home</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <Switch checked={form.isActive} onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))} />
+                  <Switch
+                    checked={form.isActive}
+                    onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))}
+                  />
                   <span className="text-sm">Active</span>
                 </label>
               </div>
@@ -222,7 +298,11 @@ export function PublicationFormDialog({ open, onOpenChange, publicationId, onSav
               <div>
                 <Label>Cover image</Label>
                 {form.coverImageUrl && (
-                  <img src={form.coverImageUrl} alt="" className="mb-2 h-32 w-full rounded-xl object-cover" />
+                  <img
+                    src={form.coverImageUrl}
+                    alt=""
+                    className="mb-2 h-32 w-full rounded-xl object-cover"
+                  />
                 )}
                 <Input
                   type="file"
@@ -273,14 +353,21 @@ export function PublicationFormDialog({ open, onOpenChange, publicationId, onSav
               </div>
               <div>
                 <Label>File URL</Label>
-                <Input value={form.fileUrl} onChange={(e) => setForm((f) => ({ ...f, fileUrl: e.target.value }))} />
+                <Input
+                  value={form.fileUrl}
+                  onChange={(e) => setForm((f) => ({ ...f, fileUrl: e.target.value }))}
+                />
               </div>
             </TabsContent>
 
             <TabsContent value="links" className="mt-4 space-y-3">
               <div>
                 <Label>External URL</Label>
-                <Input value={form.externalUrl} onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))} placeholder="https://…" />
+                <Input
+                  value={form.externalUrl}
+                  onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))}
+                  placeholder="https://…"
+                />
               </div>
             </TabsContent>
 

@@ -3,16 +3,27 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { AdminPageHeader, AdminShell } from "@/components/admin-page";
 import { PublicationFormDialog } from "@/components/admin/publication-form-dialog";
+import { FactsheetGeneratorDialog } from "@/components/admin/factsheet-generator-dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { downloadCsv } from "@/lib/csv";
 import { deletePublication, fetchAdminPublications } from "@/lib/publications";
 import { useAdminDelete } from "@/hooks/use-admin-delete";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Sparkles, Trash2 } from "lucide-react";
+import type { FactsheetDraft } from "@/modules/ai/server/factsheet";
 
-export const Route = createLazyFileRoute("/_authenticated/admin/publications")({ component: AdminPublications });
+export const Route = createLazyFileRoute("/_authenticated/admin/publications")({
+  component: AdminPublications,
+});
 
 function AdminPublications() {
   const qc = useQueryClient();
@@ -20,6 +31,8 @@ function AdminPublications() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [generatorOpen, setGeneratorOpen] = useState(false);
+  const [aiDraft, setAiDraft] = useState<FactsheetDraft | null>(null);
 
   const { data } = useQuery({
     queryKey: ["admin-publications"],
@@ -34,11 +47,13 @@ function AdminPublications() {
   );
 
   function openNew() {
+    setAiDraft(null);
     setEditingId(null);
     setOpen(true);
   }
 
   function openEdit(id: string) {
+    setAiDraft(null);
     setEditingId(id);
     setOpen(true);
   }
@@ -77,6 +92,13 @@ function AdminPublications() {
         }
       />
 
+      <div className="flex justify-end">
+        <Button type="button" variant="outline" onClick={() => setGeneratorOpen(true)}>
+          <Sparkles aria-hidden="true" />
+          Generate factsheet draft
+        </Button>
+      </div>
+
       <Card>
         <CardContent className="p-0">
           <Table>
@@ -112,10 +134,20 @@ function AdminPublications() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => openEdit(r.id)} aria-label={`Edit ${r.title}`}>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => openEdit(r.id)}
+                        aria-label={`Edit ${r.title}`}
+                      >
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={() => del(r.id, r.title)} aria-label={`Delete ${r.title}`}>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => del(r.id, r.title)}
+                        aria-label={`Delete ${r.title}`}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
@@ -127,7 +159,22 @@ function AdminPublications() {
         </CardContent>
       </Card>
 
-      <PublicationFormDialog open={open} onOpenChange={setOpen} publicationId={editingId} onSaved={invalidateAll} />
+      <FactsheetGeneratorDialog
+        open={generatorOpen}
+        onOpenChange={setGeneratorOpen}
+        onDraftReady={(draft) => {
+          setAiDraft(draft);
+          setEditingId(null);
+          setOpen(true);
+        }}
+      />
+      <PublicationFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        publicationId={editingId}
+        onSaved={invalidateAll}
+        initialDraft={aiDraft}
+      />
       {dialog}
     </AdminShell>
   );
