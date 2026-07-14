@@ -10,13 +10,19 @@ import {
   sendDevelopmentTestNotification,
   subscribeDevice,
   unsubscribeDevice,
-  urlBase64ToUint8Array,
   type PushPermissionState,
   type WeatherNotificationPreferencesInput,
 } from "@/lib/weather-notifications";
+import {
+  formatVapidSetupError,
+  sendServerPushTestServerFn,
+} from "@/lib/weather-notifications/delivery-server-fn";
+import { isClientVapidConfigured } from "@/lib/weather-notifications/vapid-config";
+import {
+  normalizeBrowserPushSubscription,
+  urlBase64ToUint8Array,
+} from "@/lib/weather-notifications/subscription-normalize";
 import { toast } from "sonner";
-
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
 
 function getPermissionState(): PushPermissionState {
   if (typeof window === "undefined" || !("Notification" in window)) return "unsupported";
@@ -30,10 +36,15 @@ export function usePushNotifications() {
   const [permission, setPermission] = useState<PushPermissionState>(getPermissionState);
   const [swRegistered, setSwRegistered] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [subscriptions, setSubscriptions] = useState<Awaited<ReturnType<typeof listPushSubscriptions>>>([]);
+  const [subscriptions, setSubscriptions] = useState<
+    Awaited<ReturnType<typeof listPushSubscriptions>>
+  >([]);
   const [preferences, setPreferences] = useState<WeatherNotificationPreferencesInput | null>(null);
+  const [subscriptionAttemptFailed, setSubscriptionAttemptFailed] = useState(false);
 
-  const isSupported = permission !== "unsupported" && typeof window !== "undefined" && "serviceWorker" in navigator;
+  const vapidConfigured = isClientVapidConfigured();
+  const isSupported =
+    permission !== "unsupported" && typeof window !== "undefined" && "serviceWorker" in navigator;
 
   const refresh = useCallback(async () => {
     if (!user) {
@@ -83,6 +94,7 @@ export function usePushNotifications() {
     if (!isSupported) throw new Error("Push notifications are not supported in this browser.");
 
     setBusy(true);
+    setSubscriptionAttemptFailed(false);
     try {
       const registration = await registerWeatherServiceWorker();
       setSwRegistered(Boolean(registration));
@@ -100,33 +112,42 @@ export function usePushNotifications() {
       await saveWeatherNotificationPreferences(user.id, nextPrefs);
       setPreferences(nextPrefs);
 
-      if (registration && VAPID_PUBLIC_KEY) {
+      if (!vapidConfigured) {
+        toast.message(
+          "VAPID public key is not configured. Add VITE_VAPID_PUBLIC_KEY to enable server push.",
+        );
+        await refresh();
+        return;
+      }
+
+      if (registration) {
+        const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+          applicationServerKey: urlBase64ToUint8Array(vapidKey),
         });
-        const json = subscription.toJSON();
-        if (json.endpoint && json.keys?.p256dh && json.keys?.auth) {
-          await subscribeDevice(user.id, {
-            endpoint: json.endpoint,
-            p256dh: json.keys.p256dh,
-            auth: json.keys.auth,
-            userAgent: navigator.userAgent,
-            deviceLabel: "This device",
-          });
+        const normalized = normalizeBrowserPushSubscription(subscription, {
+          userAgent: navigator.userAgent,
+          deviceLabel: "This device",
+        });
+        if (!normalized) {
+          setSubscriptionAttemptFailed(true);
+          throw new Error("Could not normalize push subscription.");
         }
+        await subscribeDevice(user.id, normalized);
       }
 
       await refresh();
-      toast.success(
-        VAPID_PUBLIC_KEY
-          ? "Weather alerts enabled on this device."
-          : "Preferences saved. Server push will activate after VAPID setup (development test mode available).",
-      );
+      toast.success("Weather alerts enabled on this device.");
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("normalize")) {
+        setSubscriptionAttemptFailed(true);
+      }
+      throw error;
     } finally {
       setBusy(false);
     }
-  }, [user, isSupported, preferences, refresh]);
+  }, [user, isSupported, preferences, refresh, vapidConfigured]);
 
   const disableNotifications = useCallback(async () => {
     if (!user) return;
@@ -152,8 +173,27 @@ export function usePushNotifications() {
 
   const sendTestNotification = useCallback(async () => {
     await sendDevelopmentTestNotification();
-    toast.success("Development test notification sent locally.");
+    toast.success("Local development test notification sent.");
   }, []);
+
+  const sendServerPushTest = useCallback(async () => {
+    if (!import.meta.env.DEV) {
+      toast.error("Server push test is development-only.");
+      return;
+    }
+    try {
+      const result = await sendServerPushTestServerFn();
+      if (result.sent > 0) {
+        toast.success(`Development server push sent to ${result.sent} device(s).`);
+      } else {
+        toast.error("Server push test failed for all devices.");
+      }
+    } catch (error) {
+      toast.error(formatVapidSetupError(error));
+    }
+  }, []);
+
+  const activeSubscriptionCount = subscriptions.filter((sub) => sub.isActive).length;
 
   const status = useMemo(
     () =>
@@ -162,8 +202,19 @@ export function usePushNotifications() {
         isSupported,
         permission,
         preferences,
+        activeSubscriptionCount,
+        vapidConfigured,
+        subscriptionAttemptFailed,
       }),
-    [user, isSupported, permission, preferences],
+    [
+      user,
+      isSupported,
+      permission,
+      preferences,
+      activeSubscriptionCount,
+      vapidConfigured,
+      subscriptionAttemptFailed,
+    ],
   );
 
   return {
@@ -176,10 +227,12 @@ export function usePushNotifications() {
     preferences,
     setPreferences,
     status,
+    vapidConfigured,
     refresh,
     enableNotifications,
     disableNotifications,
     sendTestNotification,
+    sendServerPushTest,
     savePreferences: async (input: WeatherNotificationPreferencesInput) => {
       if (!user) return;
       const saved = await saveWeatherNotificationPreferences(user.id, input);

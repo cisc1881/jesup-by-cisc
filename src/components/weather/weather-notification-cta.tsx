@@ -12,23 +12,38 @@ const STATUS_COPY = {
   },
   "not-subscribed": {
     label: "Not subscribed",
-    description: "Opt in to receive severe weather watches, warnings, and emergencies for your county.",
+    description:
+      "Opt in to receive severe weather watches, warnings, and emergencies for your county.",
     action: "Enable severe weather alerts",
   },
   subscribed: {
     label: "Subscribed",
-    description: "You have opted in to severe weather notifications. Manage types and quiet hours in settings.",
+    description:
+      "You have opted in to severe weather notifications. Manage types and quiet hours in settings.",
     action: "Manage alert settings",
   },
   "permission-denied": {
     label: "Permission denied",
-    description: "Browser notification permission was denied. Update site settings to enable alerts.",
+    description:
+      "Browser notification permission was denied. Update site settings to enable alerts.",
     action: "Open alert settings",
   },
   unsupported: {
     label: "Unsupported browser",
     description: "This browser does not support push notifications.",
     action: "Learn more",
+  },
+  "configuration-missing": {
+    label: "Configuration missing",
+    description:
+      "Server push is not configured yet. Preferences are saved; add VAPID keys in development.",
+    action: "Open alert settings",
+  },
+  "subscription-failed": {
+    label: "Subscription failed",
+    description:
+      "Browser permission was granted but device registration failed. Try enabling again.",
+    action: "Open alert settings",
   },
 } as const;
 
@@ -47,13 +62,20 @@ export function WeatherNotificationCta() {
             <AppBadge variant="secondary">{copy.label}</AppBadge>
           </div>
           <p className="text-sm text-muted-foreground">{copy.description}</p>
-          <p className="text-xs text-muted-foreground">Opt-in only. Permission is requested when you choose Enable — never automatically on page load.</p>
+          <p className="text-xs text-muted-foreground">
+            Opt-in only. Permission is requested when you choose Enable — never automatically on
+            page load.
+          </p>
         </div>
         <div className="shrink-0">
           {user ? (
             <AppButton asChild className="min-h-11">
               <Link to="/me/weather-alerts">
-                {status === "subscribed" ? <Bell aria-hidden="true" /> : <BellOff aria-hidden="true" />}
+                {status === "subscribed" ? (
+                  <Bell aria-hidden="true" />
+                ) : (
+                  <BellOff aria-hidden="true" />
+                )}
                 {copy.action}
               </Link>
             </AppButton>

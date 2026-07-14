@@ -3668,6 +3668,99 @@ export type Database = {
         }
         Relationships: []
       }
+      weather_alert_delayed_deliveries: {
+        Row: {
+          created_at: string
+          event_name: string
+          expires_at: string
+          failure_reason: string | null
+          id: string
+          nws_alert_id: string
+          scheduled_for: string
+          severity: string
+          status: Database["public"]["Enums"]["weather_delayed_delivery_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          expires_at: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id: string
+          scheduled_for: string
+          severity: string
+          status?: Database["public"]["Enums"]["weather_delayed_delivery_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id?: string
+          scheduled_for?: string
+          severity?: string
+          status?: Database["public"]["Enums"]["weather_delayed_delivery_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weather_alert_poll_runs: {
+        Row: {
+          alerts_fetched: number
+          created_at: string
+          deliveries_delayed: number
+          deliveries_failed: number
+          deliveries_sent: number
+          deliveries_suppressed: number
+          error_message: string | null
+          finished_at: string | null
+          groups_polled: number
+          id: string
+          started_at: string
+          status: string
+          trigger_source: string
+          triggered_by: string | null
+        }
+        Insert: {
+          alerts_fetched?: number
+          created_at?: string
+          deliveries_delayed?: number
+          deliveries_failed?: number
+          deliveries_sent?: number
+          deliveries_suppressed?: number
+          error_message?: string | null
+          finished_at?: string | null
+          groups_polled?: number
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_source?: string
+          triggered_by?: string | null
+        }
+        Update: {
+          alerts_fetched?: number
+          created_at?: string
+          deliveries_delayed?: number
+          deliveries_failed?: number
+          deliveries_sent?: number
+          deliveries_suppressed?: number
+          error_message?: string | null
+          finished_at?: string | null
+          groups_polled?: number
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_source?: string
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       weather_notification_preferences: {
         Row: {
           alerts_enabled: boolean
@@ -4162,6 +4255,13 @@ export type Database = {
         | "suppressed"
         | "failed"
         | "test"
+        | "expired"
+      weather_delayed_delivery_status:
+        | "pending"
+        | "sent"
+        | "expired"
+        | "failed"
+        | "suppressed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4435,6 +4535,14 @@ export const Constants = {
         "suppressed",
         "failed",
         "test",
+        "expired",
+      ],
+      weather_delayed_delivery_status: [
+        "pending",
+        "sent",
+        "expired",
+        "failed",
+        "suppressed",
       ],
     },
   },

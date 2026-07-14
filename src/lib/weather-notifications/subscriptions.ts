@@ -1,10 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
+import { normalizePushSubscriptionJson } from "./subscription-normalize";
 import type { PushSubscriptionInput, PushSubscriptionRecord } from "./types";
 
 function pushSubsTable() {
-  return (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }).from(
-    "push_subscriptions",
-  );
+  return (
+    supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }
+  ).from("push_subscriptions");
 }
 
 function mapRow(row: Record<string, unknown>): PushSubscriptionRecord {
@@ -40,13 +41,19 @@ export async function subscribeDevice(
   userId: string,
   input: PushSubscriptionInput,
 ): Promise<PushSubscriptionRecord> {
+  const normalized = normalizePushSubscriptionJson(
+    { endpoint: input.endpoint, keys: { p256dh: input.p256dh, auth: input.auth } },
+    { userAgent: input.userAgent, deviceLabel: input.deviceLabel },
+  );
+  if (!normalized) throw new Error("Invalid push subscription payload.");
+
   const payload = {
     user_id: userId,
-    endpoint: input.endpoint,
-    p256dh: input.p256dh,
-    auth: input.auth,
-    user_agent: input.userAgent ?? null,
-    device_label: input.deviceLabel ?? null,
+    endpoint: normalized.endpoint,
+    p256dh: normalized.p256dh,
+    auth: normalized.auth,
+    user_agent: normalized.userAgent ?? null,
+    device_label: normalized.deviceLabel ?? null,
     is_active: true,
     failure_count: 0,
     revoked_at: null,
@@ -61,7 +68,16 @@ export async function subscribeDevice(
   return mapRow(data as Record<string, unknown>);
 }
 
+export async function unsubscribeBrowserPush(): Promise<void> {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+  const registration = await navigator.serviceWorker.getRegistration("/");
+  const subscription = await registration?.pushManager.getSubscription();
+  await subscription?.unsubscribe();
+}
+
 export async function unsubscribeDevice(userId: string, subscriptionId: string): Promise<void> {
+  await unsubscribeBrowserPush();
+
   const { error } = await pushSubsTable()
     .update({ is_active: false, revoked_at: new Date().toISOString() })
     .eq("id", subscriptionId)
@@ -70,7 +86,10 @@ export async function unsubscribeDevice(userId: string, subscriptionId: string):
   if (error) throw error;
 }
 
-export async function deactivateFailedSubscription(subscriptionId: string, reason?: string): Promise<void> {
+export async function deactivateFailedSubscription(
+  subscriptionId: string,
+  reason?: string,
+): Promise<void> {
   const { error } = await pushSubsTable()
     .update({
       is_active: false,

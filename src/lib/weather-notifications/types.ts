@@ -4,7 +4,10 @@ export type WeatherNotificationLocationSource = "live" | "manual" | "default" | 
 
 export type PushPermissionState = "unsupported" | "default" | "granted" | "denied";
 
-export type WeatherAlertDeliveryStatus = "pending" | "sent" | "suppressed" | "failed" | "test";
+export type WeatherAlertDeliveryStatus =
+  "pending" | "sent" | "suppressed" | "failed" | "test" | "expired";
+
+export type WeatherDelayedDeliveryStatus = "pending" | "sent" | "expired" | "failed" | "suppressed";
 
 export interface WeatherNotificationPreferences {
   id: string;
@@ -82,21 +85,26 @@ export interface MappedNwsAlertForDelivery {
 }
 
 export type AlertDeliveryDecision =
-  | { action: "send" }
-  | { action: "suppress"; reason: string }
-  | { action: "delay"; reason: string };
+  { action: "send" } | { action: "suppress"; reason: string } | { action: "delay"; reason: string };
 
 export type WeatherNotificationCtaStatus =
   | "signed-out"
   | "not-subscribed"
   | "subscribed"
   | "permission-denied"
-  | "unsupported";
+  | "unsupported"
+  | "configuration-missing"
+  | "subscription-failed";
 
 export interface AdminWeatherNotificationSummary {
   enabledUsers: number;
   activeSubscriptions: number;
   failedSubscriptions: number;
+  deactivatedSubscriptions: number;
+  successfulDeliveries: number;
+  failedDeliveries: number;
+  suppressedAlerts: number;
+  delayedAlertsPending: number;
   processedAlertsLast7Days: number;
   recentProcessedAlerts: Array<{
     id: string;
@@ -105,6 +113,29 @@ export interface AdminWeatherNotificationSummary {
     deliveryStatus: WeatherAlertDeliveryStatus;
     createdAt: string;
   }>;
+  subscriptionsByDevice: AdminPushSubscriptionRow[];
+  delayedAlerts: Array<{
+    id: string;
+    userId: string;
+    eventName: string;
+    severity: string;
+    scheduledFor: string;
+    status: WeatherDelayedDeliveryStatus;
+    createdAt: string;
+  }>;
+  latestPollRun: {
+    id: string;
+    startedAt: string;
+    finishedAt: string | null;
+    status: string;
+    groupsPolled: number;
+    alertsFetched: number;
+    deliveriesSent: number;
+    deliveriesDelayed: number;
+    deliveriesSuppressed: number;
+    deliveriesFailed: number;
+    errorMessage: string | null;
+  } | null;
 }
 
 /** Admin-safe subscription row — no p256dh/auth key material. */

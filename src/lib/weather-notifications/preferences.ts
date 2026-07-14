@@ -1,13 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
-import type {
-  WeatherNotificationPreferences,
-  WeatherNotificationPreferencesInput,
-} from "./types";
+import type { WeatherNotificationPreferences, WeatherNotificationPreferencesInput } from "./types";
 
 function weatherPrefsTable() {
-  return (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }).from(
-    "weather_notification_preferences",
-  );
+  return (
+    supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }
+  ).from("weather_notification_preferences");
 }
 
 function mapRow(row: Record<string, unknown>): WeatherNotificationPreferences {
@@ -20,7 +17,8 @@ function mapRow(row: Record<string, unknown>): WeatherNotificationPreferences {
     warningsEnabled: Boolean(row.warnings_enabled),
     emergenciesEnabled: Boolean(row.emergencies_enabled),
     dailyForecastEnabled: Boolean(row.daily_forecast_enabled),
-    locationSource: (row.location_source as WeatherNotificationPreferences["locationSource"]) ?? null,
+    locationSource:
+      (row.location_source as WeatherNotificationPreferences["locationSource"]) ?? null,
     countyName: (row.county_name as string | null) ?? null,
     stateCode: (row.state_code as string | null) ?? null,
     latitudeBucket: row.latitude_bucket != null ? Number(row.latitude_bucket) : null,

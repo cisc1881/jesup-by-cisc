@@ -6,9 +6,9 @@ import type {
 } from "./types";
 
 function processedAlertsTable() {
-  return (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }).from(
-    "processed_weather_alerts",
-  );
+  return (
+    supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }
+  ).from("processed_weather_alerts");
 }
 
 function mapRow(row: Record<string, unknown>): ProcessedWeatherAlertRecord {
@@ -26,7 +26,9 @@ function mapRow(row: Record<string, unknown>): ProcessedWeatherAlertRecord {
   };
 }
 
-export async function listProcessedAlertsForUser(userId: string): Promise<ProcessedWeatherAlertRecord[]> {
+export async function listProcessedAlertsForUser(
+  userId: string,
+): Promise<ProcessedWeatherAlertRecord[]> {
   const { data, error } = await processedAlertsTable()
     .select("*")
     .eq("user_id", userId)
@@ -37,7 +39,10 @@ export async function listProcessedAlertsForUser(userId: string): Promise<Proces
   return (data ?? []).map((row) => mapRow(row as Record<string, unknown>));
 }
 
-export async function isAlertAlreadyProcessed(userId: string, nwsAlertId: string): Promise<boolean> {
+export async function isAlertAlreadyProcessed(
+  userId: string,
+  nwsAlertId: string,
+): Promise<boolean> {
   const { data, error } = await processedAlertsTable()
     .select("id")
     .eq("user_id", userId)
@@ -62,7 +67,9 @@ export async function recordProcessedAlert(
     expires_at: alert.expiresAt,
     delivery_status: deliveryStatus,
     failure_reason: options?.failureReason ?? null,
-    sent_at: options?.sentAt ?? (deliveryStatus === "sent" || deliveryStatus === "test" ? new Date().toISOString() : null),
+    sent_at:
+      options?.sentAt ??
+      (deliveryStatus === "sent" || deliveryStatus === "test" ? new Date().toISOString() : null),
   };
 
   const { data, error } = await processedAlertsTable().insert(payload).select("*").single();

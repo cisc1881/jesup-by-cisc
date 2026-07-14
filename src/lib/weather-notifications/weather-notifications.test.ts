@@ -11,7 +11,9 @@ import { isQuietHoursActive, shouldBypassQuietHours } from "./quiet-hours";
 import { resolvePushNotificationStatus } from "./push-status";
 import type { MappedNwsAlertForDelivery, WeatherNotificationPreferences } from "./types";
 
-function basePreferences(overrides: Partial<WeatherNotificationPreferences> = {}): WeatherNotificationPreferences {
+function basePreferences(
+  overrides: Partial<WeatherNotificationPreferences> = {},
+): WeatherNotificationPreferences {
   return {
     id: "pref-1",
     userId: "user-1",
@@ -56,7 +58,9 @@ describe("severity preference matching", () => {
   });
 
   it("suppresses watch when watches are disabled", () => {
-    expect(severityPreferenceEnabled(basePreferences({ watchesEnabled: false }), "watch")).toBe(false);
+    expect(severityPreferenceEnabled(basePreferences({ watchesEnabled: false }), "watch")).toBe(
+      false,
+    );
   });
 
   it("suppresses all severities when alerts are disabled", () => {
@@ -126,7 +130,12 @@ describe("alert deduplication", () => {
     const processed = [{ nwsAlertId: "alert-123" }];
     expect(isDuplicateProcessedAlert(processed, "alert-123")).toBe(true);
 
-    const decision = evaluateAlertDelivery(basePreferences(), baseAlert({ id: "alert-123" }), processed, activeNow);
+    const decision = evaluateAlertDelivery(
+      basePreferences(),
+      baseAlert({ id: "alert-123" }),
+      processed,
+      activeNow,
+    );
     expect(decision.action).toBe("suppress");
   });
 
@@ -181,15 +190,42 @@ describe("push notification status", () => {
     ).toBe("permission-denied");
   });
 
-  it("reports subscribed when preferences enabled", () => {
+  it("reports subscribed when preferences enabled with active subscription", () => {
     expect(
       resolvePushNotificationStatus({
         user: { id: "u1" },
         isSupported: true,
         permission: "granted",
         preferences: { enabled: true },
+        vapidConfigured: true,
+        activeSubscriptionCount: 1,
       }),
     ).toBe("subscribed");
+  });
+
+  it("reports configuration-missing when VAPID is not configured", () => {
+    expect(
+      resolvePushNotificationStatus({
+        user: { id: "u1" },
+        isSupported: true,
+        permission: "granted",
+        preferences: { enabled: true },
+        vapidConfigured: false,
+      }),
+    ).toBe("configuration-missing");
+  });
+
+  it("reports subscription-failed when no active devices", () => {
+    expect(
+      resolvePushNotificationStatus({
+        user: { id: "u1" },
+        isSupported: true,
+        permission: "granted",
+        preferences: { enabled: true },
+        vapidConfigured: true,
+        activeSubscriptionCount: 0,
+      }),
+    ).toBe("subscription-failed");
   });
 
   it("reports not-subscribed when signed in but disabled", () => {

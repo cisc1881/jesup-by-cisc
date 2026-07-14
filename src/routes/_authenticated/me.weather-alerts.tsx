@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublicLayout, PageHeader } from "@/components/public-layout";
-import { AppButton, AppCard, AppCardContent, AppCardHeader, AppCardTitle } from "@/components/design-system";
+import {
+  AppButton,
+  AppCard,
+  AppCardContent,
+  AppCardHeader,
+  AppCardTitle,
+} from "@/components/design-system";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -27,14 +33,23 @@ function WeatherAlertsSettingsPage() {
     enableNotifications,
     disableNotifications,
     sendTestNotification,
+    sendServerPushTest,
+    vapidConfigured,
     savePreferences,
   } = usePushNotifications();
 
   if (!user) {
     return (
       <PublicLayout>
-        <PageHeader title="Weather alerts" description="Sign in to manage severe weather notifications." />
-        <AppButton asChild><Link to="/auth" search={{ next: "/me/weather-alerts" }}>Sign in</Link></AppButton>
+        <PageHeader
+          title="Weather alerts"
+          description="Sign in to manage severe weather notifications."
+        />
+        <AppButton asChild>
+          <Link to="/auth" search={{ next: "/me/weather-alerts" }}>
+            Sign in
+          </Link>
+        </AppButton>
       </PublicLayout>
     );
   }
@@ -92,88 +107,234 @@ function WeatherAlertsSettingsPage() {
           </AppCardHeader>
           <AppCardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
-              Server push delivery is not active yet. You can send a <strong className="text-foreground">local development test</strong> notification after granting browser permission. No live NWS alerts are sent.
+              <strong className="text-foreground">Development only.</strong> Server push uses VAPID
+              keys configured in your development environment. Live NWS alerts are delivered only
+              after a manual or scheduled poll cycle — never fabricated.
             </p>
-            <p>Permission status: <strong className="text-foreground">{permission}</strong> · Service worker: <strong className="text-foreground">{swRegistered ? "registered" : "not registered"}</strong></p>
+            <p>
+              Permission: <strong className="text-foreground">{permission}</strong> · Service
+              worker:{" "}
+              <strong className="text-foreground">
+                {swRegistered ? "registered" : "not registered"}
+              </strong>{" "}
+              · VAPID:{" "}
+              <strong className="text-foreground">
+                {vapidConfigured ? "configured" : "missing"}
+              </strong>
+            </p>
           </AppCardContent>
         </AppCard>
 
         <AppCard padding="md">
-          <AppCardHeader><AppCardTitle>Master controls</AppCardTitle></AppCardHeader>
+          <AppCardHeader>
+            <AppCardTitle>Master controls</AppCardTitle>
+          </AppCardHeader>
           <AppCardContent className="space-y-4">
-            <ToggleRow label="Enable severe weather alerts" checked={prefs.enabled} onCheckedChange={(enabled) => setPreferences({ ...prefs, enabled })} />
+            <ToggleRow
+              label="Enable severe weather alerts"
+              checked={prefs.enabled}
+              onCheckedChange={(enabled) => setPreferences({ ...prefs, enabled })}
+            />
             <div className="flex flex-wrap gap-3">
-              <AppButton className="min-h-11" onClick={() => void enableNotifications()} disabled={busy || !isSupported}>
+              <AppButton
+                className="min-h-11"
+                onClick={() => void enableNotifications()}
+                disabled={busy || !isSupported}
+              >
                 <Bell aria-hidden="true" /> Enable notifications
               </AppButton>
-              <AppButton variant="outline" className="min-h-11" onClick={() => void disableNotifications()} disabled={busy}>
+              <AppButton
+                variant="outline"
+                className="min-h-11"
+                onClick={() => void disableNotifications()}
+                disabled={busy}
+              >
                 <BellOff aria-hidden="true" /> Disable notifications
               </AppButton>
-              <AppButton variant="outline" className="min-h-11" onClick={() => void sendTestNotification()} disabled={permission !== "granted"}>
-                <TestTube2 aria-hidden="true" /> Send test notification
+              <AppButton
+                variant="outline"
+                className="min-h-11"
+                onClick={() => void sendTestNotification()}
+                disabled={permission !== "granted"}
+              >
+                <TestTube2 aria-hidden="true" /> Local test notification
               </AppButton>
+              {import.meta.env.DEV ? (
+                <AppButton
+                  variant="outline"
+                  className="min-h-11"
+                  onClick={() => void sendServerPushTest()}
+                  disabled={
+                    permission !== "granted" || !vapidConfigured || subscriptions.length === 0
+                  }
+                >
+                  <TestTube2 aria-hidden="true" /> Send server push test (development only)
+                </AppButton>
+              ) : null}
             </div>
-            {!isSupported ? <p className="text-sm text-destructive">This browser does not support notifications.</p> : null}
-            {permission === "denied" ? <p className="text-sm text-destructive">Permission denied. Update browser site settings to re-enable.</p> : null}
+            {!vapidConfigured ? (
+              <p className="text-sm text-amber-600">
+                VAPID public key missing. Run <code>npm run generate:vapid-keys</code> and add keys
+                to <code>.env</code>.
+              </p>
+            ) : null}
+            {!isSupported ? (
+              <p className="text-sm text-destructive">
+                This browser does not support notifications.
+              </p>
+            ) : null}
+            {permission === "denied" ? (
+              <p className="text-sm text-destructive">
+                Permission denied. Update browser site settings to re-enable.
+              </p>
+            ) : null}
           </AppCardContent>
         </AppCard>
 
         <AppCard padding="md">
-          <AppCardHeader><AppCardTitle>Alert types</AppCardTitle></AppCardHeader>
+          <AppCardHeader>
+            <AppCardTitle>Alert types</AppCardTitle>
+          </AppCardHeader>
           <AppCardContent className="space-y-3">
-            <ToggleRow label="Advisories" checked={prefs.alertsEnabled} onCheckedChange={(alertsEnabled) => setPreferences({ ...prefs, alertsEnabled })} />
-            <ToggleRow label="Watches" checked={prefs.watchesEnabled} onCheckedChange={(watchesEnabled) => setPreferences({ ...prefs, watchesEnabled })} />
-            <ToggleRow label="Warnings" checked={prefs.warningsEnabled} onCheckedChange={(warningsEnabled) => setPreferences({ ...prefs, warningsEnabled })} />
-            <ToggleRow label="Emergencies" checked={prefs.emergenciesEnabled} onCheckedChange={(emergenciesEnabled) => setPreferences({ ...prefs, emergenciesEnabled })} />
-            <ToggleRow label="Daily forecast (future)" checked={prefs.dailyForecastEnabled} onCheckedChange={(dailyForecastEnabled) => setPreferences({ ...prefs, dailyForecastEnabled })} />
+            <ToggleRow
+              label="Advisories"
+              checked={prefs.alertsEnabled}
+              onCheckedChange={(alertsEnabled) => setPreferences({ ...prefs, alertsEnabled })}
+            />
+            <ToggleRow
+              label="Watches"
+              checked={prefs.watchesEnabled}
+              onCheckedChange={(watchesEnabled) => setPreferences({ ...prefs, watchesEnabled })}
+            />
+            <ToggleRow
+              label="Warnings"
+              checked={prefs.warningsEnabled}
+              onCheckedChange={(warningsEnabled) => setPreferences({ ...prefs, warningsEnabled })}
+            />
+            <ToggleRow
+              label="Emergencies"
+              checked={prefs.emergenciesEnabled}
+              onCheckedChange={(emergenciesEnabled) =>
+                setPreferences({ ...prefs, emergenciesEnabled })
+              }
+            />
+            <ToggleRow
+              label="Daily forecast (future)"
+              checked={prefs.dailyForecastEnabled}
+              onCheckedChange={(dailyForecastEnabled) =>
+                setPreferences({ ...prefs, dailyForecastEnabled })
+              }
+            />
           </AppCardContent>
         </AppCard>
 
         <AppCard padding="md">
-          <AppCardHeader><AppCardTitle>Location</AppCardTitle></AppCardHeader>
+          <AppCardHeader>
+            <AppCardTitle>Location</AppCardTitle>
+          </AppCardHeader>
           <AppCardContent className="space-y-3 text-sm">
-            <p>County: <strong>{prefs.countyName ?? "Not set"}</strong> {prefs.stateCode ? `(${prefs.stateCode})` : ""}</p>
-            <p>Coarse area bucket: {prefs.latitudeBucket != null ? `${prefs.latitudeBucket}, ${prefs.longitudeBucket}` : "Not set"}</p>
-            <AppButton variant="outline" className="min-h-11" onClick={() => void syncLocationFromBrowser()}>Use Home weather location</AppButton>
+            <p>
+              County: <strong>{prefs.countyName ?? "Not set"}</strong>{" "}
+              {prefs.stateCode ? `(${prefs.stateCode})` : ""}
+            </p>
+            <p>
+              Coarse area bucket:{" "}
+              {prefs.latitudeBucket != null
+                ? `${prefs.latitudeBucket}, ${prefs.longitudeBucket}`
+                : "Not set"}
+            </p>
+            <AppButton
+              variant="outline"
+              className="min-h-11"
+              onClick={() => void syncLocationFromBrowser()}
+            >
+              Use Home weather location
+            </AppButton>
           </AppCardContent>
         </AppCard>
 
         <AppCard padding="md">
-          <AppCardHeader><AppCardTitle>Quiet hours</AppCardTitle></AppCardHeader>
+          <AppCardHeader>
+            <AppCardTitle>Quiet hours</AppCardTitle>
+          </AppCardHeader>
           <AppCardContent className="space-y-4">
-            <ToggleRow label="Enable quiet hours" checked={prefs.quietHoursEnabled} onCheckedChange={(quietHoursEnabled) => setPreferences({ ...prefs, quietHoursEnabled })} />
+            <ToggleRow
+              label="Enable quiet hours"
+              checked={prefs.quietHoursEnabled}
+              onCheckedChange={(quietHoursEnabled) =>
+                setPreferences({ ...prefs, quietHoursEnabled })
+              }
+            />
             <div className="grid gap-3 sm:grid-cols-2">
-              <div><Label htmlFor="quiet-start">Start</Label><Input id="quiet-start" type="time" value={prefs.quietHoursStart ?? ""} onChange={(e) => setPreferences({ ...prefs, quietHoursStart: e.target.value })} /></div>
-              <div><Label htmlFor="quiet-end">End</Label><Input id="quiet-end" type="time" value={prefs.quietHoursEnd ?? ""} onChange={(e) => setPreferences({ ...prefs, quietHoursEnd: e.target.value })} /></div>
+              <div>
+                <Label htmlFor="quiet-start">Start</Label>
+                <Input
+                  id="quiet-start"
+                  type="time"
+                  value={prefs.quietHoursStart ?? ""}
+                  onChange={(e) => setPreferences({ ...prefs, quietHoursStart: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="quiet-end">End</Label>
+                <Input
+                  id="quiet-end"
+                  type="time"
+                  value={prefs.quietHoursEnd ?? ""}
+                  onChange={(e) => setPreferences({ ...prefs, quietHoursEnd: e.target.value })}
+                />
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">Timezone: {prefs.timezone}. Emergency alerts bypass quiet hours.</p>
+            <p className="text-xs text-muted-foreground">
+              Timezone: {prefs.timezone}. Emergency alerts bypass quiet hours.
+            </p>
           </AppCardContent>
         </AppCard>
 
         <AppCard padding="md">
-          <AppCardHeader><AppCardTitle>Devices</AppCardTitle></AppCardHeader>
+          <AppCardHeader>
+            <AppCardTitle>Devices</AppCardTitle>
+          </AppCardHeader>
           <AppCardContent className="space-y-2 text-sm">
-            {subscriptions.length === 0 ? <p className="text-muted-foreground">No active device subscriptions.</p> : null}
+            {subscriptions.length === 0 ? (
+              <p className="text-muted-foreground">No active device subscriptions.</p>
+            ) : null}
             {subscriptions.map((sub) => (
-              <p key={sub.id}>{sub.deviceLabel ?? "Device"} — {sub.isActive ? "active" : "inactive"}</p>
+              <p key={sub.id}>
+                {sub.deviceLabel ?? "Device"} — {sub.isActive ? "active" : "inactive"}
+              </p>
             ))}
           </AppCardContent>
         </AppCard>
 
         <AppCard padding="md">
           <AppCardContent className="space-y-2 text-xs text-muted-foreground">
-            <p><strong className="text-foreground">Privacy:</strong> Notifications are opt-in. JESUP does not continuously track your location. Only coarse coordinate buckets and county/state are stored — never precise coordinates in our database.</p>
+            <p>
+              <strong className="text-foreground">Privacy:</strong> Notifications are opt-in. JESUP
+              does not continuously track your location. Only coarse coordinate buckets and
+              county/state are stored — never precise coordinates in our database.
+            </p>
             <p>Browser permission is requested only when you tap Enable notifications.</p>
           </AppCardContent>
         </AppCard>
 
-        <AppButton className="min-h-11" onClick={() => void handleSave()} disabled={busy}>Save preferences</AppButton>
+        <AppButton className="min-h-11" onClick={() => void handleSave()} disabled={busy}>
+          Save preferences
+        </AppButton>
       </div>
     </PublicLayout>
   );
 }
 
-function ToggleRow({ label, checked, onCheckedChange }: { label: string; checked: boolean; onCheckedChange: (value: boolean) => void }) {
+function ToggleRow({
+  label,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  checked: boolean;
+  onCheckedChange: (value: boolean) => void;
+}) {
   return (
     <div className="flex min-h-11 items-center justify-between gap-4">
       <Label>{label}</Label>
