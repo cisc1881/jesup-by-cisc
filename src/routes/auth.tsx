@@ -83,6 +83,13 @@ function AuthPage() {
     if (result.error) toast.error(result.error.message || "Google sign-in failed");
   }
 
+  async function apple() {
+    const result = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) toast.error(result.error.message || "Apple sign-in failed");
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/40 p-4">
       <Card className="w-full max-w-md">
