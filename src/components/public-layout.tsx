@@ -13,7 +13,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <SkipLink />
       <PublicNav />
       <div className="flex flex-1 flex-col pb-bottom-nav md:pb-0">
-        <main id="main-content" className="flex-1 outline-none">
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
           {children}
           <CiscTabStory />
         </main>

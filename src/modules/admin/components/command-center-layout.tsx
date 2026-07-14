@@ -24,12 +24,14 @@ import {
 import { NotificationBellDropdown } from "./notification-bell-dropdown";
 import { GlobalSearchDialog } from "@/components/search/global-search-dialog";
 import { JesupLogoMark } from "@/components/branding";
+import { SkipLink } from "@/components/skip-link";
 
 export function CommandCenterLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <SidebarProvider>
+      <SkipLink />
       <div className="flex min-h-screen w-full">
         <Sidebar collapsible="icon">
           <SidebarHeader>
@@ -104,21 +106,25 @@ export function CommandCenterLayout() {
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-14 items-center gap-3 border-b bg-background px-4">
             <SidebarTrigger />
-            <div className="font-black tracking-tight text-sm text-foreground">
+            <div className="min-w-0 truncate text-sm font-black tracking-tight text-foreground">
               {COMMAND_CENTER_TITLE}
             </div>
             <div className="ml-auto flex items-center gap-2">
               <GlobalSearchDialog />
               <NotificationBellDropdown />
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
                 <Link to="/">Public site</Link>
               </Button>
             </div>
           </header>
-          <main className="flex-1 bg-secondary/30 p-4 sm:p-6">
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="min-w-0 flex-1 bg-secondary/30 p-4 outline-none sm:p-6"
+          >
             <Outlet />
           </main>
         </div>

@@ -63,7 +63,12 @@ export function PublicNav() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 rounded-full border-border/70">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 rounded-full border-border/70"
+                  aria-label="Open account menu"
+                >
                   <UserIcon className="h-4 w-4" />
                   <span className="hidden max-w-[140px] truncate sm:inline">{user.email}</span>
                 </Button>

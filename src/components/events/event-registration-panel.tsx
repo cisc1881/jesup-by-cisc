@@ -199,8 +199,9 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
           <div className="space-y-3">
             {event.registrationStatus === "invite_only" && (
               <div>
-                <Label>Invite code</Label>
+                <Label htmlFor={`event-${event.id}-invite-code`}>Invite code</Label>
                 <Input
+                  id={`event-${event.id}-invite-code`}
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value)}
                   placeholder="Enter invite code"
@@ -208,8 +209,9 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
               </div>
             )}
             <div>
-              <Label>Notes (optional)</Label>
+              <Label htmlFor={`event-${event.id}-registration-notes`}>Notes (optional)</Label>
               <Textarea
+                id={`event-${event.id}-registration-notes`}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Dietary restrictions, accessibility needs, etc."
