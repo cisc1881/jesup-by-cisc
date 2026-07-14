@@ -11,6 +11,7 @@ import {
   EventsEmptyState,
   EventsPageSkeleton,
   EventsPullRefresh,
+  FeaturedCiscEvents,
   FeaturedEventHero,
   type EventViewMode,
 } from "@/components/events";
@@ -21,7 +22,11 @@ export const Route = createFileRoute("/events/")({
   head: () => ({
     meta: [
       { title: "Events · JESUP" },
-      { name: "description", content: "Workshops, conferences, trainings, and community events from CISC at Tuskegee University." },
+      {
+        name: "description",
+        content:
+          "Workshops, conferences, trainings, and community events from CISC at Tuskegee University.",
+      },
       { property: "og:title", content: "Events · JESUP" },
     ],
   }),
@@ -72,17 +77,24 @@ function EventsPage() {
   return (
     <PublicLayout>
       <EventsPullRefresh onRefresh={handleRefresh} disabled={isFetching}>
-        <PageContainer size="lg" className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]">
+        <PageContainer
+          size="lg"
+          className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]"
+        >
           <header className="space-y-3">
             <p className="text-eyebrow grad-gold-text">CISC Extension</p>
-            <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">Events</h1>
+            <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
+              Events
+            </h1>
             {events && events.length > 0 && (
               <p className="max-w-2xl text-base text-muted-foreground">
-                {filtered.length} upcoming and archived event{filtered.length === 1 ? "" : "s"} — workshops, conferences,
-                trainings, academies, and field demonstrations.
+                {filtered.length} upcoming and archived event{filtered.length === 1 ? "" : "s"} —
+                workshops, conferences, trainings, academies, and field demonstrations.
               </p>
             )}
           </header>
+
+          <FeaturedCiscEvents />
 
           {showInitialSkeleton ? (
             <EventsPageSkeleton />

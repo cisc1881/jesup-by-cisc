@@ -1,6 +1,7 @@
 export { EventCard } from "./event-card";
 export { EventFilters, type EventViewMode } from "./event-filters";
 export { FeaturedEventHero } from "./featured-event-hero";
+export { FeaturedCiscEvents } from "./featured-cisc-events";
 export { EventSectionRow } from "./event-section-row";
 export { EventsPageSkeleton } from "./events-page-skeleton";
 export { EventsEmptyState } from "./events-empty-state";
