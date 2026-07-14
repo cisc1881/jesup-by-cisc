@@ -4,7 +4,11 @@ import { fetchFeaturedPodcastEpisode } from "@/lib/podcasts";
 import { fetchPartners } from "@/lib/partners";
 import { fetchPublications } from "@/lib/publications";
 import { fetchHomePrograms } from "./programs-source";
-import { DEFAULT_IMPACT_METRICS, fetchHomeSectionMeta, DEFAULT_SECTION_META } from "./section-config";
+import {
+  DEFAULT_IMPACT_METRICS,
+  fetchHomeSectionMeta,
+  DEFAULT_SECTION_META,
+} from "./section-config";
 import type {
   HomeCta,
   HomeEvent,
@@ -18,6 +22,14 @@ import type {
 } from "./types";
 
 const now = () => new Date().toISOString();
+
+function heroImage(metadata: unknown, fallback: string | null): string | null {
+  if (metadata && typeof metadata === "object" && "hero_image_url" in metadata) {
+    const value = (metadata as { hero_image_url?: unknown }).hero_image_url;
+    if (typeof value === "string" && value.length > 0) return value;
+  }
+  return fallback;
+}
 
 const EMPTY_HOME_NEWS: { featured: HomeNewsArticle | null; latest: HomeNewsArticle[] } = {
   featured: null,
@@ -33,7 +45,11 @@ function defaultHomeImpactStats(): HomeImpactStat[] {
 }
 
 /** Run a home section query without failing the entire page. */
-async function safeHomeSection<T>(section: string, fallback: T, query: () => Promise<T>): Promise<T> {
+async function safeHomeSection<T>(
+  section: string,
+  fallback: T,
+  query: () => Promise<T>,
+): Promise<T> {
   try {
     return await query();
   } catch (error) {
@@ -61,7 +77,10 @@ export function createEmptyHomePageData(): HomePageData {
   };
 }
 
-async function countTable(table: "events" | "publications" | "markets" | "partners", filter?: { column: string; op: string; value: unknown }) {
+async function countTable(
+  table: "events" | "publications" | "markets" | "partners",
+  filter?: { column: string; op: string; value: unknown },
+) {
   let query = supabase.from(table).select("*", { count: "exact", head: true });
   if (filter) {
     query = query.filter(filter.column, filter.op, filter.value);
@@ -75,18 +94,20 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
   const [eventsRes, marketsRes, podcastRes, programsRes] = await Promise.all([
     supabase
       .from("events")
-      .select("id,title,description,image_url,starts_at")
+      .select("id,title,description,image_url,starts_at,is_featured,metadata")
       .eq("status", "published")
       .eq("is_active", true)
       .not("image_url", "is", null)
       .gte("starts_at", now())
+      .order("is_featured", { ascending: false })
       .order("starts_at", { ascending: true })
       .limit(limit),
     supabase
       .from("markets")
-      .select("id,name,description,image_url")
+      .select("id,name,description,image_url,is_featured,metadata")
       .eq("is_active", true)
       .not("image_url", "is", null)
+      .order("is_featured", { ascending: false })
       .order("name")
       .limit(limit),
     supabase
@@ -99,7 +120,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       .limit(limit),
     supabase
       .from("programs")
-      .select("id,slug,name,tagline,cover_image_url")
+      .select("id,slug,name,tagline,cover_image_url,metadata")
       .eq("is_active", true)
       .eq("is_featured", true)
       .not("cover_image_url", "is", null)
@@ -113,7 +134,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
     if (!e.image_url) continue;
     slides.push({
       id: `event-${e.id}`,
-      imageUrl: e.image_url,
+      imageUrl: heroImage(e.metadata, e.image_url) ?? e.image_url,
       imageAlt: e.title,
       title: e.title,
       subtitle: e.description,
@@ -127,7 +148,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
     if (!m.image_url) continue;
     slides.push({
       id: `market-${m.id}`,
-      imageUrl: m.image_url,
+      imageUrl: heroImage(m.metadata, m.image_url) ?? m.image_url,
       imageAlt: m.name,
       title: m.name,
       subtitle: m.description,
@@ -155,7 +176,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
     if (!p.cover_image_url) continue;
     slides.push({
       id: `program-${p.id}`,
-      imageUrl: p.cover_image_url,
+      imageUrl: heroImage(p.metadata, p.cover_image_url) ?? p.cover_image_url,
       imageAlt: p.name,
       title: p.name,
       subtitle: p.tagline,
@@ -209,7 +230,9 @@ export async function fetchFeaturedPodcast(): Promise<HomePodcastEpisode | null>
   };
 }
 
-function mapHomeNewsArticle(article: Awaited<ReturnType<typeof fetchNewsArticles>>[number]): HomeNewsArticle {
+function mapHomeNewsArticle(
+  article: Awaited<ReturnType<typeof fetchNewsArticles>>[number],
+): HomeNewsArticle {
   return {
     id: article.id,
     slug: article.slug,
@@ -300,11 +323,19 @@ export async function fetchHomeImpactStats(): Promise<HomeImpactStat[]> {
   }));
 }
 
-export function resolveHomeCta(events: HomeEvent[], podcast: HomePodcastEpisode | null): HomeCta | null {
+export function resolveHomeCta(
+  events: HomeEvent[],
+  podcast: HomePodcastEpisode | null,
+): HomeCta | null {
   const nextEvent = events[0];
   if (nextEvent) {
     return {
-      eyebrow: nextEvent.startsAt ? new Date(nextEvent.startsAt).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : null,
+      eyebrow: nextEvent.startsAt
+        ? new Date(nextEvent.startsAt).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          })
+        : null,
       title: nextEvent.title,
       body: nextEvent.location,
       linkTo: "/events/$id",
@@ -335,13 +366,14 @@ export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; ln
   const dLng = toRad(b.lng - a.lng);
   const lat1 = toRad(a.lat);
   const lat2 = toRad(b.lat);
-  const h =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-export function pickNearestMarket(markets: HomeMarket[], coords: { lat: number; lng: number } | null): HomeMarket | null {
+export function pickNearestMarket(
+  markets: HomeMarket[],
+  coords: { lat: number; lng: number } | null,
+): HomeMarket | null {
   const withCoords = markets.filter((m) => m.lat != null && m.lng != null);
   if (withCoords.length === 0) return markets[0] ?? null;
   if (!coords) return withCoords[0] ?? markets[0] ?? null;

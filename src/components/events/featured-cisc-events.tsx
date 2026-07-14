@@ -7,9 +7,8 @@ const FEATURED_EVENTS = [
     location: "Tuskegee University Campus · 1200 W. Montgomery Road, Tuskegee, AL 36088",
     description:
       "A legacy gathering focused on leadership, innovation, community empowerment, and economic ecosystems that promote development and prosperity.",
-    image: "/events/booker-t-washington-summit-2026.jpg",
-    imageAlt:
-      "Save the date flyer for the 30th Annual Booker T. Washington Economic Development Summit",
+    image: "/starter/economic-development.jpg",
+    imageAlt: "AI-generated illustration of rural economic development and entrepreneurship",
     url: "https://www.tuskegee.edu/btwsummit",
     linkLabel: "Summit information",
   },
@@ -19,8 +18,8 @@ const FEATURED_EVENTS = [
     location: "Renaissance Montgomery Hotel & Spa · 201 Tallapoosa Street, Montgomery, AL",
     description:
       "Farmers, educators, researchers, students, and community leaders share knowledge and strengthen the land-grant mission through research, education, Extension, and networking.",
-    image: "/events/pawc-2026.jpg",
-    imageAlt: "Flyer for the 84th Annual Professional Agricultural Workers Conference",
+    image: "/starter/agricultural-extension.jpg",
+    imageAlt: "AI-generated illustration of agricultural education and Extension collaboration",
     url: "https://pawc.info",
     linkLabel: "PAWC information",
   },
@@ -30,8 +29,8 @@ const FEATURED_EVENTS = [
     location: "Tuskegee University Campus · 1200 W. Montgomery Road, Tuskegee, AL 36088",
     description:
       "A two-day summit uniting farmers, processors, producers, researchers, and industry leaders to advance sustainable meat production and strengthen rural Black Belt economies.",
-    image: "/events/black-belt-meat-summit-2027.jpg",
-    imageAlt: "Save the date flyer for the Black Belt Meat Summit, April 14 through 16, 2027",
+    image: "/starter/sustainable-livestock.jpg",
+    imageAlt: "AI-generated illustration of sustainable Black Belt livestock production",
     url: "https://www.tuskegee.edu/BlackBeltMeatSummit",
     linkLabel: "Meat Summit information",
     contact:
@@ -51,8 +50,9 @@ export function FeaturedCiscEvents() {
           Featured CISC and Tuskegee events
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          Dates and locations are taken from the official event flyers supplied by CISC. Follow the
-          event link for registration and schedule updates.
+          Event details reflect official materials from CISC and Tuskegee University. Artwork is
+          AI-generated and illustrative; follow each event link for registration and schedule
+          updates.
         </p>
       </div>
       <div className="grid gap-5 lg:grid-cols-3">
@@ -61,20 +61,14 @@ export function FeaturedCiscEvents() {
             key={event.title}
             className="flex overflow-hidden rounded-2xl border border-border/70 bg-card shadow-token-soft lg:flex-col"
           >
-            <a
-              href={event.image}
-              target="_blank"
-              rel="noreferrer"
-              className="block w-2/5 shrink-0 bg-muted lg:aspect-[4/3] lg:w-full"
-              aria-label={`Open full flyer: ${event.title}`}
-            >
+            <div className="block w-2/5 shrink-0 bg-muted lg:aspect-[4/3] lg:w-full">
               <img
                 src={event.image}
                 alt={event.imageAlt}
                 className="h-full w-full object-cover object-top"
                 loading="lazy"
               />
-            </a>
+            </div>
             <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
               <h3 className="font-black leading-snug">{event.title}</h3>
               <p className="mt-3 flex gap-2 text-sm font-semibold text-foreground">

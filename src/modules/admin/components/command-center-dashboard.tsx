@@ -14,8 +14,10 @@ import {
   MessageSquare,
   RefreshCw,
   Settings,
+  Sparkles,
   Users,
 } from "lucide-react";
+import { toast } from "sonner";
 import { EventFormDialog } from "@/components/admin/event-form-dialog";
 import { MarketFormDialog } from "@/components/admin/market-form-dialog";
 import { ProgramFormDialog } from "@/components/admin/program-form-dialog";
@@ -24,10 +26,7 @@ import { QueryErrorState } from "@/components/design-system/query-error-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  COMMAND_CENTER_SUBTITLE,
-  COMMAND_CENTER_TITLE,
-} from "../config/nav-items";
+import { COMMAND_CENTER_SUBTITLE, COMMAND_CENTER_TITLE } from "../config/nav-items";
 import type { CommandCenterMetrics } from "../services/command-center-dashboard";
 import {
   fetchCommandCenterDashboard,
@@ -37,6 +36,7 @@ import {
   type CommandCenterPendingType,
 } from "../services/command-center-dashboard";
 import { fmtDateTime } from "@/lib/format";
+import { importStarterContentServerFn } from "../starter-content-server-fn";
 
 const METRIC_CARDS: {
   key: keyof CommandCenterMetrics;
@@ -48,9 +48,19 @@ const METRIC_CARDS: {
   { key: "upcomingEvents", label: "Upcoming Events", icon: Calendar, to: "/admin/events" },
   { key: "activeMarkets", label: "Active Markets", icon: MapPin, to: "/admin/markets" },
   { key: "publications", label: "Publications", icon: BookOpen, to: "/admin/publications" },
-  { key: "pending2fasApplications", label: "Pending 2FAS Applications", icon: GraduationCap, to: "/admin/2fas/applications" },
+  {
+    key: "pending2fasApplications",
+    label: "Pending 2FAS Applications",
+    icon: GraduationCap,
+    to: "/admin/2fas/applications",
+  },
   { key: "newInquiries", label: "New Inquiries", icon: MessageSquare, to: "/admin/inquiries" },
-  { key: "eventRegistrations", label: "Event Registrations", icon: ClipboardList, to: "/admin/events" },
+  {
+    key: "eventRegistrations",
+    label: "Event Registrations",
+    icon: ClipboardList,
+    to: "/admin/events",
+  },
 ];
 
 const QUICK_MANAGEMENT: { label: string; to: string; icon: LucideIcon }[] = [
@@ -103,7 +113,9 @@ function MetricCard({
           {isLoading ? (
             <Skeleton className="h-9 w-20" />
           ) : (
-            <div className="font-serif text-3xl font-bold text-primary">{value.toLocaleString()}</div>
+            <div className="font-serif text-3xl font-bold text-primary">
+              {value.toLocaleString()}
+            </div>
           )}
           <p className="mt-1 text-sm font-medium text-muted-foreground">{label}</p>
         </CardContent>
@@ -157,6 +169,7 @@ export function CommandCenterDashboard() {
   const [programOpen, setProgramOpen] = useState(false);
   const [eventOpen, setEventOpen] = useState(false);
   const [marketOpen, setMarketOpen] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   const { data, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ["command-center-dashboard"],
@@ -168,13 +181,48 @@ export function CommandCenterDashboard() {
     qc.invalidateQueries({ queryKey: ["command-center-counts"] });
   }
 
+  async function importStarterContent() {
+    const confirmed = window.confirm(
+      "Import 5 programs, 5 events, 5 news articles, 5 markets, and 5 partners? Existing records with the same slug will be skipped.",
+    );
+    if (!confirmed) return;
+
+    setIsImporting(true);
+    try {
+      const result = await importStarterContentServerFn();
+      const total = Object.values(result).reduce((sum, count) => sum + count, 0);
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["command-center-dashboard"] }),
+        qc.invalidateQueries({ queryKey: ["programs"] }),
+        qc.invalidateQueries({ queryKey: ["events"] }),
+        qc.invalidateQueries({ queryKey: ["news"] }),
+        qc.invalidateQueries({ queryKey: ["markets"] }),
+        qc.invalidateQueries({ queryKey: ["partners"] }),
+        qc.invalidateQueries({ queryKey: ["home-page"] }),
+      ]);
+      toast.success(
+        total > 0
+          ? `Imported ${total} CISC starter records.`
+          : "CISC starter content is already imported.",
+      );
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Starter content import failed.");
+    } finally {
+      setIsImporting(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <section className="relative overflow-hidden rounded-2xl grad-crimson p-6 text-primary-foreground shadow-token-crimson sm:p-8">
         <div className="relative z-10">
           <span className="gold-bar mb-4" />
-          <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">{COMMAND_CENTER_TITLE}</h1>
-          <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">{COMMAND_CENTER_SUBTITLE}</p>
+          <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
+            {COMMAND_CENTER_TITLE}
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
+            {COMMAND_CENTER_SUBTITLE}
+          </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Button
               size="sm"
@@ -214,7 +262,22 @@ export function CommandCenterDashboard() {
               <MapPinPlus className="mr-1.5 h-4 w-4" />
               Add Market
             </Button>
-            <Button size="sm" variant="secondary" className="bg-white/15 text-primary-foreground hover:bg-white/25" asChild>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="min-h-[44px] bg-accent text-accent-foreground hover:bg-accent/90"
+              onClick={importStarterContent}
+              disabled={isImporting}
+            >
+              <Sparkles className={`mr-1.5 h-4 w-4 ${isImporting ? "animate-pulse" : ""}`} />
+              {isImporting ? "Importing…" : "Import CISC Starter Content"}
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="bg-white/15 text-primary-foreground hover:bg-white/25"
+              asChild
+            >
               <Link to="/admin/2fas/applications">
                 <GraduationCap className="mr-1.5 h-4 w-4" />
                 Review 2FAS Applications
@@ -268,10 +331,14 @@ export function CommandCenterDashboard() {
               </div>
             )}
             {isError && !isLoading && (
-              <p className="py-6 text-center text-sm text-muted-foreground">Activity unavailable.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Activity unavailable.
+              </p>
             )}
             {!isLoading && !isError && (data?.recentActivity.length ?? 0) === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">No recent activity yet.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                No recent activity yet.
+              </p>
             )}
             {(data?.recentActivity ?? []).map((item) => (
               <ActivityRow key={item.id} item={item} />
@@ -295,10 +362,14 @@ export function CommandCenterDashboard() {
               </div>
             )}
             {isError && !isLoading && (
-              <p className="py-6 text-center text-sm text-muted-foreground">Review queue unavailable.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Review queue unavailable.
+              </p>
             )}
             {!isLoading && !isError && (data?.pendingReview.length ?? 0) === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">Nothing needs review right now.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Nothing needs review right now.
+              </p>
             )}
             {(data?.pendingReview ?? []).map((item) => (
               <PendingRow key={item.id} item={item} />
