@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { fmtDateTime } from "@/lib/format";
 import type { FactsheetDraft } from "@/modules/ai/server/factsheet";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 type PublicationFormDialogProps = {
   open: boolean;
@@ -91,6 +92,7 @@ export function PublicationFormDialog({
         next.title = initialDraft.title;
         next.slug = slugify(initialDraft.title);
         next.description = initialDraft.description;
+        next.contentHtml = initialDraft.contentHtml;
         next.author = initialDraft.author;
         next.tags = initialDraft.tags;
         next.contentType = "factsheet";
@@ -199,6 +201,18 @@ export function PublicationFormDialog({
                   rows={4}
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Publication body</Label>
+                <p className="text-xs text-muted-foreground">
+                  Review and edit AI-generated content here before saving or activating the
+                  publication.
+                </p>
+                <RichTextEditor
+                  value={form.contentHtml}
+                  onChange={(contentHtml) => setForm((f) => ({ ...f, contentHtml }))}
+                  placeholder="Write the publication body…"
                 />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">

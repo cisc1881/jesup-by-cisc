@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { PublicationContentType } from "@/lib/publication-content-types";
 import { publicationContentTypeLabel } from "@/lib/publication-content-types";
+import { sanitizeRichText } from "@/lib/safe-rich-text";
 
 export const PUBLICATION_PDF_BUCKET = "publications";
 export const PUBLICATION_COVER_BUCKET = "publication-images";
@@ -40,6 +41,7 @@ export type PublicationAttachment = {
 };
 
 export type PublicationDetail = PublicationListItem & {
+  contentHtml: string;
   programs: PublicationAttachment[];
   events: PublicationAttachment[];
   podcasts: PublicationAttachment[];
@@ -47,9 +49,11 @@ export type PublicationDetail = PublicationListItem & {
 };
 
 export type PublicationFormData = {
+  metadata: Record<string, unknown>;
   slug: string;
   title: string;
   description: string;
+  contentHtml: string;
   author: string;
   publishedAt: string;
   categoryId: string;
@@ -66,12 +70,18 @@ export type PublicationFormData = {
 };
 
 export function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export async function uploadPublicationPdf(file: File) {
   const path = `files/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const { error } = await supabase.storage.from(PUBLICATION_PDF_BUCKET).upload(path, file, { upsert: true });
+  const { error } = await supabase.storage
+    .from(PUBLICATION_PDF_BUCKET)
+    .upload(path, file, { upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from(PUBLICATION_PDF_BUCKET).getPublicUrl(path);
   return data.publicUrl;
@@ -79,7 +89,9 @@ export async function uploadPublicationPdf(file: File) {
 
 export async function uploadPublicationCover(file: File) {
   const path = `covers/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const { error } = await supabase.storage.from(PUBLICATION_COVER_BUCKET).upload(path, file, { upsert: true });
+  const { error } = await supabase.storage
+    .from(PUBLICATION_COVER_BUCKET)
+    .upload(path, file, { upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from(PUBLICATION_COVER_BUCKET).getPublicUrl(path);
   return data.publicUrl;
@@ -195,6 +207,9 @@ export async function fetchPublicationBySlug(slug: string): Promise<PublicationD
   return {
     ...base,
     metadata: (row.metadata as Record<string, unknown>) ?? {},
+    contentHtml: sanitizeRichText(
+      ((row.metadata as Record<string, unknown>)?.contentHtml as string) ?? "",
+    ),
     programs: (programsRes.data ?? []).map((item) => {
       const program = item.programs as { id: string; name: string; slug: string };
       return {
@@ -215,7 +230,12 @@ export async function fetchPublicationBySlug(slug: string): Promise<PublicationD
       };
     }),
     podcasts: (podcastsRes.data ?? []).map((item) => {
-      const ep = item.podcast_episodes as { id: string; title: string; guest: string | null; slug: string };
+      const ep = item.podcast_episodes as {
+        id: string;
+        title: string;
+        guest: string | null;
+        slug: string;
+      };
       return {
         id: ep.id,
         title: ep.title,
@@ -255,7 +275,12 @@ export async function savePublicationCategory(name: string) {
   }
 
   const row = data as { id: string; name: string; slug: string; sort_order: number };
-  return { id: row.id, name: row.name, slug: row.slug, sortOrder: row.sort_order } satisfies PublicationCategory;
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    sortOrder: row.sort_order,
+  } satisfies PublicationCategory;
 }
 
 export async function fetchAdminPublications() {
@@ -269,21 +294,34 @@ export async function fetchAdminPublications() {
   return rows.map((row) => mapListRow(row as Record<string, unknown>, tagMap.get(row.id) ?? []));
 }
 
-export async function fetchAdminPublicationForm(publicationId: string): Promise<PublicationFormData> {
-  const { data: row, error } = await supabase.from("publications").select("*").eq("id", publicationId).single();
+export async function fetchAdminPublicationForm(
+  publicationId: string,
+): Promise<PublicationFormData> {
+  const { data: row, error } = await supabase
+    .from("publications")
+    .select("*")
+    .eq("id", publicationId)
+    .single();
   if (error) throw error;
 
   const [tagsRes, programsRes, eventsRes, podcastsRes] = await Promise.all([
     supabase.from("publication_tags").select("tag").eq("publication_id", publicationId),
     supabase.from("program_publications").select("program_id").eq("publication_id", publicationId),
     supabase.from("publication_events").select("event_id").eq("publication_id", publicationId),
-    supabase.from("publication_podcast_episodes").select("podcast_episode_id").eq("publication_id", publicationId),
+    supabase
+      .from("publication_podcast_episodes")
+      .select("podcast_episode_id")
+      .eq("publication_id", publicationId),
   ]);
 
   return {
+    metadata: (row.metadata as Record<string, unknown>) ?? {},
     slug: row.slug ?? "",
     title: row.title,
     description: row.description ?? "",
+    contentHtml: sanitizeRichText(
+      ((row.metadata as Record<string, unknown>)?.contentHtml as string) ?? "",
+    ),
     author: row.author ?? "",
     publishedAt: row.published_at ? row.published_at.slice(0, 10) : "",
     categoryId: row.category_id ?? "",
@@ -309,29 +347,45 @@ async function replacePublicationRelations(publicationId: string, form: Publicat
   ]);
 
   if (form.tags.length > 0) {
-    const { error } = await supabase.from("publication_tags").insert(
-      form.tags.map((tag) => ({ publication_id: publicationId, tag: tag.trim() })).filter((t) => t.tag),
-    );
+    const { error } = await supabase
+      .from("publication_tags")
+      .insert(
+        form.tags
+          .map((tag) => ({ publication_id: publicationId, tag: tag.trim() }))
+          .filter((t) => t.tag),
+      );
     if (error) throw error;
   }
 
   if (form.programIds.length > 0) {
     const { error } = await supabase.from("program_publications").insert(
-      form.programIds.map((id, i) => ({ publication_id: publicationId, program_id: id, sort_order: i })),
+      form.programIds.map((id, i) => ({
+        publication_id: publicationId,
+        program_id: id,
+        sort_order: i,
+      })),
     );
     if (error) throw error;
   }
 
   if (form.eventIds.length > 0) {
     const { error } = await supabase.from("publication_events").insert(
-      form.eventIds.map((id, i) => ({ publication_id: publicationId, event_id: id, sort_order: i })),
+      form.eventIds.map((id, i) => ({
+        publication_id: publicationId,
+        event_id: id,
+        sort_order: i,
+      })),
     );
     if (error) throw error;
   }
 
   if (form.podcastIds.length > 0) {
     const { error } = await supabase.from("publication_podcast_episodes").insert(
-      form.podcastIds.map((id, i) => ({ publication_id: publicationId, podcast_episode_id: id, sort_order: i })),
+      form.podcastIds.map((id, i) => ({
+        publication_id: publicationId,
+        podcast_episode_id: id,
+        sort_order: i,
+      })),
     );
     if (error) throw error;
   }
@@ -342,6 +396,7 @@ export async function savePublication(publicationId: string | null, form: Public
     slug: form.slug || slugify(form.title),
     title: form.title,
     description: form.description || null,
+    metadata: { ...form.metadata, contentHtml: sanitizeRichText(form.contentHtml) },
     author: form.author || null,
     published_at: form.publishedAt || null,
     category_id: form.categoryId || null,
@@ -373,9 +428,11 @@ export async function deletePublication(publicationId: string) {
 }
 
 export const emptyPublicationForm = (): PublicationFormData => ({
+  metadata: {},
   slug: "",
   title: "",
   description: "",
+  contentHtml: "",
   author: "",
   publishedAt: "",
   categoryId: "",

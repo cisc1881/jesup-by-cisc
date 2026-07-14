@@ -4,7 +4,7 @@ import { parseFactsheetDraft } from "./factsheet";
 describe("parseFactsheetDraft", () => {
   it("accepts fenced JSON and normalizes bounded metadata", () => {
     const draft = parseFactsheetDraft(`\`\`\`json
-      {"title":"  Soil   Health Basics ","description":" Practical   research notes. ","author":"","tags":["Soil", "soil", "Farming"]}
+      {"title":"  Soil   Health Basics ","description":" Practical   research notes. ","author":"","tags":["Soil", "soil", "Farming"],"contentHtml":"<h2>Soil health</h2><p onclick='bad()'>Start with verified research.</p>"}
       \`\`\``);
 
     expect(draft).toEqual({
@@ -12,6 +12,7 @@ describe("parseFactsheetDraft", () => {
       description: "Practical research notes.",
       author: "CISC at Tuskegee University",
       tags: ["soil", "farming"],
+      contentHtml: "<h2>Soil health</h2><p>Start with verified research.</p>",
     });
   });
 

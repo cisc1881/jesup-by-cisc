@@ -8,6 +8,7 @@ import {
   PublicationTagList,
 } from "@/components/publications";
 import { fetchPublicationBySlug } from "@/lib/publications";
+import { RichTextContent } from "@/components/rich-text-editor";
 
 export const Route = createFileRoute("/publications/$slug")({
   loader: async ({ params }) => {
@@ -16,7 +17,10 @@ export const Route = createFileRoute("/publications/$slug")({
     return { publication };
   },
   head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "Publication not found · JESUP" }, { name: "robots", content: "noindex" }] };
+    if (!loaderData)
+      return {
+        meta: [{ title: "Publication not found · JESUP" }, { name: "robots", content: "noindex" }],
+      };
     const p = loaderData.publication;
     return {
       meta: [
@@ -33,7 +37,10 @@ export const Route = createFileRoute("/publications/$slug")({
     <PublicLayout>
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="text-3xl font-black tracking-tight">Publication not found</h1>
-        <Link to="/publications" className="mt-6 inline-flex rounded-full grad-crimson px-5 py-2.5 text-sm font-bold text-white">
+        <Link
+          to="/publications"
+          className="mt-6 inline-flex rounded-full grad-crimson px-5 py-2.5 text-sm font-bold text-white"
+        >
           Back to publications
         </Link>
       </div>
@@ -50,14 +57,22 @@ function PublicationDetailPage() {
       <PageContainer size="md" className="space-y-8 pb-bottom-nav md:pb-[var(--page-py)]">
         <PublicationActionBar publication={publication} />
         {publication.description && (
-          <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">{publication.description}</p>
+          <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">
+            {publication.description}
+          </p>
+        )}
+        {publication.contentHtml && (
+          <RichTextContent html={publication.contentHtml} className="text-base sm:text-lg" />
         )}
         <PublicationTagList tags={publication.tags} />
         <div className="gold-divider" />
         <div className="space-y-8">
           <PublicationRelatedSection title="Related programs" items={publication.programs} />
           <PublicationRelatedSection title="Related events" items={publication.events} />
-          <PublicationRelatedSection title="Related podcast episodes" items={publication.podcasts} />
+          <PublicationRelatedSection
+            title="Related podcast episodes"
+            items={publication.podcasts}
+          />
         </div>
       </PageContainer>
     </PublicLayout>

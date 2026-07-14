@@ -3,12 +3,14 @@ import { JESUP_SYSTEM_PROMPT } from "../prompts/system";
 import { completeAiInteraction, failAiInteraction, startAiInteraction } from "./audit";
 import type { AiProviderConfig } from "./config";
 import { createAiProviderClient, type AiProviderClient } from "./proxy";
+import { sanitizeRichText } from "@/lib/safe-rich-text";
 
 export type FactsheetDraft = {
   title: string;
   description: string;
   author: string;
   tags: string[];
+  contentHtml: string;
 };
 
 type GenerateFactsheetDraftInput = {
@@ -28,6 +30,7 @@ Return one JSON object with exactly these fields:
 - "description": a plain-language summary of 2-4 sentences, maximum 1200 characters
 - "author": an author or organization stated in the notes, or "CISC at Tuskegee University"
 - "tags": 3-8 short lowercase topic tags
+- "contentHtml": a 400-900 word factsheet body using only <h2>, <h3>, <p>, <strong>, <em>, <ul>, <ol>, and <li>
 
 Do not add facts, statistics, recommendations, or claims that are absent from the notes. Return JSON only.`;
 
@@ -55,7 +58,7 @@ export async function generateFactsheetDraft(
           content: `TOPIC:\n${input.topic}\n\nRESEARCH NOTES:\n${input.researchNotes}`,
         },
       ],
-      maxTokens: 700,
+      maxTokens: 1_800,
       temperature: 0.1,
       signal: controller.signal,
     });
@@ -94,10 +97,15 @@ export function parseFactsheetDraft(content: string): FactsheetDraft {
         ...new Set(record.tags.map((tag) => cleanString(tag, 40).toLowerCase()).filter(Boolean)),
       ].slice(0, 8)
     : [];
-  if (!title || !description) {
+  const contentHtml = sanitizeRichText(cleanRawString(record.contentHtml, 20_000));
+  if (!title || !description || !contentHtml) {
     throw namedError("AiDraftFormatError", "The AI draft is missing a title or description.");
   }
-  return { title, description, author, tags };
+  return { title, description, author, tags, contentHtml };
+}
+
+function cleanRawString(value: unknown, maxLength: number): string {
+  return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 }
 
 function cleanString(value: unknown, maxLength: number): string {
