@@ -5,6 +5,7 @@ import { SkipLink } from "./skip-link";
 import { Link } from "@tanstack/react-router";
 import ciscLogo from "@/assets/cisc-logo.png.asset.json";
 import { JesupLogoMark } from "@/components/branding";
+import { CiscTabStory } from "@/components/cisc-tab-story";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <div className="flex flex-1 flex-col pb-bottom-nav md:pb-0">
         <main id="main-content" className="flex-1 outline-none">
           {children}
+          <CiscTabStory />
         </main>
         <footer className="mt-8 border-t border-border/60 bg-card">
           <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
