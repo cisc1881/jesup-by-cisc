@@ -22,10 +22,7 @@ import {
   submitMyParticipantDemographics,
   type DemographicFormData,
 } from "@/lib/demographics";
-import {
-  GALLERY_SUBMISSION_STATUS_LABELS,
-  listMyGallerySubmissions,
-} from "@/lib/event-gallery";
+import { GALLERY_SUBMISSION_STATUS_LABELS, listMyGallerySubmissions } from "@/lib/event-gallery";
 import {
   demographicCompletionQueryKey,
   eventDemographicAggregatesQueryKey,
@@ -50,9 +47,11 @@ function MePage() {
     queryKey: ["my-regs", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("event_registrations")
+      const { data } = await supabase
+        .from("event_registrations")
         .select("id, notes, created_at, events(id,title,starts_at,location)")
-        .eq("user_id", user!.id).order("created_at", { ascending: false });
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       return data ?? [];
     },
   });
@@ -60,9 +59,11 @@ function MePage() {
     queryKey: ["my-apps", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("internship_applications")
+      const { data } = await supabase
+        .from("internship_applications")
         .select("id,status,created_at,internships(id,title,department)")
-        .eq("user_id", user!.id).order("created_at", { ascending: false });
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       return data ?? [];
     },
   });
@@ -70,9 +71,11 @@ function MePage() {
     queryKey: ["my-checkouts", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("equipment_checkouts")
+      const { data } = await supabase
+        .from("equipment_checkouts")
         .select("id,quantity,checkout_date,return_date,status,equipment(id,name)")
-        .eq("user_id", user!.id).order("created_at", { ascending: false });
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       return data ?? [];
     },
   });
@@ -113,7 +116,7 @@ function MePage() {
             <TabsTrigger value="regs">Event Registrations</TabsTrigger>
             <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
             <TabsTrigger value="photos">Photo Submissions</TabsTrigger>
-            <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
+            <TabsTrigger value="inquiries">Program Interest & Inquiries</TabsTrigger>
             <TabsTrigger value="apps">Internship Applications</TabsTrigger>
             <TabsTrigger value="cos">Equipment Checkouts</TabsTrigger>
           </TabsList>
@@ -125,7 +128,9 @@ function MePage() {
             </Card>
           </TabsContent>
           <TabsContent value="regs" className="mt-4 space-y-3">
-            {(!regs || regs.length === 0) && <p className="text-muted-foreground">No registrations yet.</p>}
+            {(!regs || regs.length === 0) && (
+              <p className="text-muted-foreground">No registrations yet.</p>
+            )}
             {regs?.map((r: any) => (
               <RegistrationDemographicsCard key={r.id} registrationId={r.id} event={r.events} />
             ))}
@@ -143,7 +148,8 @@ function MePage() {
                       <div className="font-medium">{item.eventTitle}</div>
                       <p className="text-sm text-muted-foreground">{item.evaluationTitle}</p>
                       <p className="text-sm text-muted-foreground">
-                        {item.isRequired ? "Required" : "Optional"} · {EVALUATION_RESPONSE_MODE_LABELS[item.responseMode]}
+                        {item.isRequired ? "Required" : "Optional"} ·{" "}
+                        {EVALUATION_RESPONSE_MODE_LABELS[item.responseMode]}
                         {item.closesAt ? ` · Closes ${fmtDateTime(item.closesAt)}` : ""}
                       </p>
                     </div>
@@ -157,7 +163,9 @@ function MePage() {
               ))}
             </div>
             <div className="space-y-3">
-              <h3 className="font-serif text-lg font-semibold text-primary">Completed evaluations</h3>
+              <h3 className="font-serif text-lg font-semibold text-primary">
+                Completed evaluations
+              </h3>
               {completedEvaluations.length === 0 && (
                 <p className="text-muted-foreground">No completed evaluations yet.</p>
               )}
@@ -167,7 +175,8 @@ function MePage() {
                     <div className="font-medium">{item.eventTitle}</div>
                     <p className="text-sm text-muted-foreground">{item.evaluationTitle}</p>
                     <p className="text-sm text-muted-foreground">
-                      Completed {fmtDateTime(item.completedAt)} · {EVALUATION_RESPONSE_MODE_LABELS[item.responseMode]}
+                      Completed {fmtDateTime(item.completedAt)} ·{" "}
+                      {EVALUATION_RESPONSE_MODE_LABELS[item.responseMode]}
                     </p>
                   </CardContent>
                 </Card>
@@ -213,54 +222,75 @@ function MePage() {
             )}
             {!inquiriesLoading && !inquiriesError && inquiries.length === 0 && (
               <p className="text-muted-foreground">
-                No linked inquiries yet.{" "}
+                No program interest requests or inquiries yet.{" "}
                 <Link to="/join" className="text-primary hover:underline">
                   Submit a join/connect inquiry
                 </Link>
                 .
               </p>
             )}
-            {!inquiriesLoading && !inquiriesError && inquiries.map((inquiry) => (
-              <Card key={inquiry.id}>
-                <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+            {!inquiriesLoading &&
+              !inquiriesError &&
+              inquiries.map((inquiry) => (
+                <Card key={inquiry.id}>
+                  <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <div className="font-serif text-lg font-semibold text-primary">
+                        {INQUIRY_TYPE_LABELS[inquiry.inquiryType]}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Ref {formatInquiryReference(inquiry.id)} · Submitted{" "}
+                        {fmtDate(inquiry.submittedAt)}
+                      </p>
+                      {inquiry.programName && (
+                        <p className="text-sm text-muted-foreground">
+                          Program: {inquiry.programName}
+                        </p>
+                      )}
+                    </div>
+                    <Badge>{INQUIRY_STATUS_LABELS[inquiry.status]}</Badge>
+                  </CardContent>
+                </Card>
+              ))}
+          </TabsContent>
+          <TabsContent value="apps" className="mt-4 space-y-3">
+            {(!apps || apps.length === 0) && (
+              <p className="text-muted-foreground">No applications yet.</p>
+            )}
+            {apps?.map((a: any) => (
+              <Card key={a.id}>
+                <CardContent className="p-4 flex items-center justify-between gap-2">
                   <div>
                     <div className="font-serif text-lg font-semibold text-primary">
-                      {INQUIRY_TYPE_LABELS[inquiry.inquiryType]}
+                      {a.internships.title}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Ref {formatInquiryReference(inquiry.id)} · Submitted {fmtDate(inquiry.submittedAt)}
+                      {a.internships.department} · {fmtDate(a.created_at)}
                     </p>
-                    {inquiry.programName && (
-                      <p className="text-sm text-muted-foreground">Program: {inquiry.programName}</p>
-                    )}
                   </div>
-                  <Badge>{INQUIRY_STATUS_LABELS[inquiry.status]}</Badge>
+                  <Badge>{a.status}</Badge>
                 </CardContent>
               </Card>
             ))}
           </TabsContent>
-          <TabsContent value="apps" className="mt-4 space-y-3">
-            {(!apps || apps.length === 0) && <p className="text-muted-foreground">No applications yet.</p>}
-            {apps?.map((a: any) => (
-              <Card key={a.id}><CardContent className="p-4 flex items-center justify-between gap-2">
-                <div>
-                  <div className="font-serif text-lg font-semibold text-primary">{a.internships.title}</div>
-                  <p className="text-sm text-muted-foreground">{a.internships.department} · {fmtDate(a.created_at)}</p>
-                </div>
-                <Badge>{a.status}</Badge>
-              </CardContent></Card>
-            ))}
-          </TabsContent>
           <TabsContent value="cos" className="mt-4 space-y-3">
-            {(!cos || cos.length === 0) && <p className="text-muted-foreground">No checkouts yet.</p>}
+            {(!cos || cos.length === 0) && (
+              <p className="text-muted-foreground">No checkouts yet.</p>
+            )}
             {cos?.map((c: any) => (
-              <Card key={c.id}><CardContent className="p-4 flex items-center justify-between gap-2">
-                <div>
-                  <div className="font-serif text-lg font-semibold text-primary">{c.equipment.name}</div>
-                  <p className="text-sm text-muted-foreground">Qty {c.quantity} · {fmtDate(c.checkout_date)} → {fmtDate(c.return_date)}</p>
-                </div>
-                <Badge>{c.status}</Badge>
-              </CardContent></Card>
+              <Card key={c.id}>
+                <CardContent className="p-4 flex items-center justify-between gap-2">
+                  <div>
+                    <div className="font-serif text-lg font-semibold text-primary">
+                      {c.equipment.name}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Qty {c.quantity} · {fmtDate(c.checkout_date)} → {fmtDate(c.return_date)}
+                    </p>
+                  </div>
+                  <Badge>{c.status}</Badge>
+                </CardContent>
+              </Card>
             ))}
           </TabsContent>
         </Tabs>
@@ -318,7 +348,8 @@ function RegistrationDemographicsCard({
           {event.location ? ` · ${event.location}` : ""}
         </p>
         <p className="text-sm text-muted-foreground">
-          Optional demographics: submission status is not displayed for privacy. You may update your responses at any time.
+          Optional demographics: submission status is not displayed for privacy. You may update your
+          responses at any time.
         </p>
         {!open ? (
           <AppButton variant="outline" size="sm" shape="pill" onClick={() => setOpen(true)}>
@@ -326,9 +357,19 @@ function RegistrationDemographicsCard({
           </AppButton>
         ) : (
           <div className="space-y-3">
-            <DemographicForm value={form} onChange={setForm} idPrefix={`me-reg-${registrationId}`} />
+            <DemographicForm
+              value={form}
+              onChange={setForm}
+              idPrefix={`me-reg-${registrationId}`}
+            />
             <div className="flex flex-wrap gap-2">
-              <AppButton variant="primary" size="sm" shape="pill" onClick={() => void saveDemographics()} disabled={saving}>
+              <AppButton
+                variant="primary"
+                size="sm"
+                shape="pill"
+                onClick={() => void saveDemographics()}
+                disabled={saving}
+              >
                 {saving ? "Saving…" : "Save"}
               </AppButton>
               <AppButton variant="outline" size="sm" shape="pill" onClick={() => setOpen(false)}>

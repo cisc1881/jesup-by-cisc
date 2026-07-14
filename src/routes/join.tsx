@@ -40,6 +40,12 @@ import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/join")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    inquiryType: INQUIRY_TYPES.includes(search.inquiryType as InquiryType)
+      ? (search.inquiryType as InquiryType)
+      : undefined,
+    programId: typeof search.programId === "string" ? search.programId : undefined,
+  }),
   head: () =>
     listPageHead({
       title: "Join / Connect",
@@ -91,9 +97,14 @@ const initialForm: FormState = {
 };
 
 function JoinPage() {
+  const search = Route.useSearch();
   const { user } = useAuth();
   const qc = useQueryClient();
-  const [form, setForm] = useState<FormState>(initialForm);
+  const [form, setForm] = useState<FormState>(() => ({
+    ...initialForm,
+    inquiryType: search.inquiryType ?? "",
+    programId: search.programId ?? "",
+  }));
   const [errors, setErrors] = useState<Partial<Record<keyof FormState | "submit", string>>>({});
   const [busy, setBusy] = useState(false);
   const [referenceId, setReferenceId] = useState<string | null>(null);
@@ -126,7 +137,8 @@ function JoinPage() {
     [institutions, form.institutionId],
   );
 
-  const showProgram = form.inquiryType === "join_program" || form.inquiryType === "student_opportunity";
+  const showProgram =
+    form.inquiryType === "join_program" || form.inquiryType === "student_opportunity";
   const showStudentEligibility = form.inquiryType === "student_opportunity";
   const showOtherSchool = !!selectedInstitution && isOtherInstitution(selectedInstitution);
 
@@ -164,7 +176,8 @@ function JoinPage() {
     if (!form.firstName.trim()) next.firstName = "First name is required.";
     if (!form.lastName.trim()) next.lastName = "Last name is required.";
     if (!form.email.trim()) next.email = "Email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
+      next.email = "Enter a valid email address.";
     if (!form.consentContact) next.consentContact = "Consent to be contacted is required.";
     if (showOtherSchool && !form.organizationOrSchool.trim()) {
       next.organizationOrSchool = "Enter your school or organization name.";
@@ -212,7 +225,8 @@ function JoinPage() {
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unable to submit your inquiry. Please try again.";
+      const message =
+        err instanceof Error ? err.message : "Unable to submit your inquiry. Please try again.";
       setErrors({ submit: message });
       toast.error(message);
     } finally {
@@ -234,7 +248,10 @@ function JoinPage() {
               <CheckCircle2 className="h-12 w-12 text-primary" aria-hidden="true" />
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Your reference number</p>
-                <p className="mt-1 font-mono text-2xl font-bold tracking-widest text-primary" aria-label={`Reference number ${formatInquiryReference(referenceId)}`}>
+                <p
+                  className="mt-1 font-mono text-2xl font-bold tracking-widest text-primary"
+                  aria-label={`Reference number ${formatInquiryReference(referenceId)}`}
+                >
                   {formatInquiryReference(referenceId)}
                 </p>
                 <p className="mt-3 text-sm text-muted-foreground">
@@ -255,8 +272,12 @@ function JoinPage() {
     <PublicLayout>
       <PageHeader
         eyebrow="Connect with CISC"
-        title="Join / Connect"
-        description="Tell us how you'd like to connect with Cooperative Extension programs, partnerships, student opportunities, and community services. All schools and institutions are welcome."
+        title={form.inquiryType === "join_program" ? "Join a CISC Program" : "Join / Connect"}
+        description={
+          form.inquiryType === "join_program"
+            ? "Submit your program interest directly through JESUP. Your request will be tracked here from submission through staff follow-up."
+            : "Tell us how you'd like to connect with Cooperative Extension programs, partnerships, student opportunities, and community services. All schools and institutions are welcome."
+        }
       />
       <PageContainer size="md" className="pb-bottom-nav md:pb-[var(--page-py)]">
         {formDataLoading && <LoadingState label="Loading form options…" className="mb-4" />}
@@ -273,8 +294,16 @@ function JoinPage() {
         )}
         <Card>
           <CardContent className="p-6 sm:p-8">
-            <form onSubmit={handleSubmit} className="space-y-6" noValidate aria-busy={busy || formDataLoading}>
-              <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              noValidate
+              aria-busy={busy || formDataLoading}
+            >
+              <div
+                className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden"
+                aria-hidden="true"
+              >
                 <Label htmlFor="company_website">Company website</Label>
                 <Input
                   id="company_website"
@@ -289,8 +318,15 @@ function JoinPage() {
                 <legend className="text-sm font-semibold text-foreground">How can we help?</legend>
                 <div className="space-y-2">
                   <Label htmlFor="inquiryType">Inquiry type *</Label>
-                  <Select value={form.inquiryType} onValueChange={(v) => setField("inquiryType", v as InquiryType)}>
-                    <SelectTrigger id="inquiryType" aria-invalid={!!errors.inquiryType} aria-describedby={errors.inquiryType ? "inquiryType-error" : undefined}>
+                  <Select
+                    value={form.inquiryType}
+                    onValueChange={(v) => setField("inquiryType", v as InquiryType)}
+                  >
+                    <SelectTrigger
+                      id="inquiryType"
+                      aria-invalid={!!errors.inquiryType}
+                      aria-describedby={errors.inquiryType ? "inquiryType-error" : undefined}
+                    >
                       <SelectValue placeholder="Choose an inquiry type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -313,7 +349,10 @@ function JoinPage() {
                 {showProgram && (
                   <div className="space-y-2">
                     <Label htmlFor="programId">Program of interest</Label>
-                    <Select value={form.programId || "none"} onValueChange={(v) => setField("programId", v === "none" ? "" : v)}>
+                    <Select
+                      value={form.programId || "none"}
+                      onValueChange={(v) => setField("programId", v === "none" ? "" : v)}
+                    >
                       <SelectTrigger id="programId">
                         <SelectValue placeholder="Select a program (optional)" />
                       </SelectTrigger>
@@ -343,7 +382,11 @@ function JoinPage() {
                       aria-invalid={!!errors.firstName}
                       aria-describedby={errors.firstName ? "firstName-error" : undefined}
                     />
-                    {errors.firstName && <p id="firstName-error" className="text-sm text-destructive" role="alert">{errors.firstName}</p>}
+                    {errors.firstName && (
+                      <p id="firstName-error" className="text-sm text-destructive" role="alert">
+                        {errors.firstName}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last name *</Label>
@@ -355,7 +398,11 @@ function JoinPage() {
                       aria-invalid={!!errors.lastName}
                       aria-describedby={errors.lastName ? "lastName-error" : undefined}
                     />
-                    {errors.lastName && <p id="lastName-error" className="text-sm text-destructive" role="alert">{errors.lastName}</p>}
+                    {errors.lastName && (
+                      <p id="lastName-error" className="text-sm text-destructive" role="alert">
+                        {errors.lastName}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -372,7 +419,11 @@ function JoinPage() {
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "email-error" : undefined}
                     />
-                    {errors.email && <p id="email-error" className="text-sm text-destructive" role="alert">{errors.email}</p>}
+                    {errors.email && (
+                      <p id="email-error" className="text-sm text-destructive" role="alert">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone</Label>
@@ -405,7 +456,9 @@ function JoinPage() {
               </fieldset>
 
               <fieldset className="space-y-4">
-                <legend className="text-sm font-semibold text-foreground">School or institution</legend>
+                <legend className="text-sm font-semibold text-foreground">
+                  School or institution
+                </legend>
                 <InstitutionFields
                   institutions={institutions}
                   value={{
@@ -425,11 +478,18 @@ function JoinPage() {
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="city">City</Label>
-                    <Input id="city" value={form.city} onChange={(e) => setField("city", e.target.value)} />
+                    <Input
+                      id="city"
+                      value={form.city}
+                      onChange={(e) => setField("city", e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="state">State</Label>
-                    <Select value={form.state || "none"} onValueChange={(v) => setField("state", v === "none" ? "" : v)}>
+                    <Select
+                      value={form.state || "none"}
+                      onValueChange={(v) => setField("state", v === "none" ? "" : v)}
+                    >
                       <SelectTrigger id="state">
                         <SelectValue placeholder="State" />
                       </SelectTrigger>
@@ -445,7 +505,11 @@ function JoinPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="county">County</Label>
-                    <Input id="county" value={form.county} onChange={(e) => setField("county", e.target.value)} />
+                    <Input
+                      id="county"
+                      value={form.county}
+                      onChange={(e) => setField("county", e.target.value)}
+                    />
                   </div>
                 </div>
               </fieldset>
@@ -493,12 +557,19 @@ function JoinPage() {
               </fieldset>
 
               {errors.submit && (
-                <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive" role="alert">
+                <p
+                  className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+                  role="alert"
+                >
                   {errors.submit}
                 </p>
               )}
 
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={busy || formDataLoading || formDataError}>
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90"
+                disabled={busy || formDataLoading || formDataError}
+              >
                 {busy ? "Submitting…" : "Submit inquiry"}
               </Button>
             </form>
