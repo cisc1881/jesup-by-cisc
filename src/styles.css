@@ -203,12 +203,23 @@
   body {
     width: 100%;
     max-width: 100%;
+    height: 100%;
     overflow-x: hidden;
     overscroll-behavior-x: none;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "cv02","cv03","cv04","cv11";
+  }
+  #root {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    -webkit-overflow-scrolling: touch;
   }
   html[data-high-contrast="true"] {
     --color-muted-foreground: oklch(0.28 0 0);
