@@ -25,20 +25,18 @@ export function FeaturedEventHero({ event }: FeaturedEventHeroProps) {
               "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(122,12,22,0.45) 50%, rgba(122,12,22,0.96) 100%)",
           }}
         />
-        <div className="absolute left-4 top-4 z-10 sm:left-6 sm:top-6">
-          <span className="glass-surface-dark inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
-            <Sparkles className="h-3.5 w-3.5 text-accent" />
-            Featured event
-          </span>
-        </div>
-        {event.categoryName && (
-          <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
-            <span className="glass-surface rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
-              {event.categoryName}
-            </span>
-          </div>
-        )}
         <div className="relative z-10 flex min-h-[360px] flex-col justify-end p-6 sm:min-h-[440px] sm:p-10">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+            <span className="glass-surface-dark inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
+              <Sparkles className="h-3.5 w-3.5 text-accent" />
+              Featured event
+            </span>
+            {event.categoryName && (
+              <span className="glass-surface rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
+                {event.categoryName}
+              </span>
+            )}
+          </div>
           <AppBadge variant="gold" className="w-fit bg-white/10 text-white">
             {registrationStatusLabel(event.registrationStatus)}
           </AppBadge>

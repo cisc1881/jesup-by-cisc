@@ -27,13 +27,13 @@ export function FeaturedMarketHero({ market }: FeaturedMarketHeroProps) {
               "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(122,12,22,0.45) 50%, rgba(122,12,22,0.96) 100%)",
           }}
         />
-        <div className="absolute left-4 top-4 z-10 sm:left-6 sm:top-6">
-          <span className="glass-surface-dark inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
-            <Sparkles className="h-3.5 w-3.5 text-accent" />
-            Featured market
-          </span>
-        </div>
         <div className="relative z-10 flex min-h-[360px] flex-col justify-end p-6 sm:min-h-[440px] sm:p-10">
+          <div className="mb-6">
+            <span className="glass-surface-dark inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
+              <Sparkles className="h-3.5 w-3.5 text-accent" />
+              Featured market
+            </span>
+          </div>
           <div className="flex flex-wrap gap-2">
             {market.isOpenToday && <AppBadge variant="gold">Open today</AppBadge>}
             {market.acceptsSnapEbt && <AppBadge variant="gold">SNAP/EBT</AppBadge>}
