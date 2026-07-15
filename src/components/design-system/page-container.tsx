@@ -26,7 +26,7 @@ export function PageContainer({
   return (
     <div
       className={cn(
-        "mx-auto w-full page-x page-y",
+        "mx-auto w-full min-w-0 max-w-full page-x page-y",
         sizes[size],
         withBottomNavOffset && "pb-bottom-nav md:pb-[var(--page-py)]",
         className,

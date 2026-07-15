@@ -37,7 +37,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
   const active = slides[selected] ?? slides[0];
 
   return (
-    <section className="relative isolate overflow-hidden grad-crimson">
+    <section className="relative isolate w-full max-w-full overflow-hidden grad-crimson">
       <div className="absolute inset-0 opacity-20" aria-hidden="true">
         <div
           className="h-full w-full"
@@ -76,7 +76,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
         <div className="absolute inset-0 hero-overlay opacity-60" aria-hidden="true" />
       )}
 
-      <div className="relative z-10 mx-auto flex min-h-[min(72vh,520px)] max-w-7xl flex-col justify-between page-x pb-8 pt-6 sm:min-h-[min(68vh,580px)] sm:pb-10 sm:pt-8">
+      <div className="relative z-10 mx-auto flex min-h-[min(72vh,520px)] w-full min-w-0 max-w-7xl flex-col justify-between page-x pb-8 pt-6 sm:min-h-[min(68vh,580px)] sm:pb-10 sm:pt-8">
         <BrandMark variant="light" />
 
         <div className="mt-auto space-y-4">

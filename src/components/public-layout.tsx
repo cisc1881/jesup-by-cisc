@@ -10,11 +10,11 @@ import { FloatingUtilityDock } from "@/components/floating-utility-dock";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-hidden bg-background">
       <SkipLink />
       <PublicNav />
-      <div className="flex flex-1 flex-col pb-bottom-nav md:pb-0">
-        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+      <div className="flex min-w-0 flex-1 flex-col pb-bottom-nav md:pb-0">
+        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 outline-none">
           {children}
           <CiscTabStory />
         </main>

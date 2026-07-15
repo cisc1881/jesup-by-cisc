@@ -192,14 +192,18 @@
 @layer base {
   * { border-color: var(--color-border); }
   html {
-    overflow-x: clip;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
     overscroll-behavior-x: none;
     font-size: calc(100% * var(--user-text-scale, 1));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    overflow-x: clip;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
     overscroll-behavior-x: none;
     background-color: var(--color-background);
     color: var(--color-foreground);
