@@ -134,6 +134,30 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
+    const root = document.getElementById("root");
+    const resetHorizontalPosition = () => {
+      if (root && root.scrollLeft !== 0) root.scrollLeft = 0;
+      if (document.documentElement.scrollLeft !== 0) document.documentElement.scrollLeft = 0;
+      if (document.body.scrollLeft !== 0) document.body.scrollLeft = 0;
+      if (window.scrollX !== 0) window.scrollTo({ left: 0, top: window.scrollY, behavior: "instant" });
+    };
+
+    resetHorizontalPosition();
+    root?.addEventListener("scroll", resetHorizontalPosition, { passive: true });
+    window.addEventListener("pageshow", resetHorizontalPosition);
+    window.addEventListener("resize", resetHorizontalPosition);
+    window.addEventListener("orientationchange", resetHorizontalPosition);
+    window.addEventListener("touchend", resetHorizontalPosition, { passive: true });
+
+    return () => {
+      root?.removeEventListener("scroll", resetHorizontalPosition);
+      window.removeEventListener("pageshow", resetHorizontalPosition);
+      window.removeEventListener("resize", resetHorizontalPosition);
+      window.removeEventListener("orientationchange", resetHorizontalPosition);
+      window.removeEventListener("touchend", resetHorizontalPosition);
+    };
+  }, []);
+  useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
