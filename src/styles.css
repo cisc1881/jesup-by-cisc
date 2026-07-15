@@ -237,7 +237,16 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; font-weight: 700; }
+  h1, h2, h3, h4 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  h1 { line-height: 1.14 !important; }
+  h2, h3, h4 { line-height: 1.2 !important; }
 }
 
 @utility gold-bar {
