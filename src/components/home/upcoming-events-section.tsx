@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Calendar, MapPin } from "lucide-react";
+import { ArrowRight, Calendar, MapPin } from "lucide-react";
 import type { HomeEvent, HomeSectionMeta } from "@/lib/home";
 import { fmtDateTime } from "@/lib/format";
 import {
@@ -56,6 +56,10 @@ export function UpcomingEventsSection({ events, meta, isLoading }: UpcomingEvent
                       {e.location}
                     </p>
                   )}
+                  <span className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-xs font-bold text-foreground">
+                    {e.registrationOpen ? "Register" : "Learn more"}
+                    <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </span>
                 </MediaCard>
               </Link>
             </HorizontalScrollItem>

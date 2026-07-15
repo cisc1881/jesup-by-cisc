@@ -110,7 +110,9 @@ export function EventCard({ event, className, animationIndex = 0, saved, onToggl
         )}
         <div className="mt-auto pt-4">
           <AppButton variant="outline" size="sm" shape="pill" className="pointer-events-none w-full">
-            View Event
+            {event.registrationStatus === "open" || event.registrationStatus === "waiting_list"
+              ? "Register"
+              : "Learn more"}
           </AppButton>
         </div>
       </div>

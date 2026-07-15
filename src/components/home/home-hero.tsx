@@ -95,9 +95,16 @@ export function HomeHero({ slides }: HomeHeroProps) {
           </div>
 
           {active?.linkLabel && (
-            <AppButton variant="inverse" size="lg" shape="pill" asChild>
+            <AppButton
+              variant="inverse"
+              size="lg"
+              shape="pill"
+              asChild
+              className="w-full max-w-full sm:w-auto"
+            >
               <Link to={active.linkTo} {...(active.linkParams ? { params: active.linkParams } : {})}>
-                {active.linkLabel} <ArrowRight className="h-4 w-4" />
+                <span className="truncate">{active.linkLabel}</span>
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </AppButton>
           )}

@@ -140,7 +140,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       subtitle: e.description,
       linkTo: "/events/$id",
       linkParams: { id: e.id },
-      linkLabel: e.title,
+      linkLabel: "Register",
     });
   }
 
@@ -154,7 +154,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       subtitle: m.description,
       linkTo: "/markets/$id",
       linkParams: { id: m.id },
-      linkLabel: m.name,
+      linkLabel: "Learn more",
     });
   }
 
@@ -168,7 +168,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       subtitle: p.description,
       linkTo: "/podcasts/$slug",
       linkParams: { slug: p.slug },
-      linkLabel: p.title,
+      linkLabel: "Listen now",
     });
   }
 
@@ -182,7 +182,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       subtitle: p.tagline,
       linkTo: "/programs/$slug",
       linkParams: { slug: p.slug },
-      linkLabel: p.name,
+      linkLabel: "Learn more",
     });
   }
 
