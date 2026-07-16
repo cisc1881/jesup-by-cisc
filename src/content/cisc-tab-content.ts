@@ -173,7 +173,5 @@ export const CISC_TAB_CONTENT: Record<string, CiscTabStory> = {
       "SEI High School and SEI Undergraduates",
       "Graduate Extension Interns/Fellows",
     ],
-    sourceUrl: "https://cisc1881.org/fellowships-internships-jobs/",
-    sourceLabel: "View the informational source",
   },
 };

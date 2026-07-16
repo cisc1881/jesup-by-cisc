@@ -30,6 +30,18 @@ type InternshipApplicationFormProps = {
   onSuccess?: () => void;
 };
 
+export const RESUME_MAX_BYTES = 10 * 1024 * 1024;
+const RESUME_EXTENSIONS = [".pdf", ".doc", ".docx"];
+
+export function validateResumeFile(file: Pick<File, "name" | "size">) {
+  const lowerName = file.name.toLowerCase();
+  if (!RESUME_EXTENSIONS.some((extension) => lowerName.endsWith(extension))) {
+    return "Upload a PDF or Word document (.pdf, .doc, or .docx).";
+  }
+  if (file.size > RESUME_MAX_BYTES) return "Resume files must be 10 MB or smaller.";
+  return null;
+}
+
 const emptyInstitution: InstitutionSelection = {
   institutionId: "",
   institutionType: "",
@@ -186,12 +198,23 @@ export function InternshipApplicationForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="resume-file">Resume (PDF or Word)</Label>
+        <Label htmlFor="resume-file">Resume (PDF or Word, 10 MB max)</Label>
         <Input
           id="resume-file"
           type="file"
           accept=".pdf,.doc,.docx"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => {
+            const selected = e.target.files?.[0] ?? null;
+            if (!selected) return setFile(null);
+            const validationError = validateResumeFile(selected);
+            if (validationError) {
+              toast.error(validationError);
+              e.target.value = "";
+              setFile(null);
+              return;
+            }
+            setFile(selected);
+          }}
           disabled={busy}
         />
       </div>

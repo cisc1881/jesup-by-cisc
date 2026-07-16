@@ -70,6 +70,7 @@ function AdminInternships() {
   async function setStatus(appId: string, status: string) {
     const { error } = await supabase.from("internship_applications").update({ status: status as any }).eq("id", appId);
     if (error) return toast.error(error.message);
+    toast.success(`Application marked ${status}`);
     qc.invalidateQueries({ queryKey: ["admin-apps"] });
   }
   async function resumeLink(path: string) {
@@ -98,8 +99,8 @@ function AdminInternships() {
                 <TableCell>{fmtDate(r.deadline)}</TableCell>
                 <TableCell><Badge variant={r.is_open ? "default" : "secondary"}>{r.is_open ? "Open" : "Closed"}</Badge></TableCell>
                 <TableCell><div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => setAppsOpen(r.id)}><Users className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                  <Button size="icon" variant="ghost" aria-label={`Review applications for ${r.title}`} onClick={() => setAppsOpen(r.id)}><Users className="h-4 w-4" /></Button>
+                  <Button size="icon" variant="ghost" aria-label={`Edit ${r.title}`} onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => del(r.id, r.title)} aria-label={`Delete ${r.title}`}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </div></TableCell>
               </TableRow>
