@@ -18,16 +18,16 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
       starterEvents,
       starterNews,
       starterMarkets,
-      starterPartners,
       starterPodcasts,
       starterInternships,
     } = await import("./starter-content");
+    // The official partner roster and supplied brand assets are managed separately
+    // so a starter-content refresh cannot overwrite approved logos or republish placeholders.
     const imports = [
       ["programs", starterPrograms],
       ["events", starterEvents],
       ["news_articles", starterNews],
       ["markets", starterMarkets],
-      ["partners", starterPartners],
       ["podcast_episodes", starterPodcasts],
       ["internships", starterInternships],
     ] as const;
