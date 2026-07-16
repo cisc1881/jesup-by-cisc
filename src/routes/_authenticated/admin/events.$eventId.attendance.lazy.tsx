@@ -48,6 +48,7 @@ import {
   type EventAttendanceRow,
 } from "@/lib/attendance";
 import { downloadCsv } from "@/lib/csv";
+import { printEventBadge } from "@/lib/badge-printing";
 import { fmtDateTime } from "@/lib/format";
 import {
   adminEventAttendanceQueryKey,
@@ -59,6 +60,7 @@ import {
   ArrowLeft,
   ClipboardCheck,
   Loader2,
+  Printer,
   Upload,
   UserCheck,
   UserPlus,
@@ -136,12 +138,14 @@ function AttendanceRowActions({
   adminUserId,
   onUpdated,
   onEditNote,
+  eventTitle,
 }: {
   row: EventAttendanceRow;
   eventId: string;
   adminUserId?: string | null;
   onUpdated: () => void;
   onEditNote: () => void;
+  eventTitle: string;
 }) {
   const [busy, setBusy] = useState(false);
 
@@ -157,6 +161,14 @@ function AttendanceRowActions({
         syncLegacyCheckin: status === "checked_in",
       });
       toast.success(`Marked ${ATTENDANCE_STATUS_LABELS[status].toLowerCase()}`);
+      if (status === "checked_in") {
+        printEventBadge({
+          attendeeName: row.participantName,
+          eventTitle,
+          organization: row.organizationOrSchool,
+          ticketCode: row.ticketCode,
+        });
+      }
       onUpdated();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Update failed");
@@ -195,6 +207,20 @@ function AttendanceRowActions({
       )}
       <Button size="sm" variant="ghost" disabled={busy} onClick={onEditNote}>
         Note
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        disabled={busy}
+        onClick={() => printEventBadge({
+          attendeeName: row.participantName,
+          eventTitle,
+          organization: row.organizationOrSchool,
+          ticketCode: row.ticketCode,
+        })}
+      >
+        <Printer className="h-4 w-4" />
+        <span className="sr-only sm:not-sr-only sm:ml-1">Badge</span>
       </Button>
     </div>
   );
@@ -274,8 +300,18 @@ function EventAttendancePage() {
     }
     setCheckingIn(true);
     try {
-      await checkInByTicketCode(eventId, code, user?.id ?? null);
+      const { registration } = await checkInByTicketCode(eventId, code, user?.id ?? null);
       toast.success(scannedCode ? "QR ticket validated and checked in" : "Checked in by ticket code");
+      const profile = registration.profiles as {
+        full_name: string | null;
+        affiliation: string | null;
+      } | null;
+      printEventBadge({
+        attendeeName: profile?.full_name ?? registration.attendee_name ?? "Guest",
+        eventTitle: header?.title ?? "JESUP Event",
+        organization: profile?.affiliation ?? null,
+        ticketCode: registration.ticket_code,
+      });
       setTicketCode("");
       refresh();
     } catch (err) {
@@ -540,6 +576,7 @@ function EventAttendancePage() {
                               setNoteRow(row);
                               setNoteText(row.notes ?? "");
                             }}
+                            eventTitle={header?.title ?? "JESUP Event"}
                           />
                         </TableCell>
                       </TableRow>
@@ -596,6 +633,7 @@ function EventAttendancePage() {
                         setNoteRow(row);
                         setNoteText(row.notes ?? "");
                       }}
+                      eventTitle={header?.title ?? "JESUP Event"}
                     />
                   </div>
                 ))}

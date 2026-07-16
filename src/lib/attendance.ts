@@ -478,7 +478,7 @@ export async function findRegistrationByTicketCode(eventId: string, ticketCode: 
   const code = ticketCode.trim().toUpperCase();
   if (!code) return null;
 
-  const select = "id, event_id, status, ticket_code, external_barcode, checked_in_at, profiles ( full_name, email )";
+  const select = "id, event_id, attendee_name, attendee_email, status, ticket_code, external_barcode, checked_in_at, profiles ( full_name, email, affiliation )";
   const { data, error } = await supabase
     .from("event_registrations")
     .select(select)
@@ -509,7 +509,7 @@ export async function checkInByTicketCode(
   if (registration.status === "cancelled") throw new Error("This registration was cancelled.");
   if (registration.checked_in_at) throw new Error("This attendee is already checked in.");
 
-  return markRegistrationAttendance({
+  const attendanceId = await markRegistrationAttendance({
     eventId,
     registrationId: registration.id,
     status: "checked_in",
@@ -518,6 +518,7 @@ export async function checkInByTicketCode(
     attendanceMethod: "manual",
     syncLegacyCheckin: true,
   });
+  return { registration, attendanceId };
 }
 
 export async function addWalkIn(input: WalkInInput) {
