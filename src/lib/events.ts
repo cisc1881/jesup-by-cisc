@@ -127,6 +127,11 @@ export type EventFormData = {
   registrationOpen: boolean;
   externalUrl: string;
   inviteCode: string;
+  registrationProvider: "jesup" | "eventbrite";
+  eventbriteEventId: string;
+  eventbriteEventUrl: string;
+  ticketPriceLabel: string;
+  metadata: Record<string, unknown>;
   programIds: string[];
   publicationIds: string[];
   podcastIds: string[];
@@ -567,6 +572,11 @@ export function emptyEventForm(): EventFormData {
     registrationOpen: true,
     externalUrl: "",
     inviteCode: "",
+    registrationProvider: "jesup",
+    eventbriteEventId: "",
+    eventbriteEventUrl: "",
+    ticketPriceLabel: "",
+    metadata: {},
     programIds: [],
     publicationIds: [],
     podcastIds: [],
@@ -628,6 +638,9 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     if (res.error) throw res.error;
   }
 
+  const metadata = (row.metadata as Record<string, unknown> | null) ?? {};
+  const registrationProvider = metadata.registration_provider === "eventbrite" ? "eventbrite" : "jesup";
+
   return {
     slug: row.slug ?? "",
     title: row.title,
@@ -650,6 +663,11 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     registrationOpen: row.registration_open,
     externalUrl: row.external_url ?? "",
     inviteCode: row.invite_code ?? "",
+    registrationProvider,
+    eventbriteEventId: typeof metadata.eventbrite_event_id === "string" ? metadata.eventbrite_event_id : "",
+    eventbriteEventUrl: typeof metadata.eventbrite_event_url === "string" ? metadata.eventbrite_event_url : "",
+    ticketPriceLabel: typeof metadata.ticket_price_label === "string" ? metadata.ticket_price_label : "",
+    metadata,
     programIds: (programsRes.data ?? []).map((r) => r.program_id),
     publicationIds: (pubsRes.data ?? []).map((r) => r.publication_id),
     podcastIds: (podcastsRes.data ?? []).map((r) => r.podcast_episode_id),
@@ -805,8 +823,15 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
 
 export async function saveEvent(eventId: string | null, form: EventFormData) {
   const slug = form.slug.trim() || slugify(form.title);
-  const registrationOpen =
-    form.registrationStatus === "open" || form.registrationStatus === "waiting_list";
+  const registrationOpen = form.registrationProvider === "jesup" &&
+    (form.registrationStatus === "open" || form.registrationStatus === "waiting_list");
+  const metadata = {
+    ...form.metadata,
+    registration_provider: form.registrationProvider,
+    eventbrite_event_id: form.eventbriteEventId.trim() || null,
+    eventbrite_event_url: form.eventbriteEventUrl.trim() || null,
+    ticket_price_label: form.ticketPriceLabel.trim() || null,
+  };
   const payload = {
     slug,
     title: form.title,
@@ -829,6 +854,7 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
     registration_open: registrationOpen,
     external_url: form.externalUrl || null,
     invite_code: form.inviteCode || null,
+    metadata,
   };
 
   if (eventId) {

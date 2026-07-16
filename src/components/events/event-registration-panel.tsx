@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarPlus, ExternalLink, QrCode, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { EventbriteCheckout } from "@/components/events/eventbrite-checkout";
 
 type EventRegistrationPanelProps = {
   event: EventDetail;
@@ -48,6 +49,10 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     buildEmptyDemographicForm(),
   );
   const [savingDemographics, setSavingDemographics] = useState(false);
+  const registrationProvider = event.metadata.registration_provider === "eventbrite" ? "eventbrite" : "jesup";
+  const eventbriteEventId = typeof event.metadata.eventbrite_event_id === "string" ? event.metadata.eventbrite_event_id : "";
+  const eventbriteEventUrl = typeof event.metadata.eventbrite_event_url === "string" ? event.metadata.eventbrite_event_url : "";
+  const ticketPriceLabel = typeof event.metadata.ticket_price_label === "string" ? event.metadata.ticket_price_label : null;
 
   const canRegister =
     event.registrationStatus === "open" ||
@@ -150,9 +155,17 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     <div className="space-y-4">
       <AppCard variant="lift" padding="md" className="space-y-4">
         <h2 className="text-xl font-black tracking-[var(--tracking-tight)] text-foreground">
-          Registration
+          {registrationProvider === "eventbrite" ? "Tickets" : "Registration"}
         </h2>
-        {registration ? (
+        {registrationProvider === "eventbrite" && eventbriteEventId && eventbriteEventUrl ? (
+          <EventbriteCheckout
+            eventId={eventbriteEventId}
+            eventUrl={eventbriteEventUrl}
+            priceLabel={ticketPriceLabel}
+          />
+        ) : registrationProvider === "eventbrite" ? (
+          <p className="text-muted-foreground">Ticket checkout is being prepared. Please check back soon.</p>
+        ) : registration ? (
           <div className="space-y-3">
             <p className="font-semibold text-green-700">
               {registration.status === "waiting_list"

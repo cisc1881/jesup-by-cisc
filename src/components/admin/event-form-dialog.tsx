@@ -310,6 +310,27 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
 
             <TabsContent value="registration" className="space-y-4 pt-4">
               <div className="grid gap-3 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Label>Registration and payment provider</Label>
+                  <Select
+                    value={form.registrationProvider}
+                    onValueChange={(value) =>
+                      setForm((current) => ({
+                        ...current,
+                        registrationProvider: value as EventFormData["registrationProvider"],
+                      }))
+                    }
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="jesup">JESUP — free registration</SelectItem>
+                      <SelectItem value="eventbrite">Eventbrite — paid ticket checkout</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Eventbrite securely processes paid tickets while the attendee remains on the JESUP event page.
+                  </p>
+                </div>
                 <div>
                   <Label>Registration status</Label>
                   <Select value={form.registrationStatus} onValueChange={(v) => setForm((f) => ({ ...f, registrationStatus: v as EventFormData["registrationStatus"], registrationOpen: v === "open" || v === "waiting_list" }))}>
@@ -329,6 +350,41 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                   <Label>Invite code</Label>
                   <Input value={form.inviteCode} onChange={(e) => setForm((f) => ({ ...f, inviteCode: e.target.value }))} />
                 </div>
+                {form.registrationProvider === "eventbrite" && (
+                  <>
+                    <div>
+                      <Label>Eventbrite Event ID *</Label>
+                      <Input
+                        required
+                        inputMode="numeric"
+                        value={form.eventbriteEventId}
+                        onChange={(e) => setForm((f) => ({ ...f, eventbriteEventId: e.target.value.replace(/\D/g, "") }))}
+                        placeholder="1234567890123"
+                      />
+                    </div>
+                    <div>
+                      <Label>Price shown in JESUP</Label>
+                      <Input
+                        value={form.ticketPriceLabel}
+                        onChange={(e) => setForm((f) => ({ ...f, ticketPriceLabel: e.target.value }))}
+                        placeholder="$25 or $25–$75"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Label>Eventbrite event URL *</Label>
+                      <Input
+                        required
+                        type="url"
+                        value={form.eventbriteEventUrl}
+                        onChange={(e) => setForm((f) => ({ ...f, eventbriteEventUrl: e.target.value }))}
+                        placeholder="https://www.eventbrite.com/e/..."
+                      />
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Used as a reliable fallback if embedded checkout is unavailable.
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
             </TabsContent>
 
