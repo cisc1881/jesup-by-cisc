@@ -94,7 +94,7 @@ function AdminNotifications() {
     <CommandCenterContentShell>
       <CommandCenterPageHeader
         title="Notification Center"
-        description="In-app alerts for Command Center activity. Email, SMS, and push delivery coming later."
+        description="In-app alerts for Command Center activity, with confirmation email delivery monitoring."
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" asChild>

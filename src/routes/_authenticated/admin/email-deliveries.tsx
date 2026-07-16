@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Mail, RefreshCw } from "lucide-react";
+import { Mail, Play, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CommandCenterContentShell, CommandCenterPageHeader } from "@/modules/admin";
 import {
   listEmailDeliveries,
+  processPendingEmailDeliveries,
   retryEmailDelivery,
   retryFailedEmailDeliveries,
   type EmailDeliveryStatus,
@@ -53,16 +54,24 @@ function AdminEmailDeliveries() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-email-deliveries"] });
   const retryOne = useMutation({
     mutationFn: retryEmailDelivery,
-    onSuccess: () => {
-      toast.success("Email queued for retry");
+    onSuccess: (result) => {
+      toast.success(result?.sent ? `${result.sent} email${result.sent === 1 ? "" : "s"} sent` : "Email queued; no messages were sent yet");
       void refresh();
     },
     onError: (error) => toast.error(error.message),
   });
   const retryAll = useMutation({
     mutationFn: retryFailedEmailDeliveries,
-    onSuccess: () => {
-      toast.success("Failed emails queued for retry");
+    onSuccess: (result) => {
+      toast.success(result?.sent ? `${result.sent} email${result.sent === 1 ? "" : "s"} sent` : "Failed emails re-queued; no messages were sent yet");
+      void refresh();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const processQueue = useMutation({
+    mutationFn: processPendingEmailDeliveries,
+    onSuccess: (result) => {
+      toast.success(`Queue processed: ${result?.sent ?? 0} sent, ${result?.failed ?? 0} failed`);
       void refresh();
     },
     onError: (error) => toast.error(error.message),
@@ -75,7 +84,11 @@ function AdminEmailDeliveries() {
         title="Email Delivery"
         description="Monitor confirmation delivery, inspect failures, and retry queued messages."
         actions={
-          failedCount > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => processQueue.mutate()} disabled={processQueue.isPending}>
+              <Play className="mr-2 h-4 w-4" /> Process queue
+            </Button>
+            {failedCount > 0 && (
             <Button
               variant="outline"
               onClick={() => retryAll.mutate()}
@@ -83,7 +96,8 @@ function AdminEmailDeliveries() {
             >
               <RefreshCw className="mr-2 h-4 w-4" /> Retry failed
             </Button>
-          ) : undefined
+            )}
+          </div>
         }
       />
 

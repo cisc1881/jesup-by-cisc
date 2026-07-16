@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { triggerEmailDelivery } from "@/lib/email-delivery";
+import { processEmailDeliveryQueue } from "@/lib/email-delivery";
 
 export type EmailDeliveryStatus = "pending" | "processing" | "sent" | "failed";
 
@@ -26,7 +26,7 @@ export async function retryEmailDelivery(id: string) {
     })
     .eq("id", id);
   if (error) throw error;
-  triggerEmailDelivery();
+  return processEmailDeliveryQueue();
 }
 
 export async function retryFailedEmailDeliveries() {
@@ -40,5 +40,9 @@ export async function retryFailedEmailDeliveries() {
     })
     .eq("status", "failed");
   if (error) throw error;
-  triggerEmailDelivery();
+  return processEmailDeliveryQueue();
+}
+
+export function processPendingEmailDeliveries() {
+  return processEmailDeliveryQueue();
 }
