@@ -17,6 +17,7 @@ const searchSchema = z.object({
     .string()
     .optional()
     .transform((val) => validateNextPath(val) ?? undefined),
+  mode: z.enum(["reset"]).optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -25,20 +26,25 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { next } = useSearch({ from: "/auth" });
+  const { next, mode } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
+    if (mode === "reset") return;
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session?.user) return;
       const destination = await resolvePostLoginPathForUser(next, data.session.user.id);
       void navigate({ to: destination as "/", replace: true });
     });
-  }, [navigate, next]);
+  }, [mode, navigate, next]);
 
   async function redirectAfterAuth() {
     const {
@@ -76,6 +82,34 @@ function AuthPage() {
     await redirectAfterAuth();
   }
 
+  async function requestPasswordReset(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth?mode=reset`,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    setResetEmailSent(true);
+    toast.success("Password reset email sent");
+  }
+
+  async function updatePassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (newPassword.length < 8) {
+      return toast.error("Use at least 8 characters for your new password.");
+    }
+    if (newPassword !== confirmPassword) {
+      return toast.error("The passwords do not match.");
+    }
+    setBusy(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("Password updated. You are signed in.");
+    await redirectAfterAuth();
+  }
+
   async function google() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
@@ -103,6 +137,82 @@ function AuthPage() {
           </p>
         </CardHeader>
         <CardContent>
+          {mode === "reset" ? (
+            <form onSubmit={updatePassword} className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Enter a new password for your JESUP account.
+              </p>
+              <div>
+                <Label htmlFor="new-password">New password</Label>
+                <Input
+                  id="new-password"
+                  name="new-password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="confirm-password">Confirm new password</Label>
+                <Input
+                  id="confirm-password"
+                  name="confirm-password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" disabled={busy} className="w-full bg-primary hover:bg-primary/90">
+                {busy ? "Updating…" : "Update password"}
+              </Button>
+            </form>
+          ) : forgotPassword ? (
+            resetEmailSent ? (
+              <div className="space-y-4 text-center">
+                <p className="font-medium text-primary">Check your email</p>
+                <p className="text-sm text-muted-foreground">
+                  If an account exists for {email}, a secure password-reset link has been sent.
+                </p>
+                <Button type="button" variant="outline" className="w-full" onClick={() => {
+                  setForgotPassword(false);
+                  setResetEmailSent(false);
+                }}>
+                  Back to sign in
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={requestPasswordReset} className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Enter your account email and we’ll send you a secure reset link.
+                </p>
+                <div>
+                  <Label htmlFor="reset-email">Email</Label>
+                  <Input
+                    id="reset-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <Button type="submit" disabled={busy} className="w-full bg-primary hover:bg-primary/90">
+                  {busy ? "Sending…" : "Send reset link"}
+                </Button>
+                <Button type="button" variant="ghost" className="w-full" onClick={() => setForgotPassword(false)}>
+                  Back to sign in
+                </Button>
+              </form>
+            )
+          ) : (
+            <>
           <Button onClick={google} variant="outline" className="mb-2 w-full">
             Continue with Google
           </Button>
@@ -149,6 +259,13 @@ function AuthPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button
+                    type="button"
+                    className="mt-2 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    onClick={() => setForgotPassword(true)}
+                  >
+                    Forgot password?
+                  </button>
                 </div>
                 <Button
                   type="submit"
@@ -206,6 +323,8 @@ function AuthPage() {
               </form>
             </TabsContent>
           </Tabs>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
