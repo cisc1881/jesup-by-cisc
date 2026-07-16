@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { publishingWriteError, validateContentIdentity, validateEventSchedule } from "@/lib/content-publishing";
 
 export const EVENT_IMAGES_BUCKET = "event-images";
 
@@ -823,6 +824,8 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
 
 export async function saveEvent(eventId: string | null, form: EventFormData) {
   const slug = form.slug.trim() || slugify(form.title);
+  validateContentIdentity("Event", form.title, slug);
+  validateEventSchedule(form.startsAt, form.endsAt);
   const registrationOpen = form.registrationProvider === "jesup" &&
     (form.registrationStatus === "open" || form.registrationStatus === "waiting_list");
   const metadata = {
@@ -834,7 +837,7 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
   };
   const payload = {
     slug,
-    title: form.title,
+    title: form.title.trim(),
     description: form.description || null,
     description_html: form.descriptionHtml || null,
     starts_at: form.startsAt,
@@ -859,13 +862,13 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
 
   if (eventId) {
     const { error } = await supabase.from("events").update(payload).eq("id", eventId);
-    if (error) throw error;
+    if (error) throw publishingWriteError(error, "Event");
     await replaceEventRelations(eventId, form);
     return eventId;
   }
 
   const { data, error } = await supabase.from("events").insert(payload).select("id").single();
-  if (error) throw error;
+  if (error) throw publishingWriteError(error, "Event");
   await replaceEventRelations(data.id, form);
   return data.id;
 }

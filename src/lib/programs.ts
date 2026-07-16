@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { publishingWriteError, validateContentIdentity } from "@/lib/content-publishing";
 
 export const PROGRAM_IMAGES_BUCKET = "program-images";
 
@@ -449,9 +450,11 @@ async function replaceProgramRelations(programId: string, form: ProgramFormData)
 }
 
 export async function saveProgram(programId: string | null, form: ProgramFormData) {
+  const slug = form.slug.trim() || slugify(form.name);
+  validateContentIdentity("Program", form.name, slug);
   const payload = {
-    slug: form.slug || slugify(form.name),
-    name: form.name,
+    slug,
+    name: form.name.trim(),
     short: form.short || null,
     tagline: form.tagline || null,
     description_html: form.descriptionHtml || null,
@@ -472,13 +475,13 @@ export async function saveProgram(programId: string | null, form: ProgramFormDat
 
   if (programId) {
     const { error } = await supabase.from("programs").update(payload).eq("id", programId);
-    if (error) throw error;
+    if (error) throw publishingWriteError(error, "Program");
     await replaceProgramRelations(programId, form);
     return programId;
   }
 
   const { data, error } = await supabase.from("programs").insert(payload).select("id").single();
-  if (error) throw error;
+  if (error) throw publishingWriteError(error, "Program");
   await replaceProgramRelations(data.id, form);
   return data.id;
 }

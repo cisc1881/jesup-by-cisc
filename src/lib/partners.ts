@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { publishingWriteError, validateContentIdentity } from "@/lib/content-publishing";
 import type { PartnerCategory } from "@/lib/partner-categories";
 import { PARTNER_IMPACT_GROUPS } from "@/lib/partner-categories";
 import type { PartnershipFocusArea } from "@/lib/partner-focus-areas";
@@ -406,7 +407,7 @@ async function replacePartnerRelations(partnerId: string, form: PartnerFormData)
 
 export async function savePartner(partnerId: string | null, form: PartnerFormData) {
   const slug = form.slug.trim() || slugify(form.name);
-  if (!form.name.trim()) throw new Error("Name is required");
+  validateContentIdentity("Partner", form.name, slug);
 
   if (form.isFeatured) {
     await clearOtherFeatured(partnerId ?? undefined);
@@ -435,10 +436,10 @@ export async function savePartner(partnerId: string | null, form: PartnerFormDat
   let id = partnerId;
   if (partnerId) {
     const { error } = await supabase.from("partners").update(payload).eq("id", partnerId);
-    if (error) throw error;
+    if (error) throw publishingWriteError(error, "Partner");
   } else {
     const { data, error } = await supabase.from("partners").insert(payload).select("id").single();
-    if (error) throw error;
+    if (error) throw publishingWriteError(error, "Partner");
     id = data.id as string;
   }
 

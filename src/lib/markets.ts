@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { publishingWriteError, validateContentIdentity } from "@/lib/content-publishing";
 import { distanceKm } from "@/lib/market-geo";
 
 export const MARKET_IMAGES_BUCKET = "market-images";
@@ -706,9 +707,10 @@ async function replaceMarketRelations(marketId: string, form: MarketFormData) {
 
 export async function saveMarket(marketId: string | null, form: MarketFormData) {
   const slug = form.slug.trim() || slugify(form.name);
+  validateContentIdentity("Market", form.name, slug);
   const payload = {
     slug,
-    name: form.name,
+    name: form.name.trim(),
     description: form.description || null,
     address: form.address || null,
     city: form.city || null,
@@ -732,13 +734,13 @@ export async function saveMarket(marketId: string | null, form: MarketFormData) 
 
   if (marketId) {
     const { error } = await supabase.from("markets").update(payload).eq("id", marketId);
-    if (error) throw error;
+    if (error) throw publishingWriteError(error, "Market");
     await replaceMarketRelations(marketId, form);
     return marketId;
   }
 
   const { data, error } = await supabase.from("markets").insert(payload).select("id").single();
-  if (error) throw error;
+  if (error) throw publishingWriteError(error, "Market");
   await replaceMarketRelations(data.id, form);
   return data.id;
 }

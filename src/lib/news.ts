@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { publishedAtValue, publishingWriteError, validateContentIdentity, validateNewsPublication } from "@/lib/content-publishing";
 
 export const NEWS_IMAGES_BUCKET = "news-images";
 
@@ -376,7 +377,8 @@ async function replaceNewsRelations(articleId: string, form: NewsFormData) {
 
 export async function saveNewsArticle(articleId: string | null, form: NewsFormData) {
   const slug = form.slug.trim() || slugify(form.title);
-  if (!form.title.trim()) throw new Error("Title is required");
+  validateContentIdentity("Article", form.title, slug);
+  validateNewsPublication(form.isPublished, form.summary, form.contentHtml);
 
   if (form.isFeatured) {
     await clearOtherFeatured(articleId ?? undefined);
@@ -394,7 +396,7 @@ export async function saveNewsArticle(articleId: string | null, form: NewsFormDa
     author: form.author.trim() || null,
     category: form.category || null,
     cover_image_url: form.coverImageUrl.trim() || null,
-    published_at: form.publishedAt || null,
+    published_at: publishedAtValue(form.isPublished, form.publishedAt),
     is_published: form.isPublished,
     is_featured: form.isFeatured,
     reading_time_minutes: readingTime,
@@ -406,10 +408,10 @@ export async function saveNewsArticle(articleId: string | null, form: NewsFormDa
   let id = articleId;
   if (articleId) {
     const { error } = await supabase.from("news_articles").update(payload).eq("id", articleId);
-    if (error) throw error;
+    if (error) throw publishingWriteError(error, "Article");
   } else {
     const { data, error } = await supabase.from("news_articles").insert(payload).select("id").single();
-    if (error) throw error;
+    if (error) throw publishingWriteError(error, "Article");
     id = data.id as string;
   }
 
