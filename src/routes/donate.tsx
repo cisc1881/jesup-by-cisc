@@ -15,6 +15,8 @@ const ways = [
   { icon: FlaskConical, title: "Support research", body: "Advance applied research on sustainable food systems, energy, and economic development." },
 ];
 
+const TUSKEGEE_GIVING_URL = "https://alumni.tuskegee.edu/donate";
+
 function DonatePage() {
   return (
     <PublicLayout>
@@ -29,10 +31,17 @@ function DonatePage() {
             </div>
             <h1 className="text-5xl font-black leading-[1.02] tracking-tight sm:text-7xl">Grow with us.</h1>
             <p className="mt-4 max-w-2xl text-lg text-white/90">Your gift builds pipelines to opportunity — for farmers, families, and future leaders across the Black Belt and beyond.</p>
-            <button className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-primary shadow-2xl transition hover:scale-[1.02]">
-              Give online <ArrowRight className="h-4 w-4" />
-            </button>
-            <p className="mt-3 text-xs text-white/60">Online giving portal · coming soon</p>
+            <a
+              href={TUSKEGEE_GIVING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-primary shadow-2xl transition hover:scale-[1.02]"
+            >
+              Give through Tuskegee <ArrowRight className="h-4 w-4" />
+            </a>
+            <p className="mt-3 text-xs text-white/75">
+              Secure giving is processed by Tuskegee University in a new window.
+            </p>
           </div>
         </div>
       </section>
@@ -59,9 +68,14 @@ function DonatePage() {
               </span>
               <h3 className="mt-5 text-xl font-black tracking-tight">{w.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{w.body}</p>
-              <button className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-primary transition group-hover:gap-2.5">
-                Learn more <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+              <a
+                href={TUSKEGEE_GIVING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-primary transition group-hover:gap-2.5"
+              >
+                Give through Tuskegee <ArrowRight className="h-3.5 w-3.5" />
+              </a>
             </div>
           ))}
         </div>
