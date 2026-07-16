@@ -74,7 +74,7 @@ function MePage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("equipment_checkouts")
-        .select("id,quantity,checkout_date,return_date,status,equipment(id,name)")
+        .select("id,quantity,checkout_date,return_date,status,admin_notes,approved_at,checked_out_at,returned_at,equipment(id,name)")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -294,6 +294,9 @@ function MePage() {
                     <p className="text-sm text-muted-foreground">
                       Qty {c.quantity} · {fmtDate(c.checkout_date)} → {fmtDate(c.return_date)}
                     </p>
+                    {c.admin_notes && <p className="mt-1 text-sm text-muted-foreground">Staff note: {c.admin_notes}</p>}
+                    {c.checked_out_at && <p className="mt-1 text-xs text-muted-foreground">Picked up {fmtDateTime(c.checked_out_at)}</p>}
+                    {c.returned_at && <p className="mt-1 text-xs text-muted-foreground">Returned {fmtDateTime(c.returned_at)}</p>}
                   </div>
                   <Badge>{c.status}</Badge>
                 </CardContent>

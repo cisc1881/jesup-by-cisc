@@ -287,37 +287,58 @@ export type Database = {
       }
       equipment_checkouts: {
         Row: {
+          admin_notes: string | null
+          approved_at: string | null
           checkout_date: string
+          checked_out_at: string | null
+          condition_in: string | null
+          condition_out: string | null
           created_at: string
           equipment_id: string
           id: string
           notes: string | null
+          processed_by: string | null
           quantity: number
           return_date: string
+          returned_at: string | null
           status: Database["public"]["Enums"]["checkout_status"]
           updated_at: string
           user_id: string
         }
         Insert: {
+          admin_notes?: string | null
+          approved_at?: string | null
           checkout_date: string
+          checked_out_at?: string | null
+          condition_in?: string | null
+          condition_out?: string | null
           created_at?: string
           equipment_id: string
           id?: string
           notes?: string | null
+          processed_by?: string | null
           quantity?: number
           return_date: string
+          returned_at?: string | null
           status?: Database["public"]["Enums"]["checkout_status"]
           updated_at?: string
           user_id: string
         }
         Update: {
+          admin_notes?: string | null
+          approved_at?: string | null
           checkout_date?: string
+          checked_out_at?: string | null
+          condition_in?: string | null
+          condition_out?: string | null
           created_at?: string
           equipment_id?: string
           id?: string
           notes?: string | null
+          processed_by?: string | null
           quantity?: number
           return_date?: string
+          returned_at?: string | null
           status?: Database["public"]["Enums"]["checkout_status"]
           updated_at?: string
           user_id?: string
@@ -328,6 +349,13 @@ export type Database = {
             columns: ["equipment_id"]
             isOneToOne: false
             referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_checkouts_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {

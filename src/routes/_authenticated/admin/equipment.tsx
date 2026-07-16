@@ -16,8 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { downloadCsv } from "@/lib/csv";
 import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
-import { Pencil, Trash2 } from "lucide-react";
-import { fmtDate } from "@/lib/format";
+import { ClipboardCheck, Pencil, Trash2 } from "lucide-react";
+import { fmtDate, fmtDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/equipment")({ component: AdminEquipment });
 
@@ -31,6 +31,9 @@ function AdminEquipment() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState<any>(empty);
+  const [managing, setManaging] = useState<any>(null);
+  const [requestForm, setRequestForm] = useState({ status: "pending", admin_notes: "", condition_out: "", condition_in: "" });
+  const [savingRequest, setSavingRequest] = useState(false);
 
   const { data: items } = useQuery({
     queryKey: ["admin-equipment"],
@@ -41,7 +44,7 @@ function AdminEquipment() {
   const { data: requests } = useQuery({
     queryKey: ["admin-checkouts"],
     queryFn: async () => (await supabase.from("equipment_checkouts")
-      .select("id,quantity,checkout_date,return_date,status,notes,created_at,equipment(id,name),profiles(full_name,email)")
+      .select("id,quantity,checkout_date,return_date,status,notes,admin_notes,condition_out,condition_in,approved_at,checked_out_at,returned_at,created_at,equipment(id,name),profiles!equipment_checkouts_user_profile_fkey(full_name,email)")
       .order("created_at", { ascending: false })).data ?? [],
   });
 
@@ -66,10 +69,32 @@ function AdminEquipment() {
       onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-equipment"] }),
     });
   }
-  async function updateReq(id: string, status: string) {
-    const { error } = await supabase.from("equipment_checkouts").update({ status: status as any }).eq("id", id);
+  function openRequest(r: any) {
+    setManaging(r);
+    setRequestForm({
+      status: r.status,
+      admin_notes: r.admin_notes ?? "",
+      condition_out: r.condition_out ?? "",
+      condition_in: r.condition_in ?? "",
+    });
+  }
+
+  async function saveRequest(e: React.FormEvent) {
+    e.preventDefault();
+    if (!managing) return;
+    setSavingRequest(true);
+    const { error } = await supabase.from("equipment_checkouts").update({
+      status: requestForm.status as any,
+      admin_notes: requestForm.admin_notes || null,
+      condition_out: requestForm.condition_out || null,
+      condition_in: requestForm.condition_in || null,
+    }).eq("id", managing.id);
+    setSavingRequest(false);
     if (error) return toast.error(error.message);
-    toast.success("Updated"); qc.invalidateQueries({ queryKey: ["admin-checkouts"] });
+    toast.success(`Request marked ${requestForm.status.replace("_", " ")}`);
+    setManaging(null);
+    qc.invalidateQueries({ queryKey: ["admin-checkouts"] });
+    qc.invalidateQueries({ queryKey: ["my-checkouts"] });
   }
 
   return (
@@ -100,7 +125,7 @@ function AdminEquipment() {
                     <TableCell>{r.category}</TableCell>
                     <TableCell>{r.quantity_total}</TableCell>
                     <TableCell><div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => openEdit(r)} aria-label={`Edit ${r.name}`}><Pencil className="h-4 w-4" /></Button>
                       <Button size="icon" variant="ghost" onClick={() => del(r.id, r.name)} aria-label={`Delete ${r.name}`}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div></TableCell>
                   </TableRow>
@@ -131,18 +156,7 @@ function AdminEquipment() {
                     <TableCell className="text-sm">{fmtDate(r.checkout_date)} → {fmtDate(r.return_date)}</TableCell>
                     <TableCell>{r.quantity}</TableCell>
                     <TableCell><Badge>{r.status}</Badge></TableCell>
-                    <TableCell>
-                      <Select value={r.status} onValueChange={(v) => updateReq(r.id, v)}>
-                        <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="approved">Approved</SelectItem>
-                          <SelectItem value="denied">Denied</SelectItem>
-                          <SelectItem value="checked_out">Checked out</SelectItem>
-                          <SelectItem value="returned">Returned</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
+                    <TableCell><Button variant="outline" size="sm" onClick={() => openRequest(r)}><ClipboardCheck className="mr-2 h-4 w-4" />Manage</Button></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -162,6 +176,35 @@ function AdminEquipment() {
             <div><Label>Image URL</Label><Input value={form.image_url ?? ""} onChange={(e) => setForm({ ...form, image_url: e.target.value })} /></div>
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90">Save</Button>
           </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!managing} onOpenChange={(next) => { if (!next) setManaging(null); }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+          <DialogHeader><DialogTitle>Manage equipment request</DialogTitle></DialogHeader>
+          {managing && <form onSubmit={saveRequest} className="space-y-4">
+            <div className="rounded-lg bg-muted p-3 text-sm">
+              <p className="font-semibold">{managing.equipment?.name} · Qty {managing.quantity}</p>
+              <p>{managing.profiles?.full_name} · {managing.profiles?.email}</p>
+              <p>{fmtDate(managing.checkout_date)} → {fmtDate(managing.return_date)}</p>
+              {managing.notes && <p className="mt-2"><span className="font-medium">Request details:</span> {managing.notes}</p>}
+            </div>
+            <div><Label htmlFor="checkout-status">Status</Label><Select value={requestForm.status} onValueChange={(status) => setRequestForm({ ...requestForm, status })}>
+              <SelectTrigger id="checkout-status"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem><SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="denied">Denied</SelectItem><SelectItem value="checked_out">Checked out</SelectItem><SelectItem value="returned">Returned</SelectItem>
+              </SelectContent>
+            </Select></div>
+            <div><Label htmlFor="checkout-admin-notes">Staff note visible to requester</Label><Textarea id="checkout-admin-notes" name="admin_notes" value={requestForm.admin_notes} onChange={(e) => setRequestForm({ ...requestForm, admin_notes: e.target.value })} placeholder="Pickup instructions, denial reason, or other guidance" /></div>
+            <div><Label htmlFor="checkout-condition-out">Condition at pickup</Label><Textarea id="checkout-condition-out" name="condition_out" value={requestForm.condition_out} onChange={(e) => setRequestForm({ ...requestForm, condition_out: e.target.value })} placeholder="Record accessories and existing wear" /></div>
+            <div><Label htmlFor="checkout-condition-in">Condition at return</Label><Textarea id="checkout-condition-in" name="condition_in" value={requestForm.condition_in} onChange={(e) => setRequestForm({ ...requestForm, condition_in: e.target.value })} placeholder="Record returned condition and missing items" /></div>
+            <div className="grid gap-1 text-xs text-muted-foreground sm:grid-cols-3">
+              <span>Approved: {managing.approved_at ? fmtDateTime(managing.approved_at) : "—"}</span>
+              <span>Picked up: {managing.checked_out_at ? fmtDateTime(managing.checked_out_at) : "—"}</span>
+              <span>Returned: {managing.returned_at ? fmtDateTime(managing.returned_at) : "—"}</span>
+            </div>
+            <Button type="submit" disabled={savingRequest} className="w-full">{savingRequest ? "Saving…" : "Save request"}</Button>
+          </form>}
         </DialogContent>
       </Dialog>
       {dialog}

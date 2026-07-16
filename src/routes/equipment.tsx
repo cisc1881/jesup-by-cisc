@@ -54,7 +54,9 @@ function EquipmentCard({ it }: { it: any }) {
   async function request(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return navigate({ to: "/auth", search: { next: "/equipment" } });
-    if (new Date(end) < new Date(start)) return toast.error("Return date must be on/after checkout date");
+    const today = new Date().toISOString().slice(0, 10);
+    if (start < today) return toast.error("Checkout date cannot be in the past");
+    if (end < start) return toast.error("Return date must be on or after checkout date");
 
     setBusy(true);
     // Availability check: sum overlapping approved/checked_out reservations
@@ -103,13 +105,13 @@ function EquipmentCard({ it }: { it: any }) {
             <DialogHeader><DialogTitle>Request · {it.name}</DialogTitle></DialogHeader>
             <form onSubmit={request} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Quantity</Label><Input type="number" min={1} max={it.quantity_total} value={qty} onChange={(e) => setQty(parseInt(e.target.value) || 1)} required /></div>
+                <div><Label htmlFor={`equipment-quantity-${it.id}`}>Quantity</Label><Input id={`equipment-quantity-${it.id}`} name="quantity" type="number" min={1} max={it.quantity_total} value={qty} onChange={(e) => setQty(parseInt(e.target.value) || 1)} required /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Checkout date</Label><Input type="date" value={start} onChange={(e) => setStart(e.target.value)} required /></div>
-                <div><Label>Return date</Label><Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} required /></div>
+                <div><Label htmlFor={`equipment-start-${it.id}`}>Checkout date</Label><Input id={`equipment-start-${it.id}`} name="checkout_date" type="date" min={new Date().toISOString().slice(0, 10)} value={start} onChange={(e) => setStart(e.target.value)} required /></div>
+                <div><Label htmlFor={`equipment-end-${it.id}`}>Return date</Label><Input id={`equipment-end-${it.id}`} name="return_date" type="date" min={start || new Date().toISOString().slice(0, 10)} value={end} onChange={(e) => setEnd(e.target.value)} required /></div>
               </div>
-              <div><Label>Notes (optional)</Label><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
+              <div><Label htmlFor={`equipment-notes-${it.id}`}>Project or use details (optional)</Label><Textarea id={`equipment-notes-${it.id}`} name="notes" value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
               <Button type="submit" disabled={busy} className="w-full bg-primary hover:bg-primary/90">{busy ? "Submitting…" : "Submit request"}</Button>
             </form>
           </DialogContent>
