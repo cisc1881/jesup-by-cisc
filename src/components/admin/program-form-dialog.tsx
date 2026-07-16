@@ -161,7 +161,7 @@ export function ProgramFormDialog({ open, onOpenChange, programId, onSaved }: Pr
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Tabs defaultValue="details">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="flex h-auto w-full">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="media">Media</TabsTrigger>

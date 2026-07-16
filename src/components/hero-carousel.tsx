@@ -57,14 +57,16 @@ export function HeroCarousel() {
           ))}
         </div>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex justify-center gap-1.5 sm:bottom-6">
+      <div className="pointer-events-none absolute inset-x-0 bottom-1 z-10 flex justify-center sm:bottom-3">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => emblaApi?.scrollTo(i)}
-            className={`pointer-events-auto h-1.5 rounded-full transition-all ${i === selected ? "w-8 bg-white" : "w-1.5 bg-white/50"}`}
+            className="pointer-events-auto grid h-11 w-11 touch-manipulation place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             aria-label={`Slide ${i + 1}`}
-          />
+          >
+            <span className={`h-1.5 rounded-full transition-all ${i === selected ? "w-8 bg-white" : "w-1.5 bg-white/50"}`} aria-hidden="true" />
+          </button>
         ))}
       </div>
     </section>

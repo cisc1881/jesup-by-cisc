@@ -22,6 +22,7 @@ export function HorizontalScroll({ children, className, gap = "md", "aria-label"
     <div
       role="region"
       aria-label={ariaLabel}
+      style={{ contain: "inline-size layout" }}
       className={cn(
         "flex pb-1",
         canScroll

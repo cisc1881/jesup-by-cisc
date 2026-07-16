@@ -111,7 +111,7 @@ export function PartnerFormDialog({ open, onOpenChange, partnerId, onSaved }: Pa
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Tabs defaultValue="details">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
+            <TabsList className="flex h-auto w-full">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="contact">Contact</TabsTrigger>
               <TabsTrigger value="media">Media</TabsTrigger>

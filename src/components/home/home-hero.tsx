@@ -37,7 +37,10 @@ export function HomeHero({ slides }: HomeHeroProps) {
   const active = slides[selected] ?? slides[0];
 
   return (
-    <section className="relative isolate w-full max-w-full overflow-hidden grad-crimson">
+    <section
+      className="relative isolate w-full max-w-full overflow-hidden grad-crimson"
+      style={{ contain: "inline-size layout paint" }}
+    >
       <div className="absolute inset-0 opacity-20" aria-hidden="true">
         <div
           className="h-full w-full"
@@ -118,13 +121,18 @@ export function HomeHero({ slides }: HomeHeroProps) {
               key={slide.id}
               type="button"
               onClick={() => emblaApi?.scrollTo(i)}
-              className={cn(
-                "h-1.5 rounded-full transition-all",
-                i === selected ? "w-8 bg-white" : "w-1.5 bg-white/45",
-              )}
+              className="grid h-11 w-11 touch-manipulation place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               aria-label={slide.imageAlt}
               aria-current={i === selected ? "true" : undefined}
-            />
+            >
+              <span
+                className={cn(
+                  "h-1.5 rounded-full transition-all",
+                  i === selected ? "w-8 bg-white" : "w-1.5 bg-white/45",
+                )}
+                aria-hidden="true"
+              />
+            </button>
           ))}
         </div>
       )}
