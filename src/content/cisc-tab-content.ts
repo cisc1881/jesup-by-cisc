@@ -3,8 +3,8 @@ export type CiscTabStory = {
   title: string;
   summary: string;
   highlights: string[];
-  sourceUrl: string;
-  sourceLabel: string;
+  sourceUrl?: string;
+  sourceLabel?: string;
   videoUrl?: string;
   videoLabel?: string;
 };
@@ -20,8 +20,6 @@ export const CISC_TAB_CONTENT: Record<string, CiscTabStory> = {
       "Black Belt Marketing and Innovation Center",
       "Small Farm and Rural Development Program",
     ],
-    sourceUrl: "https://cisc1881.org/programs-projects/",
-    sourceLabel: "View the informational source",
   },
   "/events": {
     eyebrow: "Learn together",
@@ -46,8 +44,6 @@ export const CISC_TAB_CONTENT: Record<string, CiscTabStory> = {
       "Explore a community partnership",
       "Connect with student and career opportunities",
     ],
-    sourceUrl: "https://cisc1881.org/contact/",
-    sourceLabel: "CISC contact information",
   },
   "/news": {
     eyebrow: "From the field",

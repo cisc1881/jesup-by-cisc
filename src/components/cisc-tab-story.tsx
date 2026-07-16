@@ -28,15 +28,17 @@ export function CiscTabStory() {
               {story.summary}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={story.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-              >
-                {story.sourceLabel}
-                <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              </a>
+              {story.sourceUrl && story.sourceLabel && (
+                <a
+                  href={story.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                >
+                  {story.sourceLabel}
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                </a>
+              )}
               {story.videoUrl && (
                 <a
                   href={story.videoUrl}
@@ -50,8 +52,9 @@ export function CiscTabStory() {
               )}
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              Program information adapted from CISC’s public website. Confirm current dates,
-              eligibility, and availability on the linked official page.
+              {story.sourceUrl
+                ? "Information is adapted from CISC’s public materials. JESUP provides the current in-app action when registration, application, or follow-up is available."
+                : "Program interest, questions, and follow-up are submitted and tracked directly inside JESUP."}
             </p>
           </div>
           <div className="border-t border-border/70 bg-secondary/45 p-6 sm:p-8 lg:border-l lg:border-t-0 lg:p-10">
