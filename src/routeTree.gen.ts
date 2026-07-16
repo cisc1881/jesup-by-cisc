@@ -78,6 +78,7 @@ import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/
 import { Route as AuthenticatedAdminReportsEventsRouteImport } from './routes/_authenticated/admin/reports.events'
 import { Route as AuthenticatedAdminEventsGalleryRouteImport } from './routes/_authenticated/admin/events.gallery'
 import { Route as AuthenticatedAdmin2fasApplicationsRouteImport } from './routes/_authenticated/admin/2fas/applications'
+import { Route as AuthenticatedAdminEventsEventIdMealsRouteImport } from './routes/_authenticated/admin/events.$eventId.meals'
 import { Route as AuthenticatedAdminEventsEventIdGalleryRouteImport } from './routes/_authenticated/admin/events.$eventId.gallery'
 import { Route as AuthenticatedAdminEventsEventIdEvaluationsRouteImport } from './routes/_authenticated/admin/events.$eventId.evaluations'
 import { Route as AuthenticatedAdminEventsEventIdAttendanceRouteImport } from './routes/_authenticated/admin/events.$eventId.attendance'
@@ -485,6 +486,12 @@ const AuthenticatedAdmin2fasApplicationsRoute =
     path: '/2fas/applications',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminEventsEventIdMealsRoute =
+  AuthenticatedAdminEventsEventIdMealsRouteImport.update({
+    id: '/$eventId/meals',
+    path: '/$eventId/meals',
+    getParentRoute: () => AuthenticatedAdminEventsRoute,
+  } as any)
 const AuthenticatedAdminEventsEventIdGalleryRoute =
   AuthenticatedAdminEventsEventIdGalleryRouteImport.update({
     id: '/$eventId/gallery',
@@ -588,6 +595,7 @@ export interface FileRoutesByFullPath {
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  '/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -659,6 +667,7 @@ export interface FileRoutesByTo {
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  '/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -734,6 +743,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/_authenticated/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/_authenticated/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  '/_authenticated/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -809,6 +819,7 @@ export interface FileRouteTypes {
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
+    | '/admin/events/$eventId/meals'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -880,6 +891,7 @@ export interface FileRouteTypes {
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
+    | '/admin/events/$eventId/meals'
   id:
     | '__root__'
     | '/'
@@ -954,6 +966,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/events/$eventId/attendance'
     | '/_authenticated/admin/events/$eventId/evaluations'
     | '/_authenticated/admin/events/$eventId/gallery'
+    | '/_authenticated/admin/events/$eventId/meals'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1466,6 +1479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmin2fasApplicationsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/events/$eventId/meals': {
+      id: '/_authenticated/admin/events/$eventId/meals'
+      path: '/$eventId/meals'
+      fullPath: '/admin/events/$eventId/meals'
+      preLoaderRoute: typeof AuthenticatedAdminEventsEventIdMealsRouteImport
+      parentRoute: typeof AuthenticatedAdminEventsRoute
+    }
     '/_authenticated/admin/events/$eventId/gallery': {
       id: '/_authenticated/admin/events/$eventId/gallery'
       path: '/$eventId/gallery'
@@ -1495,6 +1515,7 @@ interface AuthenticatedAdminEventsRouteChildren {
   AuthenticatedAdminEventsEventIdAttendanceRoute: typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   AuthenticatedAdminEventsEventIdEvaluationsRoute: typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   AuthenticatedAdminEventsEventIdGalleryRoute: typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  AuthenticatedAdminEventsEventIdMealsRoute: typeof AuthenticatedAdminEventsEventIdMealsRoute
 }
 
 const AuthenticatedAdminEventsRouteChildren: AuthenticatedAdminEventsRouteChildren =
@@ -1506,6 +1527,8 @@ const AuthenticatedAdminEventsRouteChildren: AuthenticatedAdminEventsRouteChildr
       AuthenticatedAdminEventsEventIdEvaluationsRoute,
     AuthenticatedAdminEventsEventIdGalleryRoute:
       AuthenticatedAdminEventsEventIdGalleryRoute,
+    AuthenticatedAdminEventsEventIdMealsRoute:
+      AuthenticatedAdminEventsEventIdMealsRoute,
   }
 
 const AuthenticatedAdminEventsRouteWithChildren =

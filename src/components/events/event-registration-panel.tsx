@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import type { EventDetail } from "@/lib/events";
-import { registerForEvent } from "@/lib/events";
+import { registerForEvent, saveRegistrationAccommodations } from "@/lib/events";
 import { triggerEmailDelivery } from "@/lib/email-delivery";
 import { downloadEventIcs, googleMapsDirectionsUrl, shareEvent } from "@/lib/event-calendar";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarPlus, ExternalLink, QrCode, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { EventbriteCheckout } from "@/components/events/eventbrite-checkout";
@@ -42,6 +43,10 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
   const qc = useQueryClient();
   const [notes, setNotes] = useState("");
   const [inviteCode, setInviteCode] = useState("");
+  const [dietaryRestrictions, setDietaryRestrictions] = useState("");
+  const [foodAllergies, setFoodAllergies] = useState("");
+  const [accessibilityAccommodations, setAccessibilityAccommodations] = useState("");
+  const [accommodationConsent, setAccommodationConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [demographicStep, setDemographicStep] = useState(false);
   const [registrationId, setRegistrationId] = useState<string | null>(null);
@@ -66,7 +71,26 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     }
     setBusy(true);
     try {
+      const hasAccommodationDetails = Boolean(
+        dietaryRestrictions.trim() || foodAllergies.trim() || accessibilityAccommodations.trim(),
+      );
+      if (hasAccommodationDetails && !accommodationConsent) {
+        toast.error("Please authorize JESUP to use these details to coordinate your accommodations.");
+        return;
+      }
       const result = await registerForEvent(event.id, user.id, notes, inviteCode);
+      if (hasAccommodationDetails) {
+        try {
+          await saveRegistrationAccommodations(result.id, {
+            dietaryRestrictions: dietaryRestrictions.trim(),
+            foodAllergies: foodAllergies.trim(),
+            accessibilityAccommodations: accessibilityAccommodations.trim(),
+            consent: accommodationConsent,
+          });
+        } catch {
+          toast.warning("Registration completed, but accommodation details could not be saved. Please contact the event team.");
+        }
+      }
       triggerEmailDelivery();
       toast.success(
         result.status === "waiting_list" ? "Added to waiting list" : "You're registered!",
@@ -222,13 +246,49 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
               </div>
             )}
             <div>
-              <Label htmlFor={`event-${event.id}-registration-notes`}>Notes (optional)</Label>
+              <Label htmlFor={`event-${event.id}-dietary`}>Dietary preferences or restrictions (optional)</Label>
+              <Textarea
+                id={`event-${event.id}-dietary`}
+                value={dietaryRestrictions}
+                onChange={(e) => setDietaryRestrictions(e.target.value)}
+                placeholder="For example: vegetarian, halal, gluten-free"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`event-${event.id}-allergies`}>Food allergies (optional)</Label>
+              <Textarea
+                id={`event-${event.id}-allergies`}
+                value={foodAllergies}
+                onChange={(e) => setFoodAllergies(e.target.value)}
+                placeholder="List allergy and severity. For emergencies, contact the event team directly."
+              />
+            </div>
+            <div>
+              <Label htmlFor={`event-${event.id}-accessibility`}>Accessibility accommodations (optional)</Label>
+              <Textarea
+                id={`event-${event.id}-accessibility`}
+                value={accessibilityAccommodations}
+                onChange={(e) => setAccessibilityAccommodations(e.target.value)}
+                placeholder="For example: wheelchair access, ASL interpretation, accessible seating"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`event-${event.id}-registration-notes`}>Other registration notes (optional)</Label>
               <Textarea
                 id={`event-${event.id}-registration-notes`}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Dietary restrictions, accessibility needs, etc."
               />
+            </div>
+            <div className="flex items-start gap-3 rounded-xl border p-3">
+              <Checkbox
+                id={`event-${event.id}-accommodation-consent`}
+                checked={accommodationConsent}
+                onCheckedChange={(value) => setAccommodationConsent(value === true)}
+              />
+              <Label htmlFor={`event-${event.id}-accommodation-consent`} className="text-sm font-normal leading-relaxed">
+                I authorize JESUP/CISC event staff to use the dietary, allergy, and accessibility details I provide solely to coordinate this event. I understand this form is not for emergency medical instructions.
+              </Label>
             </div>
             <AppButton
               variant="primary"

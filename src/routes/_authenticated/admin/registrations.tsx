@@ -29,12 +29,16 @@ type RegistrationRow = {
   checkedInAt: string | null;
   createdAt: string;
   source: string;
+  dietaryRestrictions: string | null;
+  foodAllergies: string | null;
+  accessibilityAccommodations: string | null;
+  accommodationConsent: boolean;
 };
 
 async function fetchAllRegistrations(): Promise<RegistrationRow[]> {
   const { data, error } = await supabase
     .from("event_registrations")
-    .select("id, event_id, attendee_name, attendee_email, registration_source, status, ticket_code, checked_in_at, created_at, events ( title ), profiles ( full_name, email )")
+    .select("id, event_id, attendee_name, attendee_email, registration_source, status, ticket_code, checked_in_at, created_at, dietary_restrictions, food_allergies, accessibility_accommodations, accommodation_consent, events ( title ), profiles ( full_name, email )")
     .order("created_at", { ascending: false });
   if (error) throw error;
 
@@ -52,6 +56,10 @@ async function fetchAllRegistrations(): Promise<RegistrationRow[]> {
       checkedInAt: row.checked_in_at,
       createdAt: row.created_at,
       source: row.registration_source,
+      dietaryRestrictions: row.dietary_restrictions,
+      foodAllergies: row.food_allergies,
+      accessibilityAccommodations: row.accessibility_accommodations,
+      accommodationConsent: row.accommodation_consent,
     };
   });
 }
@@ -148,6 +156,13 @@ function AdminRegistrations() {
                       <div className="text-xs text-muted-foreground">{row.email ?? "No email"}</div>
                       {row.ticketCode && <div className="font-mono text-xs text-muted-foreground">{row.ticketCode}</div>}
                       <div className="text-xs capitalize text-muted-foreground">{row.source}</div>
+                      {row.accommodationConsent && (row.dietaryRestrictions || row.foodAllergies || row.accessibilityAccommodations) && (
+                        <div className="mt-2 space-y-1 rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs text-foreground">
+                          {row.foodAllergies && <div><strong>Allergy:</strong> {row.foodAllergies}</div>}
+                          {row.dietaryRestrictions && <div><strong>Dietary:</strong> {row.dietaryRestrictions}</div>}
+                          {row.accessibilityAccommodations && <div><strong>Accessibility:</strong> {row.accessibilityAccommodations}</div>}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Link

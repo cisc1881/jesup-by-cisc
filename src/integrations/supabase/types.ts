@@ -969,16 +969,103 @@ export type Database = {
           },
         ]
       }
+      event_meal_days: {
+        Row: {
+          allowance_per_attendee: number
+          created_at: string
+          event_id: string
+          id: string
+          is_active: boolean
+          label: string
+          service_date: string
+          updated_at: string
+        }
+        Insert: {
+          allowance_per_attendee?: number
+          created_at?: string
+          event_id: string
+          id?: string
+          is_active?: boolean
+          label: string
+          service_date: string
+          updated_at?: string
+        }
+        Update: {
+          allowance_per_attendee?: number
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          service_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_meal_days_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_meal_redemptions: {
+        Row: {
+          id: string
+          meal_day_id: string
+          redeemed_at: string
+          redeemed_by: string | null
+          redemption_number: number
+          registration_id: string
+        }
+        Insert: {
+          id?: string
+          meal_day_id: string
+          redeemed_at?: string
+          redeemed_by?: string | null
+          redemption_number: number
+          registration_id: string
+        }
+        Update: {
+          id?: string
+          meal_day_id?: string
+          redeemed_at?: string
+          redeemed_by?: string | null
+          redemption_number?: number
+          registration_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_meal_redemptions_meal_day_id_fkey"
+            columns: ["meal_day_id"]
+            isOneToOne: false
+            referencedRelation: "event_meal_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_meal_redemptions_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_registrations: {
         Row: {
+          accessibility_accommodations: string | null
+          accommodation_consent: boolean
           attendee_email: string | null
           attendee_name: string | null
           checked_in_at: string | null
           confirmation_sent_at: string | null
           created_at: string
+          dietary_restrictions: string | null
           event_id: string
           external_barcode: string | null
           external_registration_id: string | null
+          food_allergies: string | null
           id: string
           notes: string | null
           reminder_sent_at: string | null
@@ -989,14 +1076,18 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          accessibility_accommodations?: string | null
+          accommodation_consent?: boolean
           attendee_email?: string | null
           attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
+          dietary_restrictions?: string | null
           event_id: string
           external_barcode?: string | null
           external_registration_id?: string | null
+          food_allergies?: string | null
           id?: string
           notes?: string | null
           reminder_sent_at?: string | null
@@ -1007,14 +1098,18 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          accessibility_accommodations?: string | null
+          accommodation_consent?: boolean
           attendee_email?: string | null
           attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
+          dietary_restrictions?: string | null
           event_id?: string
           external_barcode?: string | null
           external_registration_id?: string | null
+          food_allergies?: string | null
           id?: string
           notes?: string | null
           reminder_sent_at?: string | null
@@ -4156,6 +4251,27 @@ export type Database = {
           status: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code: string
         }[]
+      }
+      redeem_event_meal_ticket: {
+        Args: { p_meal_day_id: string; p_ticket_code: string }
+        Returns: {
+          allowance: number
+          attendee_name: string
+          event_title: string
+          meal_label: string
+          remaining: number
+          used_count: number
+        }[]
+      }
+      save_registration_accommodations: {
+        Args: {
+          p_accessibility_accommodations?: string
+          p_consent?: boolean
+          p_dietary_restrictions?: string
+          p_food_allergies?: string
+          p_registration_id: string
+        }
+        Returns: undefined
       }
       submit_internship_application: {
         Args: { p_application: Json }

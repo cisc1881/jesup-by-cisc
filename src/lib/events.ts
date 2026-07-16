@@ -952,6 +952,25 @@ export async function registerForEvent(
   return data[0];
 }
 
+export async function saveRegistrationAccommodations(
+  registrationId: string,
+  input: {
+    dietaryRestrictions?: string;
+    foodAllergies?: string;
+    accessibilityAccommodations?: string;
+    consent: boolean;
+  },
+) {
+  const { error } = await supabase.rpc("save_registration_accommodations", {
+    p_registration_id: registrationId,
+    p_dietary_restrictions: input.dietaryRestrictions || undefined,
+    p_food_allergies: input.foodAllergies || undefined,
+    p_accessibility_accommodations: input.accessibilityAccommodations || undefined,
+    p_consent: input.consent,
+  });
+  if (error) throw error;
+}
+
 export async function getEventAnalytics(eventId: string) {
   const [regs, checkins] = await Promise.all([
     supabase

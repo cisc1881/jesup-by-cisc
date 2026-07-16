@@ -6,6 +6,7 @@ type EventbriteAttendee = {
   status?: string;
   profile?: { name?: string; first_name?: string; last_name?: string; email?: string };
   barcodes?: Array<{ barcode?: string; status?: string }>;
+  answers?: Array<{ question?: string; answer?: string }>;
 };
 
 type EventbriteAttendeePage = {
@@ -76,6 +77,15 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
           "Eventbrite attendee";
         const barcode = attendee.barcodes?.find((item) => item.barcode)?.barcode?.trim() ?? null;
         const isCancelled = (attendee.status ?? "").toLowerCase().includes("cancel");
+        const answerFor = (patterns: string[]) =>
+          attendee.answers?.find((answer) =>
+            patterns.some((pattern) => (answer.question ?? "").toLowerCase().includes(pattern)),
+          )?.answer?.trim() || null;
+        const dietaryRestrictions = answerFor(["dietary", "diet preference", "diet restriction"]);
+        const foodAllergies = answerFor(["food allerg", "allergies"]);
+        const accessibilityAccommodations = answerFor(["accessibility", "accommodation", "access need"]);
+        const consentAnswer = answerFor(["authorize jesup", "accommodation consent", "coordinate this event"]);
+        const accommodationConsent = /^(yes|true|i agree|authorized)$/i.test(consentAnswer ?? "");
 
         const { data: existing, error: existingError } = await supabaseAdmin
           .from("event_registrations")
@@ -93,6 +103,10 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
           registration_source: "eventbrite",
           external_registration_id: attendee.id,
           external_barcode: barcode,
+          dietary_restrictions: accommodationConsent ? dietaryRestrictions : null,
+          food_allergies: accommodationConsent ? foodAllergies : null,
+          accessibility_accommodations: accommodationConsent ? accessibilityAccommodations : null,
+          accommodation_consent: accommodationConsent,
           status: isCancelled ? ("cancelled" as const) : ("registered" as const),
         };
 
@@ -110,4 +124,3 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
 
     return { linkedEvents, imported, updated };
   });
-

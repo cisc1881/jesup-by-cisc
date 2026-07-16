@@ -22,7 +22,7 @@ import {
 import { fmtDateTime } from "@/lib/format";
 import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
-import { BarChart3, ClipboardCheck, Copy, FileText, ImageIcon, Pencil, Trash2, UserCheck, Users } from "lucide-react";
+import { BarChart3, ClipboardCheck, Copy, FileText, ImageIcon, Pencil, Trash2, UserCheck, Users, Utensils } from "lucide-react";
 
 export const Route = createLazyFileRoute("/_authenticated/admin/events")({
   component: AdminEvents,
@@ -66,6 +66,11 @@ function EventRowActions({
           <ClipboardCheck className="h-4 w-4" />
         </Link>
       </Button>
+      <Button size="icon" variant="ghost" className="h-10 w-10" asChild>
+        <Link to="/admin/events/$eventId/meals" params={{ eventId: row.id }} aria-label={`Meal tickets for ${row.title}`}>
+          <Utensils className="h-4 w-4" />
+        </Link>
+      </Button>
       <Button size="icon" variant="ghost" className="h-10 w-10" onClick={onDuplicate} aria-label={`Duplicate ${row.title}`}>
         <Copy className="h-4 w-4" />
       </Button>
@@ -84,6 +89,7 @@ const EVENTS_CHILD_ROUTE_IDS = new Set([
   "/_authenticated/admin/events/$eventId/attendance",
   "/_authenticated/admin/events/$eventId/evaluations",
   "/_authenticated/admin/events/$eventId/gallery",
+  "/_authenticated/admin/events/$eventId/meals",
 ]);
 
 function AdminEvents() {

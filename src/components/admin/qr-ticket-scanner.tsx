@@ -7,14 +7,18 @@ import { toast } from "sonner";
 export function QrTicketScanner({
   disabled,
   onDetected,
+  continuous = false,
 }: {
   disabled?: boolean;
   onDetected: (code: string) => void | Promise<void>;
+  continuous?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
   const detectedRef = useRef(false);
+  const onDetectedRef = useRef(onDetected);
+  onDetectedRef.current = onDetected;
 
   useEffect(() => {
     if (!open || !videoRef.current) return;
@@ -29,9 +33,13 @@ export function QrTicketScanner({
         (result) => {
           if (!result || detectedRef.current) return;
           detectedRef.current = true;
-          controlsRef.current?.stop();
-          setOpen(false);
-          void onDetected(result.getText());
+          if (!continuous) {
+            controlsRef.current?.stop();
+            setOpen(false);
+          }
+          void Promise.resolve(onDetectedRef.current(result.getText())).finally(() => {
+            if (continuous) window.setTimeout(() => { detectedRef.current = false; }, 900);
+          });
         },
       )
       .then((controls) => {
@@ -49,7 +57,7 @@ export function QrTicketScanner({
       controlsRef.current?.stop();
       controlsRef.current = null;
     };
-  }, [onDetected, open]);
+  }, [continuous, open]);
 
   return (
     <div className="space-y-3">
@@ -66,4 +74,3 @@ export function QrTicketScanner({
     </div>
   );
 }
-
