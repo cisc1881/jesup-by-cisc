@@ -18,6 +18,7 @@ import {
   saveEventMealDay,
   setMealDayActive,
 } from "@/lib/meals";
+import { formatUserErrorMessage } from "@/lib/seo";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/events/$eventId/meals")({
@@ -60,7 +61,7 @@ function EventMealsPage() {
       await qc.invalidateQueries({ queryKey: ["event-meal-days", eventId] });
       toast.success("Meal allowance added");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not add meal allowance");
+      toast.error(formatUserErrorMessage(error, "Could not add meal allowance"));
     } finally {
       setSaving(false);
     }
@@ -78,7 +79,7 @@ function EventMealsPage() {
       await qc.invalidateQueries({ queryKey: ["event-meal-redemptions", activeDayId] });
       toast.success(`${result.attendeeName}: ${result.usedCount} of ${result.allowance} meals used`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Meal ticket could not be redeemed");
+      toast.error(formatUserErrorMessage(error, "Meal ticket could not be redeemed"));
     } finally {
       setRedeeming(false);
     }

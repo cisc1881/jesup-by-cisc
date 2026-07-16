@@ -240,6 +240,15 @@ export function listPageHead(input: { title: string; description: string; path: 
 
 export function formatUserErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message.trim()) return err.message;
+  if (
+    err &&
+    typeof err === "object" &&
+    "message" in err &&
+    typeof err.message === "string" &&
+    err.message.trim()
+  ) {
+    return err.message;
+  }
   return fallback;
 }
 
