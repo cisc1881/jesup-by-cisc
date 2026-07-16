@@ -152,7 +152,7 @@ export type EventAdminRow = EventListItem & {
 
 export type EventRegistrationRow = {
   id: string;
-  userId: string;
+  userId: string | null;
   fullName: string | null;
   email: string | null;
   notes: string | null;
@@ -888,7 +888,7 @@ export async function fetchEventRegistrations(eventId: string): Promise<EventReg
   const { data, error } = await supabase
     .from("event_registrations")
     .select(
-      "id, user_id, notes, status, ticket_code, checked_in_at, created_at, profiles ( full_name, email )",
+      "id, user_id, attendee_name, attendee_email, notes, status, ticket_code, checked_in_at, created_at, profiles ( full_name, email )",
     )
     .eq("event_id", eventId)
     .order("created_at", { ascending: false });
@@ -898,8 +898,8 @@ export async function fetchEventRegistrations(eventId: string): Promise<EventReg
     return {
       id: row.id,
       userId: row.user_id,
-      fullName: profile?.full_name ?? null,
-      email: profile?.email ?? null,
+      fullName: profile?.full_name ?? row.attendee_name ?? null,
+      email: profile?.email ?? row.attendee_email ?? null,
       notes: row.notes,
       status: row.status as EventRegistrationRecordStatus,
       ticketCode: row.ticket_code,

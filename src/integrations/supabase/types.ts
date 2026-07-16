@@ -971,43 +971,58 @@ export type Database = {
       }
       event_registrations: {
         Row: {
+          attendee_email: string | null
+          attendee_name: string | null
           checked_in_at: string | null
           confirmation_sent_at: string | null
           created_at: string
           event_id: string
+          external_barcode: string | null
+          external_registration_id: string | null
           id: string
           notes: string | null
           reminder_sent_at: string | null
+          registration_source: string
           status: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          attendee_email?: string | null
+          attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
           event_id: string
+          external_barcode?: string | null
+          external_registration_id?: string | null
           id?: string
           notes?: string | null
           reminder_sent_at?: string | null
+          registration_source?: string
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          attendee_email?: string | null
+          attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
           event_id?: string
+          external_barcode?: string | null
+          external_registration_id?: string | null
           id?: string
           notes?: string | null
           reminder_sent_at?: string | null
+          registration_source?: string
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {

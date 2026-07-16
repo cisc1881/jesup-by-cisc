@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AdminPageHeader, AdminShell } from "@/components/admin-page";
 import { AttendanceImportDialog } from "@/components/admin/attendance-import-dialog";
+import { QrTicketScanner } from "@/components/admin/qr-ticket-scanner";
 import { WalkInFormDialog } from "@/components/admin/walk-in-form-dialog";
 import { DemographicAggregateCards } from "@/components/demographics/demographic-aggregate-cards";
 import { EmptyState, LoadingState, QueryErrorState } from "@/components/design-system";
@@ -265,15 +266,16 @@ function EventAttendancePage() {
     setSelected(new Set(filtered.map((row) => row.id)));
   }
 
-  async function handleTicketCheckIn() {
-    if (!ticketCode.trim()) {
+  async function handleTicketCheckIn(scannedCode?: string) {
+    const code = scannedCode?.trim() || ticketCode.trim();
+    if (!code) {
       toast.error("Enter a ticket code.");
       return;
     }
     setCheckingIn(true);
     try {
-      await checkInByTicketCode(eventId, ticketCode, user?.id ?? null);
-      toast.success("Checked in by ticket code");
+      await checkInByTicketCode(eventId, code, user?.id ?? null);
+      toast.success(scannedCode ? "QR ticket validated and checked in" : "Checked in by ticket code");
       setTicketCode("");
       refresh();
     } catch (err) {
@@ -386,7 +388,9 @@ function EventAttendancePage() {
       <DemographicAggregateCards eventId={eventId} />
 
       <Card className="mb-4">
-        <CardContent className="flex flex-col gap-3 pt-6 sm:flex-row sm:items-end">
+        <CardContent className="flex flex-col gap-4 pt-6">
+          <QrTicketScanner disabled={checkingIn} onDetected={(code) => handleTicketCheckIn(code)} />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-2">
             <Label htmlFor="ticket-code">Check in by ticket code</Label>
             <Input
@@ -408,6 +412,7 @@ function EventAttendancePage() {
             {checkingIn ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserCheck className="mr-2 h-4 w-4" />}
             Check in
           </Button>
+          </div>
         </CardContent>
       </Card>
 

@@ -38,6 +38,7 @@ import {
 } from "@/lib/evaluations";
 import { toast } from "sonner";
 import { ProfileInstitutionForm } from "@/components/profile/profile-institution-form";
+import { QRCodeSVG } from "qrcode.react";
 
 export const Route = createFileRoute("/_authenticated/me/")({ component: MePage });
 
@@ -367,9 +368,18 @@ function RegistrationDemographicsCard({
           {event.location ? ` · ${event.location}` : ""}
         </p>
         {ticketCode && registrationStatus !== "cancelled" && (
-          <p className="text-sm text-muted-foreground">
-            Ticket: <span className="font-mono font-semibold text-foreground">{ticketCode}</span>
-          </p>
+          <div className="flex flex-col gap-3 rounded-xl border bg-background p-4 sm:flex-row sm:items-center">
+            <div className="w-fit rounded-lg bg-white p-2" aria-label={`QR ticket ${ticketCode}`}>
+              <QRCodeSVG value={ticketCode} size={132} level="M" marginSize={1} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">JESUP event ticket</p>
+              <p className="mt-1 break-all font-mono text-base font-bold text-foreground">{ticketCode}</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Present this QR code or ticket number at event check-in.
+              </p>
+            </div>
+          </div>
         )}
         <p className="text-sm text-muted-foreground">
           Optional demographics: submission status is not displayed for privacy. You may update your

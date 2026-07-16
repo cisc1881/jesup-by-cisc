@@ -188,7 +188,7 @@ function registrationAttendanceStatus(
 async function fetchRegistrationsForEvent(eventId: string) {
   const { data, error } = await supabase
     .from("event_registrations")
-    .select("id, event_id, user_id, notes, status, ticket_code, checked_in_at, created_at, profiles ( full_name, email, phone, affiliation )")
+    .select("id, event_id, user_id, attendee_name, attendee_email, notes, status, ticket_code, external_barcode, checked_in_at, created_at, profiles ( full_name, email, phone, affiliation )")
     .eq("event_id", eventId);
   if (error) throw error;
   return data ?? [];
@@ -259,8 +259,10 @@ function buildAttendanceRow(
     evaluationCompletedAt: (attendance.evaluation_completed_at as string | null) ?? null,
     participantName: isWalkIn
       ? (walkIn?.full_name as string)
-      : (profile?.full_name ?? "—"),
-    email: isWalkIn ? ((walkIn?.email as string | null) ?? null) : (profile?.email ?? null),
+      : (profile?.full_name ?? (registration?.attendee_name as string | null) ?? "—"),
+    email: isWalkIn
+      ? ((walkIn?.email as string | null) ?? null)
+      : (profile?.email ?? (registration?.attendee_email as string | null) ?? null),
     phone: isWalkIn ? ((walkIn?.phone as string | null) ?? null) : (profile?.phone ?? null),
     organizationOrSchool: isWalkIn
       ? ((walkIn?.organization_or_school as string | null) ?? null)
@@ -476,14 +478,24 @@ export async function findRegistrationByTicketCode(eventId: string, ticketCode: 
   const code = ticketCode.trim().toUpperCase();
   if (!code) return null;
 
+  const select = "id, event_id, status, ticket_code, external_barcode, checked_in_at, profiles ( full_name, email )";
   const { data, error } = await supabase
     .from("event_registrations")
-    .select("id, event_id, status, ticket_code, checked_in_at, profiles ( full_name, email )")
+    .select(select)
     .eq("event_id", eventId)
     .eq("ticket_code", code)
     .maybeSingle();
   if (error) throw error;
-  return data;
+  if (data) return data;
+
+  const { data: external, error: externalError } = await supabase
+    .from("event_registrations")
+    .select(select)
+    .eq("event_id", eventId)
+    .eq("external_barcode", ticketCode.trim())
+    .maybeSingle();
+  if (externalError) throw externalError;
+  return external;
 }
 
 export async function checkInByTicketCode(
@@ -494,6 +506,8 @@ export async function checkInByTicketCode(
 ) {
   const registration = await findRegistrationByTicketCode(eventId, ticketCode);
   if (!registration) throw new Error("No registration found for that ticket code.");
+  if (registration.status === "cancelled") throw new Error("This registration was cancelled.");
+  if (registration.checked_in_at) throw new Error("This attendee is already checked in.");
 
   return markRegistrationAttendance({
     eventId,

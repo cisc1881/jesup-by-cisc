@@ -12,6 +12,7 @@ import { downloadCsv } from "@/lib/csv";
 import { checkInRegistration } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
 import { toast } from "sonner";
+import { syncEventbriteRegistrationsServerFn } from "@/lib/eventbrite-sync-server-fn";
 
 export const Route = createFileRoute("/_authenticated/admin/registrations")({
   component: AdminRegistrations,
@@ -27,12 +28,13 @@ type RegistrationRow = {
   ticketCode: string | null;
   checkedInAt: string | null;
   createdAt: string;
+  source: string;
 };
 
 async function fetchAllRegistrations(): Promise<RegistrationRow[]> {
   const { data, error } = await supabase
     .from("event_registrations")
-    .select("id, event_id, status, ticket_code, checked_in_at, created_at, events ( title ), profiles ( full_name, email )")
+    .select("id, event_id, attendee_name, attendee_email, registration_source, status, ticket_code, checked_in_at, created_at, events ( title ), profiles ( full_name, email )")
     .order("created_at", { ascending: false });
   if (error) throw error;
 
@@ -43,12 +45,13 @@ async function fetchAllRegistrations(): Promise<RegistrationRow[]> {
       id: row.id,
       eventId: row.event_id,
       eventTitle: event?.title ?? "Event",
-      fullName: profile?.full_name ?? null,
-      email: profile?.email ?? null,
+      fullName: profile?.full_name ?? row.attendee_name ?? null,
+      email: profile?.email ?? row.attendee_email ?? null,
       status: row.status,
       ticketCode: row.ticket_code,
       checkedInAt: row.checked_in_at,
       createdAt: row.created_at,
+      source: row.registration_source,
     };
   });
 }
@@ -56,6 +59,7 @@ async function fetchAllRegistrations(): Promise<RegistrationRow[]> {
 function AdminRegistrations() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
+  const [syncing, setSyncing] = useState(false);
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-registrations"],
     queryFn: fetchAllRegistrations,
@@ -76,6 +80,20 @@ function AdminRegistrations() {
     }
   }
 
+  async function syncEventbrite() {
+    setSyncing(true);
+    try {
+      const result = await syncEventbriteRegistrationsServerFn();
+      await qc.invalidateQueries({ queryKey: ["admin-registrations"] });
+      await qc.invalidateQueries({ queryKey: ["command-center-dashboard"] });
+      toast.success(`Eventbrite synced: ${result.imported} new, ${result.updated} updated.`);
+    } catch (syncError) {
+      toast.error(syncError instanceof Error ? syncError.message : "Eventbrite sync failed");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   return (
     <AdminShell>
       <AdminPageHeader
@@ -83,11 +101,17 @@ function AdminRegistrations() {
         description="View JESUP registrations across all events, export attendee lists, and manage check-in."
         searchValue={q}
         onSearchChange={setQ}
+        actions={
+          <Button type="button" variant="outline" disabled={syncing} onClick={() => void syncEventbrite()}>
+            {syncing ? "Syncing Eventbrite…" : "Sync Eventbrite"}
+          </Button>
+        }
         onExport={() => downloadCsv("event-registrations", rows, [
           { header: "Event", get: (row) => row.eventTitle },
           { header: "Name", get: (row) => row.fullName },
           { header: "Email", get: (row) => row.email },
           { header: "Status", get: (row) => row.status },
+          { header: "Source", get: (row) => row.source },
           { header: "Ticket", get: (row) => row.ticketCode },
           { header: "Registered", get: (row) => row.createdAt },
           { header: "Checked in", get: (row) => row.checkedInAt },
@@ -123,6 +147,7 @@ function AdminRegistrations() {
                       <div className="font-medium">{row.fullName ?? "Guest"}</div>
                       <div className="text-xs text-muted-foreground">{row.email ?? "No email"}</div>
                       {row.ticketCode && <div className="font-mono text-xs text-muted-foreground">{row.ticketCode}</div>}
+                      <div className="text-xs capitalize text-muted-foreground">{row.source}</div>
                     </TableCell>
                     <TableCell>
                       <Link
