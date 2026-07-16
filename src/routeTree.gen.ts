@@ -11,11 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SurveysRouteImport } from './routes/surveys'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as PublicationsRouteImport } from './routes/publications'
 import { Route as ProgramsRouteImport } from './routes/programs'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PodcastRouteImport } from './routes/podcast'
 import { Route as PartnersRouteImport } from './routes/partners'
@@ -93,6 +95,11 @@ const UnauthorizedRoute = UnauthorizedRouteImport.update({
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SurveysRoute = SurveysRouteImport.update({
   id: '/surveys',
   path: '/surveys',
@@ -116,6 +123,11 @@ const PublicationsRoute = PublicationsRouteImport.update({
 const ProgramsRoute = ProgramsRouteImport.update({
   id: '/programs',
   path: '/programs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PodcastsRoute = PodcastsRouteImport.update({
@@ -536,11 +548,13 @@ export interface FileRoutesByFullPath {
   '/partners': typeof PartnersRouteWithChildren
   '/podcast': typeof PodcastRoute
   '/podcasts': typeof PodcastsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/resources': typeof ResourcesRoute
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
+  '/terms': typeof TermsRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/weather': typeof WeatherRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -610,11 +624,13 @@ export interface FileRoutesByTo {
   '/partners': typeof PartnersRouteWithChildren
   '/podcast': typeof PodcastRoute
   '/podcasts': typeof PodcastsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/resources': typeof ResourcesRoute
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
+  '/terms': typeof TermsRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/weather': typeof WeatherRoute
   '/ask': typeof AuthenticatedAskRoute
@@ -684,11 +700,13 @@ export interface FileRoutesById {
   '/partners': typeof PartnersRouteWithChildren
   '/podcast': typeof PodcastRoute
   '/podcasts': typeof PodcastsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/resources': typeof ResourcesRoute
   '/search': typeof SearchRoute
   '/surveys': typeof SurveysRoute
+  '/terms': typeof TermsRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/weather': typeof WeatherRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -760,11 +778,13 @@ export interface FileRouteTypes {
     | '/partners'
     | '/podcast'
     | '/podcasts'
+    | '/privacy'
     | '/programs'
     | '/publications'
     | '/resources'
     | '/search'
     | '/surveys'
+    | '/terms'
     | '/unauthorized'
     | '/weather'
     | '/admin'
@@ -834,11 +854,13 @@ export interface FileRouteTypes {
     | '/partners'
     | '/podcast'
     | '/podcasts'
+    | '/privacy'
     | '/programs'
     | '/publications'
     | '/resources'
     | '/search'
     | '/surveys'
+    | '/terms'
     | '/unauthorized'
     | '/weather'
     | '/ask'
@@ -907,11 +929,13 @@ export interface FileRouteTypes {
     | '/partners'
     | '/podcast'
     | '/podcasts'
+    | '/privacy'
     | '/programs'
     | '/publications'
     | '/resources'
     | '/search'
     | '/surveys'
+    | '/terms'
     | '/unauthorized'
     | '/weather'
     | '/_authenticated/admin'
@@ -983,11 +1007,13 @@ export interface RootRouteChildren {
   PartnersRoute: typeof PartnersRouteWithChildren
   PodcastRoute: typeof PodcastRoute
   PodcastsRoute: typeof PodcastsRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
   ProgramsRoute: typeof ProgramsRouteWithChildren
   PublicationsRoute: typeof PublicationsRouteWithChildren
   ResourcesRoute: typeof ResourcesRoute
   SearchRoute: typeof SearchRoute
   SurveysRoute: typeof SurveysRoute
+  TermsRoute: typeof TermsRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   WeatherRoute: typeof WeatherRoute
   EventsIdRoute: typeof EventsIdRouteWithChildren
@@ -1008,6 +1034,13 @@ declare module '@tanstack/react-router' {
       path: '/unauthorized'
       fullPath: '/unauthorized'
       preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/surveys': {
@@ -1043,6 +1076,13 @@ declare module '@tanstack/react-router' {
       path: '/programs'
       fullPath: '/programs'
       preLoaderRoute: typeof ProgramsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/podcasts': {
@@ -1756,11 +1796,13 @@ const rootRouteChildren: RootRouteChildren = {
   PartnersRoute: PartnersRouteWithChildren,
   PodcastRoute: PodcastRoute,
   PodcastsRoute: PodcastsRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
   ProgramsRoute: ProgramsRouteWithChildren,
   PublicationsRoute: PublicationsRouteWithChildren,
   ResourcesRoute: ResourcesRoute,
   SearchRoute: SearchRoute,
   SurveysRoute: SurveysRoute,
+  TermsRoute: TermsRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   WeatherRoute: WeatherRoute,
   EventsIdRoute: EventsIdRouteWithChildren,

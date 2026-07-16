@@ -62,6 +62,12 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               <Link to="/donate" className="hover:text-primary">
                 Donate
               </Link>
+              <Link to="/privacy" className="hover:text-primary">
+                Privacy
+              </Link>
+              <Link to="/terms" className="hover:text-primary">
+                Terms
+              </Link>
             </div>
           </div>
         </footer>
