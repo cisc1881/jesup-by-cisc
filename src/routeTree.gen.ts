@@ -52,6 +52,7 @@ import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminSearchRouteImport } from './routes/_authenticated/admin/search'
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin/roles'
 import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
+import { Route as AuthenticatedAdminRegistrationsRouteImport } from './routes/_authenticated/admin/registrations'
 import { Route as AuthenticatedAdminPublicationsRouteImport } from './routes/_authenticated/admin/publications'
 import { Route as AuthenticatedAdminProgramsRouteImport } from './routes/_authenticated/admin/programs'
 import { Route as AuthenticatedAdminPodcastsRouteImport } from './routes/_authenticated/admin/podcasts'
@@ -300,6 +301,12 @@ const AuthenticatedAdminReportsRoute =
   AuthenticatedAdminReportsRouteImport.update({
     id: '/reports',
     path: '/reports',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminRegistrationsRoute =
+  AuthenticatedAdminRegistrationsRouteImport.update({
+    id: '/registrations',
+    path: '/registrations',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminPublicationsRoute =
@@ -560,6 +567,7 @@ export interface FileRoutesByFullPath {
   '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRouteWithChildren
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/search': typeof AuthenticatedAdminSearchRoute
@@ -630,6 +638,7 @@ export interface FileRoutesByTo {
   '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRouteWithChildren
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/search': typeof AuthenticatedAdminSearchRoute
@@ -704,6 +713,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
   '/_authenticated/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/_authenticated/admin/publications': typeof AuthenticatedAdminPublicationsRoute
+  '/_authenticated/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
   '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRouteWithChildren
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/_authenticated/admin/search': typeof AuthenticatedAdminSearchRoute
@@ -778,6 +788,7 @@ export interface FileRouteTypes {
     | '/admin/podcasts'
     | '/admin/programs'
     | '/admin/publications'
+    | '/admin/registrations'
     | '/admin/reports'
     | '/admin/roles'
     | '/admin/search'
@@ -848,6 +859,7 @@ export interface FileRouteTypes {
     | '/admin/podcasts'
     | '/admin/programs'
     | '/admin/publications'
+    | '/admin/registrations'
     | '/admin/reports'
     | '/admin/roles'
     | '/admin/search'
@@ -921,6 +933,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/podcasts'
     | '/_authenticated/admin/programs'
     | '/_authenticated/admin/publications'
+    | '/_authenticated/admin/registrations'
     | '/_authenticated/admin/reports'
     | '/_authenticated/admin/roles'
     | '/_authenticated/admin/search'
@@ -1271,6 +1284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/registrations': {
+      id: '/_authenticated/admin/registrations'
+      path: '/registrations'
+      fullPath: '/admin/registrations'
+      preLoaderRoute: typeof AuthenticatedAdminRegistrationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/publications': {
       id: '/_authenticated/admin/publications'
       path: '/publications'
@@ -1528,6 +1548,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminPodcastsRoute: typeof AuthenticatedAdminPodcastsRoute
   AuthenticatedAdminProgramsRoute: typeof AuthenticatedAdminProgramsRoute
   AuthenticatedAdminPublicationsRoute: typeof AuthenticatedAdminPublicationsRoute
+  AuthenticatedAdminRegistrationsRoute: typeof AuthenticatedAdminRegistrationsRoute
   AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRouteWithChildren
   AuthenticatedAdminRolesRoute: typeof AuthenticatedAdminRolesRoute
   AuthenticatedAdminSearchRoute: typeof AuthenticatedAdminSearchRoute
@@ -1564,6 +1585,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminPodcastsRoute: AuthenticatedAdminPodcastsRoute,
     AuthenticatedAdminProgramsRoute: AuthenticatedAdminProgramsRoute,
     AuthenticatedAdminPublicationsRoute: AuthenticatedAdminPublicationsRoute,
+    AuthenticatedAdminRegistrationsRoute: AuthenticatedAdminRegistrationsRoute,
     AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRouteWithChildren,
     AuthenticatedAdminRolesRoute: AuthenticatedAdminRolesRoute,
     AuthenticatedAdminSearchRoute: AuthenticatedAdminSearchRoute,

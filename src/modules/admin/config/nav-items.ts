@@ -97,6 +97,13 @@ export const COMMAND_CENTER_NAV: CommandCenterNavItem[] = [
     group: "operations",
   },
   {
+    moduleId: "events",
+    to: "/admin/registrations",
+    label: "Registrations",
+    icon: ClipboardList,
+    group: "operations",
+  },
+  {
     moduleId: "internships",
     to: "/admin/internships",
     label: "Internships",

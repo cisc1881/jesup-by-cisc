@@ -59,7 +59,7 @@ const METRIC_CARDS: {
     key: "eventRegistrations",
     label: "Event Registrations",
     icon: ClipboardList,
-    to: "/admin/events",
+    to: "/admin/registrations",
   },
 ];
 
@@ -67,6 +67,7 @@ const QUICK_MANAGEMENT: { label: string; to: string; icon: LucideIcon }[] = [
   { label: "Programs", to: "/admin/programs", icon: LayoutGrid },
   { label: "Publications", to: "/admin/publications", icon: BookOpen },
   { label: "Events", to: "/admin/events", icon: Calendar },
+  { label: "Registrations", to: "/admin/registrations", icon: ClipboardList },
   { label: "Markets", to: "/admin/markets", icon: MapPin },
   { label: "2FAS Applications", to: "/admin/2fas/applications", icon: GraduationCap },
   { label: "Users", to: "/admin/users", icon: Users },
