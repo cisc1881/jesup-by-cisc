@@ -17,7 +17,11 @@ export function PartnerDetailHero({ partner }: { partner: PartnerDetail }) {
         </Link>
         <div className="grid h-32 w-full max-w-xs place-items-center rounded-3xl bg-secondary/70 p-6 sm:h-40">
           {partner.logoUrl ? (
-            <img src={partner.logoUrl} alt={`${partner.name} logo`} className="max-h-24 max-w-full object-contain" />
+            <img
+              src={partner.logoUrl}
+              alt={`${partner.name} logo`}
+              className="max-h-36 max-w-full object-contain"
+            />
           ) : (
             <span className="text-2xl font-black text-muted-foreground">{partner.name}</span>
           )}

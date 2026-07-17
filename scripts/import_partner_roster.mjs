@@ -183,7 +183,7 @@ const roster = [
 const rows = [];
 for (const [index, partner] of roster.entries()) {
   const sourcePath = resolve(sourceDir, partner.file);
-  const storagePath = `official/${partner.slug}.png`;
+  const storagePath = `official-v2/${partner.slug}.png`;
   const bytes = await readFile(sourcePath);
   try {
     await uploadWithRetry(storagePath, bytes);

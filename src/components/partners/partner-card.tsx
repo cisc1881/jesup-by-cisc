@@ -15,12 +15,12 @@ export function PartnerCard({ partner, className }: PartnerCardProps) {
 
   return (
     <AppCard variant="lift" padding="md" className={cn("flex h-full flex-col", className)}>
-      <div className="grid h-24 place-items-center overflow-hidden rounded-2xl bg-secondary/60">
+      <div className="grid h-32 place-items-center overflow-hidden rounded-2xl bg-white p-3 shadow-inner dark:bg-white/95">
         {partner.logoUrl ? (
           <img
             src={partner.logoUrl}
             alt={`${partner.name} logo`}
-            className="max-h-16 max-w-[85%] object-contain"
+            className="h-full max-h-24 w-full max-w-[92%] object-contain"
             loading="lazy"
           />
         ) : (
