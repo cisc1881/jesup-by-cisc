@@ -70,6 +70,25 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               </Link>
             </div>
           </div>
+          <div className="border-t border-border/60">
+            <p className="mx-auto max-w-7xl px-4 py-6 text-[11px] leading-relaxed text-muted-foreground sm:px-6 sm:text-xs">
+              It is the policy of Tuskegee University Cooperative Extension Program to provide
+              equal employment opportunities and to offer educational programs, resources and
+              materials to eligible participants without regard to race, color, national origin,
+              religion, sexual orientation, disability, age, marital or veteran status, political
+              beliefs, or reprisal or retaliation for prior civil rights activity, in any program
+              or activity conducted or funded by USDA (not all bases apply to all programs). For
+              all reasonable accommodation requests, please contact Shirley Brown, Director,
+              Office of Civil Rights Compliance at {" "}
+              <a
+                href="mailto:sbrown@tuskegee.edu"
+                className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
+              >
+                sbrown@tuskegee.edu
+              </a>
+              .
+            </p>
+          </div>
         </footer>
       </div>
       <FloatingUtilityDock />
