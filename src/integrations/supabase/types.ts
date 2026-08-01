@@ -67,6 +67,123 @@ export type Database = {
         }
         Relationships: []
       }
+      county_emergency_contacts: {
+        Row: {
+          agency_name: string
+          alert_signup_url: string | null
+          alternate_phone: string | null
+          archived_at: string | null
+          county_name: string
+          created_at: string
+          emergency_kit_guidance: string | null
+          household_storm_protocol: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          primary_phone: string | null
+          shelter_info_url: string | null
+          source_name: string | null
+          source_url: string | null
+          state_code: string
+          state_name: string
+          updated_at: string
+          verification_status: string
+          verified_date: string | null
+          weather_radio_guidance: string | null
+          website_url: string | null
+        }
+        Insert: {
+          agency_name: string
+          alert_signup_url?: string | null
+          alternate_phone?: string | null
+          archived_at?: string | null
+          county_name: string
+          created_at?: string
+          emergency_kit_guidance?: string | null
+          household_storm_protocol?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          primary_phone?: string | null
+          shelter_info_url?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          state_code: string
+          state_name: string
+          updated_at?: string
+          verification_status?: string
+          verified_date?: string | null
+          weather_radio_guidance?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          agency_name?: string
+          alert_signup_url?: string | null
+          alternate_phone?: string | null
+          archived_at?: string | null
+          county_name?: string
+          created_at?: string
+          emergency_kit_guidance?: string | null
+          household_storm_protocol?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          primary_phone?: string | null
+          shelter_info_url?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          state_code?: string
+          state_name?: string
+          updated_at?: string
+          verification_status?: string
+          verified_date?: string | null
+          weather_radio_guidance?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      email_deliveries: {
+        Row: {
+          attempts: number
+          body: string
+          created_at: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          recipient: string
+          sent_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          body: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          recipient: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          body?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          recipient?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipment: {
         Row: {
           category: string | null
@@ -746,6 +863,89 @@ export type Database = {
             columns: ["grant_id"]
             isOneToOne: false
             referencedRelation: "grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_meal_days: {
+        Row: {
+          allowance_per_attendee: number
+          created_at: string
+          event_id: string
+          id: string
+          is_active: boolean
+          label: string
+          service_date: string
+          updated_at: string
+        }
+        Insert: {
+          allowance_per_attendee?: number
+          created_at?: string
+          event_id: string
+          id?: string
+          is_active?: boolean
+          label: string
+          service_date: string
+          updated_at?: string
+        }
+        Update: {
+          allowance_per_attendee?: number
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          service_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_meal_days_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_meal_redemptions: {
+        Row: {
+          id: string
+          meal_day_id: string
+          redeemed_at: string
+          redeemed_by: string | null
+          redemption_number: number
+          registration_id: string
+        }
+        Insert: {
+          id?: string
+          meal_day_id: string
+          redeemed_at?: string
+          redeemed_by?: string | null
+          redemption_number: number
+          registration_id: string
+        }
+        Update: {
+          id?: string
+          meal_day_id?: string
+          redeemed_at?: string
+          redeemed_by?: string | null
+          redemption_number?: number
+          registration_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_meal_redemptions_meal_day_id_fkey"
+            columns: ["meal_day_id"]
+            isOneToOne: false
+            referencedRelation: "event_meal_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_meal_redemptions_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
             referencedColumns: ["id"]
           },
         ]
@@ -2787,6 +2987,45 @@ export type Database = {
         }
         Relationships: []
       }
+      processed_weather_alerts: {
+        Row: {
+          created_at: string
+          delivery_status: string
+          event_name: string
+          expires_at: string
+          failure_reason: string | null
+          id: string
+          nws_alert_id: string
+          sent_at: string | null
+          severity: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_status: string
+          event_name: string
+          expires_at: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id: string
+          sent_at?: string | null
+          severity: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_status?: string
+          event_name?: string
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id?: string
+          sent_at?: string | null
+          severity?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           academic_level: Database["public"]["Enums"]["academic_level"] | null
@@ -3352,6 +3591,54 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          device_label: string | null
+          endpoint: string
+          failure_count: number
+          id: string
+          is_active: boolean
+          last_success_at: string | null
+          p256dh: string
+          revoked_at: string | null
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          device_label?: string | null
+          endpoint: string
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_success_at?: string | null
+          p256dh: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          device_label?: string | null
+          endpoint?: string
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_success_at?: string | null
+          p256dh?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       surveys: {
         Row: {
           created_at: string
@@ -3656,6 +3943,165 @@ export type Database = {
         }
         Relationships: []
       }
+      weather_alert_delayed_deliveries: {
+        Row: {
+          created_at: string
+          event_name: string
+          expires_at: string
+          failure_reason: string | null
+          id: string
+          nws_alert_id: string
+          scheduled_for: string
+          severity: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          expires_at: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id: string
+          scheduled_for: string
+          severity: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id?: string
+          scheduled_for?: string
+          severity?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weather_alert_poll_runs: {
+        Row: {
+          alerts_fetched: number
+          deliveries_delayed: number
+          deliveries_failed: number
+          deliveries_sent: number
+          deliveries_suppressed: number
+          error_message: string | null
+          finished_at: string | null
+          groups_polled: number
+          id: string
+          started_at: string
+          status: string
+          trigger_source: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          alerts_fetched?: number
+          deliveries_delayed?: number
+          deliveries_failed?: number
+          deliveries_sent?: number
+          deliveries_suppressed?: number
+          error_message?: string | null
+          finished_at?: string | null
+          groups_polled?: number
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          alerts_fetched?: number
+          deliveries_delayed?: number
+          deliveries_failed?: number
+          deliveries_sent?: number
+          deliveries_suppressed?: number
+          error_message?: string | null
+          finished_at?: string | null
+          groups_polled?: number
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
+      weather_notification_preferences: {
+        Row: {
+          alerts_enabled: boolean
+          county_name: string | null
+          created_at: string
+          daily_forecast_enabled: boolean
+          emergencies_enabled: boolean
+          enabled: boolean
+          id: string
+          last_alert_checked_at: string | null
+          latitude_bucket: number | null
+          location_source: string | null
+          longitude_bucket: number | null
+          quiet_hours_enabled: boolean
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          state_code: string | null
+          timezone: string
+          updated_at: string
+          user_id: string
+          warnings_enabled: boolean
+          watches_enabled: boolean
+        }
+        Insert: {
+          alerts_enabled?: boolean
+          county_name?: string | null
+          created_at?: string
+          daily_forecast_enabled?: boolean
+          emergencies_enabled?: boolean
+          enabled?: boolean
+          id?: string
+          last_alert_checked_at?: string | null
+          latitude_bucket?: number | null
+          location_source?: string | null
+          longitude_bucket?: number | null
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          state_code?: string | null
+          timezone?: string
+          updated_at?: string
+          user_id: string
+          warnings_enabled?: boolean
+          watches_enabled?: boolean
+        }
+        Update: {
+          alerts_enabled?: boolean
+          county_name?: string | null
+          created_at?: string
+          daily_forecast_enabled?: boolean
+          emergencies_enabled?: boolean
+          enabled?: boolean
+          id?: string
+          last_alert_checked_at?: string | null
+          latitude_bucket?: number | null
+          location_source?: string | null
+          longitude_bucket?: number | null
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          state_code?: string | null
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+          warnings_enabled?: boolean
+          watches_enabled?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       program_podcasts: {
@@ -3861,6 +4307,17 @@ export type Database = {
       post_event_chat: {
         Args: { p_event_id: string; p_message: string }
         Returns: string
+      }
+      redeem_event_meal_ticket: {
+        Args: { p_meal_day_id: string; p_ticket_code: string }
+        Returns: {
+          allowance: number
+          attendee_name: string
+          event_title: string
+          meal_label: string
+          remaining: number
+          used_count: number
+        }[]
       }
       register_for_event: {
         Args: { p_event_id: string; p_invite_code?: string; p_notes?: string }
