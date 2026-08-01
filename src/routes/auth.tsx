@@ -37,14 +37,21 @@ function AuthPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const returnTo = `${typeof window === "undefined" ? "" : window.location.origin}${validateNextPath(next) ?? ""}`;
+
   useEffect(() => {
     if (mode === "reset") return;
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session?.user) return;
       const destination = await resolvePostLoginPathForUser(next, data.session.user.id);
+      if (destination.includes("?")) {
+        window.location.replace(destination);
+        return;
+      }
       void navigate({ to: destination as "/", replace: true });
     });
   }, [mode, navigate, next]);
+
 
   async function redirectAfterAuth() {
     const {
