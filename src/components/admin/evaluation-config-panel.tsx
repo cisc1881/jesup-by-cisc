@@ -101,6 +101,7 @@ export function EvaluationConfigPanel({ eventId }: EvaluationConfigPanelProps) {
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading evaluation settings…</p>;
 
   async function saveConfig() {
+    if (!eventId) return;
     setSaving(true);
     try {
       const saved = await createOrUpdateEventEvaluation({
