@@ -37,14 +37,21 @@ function AuthPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const returnTo = `${typeof window === "undefined" ? "" : window.location.origin}${validateNextPath(next) ?? ""}`;
+
   useEffect(() => {
     if (mode === "reset") return;
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session?.user) return;
       const destination = await resolvePostLoginPathForUser(next, data.session.user.id);
+      if (destination.includes("?")) {
+        window.location.replace(destination);
+        return;
+      }
       void navigate({ to: destination as "/", replace: true });
     });
   }, [mode, navigate, next]);
+
 
   async function redirectAfterAuth() {
     const {
@@ -55,8 +62,15 @@ function AuthPage() {
       return;
     }
     const destination = await resolvePostLoginPathForUser(next, user.id);
+    // Paths with a query string (e.g. the OAuth consent screen) are not typed
+    // router targets — hand those to the browser directly.
+    if (destination.includes("?")) {
+      window.location.replace(destination);
+      return;
+    }
     void navigate({ to: destination as "/", replace: true });
   }
+
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
@@ -74,7 +88,7 @@ function AuthPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin, data: { full_name: fullName } },
+      options: { emailRedirectTo: returnTo, data: { full_name: fullName } },
     });
     setBusy(false);
     if (error) return toast.error(error.message);
@@ -112,14 +126,14 @@ function AuthPage() {
 
   async function google() {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: returnTo,
     });
     if (result.error) toast.error(result.error.message || "Google sign-in failed");
   }
 
   async function apple() {
     const result = await lovable.auth.signInWithOAuth("apple", {
-      redirect_uri: window.location.origin,
+      redirect_uri: returnTo,
     });
     if (result.error) toast.error(result.error.message || "Apple sign-in failed");
   }
