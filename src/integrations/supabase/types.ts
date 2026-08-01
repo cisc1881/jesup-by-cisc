@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_tag_links: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_tag_links_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "content_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_tags: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       equipment: {
         Row: {
           category: string | null
@@ -1271,6 +1324,42 @@ export type Database = {
         }
         Relationships: []
       }
+      home_sections: {
+        Row: {
+          created_at: string
+          id: string
+          is_published: boolean
+          section_id: string
+          settings: Json
+          sort_order: number
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          section_id: string
+          settings?: Json
+          sort_order?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          section_id?: string
+          settings?: Json
+          sort_order?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           assigned_to: string | null
@@ -2014,6 +2103,308 @@ export type Database = {
         }
         Relationships: []
       }
+      media_assets: {
+        Row: {
+          alt_text: string | null
+          asset_type: string
+          bucket: string | null
+          caption: string | null
+          created_at: string
+          file_size: number | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          mime_type: string | null
+          module_context: string | null
+          name: string
+          storage_path: string | null
+          tags: string[]
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          alt_text?: string | null
+          asset_type: string
+          bucket?: string | null
+          caption?: string | null
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          mime_type?: string | null
+          module_context?: string | null
+          name: string
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          alt_text?: string | null
+          asset_type?: string
+          bucket?: string | null
+          caption?: string | null
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          mime_type?: string | null
+          module_context?: string | null
+          name?: string
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      news_articles: {
+        Row: {
+          author: string | null
+          category: string | null
+          content_html: string | null
+          cover_image_url: string | null
+          created_at: string
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          published_at: string | null
+          reading_time_minutes: number | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sort_order: number
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content_html?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sort_order?: number
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content_html?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sort_order?: number
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      news_events: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          news_article_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          news_article_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          news_article_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_events_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_partners: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          partner_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          partner_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          partner_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_partners_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_partners_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_programs: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          program_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          program_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          program_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_programs_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_programs_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_publications: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          publication_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          publication_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          publication_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_publications_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_publications_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "publications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_tags: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_tags_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_reads: {
         Row: {
           id: string
@@ -2183,45 +2574,162 @@ export type Database = {
           },
         ]
       }
+      partner_podcast_episodes: {
+        Row: {
+          created_at: string
+          id: string
+          partner_id: string
+          podcast_episode_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          partner_id: string
+          podcast_episode_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          partner_id?: string
+          podcast_episode_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_podcast_episodes_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_podcast_episodes_podcast_episode_id_fkey"
+            columns: ["podcast_episode_id"]
+            isOneToOne: false
+            referencedRelation: "podcast_episodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_publications: {
+        Row: {
+          created_at: string
+          id: string
+          partner_id: string
+          publication_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          partner_id: string
+          publication_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          partner_id?: string
+          publication_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_publications_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_publications_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "publications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partners: {
         Row: {
+          address: string | null
           category: string | null
           created_at: string
           description: string | null
           id: string
+          is_featured: boolean
           is_published: boolean
           logo_url: string | null
+          mission: string | null
           name: string
+          notes: string | null
+          partnership_areas: string[]
+          short_description: string | null
           slug: string
+          social_links: Json
           sort_order: number
           updated_at: string
           website_url: string | null
         }
         Insert: {
+          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
+          mission?: string | null
           name: string
+          notes?: string | null
+          partnership_areas?: string[]
+          short_description?: string | null
           slug: string
+          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
         }
         Update: {
+          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
+          mission?: string | null
           name?: string
+          notes?: string | null
+          partnership_areas?: string[]
+          short_description?: string | null
           slug?: string
+          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
