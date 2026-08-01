@@ -55,8 +55,15 @@ function AuthPage() {
       return;
     }
     const destination = await resolvePostLoginPathForUser(next, user.id);
+    // Paths with a query string (e.g. the OAuth consent screen) are not typed
+    // router targets — hand those to the browser directly.
+    if (destination.includes("?")) {
+      window.location.replace(destination);
+      return;
+    }
     void navigate({ to: destination as "/", replace: true });
   }
+
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
