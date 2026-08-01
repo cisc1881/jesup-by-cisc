@@ -78,6 +78,7 @@ import { Route as AuthenticatedAdminEmailDeliveriesRouteImport } from './routes/
 import { Route as AuthenticatedAdminCountiesRouteImport } from './routes/_authenticated/admin/counties'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminWeatherNotificationsRouteImport } from './routes/_authenticated/admin/weather/notifications'
 import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/_authenticated/admin/weather/counties'
 import { Route as AuthenticatedAdminReportsEventsRouteImport } from './routes/_authenticated/admin/reports.events'
@@ -475,6 +476,11 @@ const AuthenticatedAdminActivityRoute =
     path: '/activity',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminWeatherNotificationsRoute =
   AuthenticatedAdminWeatherNotificationsRouteImport.update({
     id: '/weather/notifications',
@@ -589,6 +595,7 @@ export interface FileRoutesByFullPath {
   '/programs/$slug': typeof ProgramsSlugRoute
   '/publications/$slug': typeof PublicationsSlugRoute
   '/events/': typeof EventsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -665,6 +672,7 @@ export interface FileRoutesByTo {
   '/programs/$slug': typeof ProgramsSlugRoute
   '/publications/$slug': typeof PublicationsSlugRoute
   '/events': typeof EventsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -746,6 +754,7 @@ export interface FileRoutesById {
   '/programs/$slug': typeof ProgramsSlugRoute
   '/publications/$slug': typeof PublicationsSlugRoute
   '/events/': typeof EventsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -827,6 +836,7 @@ export interface FileRouteTypes {
     | '/programs/$slug'
     | '/publications/$slug'
     | '/events/'
+    | '/.lovable/oauth/consent'
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
@@ -903,6 +913,7 @@ export interface FileRouteTypes {
     | '/programs/$slug'
     | '/publications/$slug'
     | '/events'
+    | '/.lovable/oauth/consent'
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
@@ -983,6 +994,7 @@ export interface FileRouteTypes {
     | '/programs/$slug'
     | '/publications/$slug'
     | '/events/'
+    | '/.lovable/oauth/consent'
     | '/_authenticated/admin/activity'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/counties'
@@ -1054,6 +1066,7 @@ export interface RootRouteChildren {
   WorkshopsRoute: typeof WorkshopsRoute
   EventsIdRoute: typeof EventsIdRouteWithChildren
   EventsIndexRoute: typeof EventsIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1541,6 +1554,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/weather/notifications': {
       id: '/_authenticated/admin/weather/notifications'
       path: '/weather/notifications'
@@ -1878,6 +1898,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorkshopsRoute: WorkshopsRoute,
   EventsIdRoute: EventsIdRouteWithChildren,
   EventsIndexRoute: EventsIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
