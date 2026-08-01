@@ -273,7 +273,7 @@ export function MarketFormDialog({ open, onOpenChange, marketId, onSaved }: Mark
                   <div className="font-medium">{DAY_LABELS[hour.dayOfWeek]}</div>
                   <Input
                     type="time"
-                    value={hour.opensAt}
+                    value={hour.opensAt ?? ""}
                     disabled={hour.isClosed}
                     onChange={(e) =>
                       setForm((f) => ({
