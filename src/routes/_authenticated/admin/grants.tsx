@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { downloadCsv } from "@/lib/csv";
 import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
-import { Pencil, Sparkles, Trash2 } from "lucide-react";
+import { Pencil, Sparkles, Trash2, UserRoundCog } from "lucide-react";
 import { fmtDate } from "@/lib/format";
 import { generateGrantDraftServerFn } from "@/modules/ai/grant-assistant-server-fn";
 import type { Database } from "@/integrations/supabase/types";
@@ -41,6 +41,8 @@ function AdminGrants() {
   const [form, setForm] = useState<GrantForm>(empty);
   const [sourceNotes, setSourceNotes] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [accessGrant, setAccessGrant] = useState<GrantRow | null>(null);
+  const [funderUserId, setFunderUserId] = useState("");
 
   const { data } = useQuery({
     queryKey: ["admin-grants"],
@@ -53,6 +55,23 @@ function AdminGrants() {
       ).data ?? [],
   });
   const rows = (data ?? []).filter((r) => !q || r.title.toLowerCase().includes(q.toLowerCase()));
+  const { data: funderUsers = [] } = useQuery({
+    queryKey: ["admin-funder-users"],
+    queryFn: async () => {
+      const { data: roles, error } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "funder");
+      if (error) throw error;
+      const ids = (roles ?? []).map((role) => role.user_id);
+      if (!ids.length) return [];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", ids);
+      return profiles ?? [];
+    },
+  });
 
   function openNew() {
     setEditing(null);
@@ -102,6 +121,18 @@ function AdminGrants() {
       onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-grants"] }),
     });
   }
+  async function assignFunder() {
+    if (!accessGrant || !funderUserId) return;
+    const { error } = await supabase.rpc("set_funder_grant_access", {
+      p_grant_id: accessGrant.id,
+      p_user_id: funderUserId,
+      p_enabled: true,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Grant assigned to funder portal");
+    setAccessGrant(null);
+    setFunderUserId("");
+  }
 
   return (
     <AdminShell>
@@ -147,6 +178,14 @@ function AdminGrants() {
                     <div className="flex gap-1">
                       <Button size="icon" variant="ghost" onClick={() => openEdit(r)}>
                         <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setAccessGrant(r)}
+                        aria-label={`Assign funder access for ${r.title}`}
+                      >
+                        <UserRoundCog className="h-4 w-4" />
                       </Button>
                       <Button
                         size="icon"
@@ -247,6 +286,40 @@ function AdminGrants() {
               Save
             </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!accessGrant} onOpenChange={(open) => !open && setAccessGrant(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign funder access</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            The selected account will see aggregate metrics for{" "}
+            <strong>{accessGrant?.title}</strong> only.
+          </p>
+          <Label htmlFor="funder-user">Funder account</Label>
+          <select
+            id="funder-user"
+            name="funder_user"
+            value={funderUserId}
+            onChange={(event) => setFunderUserId(event.target.value)}
+            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="">Select funder…</option>
+            {funderUsers.map((profile) => (
+              <option key={profile.id} value={profile.id}>
+                {profile.full_name || profile.email}
+              </option>
+            ))}
+          </select>
+          {funderUsers.length === 0 && (
+            <p className="text-sm text-amber-700">
+              Grant a user the funder role from Admin → Users first.
+            </p>
+          )}
+          <Button type="button" disabled={!funderUserId} onClick={assignFunder}>
+            Assign grant
+          </Button>
         </DialogContent>
       </Dialog>
       {dialog}

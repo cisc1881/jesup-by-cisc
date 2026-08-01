@@ -42,12 +42,9 @@ export async function resolvePostLoginPathForUser(
   next: string | undefined | null,
   userId: string,
 ): Promise<string> {
-  const { data: role } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
+  const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+  const isAdmin = (roles ?? []).some((row) => row.role === "admin");
+  const isFunder = (roles ?? []).some((row) => row.role === "funder");
 
-  return resolvePostLoginPath(next, !!role);
+  return validateNextPath(next) ?? (isAdmin ? "/admin" : isFunder ? "/funder" : "/me");
 }

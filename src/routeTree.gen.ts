@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorkshopsRouteImport } from './routes/workshops'
 import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -40,9 +41,11 @@ import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as MarketsIdRouteImport } from './routes/markets.$id'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
+import { Route as AuthenticatedFunderRouteImport } from './routes/_authenticated/funder'
 import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated/me.index'
+import { Route as AuthenticatedFunderIndexRouteImport } from './routes/_authenticated/funder.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as EventsIdEvaluationRouteImport } from './routes/events.$id.evaluation'
 import { Route as AuthenticatedMeWeatherAlertsRouteImport } from './routes/_authenticated/me.weather-alerts'
@@ -85,6 +88,11 @@ import { Route as AuthenticatedAdminEventsEventIdGalleryRouteImport } from './ro
 import { Route as AuthenticatedAdminEventsEventIdEvaluationsRouteImport } from './routes/_authenticated/admin/events.$eventId.evaluations'
 import { Route as AuthenticatedAdminEventsEventIdAttendanceRouteImport } from './routes/_authenticated/admin/events.$eventId.attendance'
 
+const WorkshopsRoute = WorkshopsRouteImport.update({
+  id: '/workshops',
+  path: '/workshops',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WeatherRoute = WeatherRouteImport.update({
   id: '/weather',
   path: '/weather',
@@ -239,6 +247,11 @@ const AuthenticatedMeRoute = AuthenticatedMeRouteImport.update({
   path: '/me',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFunderRoute = AuthenticatedFunderRouteImport.update({
+  id: '/funder',
+  path: '/funder',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
   id: '/ask',
   path: '/ask',
@@ -254,6 +267,12 @@ const AuthenticatedMeIndexRoute = AuthenticatedMeIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedMeRoute,
 } as any)
+const AuthenticatedFunderIndexRoute =
+  AuthenticatedFunderIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedFunderRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -557,8 +576,10 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/weather': typeof WeatherRoute
+  '/workshops': typeof WorkshopsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/ask': typeof AuthenticatedAskRoute
+  '/funder': typeof AuthenticatedFunderRouteWithChildren
   '/me': typeof AuthenticatedMeRouteWithChildren
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
@@ -600,6 +621,7 @@ export interface FileRoutesByFullPath {
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/funder/': typeof AuthenticatedFunderIndexRoute
   '/me/': typeof AuthenticatedMeIndexRoute
   '/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
@@ -633,6 +655,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/weather': typeof WeatherRoute
+  '/workshops': typeof WorkshopsRoute
   '/ask': typeof AuthenticatedAskRoute
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
@@ -674,6 +697,7 @@ export interface FileRoutesByTo {
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/funder': typeof AuthenticatedFunderIndexRoute
   '/me': typeof AuthenticatedMeIndexRoute
   '/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
@@ -709,8 +733,10 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/weather': typeof WeatherRoute
+  '/workshops': typeof WorkshopsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/ask': typeof AuthenticatedAskRoute
+  '/_authenticated/funder': typeof AuthenticatedFunderRouteWithChildren
   '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
@@ -752,6 +778,7 @@ export interface FileRoutesById {
   '/_authenticated/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/funder/': typeof AuthenticatedFunderIndexRoute
   '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
   '/_authenticated/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/_authenticated/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
@@ -787,8 +814,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/unauthorized'
     | '/weather'
+    | '/workshops'
     | '/admin'
     | '/ask'
+    | '/funder'
     | '/me'
     | '/events/$id'
     | '/markets/$id'
@@ -830,6 +859,7 @@ export interface FileRouteTypes {
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/admin/'
+    | '/funder/'
     | '/me/'
     | '/admin/2fas/applications'
     | '/admin/events/gallery'
@@ -863,6 +893,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/unauthorized'
     | '/weather'
+    | '/workshops'
     | '/ask'
     | '/events/$id'
     | '/markets/$id'
@@ -904,6 +935,7 @@ export interface FileRouteTypes {
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/admin'
+    | '/funder'
     | '/me'
     | '/admin/2fas/applications'
     | '/admin/events/gallery'
@@ -938,8 +970,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/unauthorized'
     | '/weather'
+    | '/workshops'
     | '/_authenticated/admin'
     | '/_authenticated/ask'
+    | '/_authenticated/funder'
     | '/_authenticated/me'
     | '/events/$id'
     | '/markets/$id'
@@ -981,6 +1015,7 @@ export interface FileRouteTypes {
     | '/_authenticated/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/_authenticated/admin/'
+    | '/_authenticated/funder/'
     | '/_authenticated/me/'
     | '/_authenticated/admin/2fas/applications'
     | '/_authenticated/admin/events/gallery'
@@ -1016,12 +1051,20 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   WeatherRoute: typeof WeatherRoute
+  WorkshopsRoute: typeof WorkshopsRoute
   EventsIdRoute: typeof EventsIdRouteWithChildren
   EventsIndexRoute: typeof EventsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/workshops': {
+      id: '/workshops'
+      path: '/workshops'
+      fullPath: '/workshops'
+      preLoaderRoute: typeof WorkshopsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/weather': {
       id: '/weather'
       path: '/weather'
@@ -1239,6 +1282,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/funder': {
+      id: '/_authenticated/funder'
+      path: '/funder'
+      fullPath: '/funder'
+      preLoaderRoute: typeof AuthenticatedFunderRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ask': {
       id: '/_authenticated/ask'
       path: '/ask'
@@ -1259,6 +1309,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/me/'
       preLoaderRoute: typeof AuthenticatedMeIndexRouteImport
       parentRoute: typeof AuthenticatedMeRoute
+    }
+    '/_authenticated/funder/': {
+      id: '/_authenticated/funder/'
+      path: '/'
+      fullPath: '/funder/'
+      preLoaderRoute: typeof AuthenticatedFunderIndexRouteImport
+      parentRoute: typeof AuthenticatedFunderRoute
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -1670,6 +1727,17 @@ const AuthenticatedAdminRouteRouteWithChildren =
     AuthenticatedAdminRouteRouteChildren,
   )
 
+interface AuthenticatedFunderRouteChildren {
+  AuthenticatedFunderIndexRoute: typeof AuthenticatedFunderIndexRoute
+}
+
+const AuthenticatedFunderRouteChildren: AuthenticatedFunderRouteChildren = {
+  AuthenticatedFunderIndexRoute: AuthenticatedFunderIndexRoute,
+}
+
+const AuthenticatedFunderRouteWithChildren =
+  AuthenticatedFunderRoute._addFileChildren(AuthenticatedFunderRouteChildren)
+
 interface AuthenticatedMeRouteChildren {
   AuthenticatedMeNotificationsRoute: typeof AuthenticatedMeNotificationsRoute
   AuthenticatedMeWeatherAlertsRoute: typeof AuthenticatedMeWeatherAlertsRoute
@@ -1689,12 +1757,14 @@ const AuthenticatedMeRouteWithChildren = AuthenticatedMeRoute._addFileChildren(
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
+  AuthenticatedFunderRoute: typeof AuthenticatedFunderRouteWithChildren
   AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAskRoute: AuthenticatedAskRoute,
+  AuthenticatedFunderRoute: AuthenticatedFunderRouteWithChildren,
   AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
 }
 
@@ -1805,6 +1875,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   WeatherRoute: WeatherRoute,
+  WorkshopsRoute: WorkshopsRoute,
   EventsIdRoute: EventsIdRouteWithChildren,
   EventsIndexRoute: EventsIndexRoute,
 }

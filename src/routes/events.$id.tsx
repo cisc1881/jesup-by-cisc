@@ -13,6 +13,8 @@ import {
   EventRegistrationPanel,
   EventRelatedSections,
   EventSpeakers,
+  EventWorkspaceMenu,
+  EventChatRoom,
 } from "@/components/events";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchEventById, fetchUserEventRegistration } from "@/lib/events";
@@ -36,8 +38,6 @@ export const Route = createFileRoute("/events/$id")({
 function EventDetailPage() {
   const matches = useMatches();
   const isChild = matches.some((m) => m.routeId === "/events/$id/evaluation");
-  if (isChild) return <Outlet />;
-
   const { id } = Route.useParams();
   const { user } = useAuth();
   const { event } = Route.useLoaderData();
@@ -47,6 +47,8 @@ function EventDetailPage() {
     enabled: !!user && !!event,
     queryFn: () => fetchUserEventRegistration(id, user!.id),
   });
+
+  if (isChild) return <Outlet />;
 
   if (!event) {
     return (
@@ -63,33 +65,65 @@ function EventDetailPage() {
 
   return (
     <PublicLayout>
-      <PageContainer size="lg" className="space-y-10 pb-bottom-nav md:space-y-12 md:pb-[var(--page-py)]">
-        <AppButton variant="ghost" size="sm" shape="pill" className="w-fit" asChild>
-          <Link to="/events">
-            <ArrowLeft className="h-4 w-4" />
-            All events
-          </Link>
-        </AppButton>
+      <PageContainer
+        size="lg"
+        className="space-y-10 pb-bottom-nav md:space-y-12 md:pb-[var(--page-py)]"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <AppButton variant="ghost" size="sm" shape="pill" className="w-fit" asChild>
+            <Link to="/events">
+              <ArrowLeft className="h-4 w-4" />
+              All events
+            </Link>
+          </AppButton>
+          <EventWorkspaceMenu
+            event={event}
+            registration={registration}
+            userId={user?.id}
+            userEmail={user?.email}
+          />
+        </div>
 
         <EventDetailHero event={event} />
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className="space-y-10">
             <EventDescription event={event} />
-            <EventAgenda event={event} />
+            <div id="event-agenda" className="scroll-mt-24">
+              <EventAgenda event={event} />
+            </div>
             <EventSpeakers event={event} />
             <EventGallery event={event} />
             {user && (
               <div className="flex justify-start">
-                <EventPhotoSubmitButton eventId={event.id} eventTitle={event.title} userId={user.id} />
+                <EventPhotoSubmitButton
+                  eventId={event.id}
+                  eventTitle={event.title}
+                  userId={user.id}
+                />
               </div>
             )}
-            {(event.lat != null || event.location) && <EventMapView events={[event]} />}
+            <section
+              id="event-meals"
+              className="scroll-mt-24 rounded-3xl border border-border/70 bg-card p-6 shadow-[var(--shadow-soft)]"
+            >
+              <h2 className="text-xl font-black text-foreground">Meal tickets</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Registered attendees use the same event QR code for assigned meals. Every redemption
+                is validated for one-time use.
+              </p>
+            </section>
+            <EventChatRoom eventId={event.id} registered={!!registration} />
+            {(event.lat != null || event.location) && (
+              <div id="event-map" className="scroll-mt-24">
+                <EventMapView events={[event]} />
+              </div>
+            )}
             <EventRelatedSections event={event} />
             <EvaluationCta event={event} />
           </div>
 
-          <div className="lg:sticky lg:top-24">
+          <div id="event-registration" className="scroll-mt-24 lg:sticky lg:top-24">
             <EventRegistrationPanel event={event} registration={registration} />
           </div>
         </div>

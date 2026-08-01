@@ -6,6 +6,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isFunder, setIsFunder] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,10 +23,20 @@ export function useAuth() {
   }, []);
 
   useEffect(() => {
-    if (!user) { setIsAdmin(false); return; }
-    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin")
-      .maybeSingle().then(({ data }) => setIsAdmin(!!data));
+    if (!user) {
+      setIsAdmin(false);
+      setIsFunder(false);
+      return;
+    }
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        setIsAdmin((data ?? []).some((row) => row.role === "admin"));
+        setIsFunder((data ?? []).some((row) => row.role === "funder"));
+      });
   }, [user]);
 
-  return { session, user, isAdmin, loading };
+  return { session, user, isAdmin, isFunder, loading };
 }

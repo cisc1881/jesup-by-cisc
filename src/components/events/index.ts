@@ -17,3 +17,5 @@ export {
   EventRelatedSections,
 } from "./event-detail-sections";
 export { EventRegistrationPanel } from "./event-registration-panel";
+export { EventWorkspaceMenu } from "./event-workspace-menu";
+export { EventChatRoom } from "./event-chat-room";

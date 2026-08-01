@@ -12,3 +12,4 @@ export { NewsHomeSection } from "./news-home-section";
 export { HomeCtaSection } from "./home-cta-section";
 export { HomeWeatherSection, WeatherResourceCenter } from "./home-weather-section";
 export { HomeMoreSection } from "./home-more-section";
+export { MyJesupHomeSection } from "./my-jesup-home-section";

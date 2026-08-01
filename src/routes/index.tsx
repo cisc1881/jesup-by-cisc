@@ -7,6 +7,7 @@ import {
   HomeHero,
   HomeMoreSection,
   HomeWeatherSection,
+  MyJesupHomeSection,
   UpcomingEventsSection,
 } from "@/components/home";
 import { fetchHomePageData, createEmptyHomePageData, DEFAULT_SECTION_META } from "@/lib/home";
@@ -108,6 +109,7 @@ function Home() {
         size="lg"
         className="space-y-[var(--space-10)] pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-[var(--space-12)] sm:pt-[var(--space-8)]"
       >
+        <MyJesupHomeSection />
         <HomeWeatherSection />
         <UpcomingEventsSection
           events={relevantEvents}

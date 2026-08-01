@@ -8,6 +8,8 @@ export type ProgramCategory = {
   name: string;
   slug: string;
   sortOrder: number;
+  institutionIds: string[];
+  networkWide: boolean;
 };
 
 export type ProgramGalleryImage = {
@@ -93,12 +95,18 @@ export type ProgramFormData = {
 };
 
 export function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export async function uploadProgramImage(file: File, prefix = "covers") {
   const path = `${prefix}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const { error } = await supabase.storage.from(PROGRAM_IMAGES_BUCKET).upload(path, file, { upsert: true });
+  const { error } = await supabase.storage
+    .from(PROGRAM_IMAGES_BUCKET)
+    .upload(path, file, { upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from(PROGRAM_IMAGES_BUCKET).getPublicUrl(path);
   return data.publicUrl;
@@ -106,11 +114,20 @@ export async function uploadProgramImage(file: File, prefix = "covers") {
 
 function relationCount(value: unknown) {
   const row = Array.isArray(value) ? value[0] : value;
-  return typeof row === "object" && row !== null && "count" in row ? Number((row as { count: number }).count) : 0;
+  return typeof row === "object" && row !== null && "count" in row
+    ? Number((row as { count: number }).count)
+    : 0;
 }
 
 function mapListRow(row: Record<string, unknown>): ProgramListItem {
-  const category = row.program_categories as { id: string; name: string; slug: string } | null | undefined;
+  const category = row.program_categories as
+    { id: string; name: string; slug: string } | null | undefined;
+  const metadata = (row.metadata as Record<string, unknown> | null) ?? {};
+  const institutionIds = Array.isArray(metadata.institution_ids)
+    ? metadata.institution_ids.filter((value): value is string => typeof value === "string")
+    : typeof metadata.institution_id === "string"
+      ? [metadata.institution_id]
+      : [];
   return {
     id: row.id as string,
     slug: row.slug as string,
@@ -130,12 +147,14 @@ function mapListRow(row: Record<string, unknown>): ProgramListItem {
     isFeatured: row.is_featured as boolean,
     isActive: row.is_active as boolean,
     sortOrder: row.sort_order as number,
+    institutionIds,
+    networkWide: metadata.network_wide === true || institutionIds.length === 0,
   };
 }
 
 const programListSelect = `
   id, slug, name, short, tagline, cover_image_url, category_id, is_featured, is_active, sort_order,
-  website_url, registration_url,
+  website_url, registration_url, metadata,
   program_categories ( id, name, slug ),
   program_events ( count ),
   program_publications ( count ),
@@ -149,7 +168,11 @@ const programDetailSelect = `
   contact_person, contact_email, contact_phone, website_url, registration_url, metadata
 `;
 
-export async function fetchPrograms(options?: { activeOnly?: boolean; featuredOnly?: boolean; limit?: number }) {
+export async function fetchPrograms(options?: {
+  activeOnly?: boolean;
+  featuredOnly?: boolean;
+  limit?: number;
+}) {
   let query = supabase
     .from("programs")
     .select(programListSelect)
@@ -256,7 +279,12 @@ export async function fetchProgramBySlug(slug: string): Promise<ProgramDetail | 
       };
     }),
     podcasts: (podsRes.data ?? []).map((row) => {
-      const ep = row.podcast_episodes as { id: string; title: string; guest: string | null; slug: string };
+      const ep = row.podcast_episodes as {
+        id: string;
+        title: string;
+        guest: string | null;
+        slug: string;
+      };
       return {
         id: ep.id,
         title: ep.title,
@@ -285,7 +313,12 @@ export async function fetchProgramBySlug(slug: string): Promise<ProgramDetail | 
       };
     }),
     grants: (grantsRes.data ?? []).map((row) => {
-      const grant = row.grants as { id: string; title: string; funder: string | null; url: string | null };
+      const grant = row.grants as {
+        id: string;
+        title: string;
+        funder: string | null;
+        url: string | null;
+      };
       return {
         id: grant.id,
         title: grant.title,
@@ -324,7 +357,12 @@ export async function saveProgramCategory(name: string) {
   }
 
   const row = data as { id: string; name: string; slug: string; sort_order: number };
-  return { id: row.id, name: row.name, slug: row.slug, sortOrder: row.sort_order } satisfies ProgramCategory;
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    sortOrder: row.sort_order,
+  } satisfies ProgramCategory;
 }
 
 export async function fetchAdminPrograms() {
@@ -338,13 +376,20 @@ export async function fetchAdminPrograms() {
 }
 
 export async function fetchAdminProgramForm(programId: string): Promise<ProgramFormData> {
-  const { data: program, error } = await supabase.from("programs").select("*").eq("id", programId).single();
+  const { data: program, error } = await supabase
+    .from("programs")
+    .select("*")
+    .eq("id", programId)
+    .single();
   if (error) throw error;
 
   const [galleryRes, pubsRes, podsRes, eventsRes, partnersRes, grantsRes] = await Promise.all([
     supabase.from("program_images").select("*").eq("program_id", programId).order("sort_order"),
     supabase.from("program_publications").select("publication_id").eq("program_id", programId),
-    supabase.from("program_podcast_episodes").select("podcast_episode_id").eq("program_id", programId),
+    supabase
+      .from("program_podcast_episodes")
+      .select("podcast_episode_id")
+      .eq("program_id", programId),
     supabase.from("program_events").select("event_id").eq("program_id", programId),
     supabase.from("program_partners").select("partner_id").eq("program_id", programId),
     supabase.from("program_grants").select("grant_id").eq("program_id", programId),
@@ -410,36 +455,52 @@ async function replaceProgramRelations(programId: string, form: ProgramFormData)
   if (form.publicationIds.length > 0) {
     junctionInserts.push(
       supabase.from("program_publications").insert(
-        form.publicationIds.map((id, i) => ({ program_id: programId, publication_id: id, sort_order: i })),
+        form.publicationIds.map((id, i) => ({
+          program_id: programId,
+          publication_id: id,
+          sort_order: i,
+        })),
       ),
     );
   }
   if (form.podcastIds.length > 0) {
     junctionInserts.push(
       supabase.from("program_podcast_episodes").insert(
-        form.podcastIds.map((id, i) => ({ program_id: programId, podcast_episode_id: id, sort_order: i })),
+        form.podcastIds.map((id, i) => ({
+          program_id: programId,
+          podcast_episode_id: id,
+          sort_order: i,
+        })),
       ),
     );
   }
   if (form.eventIds.length > 0) {
     junctionInserts.push(
-      supabase.from("program_events").insert(
-        form.eventIds.map((id, i) => ({ program_id: programId, event_id: id, sort_order: i })),
-      ),
+      supabase
+        .from("program_events")
+        .insert(
+          form.eventIds.map((id, i) => ({ program_id: programId, event_id: id, sort_order: i })),
+        ),
     );
   }
   if (form.partnerIds.length > 0) {
     junctionInserts.push(
       supabase.from("program_partners").insert(
-        form.partnerIds.map((id, i) => ({ program_id: programId, partner_id: id, sort_order: i })),
+        form.partnerIds.map((id, i) => ({
+          program_id: programId,
+          partner_id: id,
+          sort_order: i,
+        })),
       ),
     );
   }
   if (form.grantIds.length > 0) {
     junctionInserts.push(
-      supabase.from("program_grants").insert(
-        form.grantIds.map((id, i) => ({ program_id: programId, grant_id: id, sort_order: i })),
-      ),
+      supabase
+        .from("program_grants")
+        .insert(
+          form.grantIds.map((id, i) => ({ program_id: programId, grant_id: id, sort_order: i })),
+        ),
     );
   }
 

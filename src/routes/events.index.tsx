@@ -19,6 +19,11 @@ import { useSavedEvents } from "@/hooks/use-saved-events";
 import { fetchEventCategories, fetchEvents, filterEvents, partitionEvents } from "@/lib/events";
 import { listPageHead } from "@/lib/seo";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
+import {
+  InstitutionScopeFilter,
+  matchesInstitutionScope,
+  type InstitutionScope,
+} from "@/components/institution-scope-filter";
 
 export const Route = createFileRoute("/events/")({
   head: () =>
@@ -38,6 +43,9 @@ function EventsPage() {
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const { savedIds, toggleSaved, savedCount } = useSavedEvents();
   const { institutionId, institutionName } = useInstitutionTheme();
+  const [institutionScope, setInstitutionScope] = useState<InstitutionScope>(
+    institutionId ? "mine" : "all",
+  );
 
   const {
     data: events,
@@ -56,11 +64,10 @@ function EventsPage() {
 
   const relevantEvents = useMemo(
     () =>
-      (events ?? []).filter(
-        (event) =>
-          !institutionId || event.networkWide || event.institutionIds.includes(institutionId),
+      (events ?? []).filter((event) =>
+        matchesInstitutionScope(event, institutionScope, institutionId),
       ),
-    [events, institutionId],
+    [events, institutionId, institutionScope],
   );
 
   const filtered = useMemo(
@@ -103,6 +110,12 @@ function EventsPage() {
               </p>
             )}
           </header>
+
+          <InstitutionScopeFilter
+            value={institutionScope}
+            onChange={setInstitutionScope}
+            hasInstitution={!!institutionId}
+          />
 
           <FeaturedCiscEvents />
 

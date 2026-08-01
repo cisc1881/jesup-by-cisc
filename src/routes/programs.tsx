@@ -15,6 +15,12 @@ import {
 import { fetchProgramCategories, fetchPrograms } from "@/lib/programs";
 import type { ProgramListItem } from "@/lib/programs";
 import { listPageHead } from "@/lib/seo";
+import { useInstitutionTheme } from "@/components/institution-theme-provider";
+import {
+  InstitutionScopeFilter,
+  matchesInstitutionScope,
+  type InstitutionScope,
+} from "@/components/institution-scope-filter";
 
 export const Route = createFileRoute("/programs")({
   head: () =>
@@ -42,6 +48,10 @@ function ProgramsLayout() {
   const isChild = matches.some((m) => m.routeId === "/programs/$slug");
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
+  const { institutionId, institutionName } = useInstitutionTheme();
+  const [institutionScope, setInstitutionScope] = useState<InstitutionScope>(
+    institutionId ? "mine" : "all",
+  );
 
   const {
     data: programs,
@@ -59,9 +69,16 @@ function ProgramsLayout() {
     queryFn: fetchProgramCategories,
   });
 
+  const relevantPrograms = useMemo(
+    () =>
+      (programs ?? []).filter((program) =>
+        matchesInstitutionScope(program, institutionScope, institutionId),
+      ),
+    [programs, institutionId, institutionScope],
+  );
   const filtered = useMemo(
-    () => filterPrograms(programs ?? [], search, categoryId),
-    [programs, search, categoryId],
+    () => filterPrograms(relevantPrograms, search, categoryId),
+    [relevantPrograms, search, categoryId],
   );
 
   const sections = useMemo(() => partitionPrograms(filtered), [filtered]);
@@ -81,7 +98,10 @@ function ProgramsLayout() {
   return (
     <PublicLayout>
       <ProgramsPullRefresh onRefresh={handleRefresh} disabled={isFetching}>
-        <PageContainer size="lg" className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]">
+        <PageContainer
+          size="lg"
+          className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]"
+        >
           <header className="space-y-3">
             <p className="text-eyebrow grad-gold-text">Signature initiatives</p>
             <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
@@ -89,11 +109,18 @@ function ProgramsLayout() {
             </h1>
             {programs && programs.length > 0 && (
               <p className="max-w-2xl text-base text-muted-foreground">
-                {filtered.length} of {programs.length} active program{programs.length === 1 ? "" : "s"} from the
-                Carver Integrative Sustainability Center.
+                {filtered.length} of {relevantPrograms.length} active program
+                {relevantPrograms.length === 1 ? "" : "s"} for{" "}
+                {institutionName ?? "the 1890 network"}.
               </p>
             )}
           </header>
+
+          <InstitutionScopeFilter
+            value={institutionScope}
+            onChange={setInstitutionScope}
+            hasInstitution={!!institutionId}
+          />
 
           {showInitialSkeleton ? (
             <ProgramsPageSkeleton />
@@ -116,7 +143,9 @@ function ProgramsLayout() {
                 </>
               ) : (
                 <div className="space-y-10 md:space-y-12">
-                  {sections.featured && <FeaturedProgramHero program={sections.featured} ctaMode="explore" />}
+                  {sections.featured && (
+                    <FeaturedProgramHero program={sections.featured} ctaMode="explore" />
+                  )}
 
                   <ProgramFilters
                     categories={categories}

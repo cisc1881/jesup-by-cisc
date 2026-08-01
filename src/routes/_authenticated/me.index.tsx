@@ -43,7 +43,7 @@ import { QRCodeSVG } from "qrcode.react";
 export const Route = createFileRoute("/_authenticated/me/")({ component: MePage });
 
 function MePage() {
-  const { user } = useAuth();
+  const { user, isAdmin, isFunder } = useAuth();
   const { data: regs } = useQuery({
     queryKey: ["my-regs", user?.id],
     enabled: !!user,
@@ -74,7 +74,9 @@ function MePage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("equipment_checkouts")
-        .select("id,quantity,checkout_date,return_date,status,admin_notes,approved_at,checked_out_at,returned_at,equipment(id,name)")
+        .select(
+          "id,quantity,checkout_date,return_date,status,admin_notes,approved_at,checked_out_at,returned_at,equipment(id,name)",
+        )
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -109,7 +111,25 @@ function MePage() {
 
   return (
     <PublicLayout>
-      <PageHeader title="My Activity" description={user?.email ?? undefined} />
+      <PageHeader
+        eyebrow="Your account"
+        title="My JESUP"
+        description={user?.email ?? undefined}
+        action={
+          <div className="flex flex-wrap gap-2">
+            {isAdmin && (
+              <AppButton asChild>
+                <Link to="/admin">Admin dashboard</Link>
+              </AppButton>
+            )}
+            {isFunder && (
+              <AppButton asChild>
+                <Link to="/funder">Funder metrics</Link>
+              </AppButton>
+            )}
+          </div>
+        }
+      />
       <div className="mx-auto max-w-5xl px-4 py-8">
         <Tabs defaultValue="profile">
           <TabsList className="flex h-auto flex-wrap gap-1">
@@ -294,9 +314,21 @@ function MePage() {
                     <p className="text-sm text-muted-foreground">
                       Qty {c.quantity} · {fmtDate(c.checkout_date)} → {fmtDate(c.return_date)}
                     </p>
-                    {c.admin_notes && <p className="mt-1 text-sm text-muted-foreground">Staff note: {c.admin_notes}</p>}
-                    {c.checked_out_at && <p className="mt-1 text-xs text-muted-foreground">Picked up {fmtDateTime(c.checked_out_at)}</p>}
-                    {c.returned_at && <p className="mt-1 text-xs text-muted-foreground">Returned {fmtDateTime(c.returned_at)}</p>}
+                    {c.admin_notes && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Staff note: {c.admin_notes}
+                      </p>
+                    )}
+                    {c.checked_out_at && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Picked up {fmtDateTime(c.checked_out_at)}
+                      </p>
+                    )}
+                    {c.returned_at && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Returned {fmtDateTime(c.returned_at)}
+                      </p>
+                    )}
                   </div>
                   <Badge>{c.status}</Badge>
                 </CardContent>
@@ -376,8 +408,12 @@ function RegistrationDemographicsCard({
               <QRCodeSVG value={ticketCode} size={132} level="M" marginSize={1} />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">JESUP event ticket</p>
-              <p className="mt-1 break-all font-mono text-base font-bold text-foreground">{ticketCode}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                JESUP event ticket
+              </p>
+              <p className="mt-1 break-all font-mono text-base font-bold text-foreground">
+                {ticketCode}
+              </p>
               <p className="mt-2 text-xs text-muted-foreground">
                 Present this QR code or ticket number at event check-in.
               </p>

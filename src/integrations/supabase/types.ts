@@ -1,10 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
@@ -369,8 +363,7 @@ export type Database = {
       }
       event_attendance: {
         Row: {
-          attendance_method:
-            Database["public"]["Enums"]["attendance_method"] | null
+          attendance_method: Database["public"]["Enums"]["attendance_method"] | null
           checked_in_at: string | null
           checked_in_by: string | null
           created_at: string
@@ -384,8 +377,7 @@ export type Database = {
           walk_in_id: string | null
         }
         Insert: {
-          attendance_method?:
-            Database["public"]["Enums"]["attendance_method"] | null
+          attendance_method?: Database["public"]["Enums"]["attendance_method"] | null
           checked_in_at?: string | null
           checked_in_by?: string | null
           created_at?: string
@@ -399,8 +391,7 @@ export type Database = {
           walk_in_id?: string | null
         }
         Update: {
-          attendance_method?:
-            Database["public"]["Enums"]["attendance_method"] | null
+          attendance_method?: Database["public"]["Enums"]["attendance_method"] | null
           checked_in_at?: string | null
           checked_in_by?: string | null
           created_at?: string
@@ -1565,8 +1556,7 @@ export type Database = {
           id: string
           inquiry_type: Database["public"]["Enums"]["inquiry_type"]
           institution_id: string | null
-          institution_type:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type: Database["public"]["Enums"]["institution_type"] | null
           last_name: string
           message: string | null
           newsletter_opt_in: boolean
@@ -1591,8 +1581,7 @@ export type Database = {
           id?: string
           inquiry_type: Database["public"]["Enums"]["inquiry_type"]
           institution_id?: string | null
-          institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           last_name: string
           message?: string | null
           newsletter_opt_in?: boolean
@@ -1617,8 +1606,7 @@ export type Database = {
           id?: string
           inquiry_type?: Database["public"]["Enums"]["inquiry_type"]
           institution_id?: string | null
-          institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           last_name?: string
           message?: string | null
           newsletter_opt_in?: boolean
@@ -1740,8 +1728,7 @@ export type Database = {
           graduation_year: number | null
           id: string
           institution_id: string | null
-          institution_type:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type: Database["public"]["Enums"]["institution_type"] | null
           internship_id: string
           is_1890_land_grant: boolean | null
           major: string | null
@@ -1764,8 +1751,7 @@ export type Database = {
           graduation_year?: number | null
           id?: string
           institution_id?: string | null
-          institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           internship_id: string
           is_1890_land_grant?: boolean | null
           major?: string | null
@@ -1788,8 +1774,7 @@ export type Database = {
           graduation_year?: number | null
           id?: string
           institution_id?: string | null
-          institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           internship_id?: string
           is_1890_land_grant?: boolean | null
           major?: string | null
@@ -2612,8 +2597,7 @@ export type Database = {
           entity_type: string | null
           id: string
           metadata: Json
-          notification_type:
-            Database["public"]["Enums"]["notification_type"] | null
+          notification_type: Database["public"]["Enums"]["notification_type"] | null
           priority: Database["public"]["Enums"]["notification_priority"]
           read_at: string | null
           status: Database["public"]["Enums"]["notification_status"]
@@ -2630,8 +2614,7 @@ export type Database = {
           entity_type?: string | null
           id?: string
           metadata?: Json
-          notification_type?:
-            Database["public"]["Enums"]["notification_type"] | null
+          notification_type?: Database["public"]["Enums"]["notification_type"] | null
           priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
@@ -2648,8 +2631,7 @@ export type Database = {
           entity_type?: string | null
           id?: string
           metadata?: Json
-          notification_type?:
-            Database["public"]["Enums"]["notification_type"] | null
+          notification_type?: Database["public"]["Enums"]["notification_type"] | null
           priority?: Database["public"]["Enums"]["notification_priority"]
           read_at?: string | null
           status?: Database["public"]["Enums"]["notification_status"]
@@ -2997,8 +2979,7 @@ export type Database = {
           full_name: string | null
           id: string
           institution_id: string | null
-          institution_type:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type: Database["public"]["Enums"]["institution_type"] | null
           is_1890_land_grant: boolean | null
           major_or_interest: string | null
           phone: string | null
@@ -3014,8 +2995,7 @@ export type Database = {
           full_name?: string | null
           id: string
           institution_id?: string | null
-          institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           is_1890_land_grant?: boolean | null
           major_or_interest?: string | null
           phone?: string | null
@@ -3031,8 +3011,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           institution_id?: string | null
-          institution_type?:
-            Database["public"]["Enums"]["institution_type"] | null
+          institution_type?: Database["public"]["Enums"]["institution_type"] | null
           is_1890_land_grant?: boolean | null
           major_or_interest?: string | null
           phone?: string | null
@@ -3480,8 +3459,7 @@ export type Database = {
           author: string | null
           category: string | null
           category_id: string | null
-          content_type:
-            Database["public"]["Enums"]["publication_content_type"] | null
+          content_type: Database["public"]["Enums"]["publication_content_type"] | null
           cover_image_url: string | null
           created_at: string
           description: string | null
@@ -3500,8 +3478,7 @@ export type Database = {
           author?: string | null
           category?: string | null
           category_id?: string | null
-          content_type?:
-            Database["public"]["Enums"]["publication_content_type"] | null
+          content_type?: Database["public"]["Enums"]["publication_content_type"] | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -3520,8 +3497,7 @@ export type Database = {
           author?: string | null
           category?: string | null
           category_id?: string | null
-          content_type?:
-            Database["public"]["Enums"]["publication_content_type"] | null
+          content_type?: Database["public"]["Enums"]["publication_content_type"] | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -4244,6 +4220,22 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: number
       }
+      get_my_funder_dashboard: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      list_event_chat: {
+        Args: { p_event_id: string }
+        Returns: { author_name: string; created_at: string; id: string; message: string }[]
+      }
+      post_event_chat: {
+        Args: { p_event_id: string; p_message: string }
+        Returns: string
+      }
+      check_in_event_session: {
+        Args: { p_session_id: string; p_ticket_code: string }
+        Returns: Json
+      }
       get_multi_event_demographic_aggregates: {
         Args: { p_event_ids: string[] }
         Returns: {
@@ -4299,6 +4291,10 @@ export type Database = {
           p_food_allergies?: string
           p_registration_id: string
         }
+        Returns: undefined
+      }
+      set_funder_grant_access: {
+        Args: { p_enabled?: boolean; p_grant_id: string; p_user_id: string }
         Returns: undefined
       }
       submit_internship_application: {
@@ -4402,14 +4398,9 @@ export type Database = {
     }
     Enums: {
       email_delivery_status: "pending" | "processing" | "sent" | "failed"
-      academic_level:
-        | "high_school"
-        | "undergraduate"
-        | "graduate"
-        | "recent_graduate"
-        | "other"
+      academic_level: "high_school" | "undergraduate" | "graduate" | "recent_graduate" | "other"
       ai_interaction_status: "started" | "completed" | "failed" | "blocked"
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "funder"
       application_status:
         | "pending"
         | "reviewed"
@@ -4422,16 +4413,9 @@ export type Database = {
         | "withdrawn"
       attendance_method: "qr" | "manual" | "csv_import" | "walk_in"
       attendance_status:
-        | "registered"
-        | "checked_in"
-        | "attended"
-        | "virtual"
-        | "no_show"
-        | "cancelled"
-      checkout_status:
-        "pending" | "approved" | "denied" | "checked_out" | "returned"
-      demographic_source_type:
-        "registration" | "walk_in" | "evaluation" | "attendance"
+        "registered" | "checked_in" | "attended" | "virtual" | "no_show" | "cancelled"
+      checkout_status: "pending" | "approved" | "denied" | "checked_out" | "returned"
+      demographic_source_type: "registration" | "walk_in" | "evaluation" | "attendance"
       evaluation_question_type:
         | "rating"
         | "single_choice"
@@ -4443,15 +4427,12 @@ export type Database = {
         | "demographic"
         | "consent"
       evaluation_response_mode: "anonymous" | "identified"
-      event_registration_record_status:
-        "registered" | "waiting_list" | "cancelled"
-      event_registration_status:
-        "open" | "closed" | "waiting_list" | "sold_out" | "invite_only"
+      event_registration_record_status: "registered" | "waiting_list" | "cancelled"
+      event_registration_status: "open" | "closed" | "waiting_list" | "sold_out" | "invite_only"
       event_report_status: "draft" | "final"
       event_status: "draft" | "published" | "archived"
       gallery_submission_status: "pending" | "approved" | "rejected"
-      inquiry_status:
-        "new" | "contacted" | "in_progress" | "resolved" | "closed"
+      inquiry_status: "new" | "contacted" | "in_progress" | "resolved" | "closed"
       inquiry_type:
         | "join_program"
         | "request_info"
@@ -4483,14 +4464,7 @@ export type Database = {
         | "prepared_foods"
         | "crafts"
       media_asset_type:
-        | "image"
-        | "video"
-        | "pdf"
-        | "magazine_cover"
-        | "factsheet"
-        | "audio"
-        | "logo"
-        | "document"
+        "image" | "video" | "pdf" | "magazine_cover" | "factsheet" | "audio" | "logo" | "document"
       milestone_status: "pending" | "in_progress" | "completed" | "waived"
       notification_audience: "admin" | "user"
       notification_channel: "in_app" | "email" | "sms" | "push"
@@ -4520,8 +4494,7 @@ export type Database = {
       twofas_track: "high_school" | "undergraduate" | "graduate" | "fellow"
       weather_alert_delivery_status:
         "pending" | "sent" | "suppressed" | "failed" | "test" | "expired"
-      weather_delayed_delivery_status:
-        "pending" | "sent" | "expired" | "failed" | "suppressed"
+      weather_delayed_delivery_status: "pending" | "sent" | "expired" | "failed" | "suppressed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4552,10 +4525,8 @@ export type Tables<
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -4628,8 +4599,7 @@ export type Enums<
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -4647,15 +4617,9 @@ export const Constants = {
   public: {
     Enums: {
       email_delivery_status: ["pending", "processing", "sent", "failed"],
-      academic_level: [
-        "high_school",
-        "undergraduate",
-        "graduate",
-        "recent_graduate",
-        "other",
-      ],
+      academic_level: ["high_school", "undergraduate", "graduate", "recent_graduate", "other"],
       ai_interaction_status: ["started", "completed", "failed", "blocked"],
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "funder"],
       application_status: [
         "pending",
         "reviewed",
@@ -4676,19 +4640,8 @@ export const Constants = {
         "no_show",
         "cancelled",
       ],
-      checkout_status: [
-        "pending",
-        "approved",
-        "denied",
-        "checked_out",
-        "returned",
-      ],
-      demographic_source_type: [
-        "registration",
-        "walk_in",
-        "evaluation",
-        "attendance",
-      ],
+      checkout_status: ["pending", "approved", "denied", "checked_out", "returned"],
+      demographic_source_type: ["registration", "walk_in", "evaluation", "attendance"],
       evaluation_question_type: [
         "rating",
         "single_choice",
@@ -4701,18 +4654,8 @@ export const Constants = {
         "consent",
       ],
       evaluation_response_mode: ["anonymous", "identified"],
-      event_registration_record_status: [
-        "registered",
-        "waiting_list",
-        "cancelled",
-      ],
-      event_registration_status: [
-        "open",
-        "closed",
-        "waiting_list",
-        "sold_out",
-        "invite_only",
-      ],
+      event_registration_record_status: ["registered", "waiting_list", "cancelled"],
+      event_registration_status: ["open", "closed", "waiting_list", "sold_out", "invite_only"],
       event_report_status: ["draft", "final"],
       event_status: ["draft", "published", "archived"],
       gallery_submission_status: ["pending", "approved", "rejected"],
@@ -4789,21 +4732,8 @@ export const Constants = {
       ],
       twofas_document_type: ["resume", "transcript", "portfolio", "other"],
       twofas_track: ["high_school", "undergraduate", "graduate", "fellow"],
-      weather_alert_delivery_status: [
-        "pending",
-        "sent",
-        "suppressed",
-        "failed",
-        "test",
-        "expired",
-      ],
-      weather_delayed_delivery_status: [
-        "pending",
-        "sent",
-        "expired",
-        "failed",
-        "suppressed",
-      ],
+      weather_alert_delivery_status: ["pending", "sent", "suppressed", "failed", "test", "expired"],
+      weather_delayed_delivery_status: ["pending", "sent", "expired", "failed", "suppressed"],
     },
   },
 } as const

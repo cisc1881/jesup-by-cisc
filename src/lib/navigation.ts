@@ -3,14 +3,11 @@ import {
   BookOpen,
   MapPin,
   DollarSign,
-  Package,
-  ClipboardList,
   Building2,
   Heart,
   Mic,
   Briefcase,
   Newspaper,
-  MessageSquare,
   CloudSun,
   LayoutGrid,
 } from "lucide-react";
@@ -44,22 +41,10 @@ export type ResourceHubLink = {
 
 export const resourceHubLinks: ResourceHubLink[] = [
   {
-    to: "/programs",
-    icon: LayoutGrid,
-    title: "Programs",
-    body: "Education, Extension, youth, research, and workforce programs.",
-  },
-  {
     to: "/weather",
     icon: CloudSun,
     title: "Weather & emergency",
     body: "Detailed forecasts, alerts, local contacts, radar, and preparedness guidance.",
-  },
-  {
-    to: "/join",
-    icon: MessageSquare,
-    title: "Join / Connect",
-    body: "Connect with CISC programs, partnerships, and opportunities.",
   },
   {
     to: "/publications",
@@ -78,18 +63,6 @@ export const resourceHubLinks: ResourceHubLink[] = [
     icon: DollarSign,
     title: "Grants",
     body: "Funding for community and farm projects.",
-  },
-  {
-    to: "/equipment",
-    icon: Package,
-    title: "Equipment",
-    body: "Reserve tools and equipment for your project.",
-  },
-  {
-    to: "/surveys",
-    icon: ClipboardList,
-    title: "Surveys",
-    body: "Share your voice and shape our programs.",
   },
   {
     to: "/partners",
@@ -125,8 +98,8 @@ export const resourceHubLinks: ResourceHubLink[] = [
 
 /** Desktop top nav — primary sections; secondary items live on /resources for mobile. */
 export const desktopNavLinks = [
-  { to: "/events", label: "Agenda & Events" },
-  { to: "/join", label: "Connect" },
+  { to: "/events", label: "Events" },
+  { to: "/workshops", label: "Workshops" },
   { to: "/programs", label: "Programs" },
-  { to: "/resources", label: "More" },
+  { to: "/resources", label: "Resources" },
 ] as const;

@@ -4,7 +4,14 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminPageHeader, AdminShell } from "@/components/admin-page";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { downloadCsv } from "@/lib/csv";
@@ -24,34 +31,58 @@ function AdminUsers() {
   const { data } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const { data: profiles } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
       const { data: roles } = await supabase.from("user_roles").select("*");
       const rolesByUser = new Map<string, string[]>();
       (roles ?? []).forEach((r) => {
         const arr = rolesByUser.get(r.user_id) ?? [];
-        arr.push(r.role); rolesByUser.set(r.user_id, arr);
+        arr.push(r.role);
+        rolesByUser.set(r.user_id, arr);
       });
       return (profiles ?? []).map((p) => ({ ...p, roles: rolesByUser.get(p.id) ?? [] }));
     },
   });
-  const rows = (data ?? []).filter((r) => !q || (r.email ?? "").toLowerCase().includes(q.toLowerCase()) || (r.full_name ?? "").toLowerCase().includes(q.toLowerCase()));
+  const rows = (data ?? []).filter(
+    (r) =>
+      !q ||
+      (r.email ?? "").toLowerCase().includes(q.toLowerCase()) ||
+      (r.full_name ?? "").toLowerCase().includes(q.toLowerCase()),
+  );
 
   async function grantAdmin(uid: string) {
     const { error } = await supabase.from("user_roles").insert({ user_id: uid, role: "admin" });
     if (error) return toast.error(error.message);
-    toast.success("Admin granted"); qc.invalidateQueries({ queryKey: ["admin-users"] });
+    toast.success("Admin granted");
+    qc.invalidateQueries({ queryKey: ["admin-users"] });
+  }
+  async function toggleFunder(uid: string, enabled: boolean) {
+    const query = enabled
+      ? supabase.from("user_roles").insert({ user_id: uid, role: "funder" })
+      : supabase.from("user_roles").delete().eq("user_id", uid).eq("role", "funder");
+    const { error } = await query;
+    if (error) return toast.error(error.message);
+    toast.success(enabled ? "Funder portal access granted" : "Funder portal access removed");
+    qc.invalidateQueries({ queryKey: ["admin-users"] });
   }
   async function revokeAdmin(uid: string, name: string) {
     if (uid === user?.id) {
       const ok = await confirm({
         title: "Remove your own admin access?",
-        description: "You will lose access to the JESUP Command Center immediately after confirming.",
+        description:
+          "You will lose access to the JESUP Command Center immediately after confirming.",
         confirmLabel: "Remove access",
         destructive: true,
       });
       if (!ok) return;
     }
-    const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).eq("role", "admin");
+    const { error } = await supabase
+      .from("user_roles")
+      .delete()
+      .eq("user_id", uid)
+      .eq("role", "admin");
     if (error) return toast.error(error.message);
     toast.success(uid === user?.id ? "Admin access removed" : `Revoked admin from ${name}`);
     qc.invalidateQueries({ queryKey: ["admin-users"] });
@@ -59,38 +90,93 @@ function AdminUsers() {
 
   return (
     <AdminShell>
-      <AdminPageHeader title="Users" searchValue={q} onSearchChange={setQ}
-        onExport={() => downloadCsv("users", rows, [
-          { header: "Name", get: (r) => r.full_name }, { header: "Email", get: (r) => r.email },
-          { header: "Roles", get: (r) => r.roles.join(", ") }, { header: "Joined", get: (r) => r.created_at },
-        ])}
+      <AdminPageHeader
+        title="Users"
+        searchValue={q}
+        onSearchChange={setQ}
+        onExport={() =>
+          downloadCsv("users", rows, [
+            { header: "Name", get: (r) => r.full_name },
+            { header: "Email", get: (r) => r.email },
+            { header: "Roles", get: (r) => r.roles.join(", ") },
+            { header: "Joined", get: (r) => r.created_at },
+          ])
+        }
       />
-      <Card><CardContent className="p-0">
-        <Table>
-          <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Roles</TableHead><TableHead>Joined</TableHead><TableHead className="w-40"></TableHead></TableRow></TableHeader>
-          <TableBody>
-            {rows.length === 0 && <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">No users.</TableCell></TableRow>}
-            {rows.map((r) => {
-              const isAdmin = r.roles.includes("admin");
-              return (
-                <TableRow key={r.id}>
-                  <TableCell className="font-medium">{r.full_name}</TableCell>
-                  <TableCell>{r.email}</TableCell>
-                  <TableCell><div className="flex gap-1">{r.roles.map((role: string) => <Badge key={role} variant={role === "admin" ? "default" : "secondary"}>{role}</Badge>)}</div></TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{fmtDate(r.created_at)}</TableCell>
-                  <TableCell>
-                    {isAdmin ? (
-                      <Button size="sm" variant="outline" onClick={() => revokeAdmin(r.id, r.full_name ?? r.email ?? "user")}>Revoke admin</Button>
-                    ) : (
-                      <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={() => grantAdmin(r.id)}>Grant admin</Button>
-                    )}
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Roles</TableHead>
+                <TableHead>Joined</TableHead>
+                <TableHead className="w-40"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                    No users.
                   </TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </CardContent></Card>
+              )}
+              {rows.map((r) => {
+                const isAdmin = r.roles.includes("admin");
+                const isFunder = r.roles.includes("funder");
+                return (
+                  <TableRow key={r.id}>
+                    <TableCell className="font-medium">{r.full_name}</TableCell>
+                    <TableCell>{r.email}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        {r.roles.map((role: string) => (
+                          <Badge key={role} variant={role === "admin" ? "default" : "secondary"}>
+                            {role}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {fmtDate(r.created_at)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-2">
+                        {isAdmin ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => revokeAdmin(r.id, r.full_name ?? r.email ?? "user")}
+                          >
+                            Revoke admin
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="bg-primary hover:bg-primary/90"
+                            onClick={() => grantAdmin(r.id)}
+                          >
+                            Grant admin
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => toggleFunder(r.id, !isFunder)}
+                        >
+                          {isFunder ? "Revoke funder" : "Grant funder"}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
       {dialog}
     </AdminShell>
   );
