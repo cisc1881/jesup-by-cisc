@@ -5,7 +5,6 @@ import { PageContainer, AppButton } from "@/components/design-system";
 import { useHomeData } from "@/hooks/use-home-data";
 import {
   HomeHero,
-  HomeMoreSection,
   HomeWeatherSection,
   MyJesupHomeSection,
   UpcomingEventsSection,
@@ -116,7 +115,6 @@ function Home() {
           meta={sections.events}
           isLoading={isLoading}
         />
-        <HomeMoreSection />
       </PageContainer>
     </PublicLayout>
   );
