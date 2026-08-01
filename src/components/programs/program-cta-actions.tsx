@@ -60,12 +60,12 @@ export function ProgramCtaActions({
   return (
     <div className={cn("flex flex-wrap gap-3", className)}>
       <AppButton variant={onDark ? "inverse" : "primary"} size="lg" shape="pill" asChild>
-        <Link to="/join" search={{ inquiryType: "join_program", programId: program.id }}>
+        <Link to="/join" search={{ inquiryType: "join_program", programId: program.id, message: undefined }}>
           Join this program <ArrowRight className="h-4 w-4" />
         </Link>
       </AppButton>
       <AppButton variant="outline" size="lg" shape="pill" className={outlineClass} asChild>
-        <Link to="/join" search={{ inquiryType: "request_info", programId: program.id }}>
+        <Link to="/join" search={{ inquiryType: "request_info", programId: program.id, message: undefined }}>
           Ask a question <MessageSquareText className="h-4 w-4" />
         </Link>
       </AppButton>

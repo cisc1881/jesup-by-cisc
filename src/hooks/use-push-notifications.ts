@@ -124,7 +124,7 @@ export function usePushNotifications() {
         const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidKey),
+          applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
         });
         const normalized = normalizeBrowserPushSubscription(subscription, {
           userAgent: navigator.userAgent,

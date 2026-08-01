@@ -274,6 +274,7 @@ function mapHomeNewsArticle(
     category: article.category,
     coverImageUrl: article.coverImageUrl,
     publishedAt: article.publishedAt,
+    isPublished: article.isPublished,
     isFeatured: article.isFeatured,
     readingTimeMinutes: article.readingTimeMinutes,
     tags: article.tags,
