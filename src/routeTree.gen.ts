@@ -23,6 +23,7 @@ import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PodcastRouteImport } from './routes/podcast'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as InternshipsRouteImport } from './routes/internships'
@@ -43,6 +44,8 @@ import { Route as EventsIdRouteImport } from './routes/events.$id'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedFunderRouteImport } from './routes/_authenticated/funder'
 import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated/me.index'
 import { Route as AuthenticatedFunderIndexRouteImport } from './routes/_authenticated/funder.index'
@@ -78,6 +81,7 @@ import { Route as AuthenticatedAdminEmailDeliveriesRouteImport } from './routes/
 import { Route as AuthenticatedAdminCountiesRouteImport } from './routes/_authenticated/admin/counties'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminWeatherNotificationsRouteImport } from './routes/_authenticated/admin/weather/notifications'
 import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/_authenticated/admin/weather/counties'
@@ -157,6 +161,11 @@ const PartnersRoute = PartnersRouteImport.update({
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketsRoute = MarketsRouteImport.update({
@@ -258,6 +267,18 @@ const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
   path: '/ask',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -476,6 +497,12 @@ const AuthenticatedAdminActivityRoute =
     path: '/activity',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -569,6 +596,7 @@ export interface FileRoutesByFullPath {
   '/internships': typeof InternshipsRoute
   '/join': typeof JoinRoute
   '/markets': typeof MarketsRouteWithChildren
+  '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/partners': typeof PartnersRouteWithChildren
   '/podcast': typeof PodcastRoute
@@ -584,6 +612,8 @@ export interface FileRoutesByFullPath {
   '/weather': typeof WeatherRoute
   '/workshops': typeof WorkshopsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ask': typeof AuthenticatedAskRoute
   '/funder': typeof AuthenticatedFunderRouteWithChildren
   '/me': typeof AuthenticatedMeRouteWithChildren
@@ -596,6 +626,7 @@ export interface FileRoutesByFullPath {
   '/publications/$slug': typeof PublicationsSlugRoute
   '/events/': typeof EventsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -649,6 +680,7 @@ export interface FileRoutesByTo {
   '/internships': typeof InternshipsRoute
   '/join': typeof JoinRoute
   '/markets': typeof MarketsRouteWithChildren
+  '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/partners': typeof PartnersRouteWithChildren
   '/podcast': typeof PodcastRoute
@@ -663,6 +695,8 @@ export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
   '/weather': typeof WeatherRoute
   '/workshops': typeof WorkshopsRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ask': typeof AuthenticatedAskRoute
   '/events/$id': typeof EventsIdRouteWithChildren
   '/markets/$id': typeof MarketsIdRoute
@@ -673,6 +707,7 @@ export interface FileRoutesByTo {
   '/publications/$slug': typeof PublicationsSlugRoute
   '/events': typeof EventsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -728,6 +763,7 @@ export interface FileRoutesById {
   '/internships': typeof InternshipsRoute
   '/join': typeof JoinRoute
   '/markets': typeof MarketsRouteWithChildren
+  '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/partners': typeof PartnersRouteWithChildren
   '/podcast': typeof PodcastRoute
@@ -743,6 +779,8 @@ export interface FileRoutesById {
   '/weather': typeof WeatherRoute
   '/workshops': typeof WorkshopsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/ask': typeof AuthenticatedAskRoute
   '/_authenticated/funder': typeof AuthenticatedFunderRouteWithChildren
   '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
@@ -755,6 +793,7 @@ export interface FileRoutesById {
   '/publications/$slug': typeof PublicationsSlugRoute
   '/events/': typeof EventsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -810,6 +849,7 @@ export interface FileRouteTypes {
     | '/internships'
     | '/join'
     | '/markets'
+    | '/mcp'
     | '/news'
     | '/partners'
     | '/podcast'
@@ -825,6 +865,8 @@ export interface FileRouteTypes {
     | '/weather'
     | '/workshops'
     | '/admin'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/ask'
     | '/funder'
     | '/me'
@@ -837,6 +879,7 @@ export interface FileRouteTypes {
     | '/publications/$slug'
     | '/events/'
     | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
@@ -890,6 +933,7 @@ export interface FileRouteTypes {
     | '/internships'
     | '/join'
     | '/markets'
+    | '/mcp'
     | '/news'
     | '/partners'
     | '/podcast'
@@ -904,6 +948,8 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/weather'
     | '/workshops'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/ask'
     | '/events/$id'
     | '/markets/$id'
@@ -914,6 +960,7 @@ export interface FileRouteTypes {
     | '/publications/$slug'
     | '/events'
     | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
@@ -968,6 +1015,7 @@ export interface FileRouteTypes {
     | '/internships'
     | '/join'
     | '/markets'
+    | '/mcp'
     | '/news'
     | '/partners'
     | '/podcast'
@@ -983,6 +1031,8 @@ export interface FileRouteTypes {
     | '/weather'
     | '/workshops'
     | '/_authenticated/admin'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/ask'
     | '/_authenticated/funder'
     | '/_authenticated/me'
@@ -995,6 +1045,7 @@ export interface FileRouteTypes {
     | '/publications/$slug'
     | '/events/'
     | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/activity'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/counties'
@@ -1050,6 +1101,7 @@ export interface RootRouteChildren {
   InternshipsRoute: typeof InternshipsRoute
   JoinRoute: typeof JoinRoute
   MarketsRoute: typeof MarketsRouteWithChildren
+  McpRoute: typeof McpRoute
   NewsRoute: typeof NewsRouteWithChildren
   PartnersRoute: typeof PartnersRouteWithChildren
   PodcastRoute: typeof PodcastRoute
@@ -1064,9 +1116,12 @@ export interface RootRouteChildren {
   UnauthorizedRoute: typeof UnauthorizedRoute
   WeatherRoute: typeof WeatherRoute
   WorkshopsRoute: typeof WorkshopsRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   EventsIdRoute: typeof EventsIdRouteWithChildren
   EventsIndexRoute: typeof EventsIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1167,6 +1222,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/markets': {
@@ -1308,6 +1370,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/ask'
       preLoaderRoute: typeof AuthenticatedAskRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
@@ -1553,6 +1629,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/activity'
       preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
@@ -1882,6 +1965,7 @@ const rootRouteChildren: RootRouteChildren = {
   InternshipsRoute: InternshipsRoute,
   JoinRoute: JoinRoute,
   MarketsRoute: MarketsRouteWithChildren,
+  McpRoute: McpRoute,
   NewsRoute: NewsRouteWithChildren,
   PartnersRoute: PartnersRouteWithChildren,
   PodcastRoute: PodcastRoute,
@@ -1896,9 +1980,13 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthorizedRoute: UnauthorizedRoute,
   WeatherRoute: WeatherRoute,
   WorkshopsRoute: WorkshopsRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   EventsIdRoute: EventsIdRouteWithChildren,
   EventsIndexRoute: EventsIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
