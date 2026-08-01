@@ -62,8 +62,8 @@ export function NearbyMarketSection({ markets, meta, isLoading }: NearbyMarketSe
       <AppCard variant="lift" padding="none" className="overflow-hidden">
         <div className="flex flex-col sm:flex-row">
           <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-secondary sm:w-48 md:w-56">
-            {market.imageUrl ? (
-              <img src={market.imageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+            {market.coverImageUrl ? (
+              <img src={market.coverImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
             ) : (
               <div className="h-full w-full grad-crimson opacity-90" aria-hidden="true" />
             )}
