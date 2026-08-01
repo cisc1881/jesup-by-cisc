@@ -41,7 +41,9 @@ import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/join")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { inquiryType?: InquiryType; programId?: string; message?: string } => ({
     inquiryType: INQUIRY_TYPES.includes(search.inquiryType as InquiryType)
       ? (search.inquiryType as InquiryType)
       : undefined,
