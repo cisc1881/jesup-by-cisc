@@ -4,14 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer, QueryErrorState } from "@/components/design-system";
 import {
-  FeaturedProgramHero,
   ProgramFilters,
-  ProgramSectionRow,
   ProgramsEmptyState,
   ProgramsPageSkeleton,
   ProgramsPullRefresh,
   filterPrograms,
 } from "@/components/programs";
+import { DirectoryResultList } from "@/components/directory-result-list";
 import { fetchProgramCategories, fetchPrograms } from "@/lib/programs";
 import type { ProgramListItem } from "@/lib/programs";
 import { listPageHead } from "@/lib/seo";
@@ -31,17 +30,6 @@ export const Route = createFileRoute("/programs")({
     }),
   component: ProgramsLayout,
 });
-
-function partitionPrograms(programs: ProgramListItem[]) {
-  const featured = programs.find((p) => p.isFeatured) ?? programs[0] ?? null;
-  const rest = featured ? programs.filter((p) => p.id !== featured.id) : programs;
-
-  const youth = rest.filter((p) => p.categorySlug === "youth");
-  const research = rest.filter((p) => p.categorySlug === "research");
-  const popular = rest.filter((p) => p.categorySlug !== "youth" && p.categorySlug !== "research");
-
-  return { featured, popular, youth, research };
-}
 
 function ProgramsLayout() {
   const matches = useMatches();
@@ -81,7 +69,6 @@ function ProgramsLayout() {
     [relevantPrograms, search, categoryId],
   );
 
-  const sections = useMemo(() => partitionPrograms(filtered), [filtered]);
   const showInitialSkeleton = isLoading && !programs?.length;
 
   const handleRefresh = useCallback(async () => {
@@ -142,11 +129,7 @@ function ProgramsLayout() {
                   <ProgramsEmptyState variant="no-results" onClearFilters={clearFilters} />
                 </>
               ) : (
-                <div className="space-y-10 md:space-y-12">
-                  {sections.featured && (
-                    <FeaturedProgramHero program={sections.featured} ctaMode="explore" />
-                  )}
-
+                <div className="space-y-6">
                   <ProgramFilters
                     categories={categories}
                     selectedCategoryId={categoryId}
@@ -155,23 +138,18 @@ function ProgramsLayout() {
                     onSearchChange={setSearch}
                   />
 
-                  <ProgramSectionRow
-                    title="Popular Programs"
-                    programs={sections.popular}
-                    sectionId="popular-programs"
-                    animationOffset={0}
-                  />
-                  <ProgramSectionRow
-                    title="Youth Development"
-                    programs={sections.youth}
-                    sectionId="youth-programs"
-                    animationOffset={3}
-                  />
-                  <ProgramSectionRow
-                    title="Research"
-                    programs={sections.research}
-                    sectionId="research-programs"
-                    animationOffset={6}
+                  <DirectoryResultList
+                    title="Programs"
+                    className="-mx-[var(--page-px)] sm:mx-0"
+                    results={filtered.map((program) => ({
+                      id: program.id,
+                      title: program.name,
+                      subtitle: program.tagline ?? program.short,
+                      detail: program.categoryName,
+                      imageUrl: program.coverImageUrl,
+                      to: "/programs/$slug" as const,
+                      params: { slug: program.slug },
+                    }))}
                   />
                 </div>
               )}

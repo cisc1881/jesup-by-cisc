@@ -13,12 +13,11 @@ type ProgramFiltersProps = {
 };
 
 const chipBase =
-  "shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95";
+  "shrink-0 border border-border px-4 py-2.5 text-sm font-semibold transition-colors";
 
-const chipInactive =
-  "glass-surface border-border/40 bg-background/70 text-foreground shadow-token-soft hover:bg-background/90";
+const chipInactive = "bg-background text-foreground hover:bg-muted";
 
-const chipActive = "grad-crimson border-transparent text-primary-foreground shadow-token-crimson";
+const chipActive = "institution-accent-bg border-transparent";
 
 export function ProgramFilters({
   categories,
@@ -36,7 +35,7 @@ export function ProgramFilters({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search programs…"
-          className="h-11 rounded-full border-border/50 bg-background/80 pl-11 shadow-token-soft backdrop-blur-sm"
+          className="h-14 rounded-none border-x-0 border-border bg-background pl-11 text-base shadow-none"
           aria-label="Search programs"
         />
       </div>
@@ -60,7 +59,10 @@ export function ProgramFilters({
               key={category.id}
               type="button"
               onClick={() => onCategoryChange(category.id)}
-              className={cn(chipBase, selectedCategoryId === category.id ? chipActive : chipInactive)}
+              className={cn(
+                chipBase,
+                selectedCategoryId === category.id ? chipActive : chipInactive,
+              )}
               aria-pressed={selectedCategoryId === category.id}
             >
               {category.name}
@@ -73,16 +75,21 @@ export function ProgramFilters({
 }
 
 export function filterPrograms<
-  T extends { name: string; tagline?: string | null; short?: string | null; categoryId?: string | null },
+  T extends {
+    name: string;
+    tagline?: string | null;
+    short?: string | null;
+    categoryId?: string | null;
+  },
 >(programs: T[], search: string, categoryId: string | null): T[] {
   const q = search.trim().toLowerCase();
   return programs.filter((program) => {
     const matchesCategory = !categoryId || program.categoryId === categoryId;
     const matchesSearch =
       !q ||
-      [program.name, program.tagline, program.short].filter(Boolean).some((value) =>
-        value!.toLowerCase().includes(q),
-      );
+      [program.name, program.tagline, program.short]
+        .filter(Boolean)
+        .some((value) => value!.toLowerCase().includes(q));
     return matchesCategory && matchesSearch;
   });
 }

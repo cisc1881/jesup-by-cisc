@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, ChevronRight, MapPin, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { PublicLayout, PageHeader } from "@/components/public-layout";
 import { PageContainer, EmptyState, LoadingState } from "@/components/design-system";
 import { Input } from "@/components/ui/input";
+import { DirectoryResultList } from "@/components/directory-result-list";
 import { fetchEvents } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
 import { listPageHead } from "@/lib/seo";
@@ -72,7 +73,7 @@ function WorkshopsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search workshop, topic, or location"
-            className="h-14 rounded-2xl pl-12 text-base"
+            className="h-14 rounded-none border-x-0 pl-12 text-base shadow-none"
           />
         </label>
 
@@ -84,44 +85,19 @@ function WorkshopsPage() {
             description="Try another institution scope or search term."
           />
         ) : (
-          <section
-            aria-labelledby="workshop-results"
-            className="overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[var(--shadow-soft)]"
-          >
-            <div className="border-b border-border/70 px-5 py-4">
-              <h2 id="workshop-results" className="font-bold text-foreground">
-                Upcoming workshops ({workshops.length})
-              </h2>
-            </div>
-            <div className="divide-y divide-border/70">
-              {workshops.map((workshop) => (
-                <Link
-                  key={workshop.id}
-                  to="/events/$id"
-                  params={{ id: workshop.id }}
-                  className="group flex items-center gap-4 p-4 transition hover:bg-muted/50 sm:p-5"
-                >
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl institution-accent-bg">
-                    <CalendarDays className="h-6 w-6" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-bold leading-tight text-foreground group-hover:text-primary">
-                      {workshop.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {fmtDateTime(workshop.startsAt)}
-                    </p>
-                    {workshop.location && (
-                      <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5" /> {workshop.location}
-                      </p>
-                    )}
-                  </div>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
-                </Link>
-              ))}
-            </div>
-          </section>
+          <DirectoryResultList
+            title="Upcoming workshops"
+            className="-mx-[var(--page-px)] sm:mx-0"
+            results={workshops.map((workshop) => ({
+              id: workshop.id,
+              title: workshop.title,
+              subtitle: fmtDateTime(workshop.startsAt),
+              detail: workshop.location,
+              imageUrl: workshop.coverImageUrl,
+              to: "/events/$id" as const,
+              params: { id: workshop.id },
+            }))}
+          />
         )}
       </PageContainer>
     </PublicLayout>

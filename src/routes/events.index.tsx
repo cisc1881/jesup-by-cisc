@@ -7,16 +7,15 @@ import {
   EventCalendarView,
   EventFilters,
   EventMapView,
-  EventSectionRow,
   EventsEmptyState,
   EventsPageSkeleton,
   EventsPullRefresh,
-  FeaturedCiscEvents,
-  FeaturedEventHero,
   type EventViewMode,
 } from "@/components/events";
+import { DirectoryResultList } from "@/components/directory-result-list";
 import { useSavedEvents } from "@/hooks/use-saved-events";
-import { fetchEventCategories, fetchEvents, filterEvents, partitionEvents } from "@/lib/events";
+import { fetchEventCategories, fetchEvents, filterEvents } from "@/lib/events";
+import { fmtDateTime } from "@/lib/format";
 import { listPageHead } from "@/lib/seo";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
 import {
@@ -41,7 +40,7 @@ function EventsPage() {
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<EventViewMode>("list");
   const [showSavedOnly, setShowSavedOnly] = useState(false);
-  const { savedIds, toggleSaved, savedCount } = useSavedEvents();
+  const { savedIds, savedCount } = useSavedEvents();
   const { institutionId, institutionName } = useInstitutionTheme();
   const [institutionScope, setInstitutionScope] = useState<InstitutionScope>(
     institutionId ? "mine" : "all",
@@ -75,7 +74,6 @@ function EventsPage() {
     [relevantEvents, search, categoryId, showSavedOnly, savedIds],
   );
 
-  const sections = useMemo(() => partitionEvents(filtered), [filtered]);
   const showInitialSkeleton = isLoading && !events?.length;
 
   const handleRefresh = useCallback(async () => {
@@ -117,8 +115,6 @@ function EventsPage() {
             hasInstitution={!!institutionId}
           />
 
-          <FeaturedCiscEvents />
-
           {showInitialSkeleton ? (
             <EventsPageSkeleton />
           ) : !relevantEvents.length ? (
@@ -145,11 +141,7 @@ function EventsPage() {
                   />
                 </>
               ) : (
-                <div className="space-y-10 md:space-y-12">
-                  {sections.featured && viewMode === "list" && !showSavedOnly && (
-                    <FeaturedEventHero event={sections.featured} />
-                  )}
-
+                <div className="space-y-6">
                   <EventFilters
                     categories={categories}
                     selectedCategoryId={categoryId}
@@ -167,51 +159,19 @@ function EventsPage() {
                   {viewMode === "map" && <EventMapView events={filtered} />}
 
                   {viewMode === "list" && (
-                    <>
-                      <EventSectionRow
-                        title="Upcoming Events"
-                        events={sections.upcoming}
-                        sectionId="upcoming-events"
-                        savedIds={savedIds}
-                        onToggleSaved={toggleSaved}
-                      />
-                      <EventSectionRow
-                        title="This Week"
-                        events={sections.thisWeek}
-                        sectionId="this-week-events"
-                        animationOffset={2}
-                        savedIds={savedIds}
-                        onToggleSaved={toggleSaved}
-                      />
-                      <EventSectionRow
-                        title="This Month"
-                        events={sections.thisMonth}
-                        sectionId="this-month-events"
-                        animationOffset={4}
-                        savedIds={savedIds}
-                        onToggleSaved={toggleSaved}
-                      />
-                      {sections.later.length > 0 && (
-                        <EventSectionRow
-                          title="Later"
-                          events={sections.later}
-                          sectionId="later-events"
-                          animationOffset={6}
-                          savedIds={savedIds}
-                          onToggleSaved={toggleSaved}
-                        />
-                      )}
-                      {sections.past.length > 0 && !showSavedOnly && (
-                        <EventSectionRow
-                          title="Past Events"
-                          events={sections.past.slice(0, 12)}
-                          sectionId="past-events"
-                          animationOffset={8}
-                          savedIds={savedIds}
-                          onToggleSaved={toggleSaved}
-                        />
-                      )}
-                    </>
+                    <DirectoryResultList
+                      title="Events"
+                      className="-mx-[var(--page-px)] sm:mx-0"
+                      results={filtered.map((event) => ({
+                        id: event.id,
+                        title: event.title,
+                        subtitle: fmtDateTime(event.startsAt),
+                        detail: event.location,
+                        imageUrl: event.coverImageUrl,
+                        to: "/events/$id" as const,
+                        params: { id: event.id },
+                      }))}
+                    />
                   )}
                 </div>
               )}

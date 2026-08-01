@@ -19,10 +19,7 @@ export function InstitutionScopeFilter({
   hasInstitution: boolean;
 }) {
   return (
-    <div
-      className="grid grid-cols-3 gap-1 rounded-2xl border border-border/70 bg-muted/50 p-1"
-      aria-label="Institution scope"
-    >
+    <div className="grid grid-cols-3 border border-border bg-muted" aria-label="Institution scope">
       {options.map((option) => {
         const Icon = option.icon;
         const disabled = option.value !== "all" && !hasInstitution;
@@ -33,10 +30,10 @@ export function InstitutionScopeFilter({
             disabled={disabled}
             onClick={() => onChange(option.value)}
             className={cn(
-              "flex min-h-12 items-center justify-center gap-1.5 rounded-xl px-2 text-center text-[11px] font-bold leading-tight transition sm:text-sm",
+              "flex min-h-12 items-center justify-center gap-1.5 border-r border-border px-2 text-center text-[11px] font-bold leading-tight transition last:border-r-0 sm:text-sm",
               value === option.value
-                ? "institution-accent-bg shadow-sm"
-                : "text-muted-foreground hover:bg-card hover:text-foreground",
+                ? "institution-accent-bg"
+                : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
               disabled && "cursor-not-allowed opacity-40",
             )}
           >

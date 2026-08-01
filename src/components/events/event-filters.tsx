@@ -20,9 +20,9 @@ type EventFiltersProps = {
 };
 
 const chipBase =
-  "shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95";
-const chipInactive = "glass-surface border-border/40 bg-background/70 text-foreground shadow-token-soft hover:bg-background/90";
-const chipActive = "grad-crimson border-transparent text-primary-foreground shadow-token-crimson";
+  "shrink-0 border border-border px-4 py-2.5 text-sm font-semibold transition-colors";
+const chipInactive = "bg-background text-foreground hover:bg-muted";
+const chipActive = "institution-accent-bg border-transparent";
 
 const viewModes: { id: EventViewMode; label: string; icon: typeof LayoutGrid }[] = [
   { id: "list", label: "List", icon: LayoutGrid },
@@ -51,7 +51,7 @@ export function EventFilters({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search events…"
-          className="h-11 rounded-full border-border/50 bg-background/80 pl-11 shadow-token-soft backdrop-blur-sm"
+          className="h-14 rounded-none border-x-0 border-border bg-background pl-11 text-base shadow-none"
           aria-label="Search events"
         />
       </div>
@@ -62,7 +62,11 @@ export function EventFilters({
             key={id}
             type="button"
             onClick={() => onViewModeChange(id)}
-            className={cn(chipBase, "inline-flex items-center gap-2", viewMode === id ? chipActive : chipInactive)}
+            className={cn(
+              chipBase,
+              "inline-flex items-center gap-2",
+              viewMode === id ? chipActive : chipInactive,
+            )}
             aria-pressed={viewMode === id}
           >
             <Icon className="h-4 w-4" />
@@ -80,7 +84,11 @@ export function EventFilters({
       </div>
 
       {categories.length > 0 && (
-        <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 scrollbar-none" role="group" aria-label="Filter by category">
+        <div
+          className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 scrollbar-none"
+          role="group"
+          aria-label="Filter by category"
+        >
           <button
             type="button"
             onClick={() => onCategoryChange(null)}
@@ -94,7 +102,10 @@ export function EventFilters({
               key={category.id}
               type="button"
               onClick={() => onCategoryChange(category.id)}
-              className={cn(chipBase, selectedCategoryId === category.id ? chipActive : chipInactive)}
+              className={cn(
+                chipBase,
+                selectedCategoryId === category.id ? chipActive : chipInactive,
+              )}
               aria-pressed={selectedCategoryId === category.id}
             >
               {category.name}
