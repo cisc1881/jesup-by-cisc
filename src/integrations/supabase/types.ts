@@ -243,6 +243,38 @@ export type Database = {
           },
         ]
       }
+      event_chat_messages: {
+        Row: {
+          author_id: string
+          created_at: string
+          event_id: string
+          id: string
+          message: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          event_id: string
+          id?: string
+          message: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          event_id?: string
+          id?: string
+          message?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_chat_messages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_checkins: {
         Row: {
           checked_in_at: string
@@ -736,12 +768,21 @@ export type Database = {
       }
       event_registrations: {
         Row: {
+          accessibility_accommodations: string | null
+          accommodation_consent: boolean
+          attendee_email: string | null
+          attendee_name: string | null
           checked_in_at: string | null
           confirmation_sent_at: string | null
           created_at: string
+          dietary_restrictions: string | null
           event_id: string
+          external_barcode: string | null
+          external_registration_id: string | null
+          food_allergies: string | null
           id: string
           notes: string | null
+          registration_source: string
           reminder_sent_at: string | null
           status: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code: string | null
@@ -749,12 +790,21 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accessibility_accommodations?: string | null
+          accommodation_consent?: boolean
+          attendee_email?: string | null
+          attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
+          dietary_restrictions?: string | null
           event_id: string
+          external_barcode?: string | null
+          external_registration_id?: string | null
+          food_allergies?: string | null
           id?: string
           notes?: string | null
+          registration_source?: string
           reminder_sent_at?: string | null
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
@@ -762,12 +812,21 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accessibility_accommodations?: string | null
+          accommodation_consent?: boolean
+          attendee_email?: string | null
+          attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
+          dietary_restrictions?: string | null
           event_id?: string
+          external_barcode?: string | null
+          external_registration_id?: string | null
+          food_allergies?: string | null
           id?: string
           notes?: string | null
+          registration_source?: string
           reminder_sent_at?: string | null
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
@@ -1140,6 +1199,38 @@ export type Database = {
             columns: ["market_id"]
             isOneToOne: false
             referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      funder_grants: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          funder_user_id: string
+          grant_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          funder_user_id: string
+          grant_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          funder_user_id?: string
+          grant_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funder_grants_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "grants"
             referencedColumns: ["id"]
           },
         ]
@@ -3234,6 +3325,7 @@ export type Database = {
           value_label: string
         }[]
       }
+      get_my_funder_dashboard: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3245,8 +3337,41 @@ export type Database = {
         Args: { p_token: string }
         Returns: string
       }
+      list_event_chat: {
+        Args: { p_event_id: string }
+        Returns: {
+          author_name: string
+          created_at: string
+          id: string
+          message: string
+        }[]
+      }
       mark_my_attendance_evaluation_complete: {
         Args: { p_attendance_id: string }
+        Returns: undefined
+      }
+      post_event_chat: {
+        Args: { p_event_id: string; p_message: string }
+        Returns: string
+      }
+      register_for_event: {
+        Args: { p_event_id: string; p_invite_code?: string; p_notes?: string }
+        Returns: {
+          checked_in_at: string
+          id: string
+          notes: string
+          status: string
+          ticket_code: string
+        }[]
+      }
+      save_registration_accommodations: {
+        Args: {
+          p_accessibility_accommodations?: string
+          p_consent?: boolean
+          p_dietary_restrictions?: string
+          p_food_allergies?: string
+          p_registration_id: string
+        }
         Returns: undefined
       }
       set_event_gallery_cover: {
@@ -3272,6 +3397,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      set_funder_grant_access: {
+        Args: {
+          p_funder_user_id: string
+          p_grant_id: string
+          p_granted: boolean
+        }
+        Returns: undefined
       }
       submit_anonymous_evaluation_answers: {
         Args: { p_access_token: string; p_answers: Json; p_response_id: string }
