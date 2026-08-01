@@ -88,7 +88,7 @@ function AuthPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin, data: { full_name: fullName } },
+      options: { emailRedirectTo: returnTo, data: { full_name: fullName } },
     });
     setBusy(false);
     if (error) return toast.error(error.message);
@@ -126,14 +126,14 @@ function AuthPage() {
 
   async function google() {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: returnTo,
     });
     if (result.error) toast.error(result.error.message || "Google sign-in failed");
   }
 
   async function apple() {
     const result = await lovable.auth.signInWithOAuth("apple", {
-      redirect_uri: window.location.origin,
+      redirect_uri: returnTo,
     });
     if (result.error) toast.error(result.error.message || "Apple sign-in failed");
   }
