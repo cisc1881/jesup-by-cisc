@@ -3351,7 +3351,7 @@ export type Database = {
         | "graduate"
         | "recent_graduate"
         | "other"
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "funder"
       application_status:
         | "pending"
         | "reviewed"
@@ -3601,7 +3601,7 @@ export const Constants = {
         "recent_graduate",
         "other",
       ],
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "funder"],
       application_status: [
         "pending",
         "reviewed",
