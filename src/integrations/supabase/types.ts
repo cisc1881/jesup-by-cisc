@@ -14,6 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_tag_links: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_tag_links_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "content_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_tags: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      county_emergency_contacts: {
+        Row: {
+          agency_name: string
+          alert_signup_url: string | null
+          alternate_phone: string | null
+          archived_at: string | null
+          county_name: string
+          created_at: string
+          emergency_kit_guidance: string | null
+          household_storm_protocol: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          primary_phone: string | null
+          shelter_info_url: string | null
+          source_name: string | null
+          source_url: string | null
+          state_code: string
+          state_name: string
+          updated_at: string
+          verification_status: string
+          verified_date: string | null
+          weather_radio_guidance: string | null
+          website_url: string | null
+        }
+        Insert: {
+          agency_name: string
+          alert_signup_url?: string | null
+          alternate_phone?: string | null
+          archived_at?: string | null
+          county_name: string
+          created_at?: string
+          emergency_kit_guidance?: string | null
+          household_storm_protocol?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          primary_phone?: string | null
+          shelter_info_url?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          state_code: string
+          state_name: string
+          updated_at?: string
+          verification_status?: string
+          verified_date?: string | null
+          weather_radio_guidance?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          agency_name?: string
+          alert_signup_url?: string | null
+          alternate_phone?: string | null
+          archived_at?: string | null
+          county_name?: string
+          created_at?: string
+          emergency_kit_guidance?: string | null
+          household_storm_protocol?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          primary_phone?: string | null
+          shelter_info_url?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          state_code?: string
+          state_name?: string
+          updated_at?: string
+          verification_status?: string
+          verified_date?: string | null
+          weather_radio_guidance?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      email_deliveries: {
+        Row: {
+          attempts: number
+          body: string
+          created_at: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          recipient: string
+          sent_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          body: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          recipient: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          body?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          recipient?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipment: {
         Row: {
           category: string | null
@@ -239,6 +409,38 @@ export type Database = {
             columns: ["registration_id"]
             isOneToOne: true
             referencedRelation: "event_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_chat_messages: {
+        Row: {
+          author_id: string
+          created_at: string
+          event_id: string
+          id: string
+          message: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          event_id: string
+          id?: string
+          message: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          event_id?: string
+          id?: string
+          message?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_chat_messages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
@@ -665,6 +867,89 @@ export type Database = {
           },
         ]
       }
+      event_meal_days: {
+        Row: {
+          allowance_per_attendee: number
+          created_at: string
+          event_id: string
+          id: string
+          is_active: boolean
+          label: string
+          service_date: string
+          updated_at: string
+        }
+        Insert: {
+          allowance_per_attendee?: number
+          created_at?: string
+          event_id: string
+          id?: string
+          is_active?: boolean
+          label: string
+          service_date: string
+          updated_at?: string
+        }
+        Update: {
+          allowance_per_attendee?: number
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          service_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_meal_days_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_meal_redemptions: {
+        Row: {
+          id: string
+          meal_day_id: string
+          redeemed_at: string
+          redeemed_by: string | null
+          redemption_number: number
+          registration_id: string
+        }
+        Insert: {
+          id?: string
+          meal_day_id: string
+          redeemed_at?: string
+          redeemed_by?: string | null
+          redemption_number: number
+          registration_id: string
+        }
+        Update: {
+          id?: string
+          meal_day_id?: string
+          redeemed_at?: string
+          redeemed_by?: string | null
+          redemption_number?: number
+          registration_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_meal_redemptions_meal_day_id_fkey"
+            columns: ["meal_day_id"]
+            isOneToOne: false
+            referencedRelation: "event_meal_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_meal_redemptions_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_partners: {
         Row: {
           event_id: string
@@ -736,12 +1021,21 @@ export type Database = {
       }
       event_registrations: {
         Row: {
+          accessibility_accommodations: string | null
+          accommodation_consent: boolean
+          attendee_email: string | null
+          attendee_name: string | null
           checked_in_at: string | null
           confirmation_sent_at: string | null
           created_at: string
+          dietary_restrictions: string | null
           event_id: string
+          external_barcode: string | null
+          external_registration_id: string | null
+          food_allergies: string | null
           id: string
           notes: string | null
+          registration_source: string
           reminder_sent_at: string | null
           status: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code: string | null
@@ -749,12 +1043,21 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accessibility_accommodations?: string | null
+          accommodation_consent?: boolean
+          attendee_email?: string | null
+          attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
+          dietary_restrictions?: string | null
           event_id: string
+          external_barcode?: string | null
+          external_registration_id?: string | null
+          food_allergies?: string | null
           id?: string
           notes?: string | null
+          registration_source?: string
           reminder_sent_at?: string | null
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
@@ -762,12 +1065,21 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accessibility_accommodations?: string | null
+          accommodation_consent?: boolean
+          attendee_email?: string | null
+          attendee_name?: string | null
           checked_in_at?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
+          dietary_restrictions?: string | null
           event_id?: string
+          external_barcode?: string | null
+          external_registration_id?: string | null
+          food_allergies?: string | null
           id?: string
           notes?: string | null
+          registration_source?: string
           reminder_sent_at?: string | null
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
@@ -1144,6 +1456,38 @@ export type Database = {
           },
         ]
       }
+      funder_grants: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          funder_user_id: string
+          grant_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          funder_user_id: string
+          grant_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          funder_user_id?: string
+          grant_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funder_grants_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grants: {
         Row: {
           amount: string | null
@@ -1177,6 +1521,42 @@ export type Database = {
           title?: string
           updated_at?: string
           url?: string | null
+        }
+        Relationships: []
+      }
+      home_sections: {
+        Row: {
+          created_at: string
+          id: string
+          is_published: boolean
+          section_id: string
+          settings: Json
+          sort_order: number
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          section_id: string
+          settings?: Json
+          sort_order?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          section_id?: string
+          settings?: Json
+          sort_order?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1923,6 +2303,308 @@ export type Database = {
         }
         Relationships: []
       }
+      media_assets: {
+        Row: {
+          alt_text: string | null
+          asset_type: string
+          bucket: string | null
+          caption: string | null
+          created_at: string
+          file_size: number | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          mime_type: string | null
+          module_context: string | null
+          name: string
+          storage_path: string | null
+          tags: string[]
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          alt_text?: string | null
+          asset_type: string
+          bucket?: string | null
+          caption?: string | null
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          mime_type?: string | null
+          module_context?: string | null
+          name: string
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          alt_text?: string | null
+          asset_type?: string
+          bucket?: string | null
+          caption?: string | null
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          mime_type?: string | null
+          module_context?: string | null
+          name?: string
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      news_articles: {
+        Row: {
+          author: string | null
+          category: string | null
+          content_html: string | null
+          cover_image_url: string | null
+          created_at: string
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          published_at: string | null
+          reading_time_minutes: number | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sort_order: number
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content_html?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sort_order?: number
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content_html?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sort_order?: number
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      news_events: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          news_article_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          news_article_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          news_article_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_events_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_partners: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          partner_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          partner_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          partner_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_partners_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_partners_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_programs: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          program_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          program_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          program_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_programs_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_programs_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_publications: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          publication_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          publication_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          publication_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_publications_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_publications_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "publications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_tags: {
+        Row: {
+          created_at: string
+          id: string
+          news_article_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_article_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_article_id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_tags_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_reads: {
         Row: {
           id: string
@@ -2092,45 +2774,162 @@ export type Database = {
           },
         ]
       }
+      partner_podcast_episodes: {
+        Row: {
+          created_at: string
+          id: string
+          partner_id: string
+          podcast_episode_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          partner_id: string
+          podcast_episode_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          partner_id?: string
+          podcast_episode_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_podcast_episodes_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_podcast_episodes_podcast_episode_id_fkey"
+            columns: ["podcast_episode_id"]
+            isOneToOne: false
+            referencedRelation: "podcast_episodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_publications: {
+        Row: {
+          created_at: string
+          id: string
+          partner_id: string
+          publication_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          partner_id: string
+          publication_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          partner_id?: string
+          publication_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_publications_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_publications_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "publications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partners: {
         Row: {
+          address: string | null
           category: string | null
           created_at: string
           description: string | null
           id: string
+          is_featured: boolean
           is_published: boolean
           logo_url: string | null
+          mission: string | null
           name: string
+          notes: string | null
+          partnership_areas: string[]
+          short_description: string | null
           slug: string
+          social_links: Json
           sort_order: number
           updated_at: string
           website_url: string | null
         }
         Insert: {
+          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
+          mission?: string | null
           name: string
+          notes?: string | null
+          partnership_areas?: string[]
+          short_description?: string | null
           slug: string
+          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
         }
         Update: {
+          address?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           logo_url?: string | null
+          mission?: string | null
           name?: string
+          notes?: string | null
+          partnership_areas?: string[]
+          short_description?: string | null
           slug?: string
+          social_links?: Json
           sort_order?: number
           updated_at?: string
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
@@ -2185,6 +2984,45 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      processed_weather_alerts: {
+        Row: {
+          created_at: string
+          delivery_status: string
+          event_name: string
+          expires_at: string
+          failure_reason: string | null
+          id: string
+          nws_alert_id: string
+          sent_at: string | null
+          severity: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_status: string
+          event_name: string
+          expires_at: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id: string
+          sent_at?: string | null
+          severity: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_status?: string
+          event_name?: string
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id?: string
+          sent_at?: string | null
+          severity?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2753,6 +3591,54 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          device_label: string | null
+          endpoint: string
+          failure_count: number
+          id: string
+          is_active: boolean
+          last_success_at: string | null
+          p256dh: string
+          revoked_at: string | null
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          device_label?: string | null
+          endpoint: string
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_success_at?: string | null
+          p256dh: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          device_label?: string | null
+          endpoint?: string
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_success_at?: string | null
+          p256dh?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       surveys: {
         Row: {
           created_at: string
@@ -3057,6 +3943,165 @@ export type Database = {
         }
         Relationships: []
       }
+      weather_alert_delayed_deliveries: {
+        Row: {
+          created_at: string
+          event_name: string
+          expires_at: string
+          failure_reason: string | null
+          id: string
+          nws_alert_id: string
+          scheduled_for: string
+          severity: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          expires_at: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id: string
+          scheduled_for: string
+          severity: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          expires_at?: string
+          failure_reason?: string | null
+          id?: string
+          nws_alert_id?: string
+          scheduled_for?: string
+          severity?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weather_alert_poll_runs: {
+        Row: {
+          alerts_fetched: number
+          deliveries_delayed: number
+          deliveries_failed: number
+          deliveries_sent: number
+          deliveries_suppressed: number
+          error_message: string | null
+          finished_at: string | null
+          groups_polled: number
+          id: string
+          started_at: string
+          status: string
+          trigger_source: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          alerts_fetched?: number
+          deliveries_delayed?: number
+          deliveries_failed?: number
+          deliveries_sent?: number
+          deliveries_suppressed?: number
+          error_message?: string | null
+          finished_at?: string | null
+          groups_polled?: number
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          alerts_fetched?: number
+          deliveries_delayed?: number
+          deliveries_failed?: number
+          deliveries_sent?: number
+          deliveries_suppressed?: number
+          error_message?: string | null
+          finished_at?: string | null
+          groups_polled?: number
+          id?: string
+          started_at?: string
+          status?: string
+          trigger_source?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
+      weather_notification_preferences: {
+        Row: {
+          alerts_enabled: boolean
+          county_name: string | null
+          created_at: string
+          daily_forecast_enabled: boolean
+          emergencies_enabled: boolean
+          enabled: boolean
+          id: string
+          last_alert_checked_at: string | null
+          latitude_bucket: number | null
+          location_source: string | null
+          longitude_bucket: number | null
+          quiet_hours_enabled: boolean
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          state_code: string | null
+          timezone: string
+          updated_at: string
+          user_id: string
+          warnings_enabled: boolean
+          watches_enabled: boolean
+        }
+        Insert: {
+          alerts_enabled?: boolean
+          county_name?: string | null
+          created_at?: string
+          daily_forecast_enabled?: boolean
+          emergencies_enabled?: boolean
+          enabled?: boolean
+          id?: string
+          last_alert_checked_at?: string | null
+          latitude_bucket?: number | null
+          location_source?: string | null
+          longitude_bucket?: number | null
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          state_code?: string | null
+          timezone?: string
+          updated_at?: string
+          user_id: string
+          warnings_enabled?: boolean
+          watches_enabled?: boolean
+        }
+        Update: {
+          alerts_enabled?: boolean
+          county_name?: string | null
+          created_at?: string
+          daily_forecast_enabled?: boolean
+          emergencies_enabled?: boolean
+          enabled?: boolean
+          id?: string
+          last_alert_checked_at?: string | null
+          latitude_bucket?: number | null
+          location_source?: string | null
+          longitude_bucket?: number | null
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          state_code?: string | null
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+          warnings_enabled?: boolean
+          watches_enabled?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       program_podcasts: {
@@ -3234,6 +4279,7 @@ export type Database = {
           value_label: string
         }[]
       }
+      get_my_funder_dashboard: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3245,8 +4291,52 @@ export type Database = {
         Args: { p_token: string }
         Returns: string
       }
+      list_event_chat: {
+        Args: { p_event_id: string }
+        Returns: {
+          author_name: string
+          created_at: string
+          id: string
+          message: string
+        }[]
+      }
       mark_my_attendance_evaluation_complete: {
         Args: { p_attendance_id: string }
+        Returns: undefined
+      }
+      post_event_chat: {
+        Args: { p_event_id: string; p_message: string }
+        Returns: string
+      }
+      redeem_event_meal_ticket: {
+        Args: { p_meal_day_id: string; p_ticket_code: string }
+        Returns: {
+          allowance: number
+          attendee_name: string
+          event_title: string
+          meal_label: string
+          remaining: number
+          used_count: number
+        }[]
+      }
+      register_for_event: {
+        Args: { p_event_id: string; p_invite_code?: string; p_notes?: string }
+        Returns: {
+          checked_in_at: string
+          id: string
+          notes: string
+          status: string
+          ticket_code: string
+        }[]
+      }
+      save_registration_accommodations: {
+        Args: {
+          p_accessibility_accommodations?: string
+          p_consent?: boolean
+          p_dietary_restrictions?: string
+          p_food_allergies?: string
+          p_registration_id: string
+        }
         Returns: undefined
       }
       set_event_gallery_cover: {
@@ -3272,6 +4362,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      set_funder_grant_access: {
+        Args: {
+          p_funder_user_id: string
+          p_grant_id: string
+          p_granted: boolean
+        }
+        Returns: undefined
       }
       submit_anonymous_evaluation_answers: {
         Args: { p_access_token: string; p_answers: Json; p_response_id: string }
@@ -3351,7 +4449,7 @@ export type Database = {
         | "graduate"
         | "recent_graduate"
         | "other"
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "funder"
       application_status:
         | "pending"
         | "reviewed"
@@ -3601,7 +4699,7 @@ export const Constants = {
         "recent_graduate",
         "other",
       ],
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "funder"],
       application_status: [
         "pending",
         "reviewed",

@@ -89,7 +89,7 @@ export function NativeEvaluationForm({
   function setAnswer(questionId: string, patch: Partial<EvaluationAnswerInput>) {
     setAnswers((prev) => ({
       ...prev,
-      [questionId]: { questionId, ...prev[questionId], ...patch },
+      [questionId]: { ...prev[questionId], ...patch, questionId },
     }));
   }
 

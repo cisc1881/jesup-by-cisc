@@ -6,6 +6,7 @@ export type {
   HomeMarket,
   HomeNewsArticle,
   HomePageData,
+  HomePartner,
   HomePodcastEpisode,
   HomeProgram,
   HomePublication,

@@ -70,6 +70,7 @@ export type HomeNewsArticle = {
   category: string | null;
   coverImageUrl: string | null;
   publishedAt: string | null;
+  isPublished: boolean;
   isFeatured: boolean;
   readingTimeMinutes: number | null;
   tags: string[];
