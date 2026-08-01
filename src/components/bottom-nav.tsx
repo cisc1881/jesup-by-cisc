@@ -13,7 +13,7 @@ const items = [
   { to: "/join", label: "Connect", icon: Users, match: (p: string) => p.startsWith("/join") },
   {
     to: "/resources",
-    label: "Explore",
+    label: "More",
     icon: Compass,
     match: (p: string) => isResourceRoute(p) || p.startsWith("/programs"),
   },

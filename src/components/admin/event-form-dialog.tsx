@@ -20,12 +20,19 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { listInstitutions } from "@/lib/institutions";
 
 type EventFormDialogProps = {
   open: boolean;
@@ -43,6 +50,12 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
   const { data: categories = [], refetch: refetchCategories } = useQuery({
     queryKey: ["event-categories"],
     queryFn: fetchEventCategories,
+  });
+
+  const { data: institutions = [] } = useQuery({
+    queryKey: ["institutions", "event-audience"],
+    queryFn: () =>
+      listInstitutions({ activeOnly: true, includeOther: false, landGrant1890Only: true }),
   });
 
   const { data: attachmentOptions } = useQuery({
@@ -153,81 +166,210 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                 </div>
                 <div>
                   <Label>Slug</Label>
-                  <Input value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} />
+                  <Input
+                    value={form.slug}
+                    onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label>Category</Label>
-                  <Select value={form.categoryId || "none"} onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v === "none" ? "" : v }))}>
-                    <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                  <Select
+                    value={form.categoryId || "none"}
+                    onValueChange={(v) =>
+                      setForm((f) => ({ ...f, categoryId: v === "none" ? "" : v }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">None</SelectItem>
                       {categories.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="sm:col-span-2 flex gap-2">
-                  <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="New category" />
-                  <Button type="button" variant="outline" onClick={addCategory}>Add</Button>
+                  <Input
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    placeholder="New category"
+                  />
+                  <Button type="button" variant="outline" onClick={addCategory}>
+                    Add
+                  </Button>
                 </div>
                 <div>
                   <Label>Starts *</Label>
-                  <Input type="datetime-local" required value={form.startsAt} onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))} />
+                  <Input
+                    type="datetime-local"
+                    required
+                    value={form.startsAt}
+                    onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label>Ends</Label>
-                  <Input type="datetime-local" value={form.endsAt} onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))} />
+                  <Input
+                    type="datetime-local"
+                    value={form.endsAt}
+                    onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label>Location</Label>
-                  <Input value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} />
+                  <Input
+                    value={form.location}
+                    onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label>Address</Label>
-                  <Input value={form.locationAddress} onChange={(e) => setForm((f) => ({ ...f, locationAddress: e.target.value }))} />
+                  <Input
+                    value={form.locationAddress}
+                    onChange={(e) => setForm((f) => ({ ...f, locationAddress: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label>Latitude</Label>
-                  <Input value={form.lat} onChange={(e) => setForm((f) => ({ ...f, lat: e.target.value }))} />
+                  <Input
+                    value={form.lat}
+                    onChange={(e) => setForm((f) => ({ ...f, lat: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label>Longitude</Label>
-                  <Input value={form.lng} onChange={(e) => setForm((f) => ({ ...f, lng: e.target.value }))} />
+                  <Input
+                    value={form.lng}
+                    onChange={(e) => setForm((f) => ({ ...f, lng: e.target.value }))}
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <Label>Description</Label>
-                  <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={4} />
+                  <Textarea
+                    value={form.description}
+                    onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                    rows={4}
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <Label>Rich description (HTML)</Label>
-                  <Textarea value={form.descriptionHtml} onChange={(e) => setForm((f) => ({ ...f, descriptionHtml: e.target.value }))} rows={5} />
+                  <Textarea
+                    value={form.descriptionHtml}
+                    onChange={(e) => setForm((f) => ({ ...f, descriptionHtml: e.target.value }))}
+                    rows={5}
+                  />
                 </div>
                 <div>
                   <Label>Status</Label>
-                  <Select value={form.status} onValueChange={(v) => setForm((f) => ({ ...f, status: v as EventFormData["status"] }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select
+                    value={form.status}
+                    onValueChange={(v) =>
+                      setForm((f) => ({ ...f, status: v as EventFormData["status"] }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       {(["draft", "published", "archived"] as const).map((status) => (
-                        <SelectItem key={status} value={status}>{eventStatusLabel(status)}</SelectItem>
+                        <SelectItem key={status} value={status}>
+                          {eventStatusLabel(status)}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Official information URL</Label>
-                  <Input value={form.externalUrl} onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))} placeholder="Background information only; registration stays inside JESUP" />
+                  <Input
+                    value={form.externalUrl}
+                    onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))}
+                    placeholder="Background information only; registration stays inside JESUP"
+                  />
                 </div>
-                <div className="flex items-center gap-2"><Switch checked={form.isActive} onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))} /><Label>Active</Label></div>
-                <div className="flex items-center gap-2"><Switch checked={form.isFeatured} onCheckedChange={(v) => setForm((f) => ({ ...f, isFeatured: v }))} /><Label>Featured</Label></div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={form.isActive}
+                    onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))}
+                  />
+                  <Label>Active</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={form.isFeatured}
+                    onCheckedChange={(v) => setForm((f) => ({ ...f, isFeatured: v }))}
+                  />
+                  <Label>Featured</Label>
+                </div>
+              </div>
+              <div className="rounded-xl border border-border/70 bg-secondary/25 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <Label className="text-sm font-bold">Shared 1890 network event</Label>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      Shared events appear for every institution. Turn this off to target selected
+                      schools only.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={form.metadata.network_wide !== false}
+                    onCheckedChange={(checked) =>
+                      setForm((current) => ({
+                        ...current,
+                        metadata: { ...current.metadata, network_wide: checked },
+                      }))
+                    }
+                    aria-label="Shared across the 1890 network"
+                  />
+                </div>
+                {form.metadata.network_wide === false ? (
+                  <div className="mt-4 border-t border-border/60 pt-4">
+                    <AttachmentPicker
+                      label="Visible to these institutions"
+                      options={institutions.map((institution) => ({
+                        id: institution.id,
+                        label: institution.name,
+                        hint: institution.state,
+                      }))}
+                      selectedIds={
+                        Array.isArray(form.metadata.institution_ids)
+                          ? form.metadata.institution_ids.filter(
+                              (value): value is string => typeof value === "string",
+                            )
+                          : []
+                      }
+                      onChange={(institutionIds) =>
+                        setForm((current) => ({
+                          ...current,
+                          metadata: {
+                            ...current.metadata,
+                            network_wide: false,
+                            institution_ids: institutionIds,
+                          },
+                        }))
+                      }
+                    />
+                  </div>
+                ) : null}
               </div>
               <div>
                 <Label>Cover image</Label>
                 <p className="mt-1 text-xs text-muted-foreground">Recommended: 2000 × 1250 px.</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
-                  <Input value={form.coverImageUrl} onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))} />
+                  <Input
+                    value={form.coverImageUrl}
+                    onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}
+                  />
                   <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm">
-                    {uploadingCover ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    {uploadingCover ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
                     Upload
                     <input
                       id="event-cover-upload"
@@ -235,9 +377,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) =>
-                        e.target.files?.[0] && handleCoverUpload(e.target.files[0])
-                      }
+                      onChange={(e) => e.target.files?.[0] && handleCoverUpload(e.target.files[0])}
                     />
                   </label>
                 </div>
@@ -247,19 +387,106 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
             <TabsContent value="agenda" className="space-y-4 pt-4">
               {form.sessions.map((session, index) => (
                 <div key={index} className="rounded-lg border p-4 space-y-3">
-                  <div className="flex justify-between"><Label>Session {index + 1}</Label>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => setForm((f) => ({ ...f, sessions: f.sessions.filter((_, i) => i !== index) }))}><Trash2 className="h-4 w-4" /></Button>
+                  <div className="flex justify-between">
+                    <Label>Session {index + 1}</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          sessions: f.sessions.filter((_, i) => i !== index),
+                        }))
+                      }
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Input value={session.title} placeholder="Title" onChange={(e) => setForm((f) => ({ ...f, sessions: f.sessions.map((s, i) => i === index ? { ...s, title: e.target.value } : s) }))} />
-                  <Textarea value={session.description ?? ""} placeholder="Description" onChange={(e) => setForm((f) => ({ ...f, sessions: f.sessions.map((s, i) => i === index ? { ...s, description: e.target.value } : s) }))} />
+                  <Input
+                    value={session.title}
+                    placeholder="Title"
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        sessions: f.sessions.map((s, i) =>
+                          i === index ? { ...s, title: e.target.value } : s,
+                        ),
+                      }))
+                    }
+                  />
+                  <Textarea
+                    value={session.description ?? ""}
+                    placeholder="Description"
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        sessions: f.sessions.map((s, i) =>
+                          i === index ? { ...s, description: e.target.value } : s,
+                        ),
+                      }))
+                    }
+                  />
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <Input type="datetime-local" value={session.startsAt ?? ""} onChange={(e) => setForm((f) => ({ ...f, sessions: f.sessions.map((s, i) => i === index ? { ...s, startsAt: e.target.value } : s) }))} />
-                    <Input type="datetime-local" value={session.endsAt ?? ""} onChange={(e) => setForm((f) => ({ ...f, sessions: f.sessions.map((s, i) => i === index ? { ...s, endsAt: e.target.value } : s) }))} />
+                    <Input
+                      type="datetime-local"
+                      value={session.startsAt ?? ""}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          sessions: f.sessions.map((s, i) =>
+                            i === index ? { ...s, startsAt: e.target.value } : s,
+                          ),
+                        }))
+                      }
+                    />
+                    <Input
+                      type="datetime-local"
+                      value={session.endsAt ?? ""}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          sessions: f.sessions.map((s, i) =>
+                            i === index ? { ...s, endsAt: e.target.value } : s,
+                          ),
+                        }))
+                      }
+                    />
                   </div>
-                  <Input value={session.location ?? ""} placeholder="Location" onChange={(e) => setForm((f) => ({ ...f, sessions: f.sessions.map((s, i) => i === index ? { ...s, location: e.target.value } : s) }))} />
+                  <Input
+                    value={session.location ?? ""}
+                    placeholder="Location"
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        sessions: f.sessions.map((s, i) =>
+                          i === index ? { ...s, location: e.target.value } : s,
+                        ),
+                      }))
+                    }
+                  />
                 </div>
               ))}
-              <Button type="button" variant="outline" onClick={() => setForm((f) => ({ ...f, sessions: [...f.sessions, { title: "", description: "", startsAt: "", endsAt: "", location: "", sortOrder: f.sessions.length }] }))}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setForm((f) => ({
+                    ...f,
+                    sessions: [
+                      ...f.sessions,
+                      {
+                        title: "",
+                        description: "",
+                        startsAt: "",
+                        endsAt: "",
+                        location: "",
+                        sortOrder: f.sessions.length,
+                      },
+                    ],
+                  }))
+                }
+              >
                 <Plus className="h-4 w-4" /> Add session
               </Button>
             </TabsContent>
@@ -267,16 +494,85 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
             <TabsContent value="speakers" className="space-y-4 pt-4">
               {form.speakers.map((speaker, index) => (
                 <div key={index} className="rounded-lg border p-4 space-y-3">
-                  <div className="flex justify-between"><Label>Speaker {index + 1}</Label>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => setForm((f) => ({ ...f, speakers: f.speakers.filter((_, i) => i !== index) }))}><Trash2 className="h-4 w-4" /></Button>
+                  <div className="flex justify-between">
+                    <Label>Speaker {index + 1}</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          speakers: f.speakers.filter((_, i) => i !== index),
+                        }))
+                      }
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Input value={speaker.name} placeholder="Name" onChange={(e) => setForm((f) => ({ ...f, speakers: f.speakers.map((s, i) => i === index ? { ...s, name: e.target.value } : s) }))} />
-                  <Input value={speaker.title ?? ""} placeholder="Title" onChange={(e) => setForm((f) => ({ ...f, speakers: f.speakers.map((s, i) => i === index ? { ...s, title: e.target.value } : s) }))} />
-                  <Textarea value={speaker.bio ?? ""} placeholder="Bio" onChange={(e) => setForm((f) => ({ ...f, speakers: f.speakers.map((s, i) => i === index ? { ...s, bio: e.target.value } : s) }))} />
-                  <Input value={speaker.photoUrl ?? ""} placeholder="Photo URL" onChange={(e) => setForm((f) => ({ ...f, speakers: f.speakers.map((s, i) => i === index ? { ...s, photoUrl: e.target.value } : s) }))} />
+                  <Input
+                    value={speaker.name}
+                    placeholder="Name"
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        speakers: f.speakers.map((s, i) =>
+                          i === index ? { ...s, name: e.target.value } : s,
+                        ),
+                      }))
+                    }
+                  />
+                  <Input
+                    value={speaker.title ?? ""}
+                    placeholder="Title"
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        speakers: f.speakers.map((s, i) =>
+                          i === index ? { ...s, title: e.target.value } : s,
+                        ),
+                      }))
+                    }
+                  />
+                  <Textarea
+                    value={speaker.bio ?? ""}
+                    placeholder="Bio"
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        speakers: f.speakers.map((s, i) =>
+                          i === index ? { ...s, bio: e.target.value } : s,
+                        ),
+                      }))
+                    }
+                  />
+                  <Input
+                    value={speaker.photoUrl ?? ""}
+                    placeholder="Photo URL"
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        speakers: f.speakers.map((s, i) =>
+                          i === index ? { ...s, photoUrl: e.target.value } : s,
+                        ),
+                      }))
+                    }
+                  />
                 </div>
               ))}
-              <Button type="button" variant="outline" onClick={() => setForm((f) => ({ ...f, speakers: [...f.speakers, { name: "", title: "", bio: "", photoUrl: "", sortOrder: f.speakers.length }] }))}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setForm((f) => ({
+                    ...f,
+                    speakers: [
+                      ...f.speakers,
+                      { name: "", title: "", bio: "", photoUrl: "", sortOrder: f.speakers.length },
+                    ],
+                  }))
+                }
+              >
                 <Plus className="h-4 w-4" /> Add speaker
               </Button>
             </TabsContent>
@@ -285,7 +581,8 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
               {eventId ? (
                 <div className="rounded-lg border p-4 space-y-3">
                   <p className="text-sm text-muted-foreground">
-                    Manage gallery images, cover selection, metadata, and participant submissions on the dedicated gallery page.
+                    Manage gallery images, cover selection, metadata, and participant submissions on
+                    the dedicated gallery page.
                   </p>
                   <Button type="button" variant="outline" asChild>
                     <Link to="/admin/events/$eventId/gallery" params={{ eventId }}>
@@ -301,11 +598,36 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
             </TabsContent>
 
             <TabsContent value="relations" className="space-y-4 pt-4">
-              <AttachmentPicker label="Programs" options={attachmentOptions?.programs ?? []} selectedIds={form.programIds} onChange={(ids) => setForm((f) => ({ ...f, programIds: ids }))} />
-              <AttachmentPicker label="Publications" options={attachmentOptions?.publications ?? []} selectedIds={form.publicationIds} onChange={(ids) => setForm((f) => ({ ...f, publicationIds: ids }))} />
-              <AttachmentPicker label="Podcast episodes" options={attachmentOptions?.podcasts ?? []} selectedIds={form.podcastIds} onChange={(ids) => setForm((f) => ({ ...f, podcastIds: ids }))} />
-              <AttachmentPicker label="Partners / sponsors" options={attachmentOptions?.partners ?? []} selectedIds={form.partnerIds} onChange={(ids) => setForm((f) => ({ ...f, partnerIds: ids }))} />
-              <AttachmentPicker label="Grants" options={attachmentOptions?.grants ?? []} selectedIds={form.grantIds} onChange={(ids) => setForm((f) => ({ ...f, grantIds: ids }))} />
+              <AttachmentPicker
+                label="Programs"
+                options={attachmentOptions?.programs ?? []}
+                selectedIds={form.programIds}
+                onChange={(ids) => setForm((f) => ({ ...f, programIds: ids }))}
+              />
+              <AttachmentPicker
+                label="Publications"
+                options={attachmentOptions?.publications ?? []}
+                selectedIds={form.publicationIds}
+                onChange={(ids) => setForm((f) => ({ ...f, publicationIds: ids }))}
+              />
+              <AttachmentPicker
+                label="Podcast episodes"
+                options={attachmentOptions?.podcasts ?? []}
+                selectedIds={form.podcastIds}
+                onChange={(ids) => setForm((f) => ({ ...f, podcastIds: ids }))}
+              />
+              <AttachmentPicker
+                label="Partners / sponsors"
+                options={attachmentOptions?.partners ?? []}
+                selectedIds={form.partnerIds}
+                onChange={(ids) => setForm((f) => ({ ...f, partnerIds: ids }))}
+              />
+              <AttachmentPicker
+                label="Grants"
+                options={attachmentOptions?.grants ?? []}
+                selectedIds={form.grantIds}
+                onChange={(ids) => setForm((f) => ({ ...f, grantIds: ids }))}
+              />
             </TabsContent>
 
             <TabsContent value="registration" className="space-y-4 pt-4">
@@ -321,34 +643,59 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                       }))
                     }
                   >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="jesup">JESUP — free registration</SelectItem>
                       <SelectItem value="eventbrite">Eventbrite — paid ticket checkout</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Eventbrite securely processes paid tickets while the attendee remains on the JESUP event page.
+                    Eventbrite securely processes paid tickets while the attendee remains on the
+                    JESUP event page.
                   </p>
                 </div>
                 <div>
                   <Label>Registration status</Label>
-                  <Select value={form.registrationStatus} onValueChange={(v) => setForm((f) => ({ ...f, registrationStatus: v as EventFormData["registrationStatus"], registrationOpen: v === "open" || v === "waiting_list" }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select
+                    value={form.registrationStatus}
+                    onValueChange={(v) =>
+                      setForm((f) => ({
+                        ...f,
+                        registrationStatus: v as EventFormData["registrationStatus"],
+                        registrationOpen: v === "open" || v === "waiting_list",
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {(["open", "closed", "waiting_list", "sold_out", "invite_only"] as const).map((status) => (
-                        <SelectItem key={status} value={status}>{registrationStatusLabel(status)}</SelectItem>
-                      ))}
+                      {(["open", "closed", "waiting_list", "sold_out", "invite_only"] as const).map(
+                        (status) => (
+                          <SelectItem key={status} value={status}>
+                            {registrationStatusLabel(status)}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Capacity</Label>
-                  <Input type="number" value={form.capacity} onChange={(e) => setForm((f) => ({ ...f, capacity: e.target.value }))} />
+                  <Input
+                    type="number"
+                    value={form.capacity}
+                    onChange={(e) => setForm((f) => ({ ...f, capacity: e.target.value }))}
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <Label>Invite code</Label>
-                  <Input value={form.inviteCode} onChange={(e) => setForm((f) => ({ ...f, inviteCode: e.target.value }))} />
+                  <Input
+                    value={form.inviteCode}
+                    onChange={(e) => setForm((f) => ({ ...f, inviteCode: e.target.value }))}
+                  />
                 </div>
                 {form.registrationProvider === "eventbrite" && (
                   <>
@@ -358,7 +705,12 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                         required
                         inputMode="numeric"
                         value={form.eventbriteEventId}
-                        onChange={(e) => setForm((f) => ({ ...f, eventbriteEventId: e.target.value.replace(/\D/g, "") }))}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            eventbriteEventId: e.target.value.replace(/\D/g, ""),
+                          }))
+                        }
                         placeholder="1234567890123"
                       />
                     </div>
@@ -366,7 +718,9 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                       <Label>Price shown in JESUP</Label>
                       <Input
                         value={form.ticketPriceLabel}
-                        onChange={(e) => setForm((f) => ({ ...f, ticketPriceLabel: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, ticketPriceLabel: e.target.value }))
+                        }
                         placeholder="$25 or $25–$75"
                       />
                     </div>
@@ -376,7 +730,9 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                         required
                         type="url"
                         value={form.eventbriteEventUrl}
-                        onChange={(e) => setForm((f) => ({ ...f, eventbriteEventUrl: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, eventbriteEventUrl: e.target.value }))
+                        }
                         placeholder="https://www.eventbrite.com/e/..."
                       />
                       <p className="mt-1 text-xs text-muted-foreground">
@@ -394,7 +750,13 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
           </Tabs>
 
           <Button type="submit" className="w-full" disabled={saving}>
-            {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : "Save event"}
+            {saving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Saving…
+              </>
+            ) : (
+              "Save event"
+            )}
           </Button>
         </form>
       </DialogContent>

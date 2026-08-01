@@ -13,6 +13,8 @@ export type HomeHeroSlide = {
   linkTo: string;
   linkParams?: Record<string, string>;
   linkLabel: string | null;
+  institutionIds?: string[];
+  networkWide?: boolean;
 };
 
 export type HomeProgram = {
@@ -31,6 +33,8 @@ export type HomeEvent = {
   location: string | null;
   imageUrl: string | null;
   registrationOpen: boolean;
+  institutionIds: string[];
+  networkWide: boolean;
 };
 
 export type HomePublication = PublicationListItem;

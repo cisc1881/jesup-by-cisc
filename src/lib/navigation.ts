@@ -12,6 +12,7 @@ import {
   Newspaper,
   MessageSquare,
   CloudSun,
+  LayoutGrid,
 } from "lucide-react";
 
 /** Routes that belong under the Resources tab (mobile) and hub page. */
@@ -42,6 +43,12 @@ export type ResourceHubLink = {
 };
 
 export const resourceHubLinks: ResourceHubLink[] = [
+  {
+    to: "/programs",
+    icon: LayoutGrid,
+    title: "Programs",
+    body: "Education, Extension, youth, research, and workforce programs.",
+  },
   {
     to: "/weather",
     icon: CloudSun,
@@ -121,5 +128,5 @@ export const desktopNavLinks = [
   { to: "/events", label: "Agenda & Events" },
   { to: "/join", label: "Connect" },
   { to: "/programs", label: "Programs" },
-  { to: "/resources", label: "Explore" },
+  { to: "/resources", label: "More" },
 ] as const;

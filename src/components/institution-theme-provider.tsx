@@ -12,12 +12,14 @@ import {
 type InstitutionThemeContextValue = {
   theme: InstitutionTheme;
   institutionName: string | null;
+  institutionId: string | null;
   isGuest: boolean;
 };
 
 const InstitutionThemeContext = createContext<InstitutionThemeContextValue>({
   theme: JESUP_NETWORK_THEME,
   institutionName: null,
+  institutionId: null,
   isGuest: true,
 });
 
@@ -51,8 +53,13 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
   }, [theme]);
 
   const value = useMemo(
-    () => ({ theme, institutionName, isGuest: !loading && !user }),
-    [theme, institutionName, loading, user],
+    () => ({
+      theme,
+      institutionName,
+      institutionId: profile?.institutionId ?? null,
+      isGuest: !loading && !user,
+    }),
+    [theme, institutionName, profile?.institutionId, loading, user],
   );
 
   return (
@@ -60,6 +67,7 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- Provider hook is intentionally colocated.
 export function useInstitutionTheme() {
   return useContext(InstitutionThemeContext);
 }

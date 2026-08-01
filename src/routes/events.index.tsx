@@ -18,9 +18,16 @@ import {
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { fetchEventCategories, fetchEvents, filterEvents, partitionEvents } from "@/lib/events";
 import { listPageHead } from "@/lib/seo";
+import { useInstitutionTheme } from "@/components/institution-theme-provider";
 
 export const Route = createFileRoute("/events/")({
-  head: () => listPageHead({ title: "Events", description: "Workshops, conferences, trainings, and community events from CISC at Tuskegee University.", path: "/events" }),
+  head: () =>
+    listPageHead({
+      title: "Events",
+      description:
+        "Workshops, conferences, trainings, and community events from CISC at Tuskegee University.",
+      path: "/events",
+    }),
   component: EventsPage,
 });
 
@@ -30,6 +37,7 @@ function EventsPage() {
   const [viewMode, setViewMode] = useState<EventViewMode>("list");
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const { savedIds, toggleSaved, savedCount } = useSavedEvents();
+  const { institutionId, institutionName } = useInstitutionTheme();
 
   const {
     data: events,
@@ -46,9 +54,18 @@ function EventsPage() {
     queryFn: fetchEventCategories,
   });
 
+  const relevantEvents = useMemo(
+    () =>
+      (events ?? []).filter(
+        (event) =>
+          !institutionId || event.networkWide || event.institutionIds.includes(institutionId),
+      ),
+    [events, institutionId],
+  );
+
   const filtered = useMemo(
-    () => filterEvents(events ?? [], search, categoryId, showSavedOnly, savedIds),
-    [events, search, categoryId, showSavedOnly, savedIds],
+    () => filterEvents(relevantEvents, search, categoryId, showSavedOnly, savedIds),
+    [relevantEvents, search, categoryId, showSavedOnly, savedIds],
   );
 
   const sections = useMemo(() => partitionEvents(filtered), [filtered]);
@@ -73,14 +90,16 @@ function EventsPage() {
           className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]"
         >
           <header className="space-y-3">
-            <p className="text-eyebrow grad-gold-text">CISC Extension</p>
+            <p className="text-eyebrow institution-accent-text">
+              {institutionName ?? "1890 Land-Grant Network"}
+            </p>
             <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
               Events
             </h1>
-            {events && events.length > 0 && (
+            {relevantEvents.length > 0 && (
               <p className="max-w-2xl text-base text-muted-foreground">
-                {filtered.length} upcoming and archived event{filtered.length === 1 ? "" : "s"} —
-                workshops, conferences, trainings, academies, and field demonstrations.
+                {filtered.length} relevant event{filtered.length === 1 ? "" : "s"} from your
+                institution and the shared 1890 network.
               </p>
             )}
           </header>
@@ -89,7 +108,7 @@ function EventsPage() {
 
           {showInitialSkeleton ? (
             <EventsPageSkeleton />
-          ) : !events?.length ? (
+          ) : !relevantEvents.length ? (
             <EventsEmptyState variant="empty" />
           ) : (
             <>

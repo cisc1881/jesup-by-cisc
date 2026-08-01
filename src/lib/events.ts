@@ -1,5 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
-import { publishingWriteError, validateContentIdentity, validateEventSchedule } from "@/lib/content-publishing";
+import {
+  publishingWriteError,
+  validateContentIdentity,
+  validateEventSchedule,
+} from "@/lib/content-publishing";
 
 export const EVENT_IMAGES_BUCKET = "event-images";
 
@@ -40,6 +44,8 @@ export type EventListItem = {
   isActive: boolean;
   status: EventStatus;
   externalUrl: string | null;
+  institutionIds: string[];
+  networkWide: boolean;
 };
 
 export type EventSession = {
@@ -204,7 +210,7 @@ export async function uploadEventImage(file: File, prefix = "covers") {
 const listSelect = `
   id, slug, title, description, description_html, starts_at, ends_at, location, location_address,
   lat, lng, capacity, image_url, category_id, registration_status, registration_open,
-  is_featured, is_active, status, external_url,
+  is_featured, is_active, status, external_url, metadata,
   event_categories ( id, name, slug )
 `;
 
@@ -227,6 +233,15 @@ function mapListRow(row: Record<string, unknown>, registrationCount = 0): EventL
     { id: string; name: string; slug: string } | null | undefined;
   const capacity = (row.capacity as number | null) ?? null;
   const registrationStatus = (row.registration_status as EventRegistrationStatus) ?? "open";
+  const metadata = (row.metadata as Record<string, unknown> | null) ?? {};
+  const rawInstitutionIds = Array.isArray(metadata.institution_ids)
+    ? metadata.institution_ids
+    : typeof metadata.institution_id === "string"
+      ? [metadata.institution_id]
+      : [];
+  const institutionIds = rawInstitutionIds.filter(
+    (value): value is string => typeof value === "string",
+  );
   return {
     id: row.id as string,
     slug: (row.slug as string) ?? (row.id as string),
@@ -252,6 +267,8 @@ function mapListRow(row: Record<string, unknown>, registrationCount = 0): EventL
     isActive: row.is_active as boolean,
     status: row.status as EventStatus,
     externalUrl: (row.external_url as string | null) ?? null,
+    institutionIds,
+    networkWide: metadata.network_wide === true || institutionIds.length === 0,
   };
 }
 
@@ -640,7 +657,8 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
   }
 
   const metadata = (row.metadata as Record<string, unknown> | null) ?? {};
-  const registrationProvider = metadata.registration_provider === "eventbrite" ? "eventbrite" : "jesup";
+  const registrationProvider =
+    metadata.registration_provider === "eventbrite" ? "eventbrite" : "jesup";
 
   return {
     slug: row.slug ?? "",
@@ -665,9 +683,12 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     externalUrl: row.external_url ?? "",
     inviteCode: row.invite_code ?? "",
     registrationProvider,
-    eventbriteEventId: typeof metadata.eventbrite_event_id === "string" ? metadata.eventbrite_event_id : "",
-    eventbriteEventUrl: typeof metadata.eventbrite_event_url === "string" ? metadata.eventbrite_event_url : "",
-    ticketPriceLabel: typeof metadata.ticket_price_label === "string" ? metadata.ticket_price_label : "",
+    eventbriteEventId:
+      typeof metadata.eventbrite_event_id === "string" ? metadata.eventbrite_event_id : "",
+    eventbriteEventUrl:
+      typeof metadata.eventbrite_event_url === "string" ? metadata.eventbrite_event_url : "",
+    ticketPriceLabel:
+      typeof metadata.ticket_price_label === "string" ? metadata.ticket_price_label : "",
     metadata,
     programIds: (programsRes.data ?? []).map((r) => r.program_id),
     publicationIds: (pubsRes.data ?? []).map((r) => r.publication_id),
@@ -826,7 +847,8 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
   const slug = form.slug.trim() || slugify(form.title);
   validateContentIdentity("Event", form.title, slug);
   validateEventSchedule(form.startsAt, form.endsAt);
-  const registrationOpen = form.registrationProvider === "jesup" &&
+  const registrationOpen =
+    form.registrationProvider === "jesup" &&
     (form.registrationStatus === "open" || form.registrationStatus === "waiting_list");
   const metadata = {
     ...form.metadata,

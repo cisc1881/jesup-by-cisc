@@ -31,6 +31,25 @@ function heroImage(metadata: unknown, fallback: string | null): string | null {
   return fallback;
 }
 
+function contentAffiliation(metadata: unknown) {
+  if (!metadata || typeof metadata !== "object") {
+    return { institutionIds: [] as string[], networkWide: true };
+  }
+  const record = metadata as Record<string, unknown>;
+  const rawIds = Array.isArray(record.institution_ids)
+    ? record.institution_ids
+    : typeof record.institution_id === "string"
+      ? [record.institution_id]
+      : [];
+  const institutionIds = rawIds.filter((value): value is string => typeof value === "string");
+  return {
+    institutionIds,
+    // Existing content remains visible as shared network content until an admin
+    // explicitly assigns it to one or more institutions.
+    networkWide: record.network_wide === true || institutionIds.length === 0,
+  };
+}
+
 const EMPTY_HOME_NEWS: { featured: HomeNewsArticle | null; latest: HomeNewsArticle[] } = {
   featured: null,
   latest: [],
@@ -141,6 +160,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       linkTo: "/events/$id",
       linkParams: { id: e.id },
       linkLabel: "Register",
+      ...contentAffiliation(e.metadata),
     });
   }
 
@@ -155,6 +175,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       linkTo: "/markets/$id",
       linkParams: { id: m.id },
       linkLabel: "Learn more",
+      ...contentAffiliation(m.metadata),
     });
   }
 
@@ -169,6 +190,8 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       linkTo: "/podcasts/$slug",
       linkParams: { slug: p.slug },
       linkLabel: "Listen now",
+      networkWide: true,
+      institutionIds: [],
     });
   }
 
@@ -183,6 +206,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       linkTo: "/programs/$slug",
       linkParams: { slug: p.slug },
       linkLabel: "Learn more",
+      ...contentAffiliation(p.metadata),
     });
   }
 
@@ -190,15 +214,23 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
 }
 
 export async function fetchHomeEvents(limit = 6): Promise<HomeEvent[]> {
-  const { fetchEvents } = await import("@/lib/events");
-  const events = await fetchEvents({ upcomingOnly: true, featuredOnly: false, limit });
-  return events.map((e) => ({
-    id: e.id,
-    title: e.title,
-    startsAt: e.startsAt,
-    location: e.location,
-    imageUrl: e.coverImageUrl,
-    registrationOpen: e.registrationOpen,
+  const { data, error } = await supabase
+    .from("events")
+    .select("id,title,starts_at,location,image_url,registration_open,metadata")
+    .eq("status", "published")
+    .eq("is_active", true)
+    .gte("starts_at", now())
+    .order("starts_at", { ascending: true })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []).map((event) => ({
+    id: event.id,
+    title: event.title,
+    startsAt: event.starts_at,
+    location: event.location,
+    imageUrl: event.image_url,
+    registrationOpen: event.registration_open,
+    ...contentAffiliation(event.metadata),
   }));
 }
 

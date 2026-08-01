@@ -1,20 +1,18 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer, AppButton } from "@/components/design-system";
 import { useHomeData } from "@/hooks/use-home-data";
 import {
-  CommunityImpactSection,
-  FeaturedProgramsSection,
-  HomeCtaSection,
   HomeHero,
-  HomeQuickActionsSection,
+  HomeMoreSection,
   HomeWeatherSection,
-  LatestPublicationsSection,
   UpcomingEventsSection,
 } from "@/components/home";
 import { fetchHomePageData, createEmptyHomePageData, DEFAULT_SECTION_META } from "@/lib/home";
 import { buildPageHead } from "@/lib/seo";
 import { HOME_PAGE_QUERY_KEY } from "@/lib/query-config";
+import { useInstitutionTheme } from "@/components/institution-theme-provider";
 
 export const Route = createFileRoute("/")({
   head: () =>
@@ -82,10 +80,29 @@ function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
 function Home() {
   const { data, isLoading } = useHomeData();
   const sections = data?.sections ?? DEFAULT_SECTION_META;
+  const { institutionId } = useInstitutionTheme();
+  const relevantEvents = useMemo(
+    () =>
+      (data?.events ?? []).filter(
+        (event) =>
+          !institutionId || event.networkWide || event.institutionIds.includes(institutionId),
+      ),
+    [data?.events, institutionId],
+  );
+  const relevantSlides = useMemo(
+    () =>
+      (data?.heroSlides ?? []).filter(
+        (slide) =>
+          !institutionId ||
+          slide.networkWide !== false ||
+          slide.institutionIds?.includes(institutionId),
+      ),
+    [data?.heroSlides, institutionId],
+  );
 
   return (
     <PublicLayout>
-      <HomeHero slides={data?.heroSlides ?? []} />
+      <HomeHero slides={relevantSlides} />
 
       <PageContainer
         size="lg"
@@ -93,27 +110,11 @@ function Home() {
       >
         <HomeWeatherSection />
         <UpcomingEventsSection
-          events={data?.events ?? []}
+          events={relevantEvents}
           meta={sections.events}
           isLoading={isLoading}
         />
-        <HomeQuickActionsSection />
-        <FeaturedProgramsSection
-          programs={data?.programs ?? []}
-          meta={sections.programs}
-          isLoading={isLoading}
-        />
-        <LatestPublicationsSection
-          publications={data?.publications ?? []}
-          meta={sections.publications}
-          isLoading={isLoading}
-        />
-        <CommunityImpactSection
-          stats={data?.impactStats ?? []}
-          meta={sections.impact}
-          isLoading={isLoading}
-        />
-        <HomeCtaSection cta={data?.cta ?? null} />
+        <HomeMoreSection />
       </PageContainer>
     </PublicLayout>
   );
