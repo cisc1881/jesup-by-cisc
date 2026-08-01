@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://trffktqewlrzziowmspd.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "jesup-by-cisc",
+      "version": "0.1.0",
+      "title": "Jesup by CISC"
+    },
+    "tools": [
+      {
+        "name": "list_events",
+        "title": "List JESUP events",
+        "description": "List upcoming JESUP events (workshops, field days, community programs) with dates, locations and registration status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "search": {
+              "description": "Filter events by title text.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum events to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_markets",
+        "title": "List farmers markets",
+        "description": "List active farmers markets in the JESUP network with location, hours, season and payment options.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "city": {
+              "description": "Filter markets by city name.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum markets to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_registrations",
+        "title": "List my event registrations",
+        "description": "List the signed-in user's own JESUP event registrations and their status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 20,
+              "description": "Maximum registrations to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "register_for_event",
+        "title": "Register for an event",
+        "description": "Register the signed-in user for a JESUP event by event id. Capacity and registration rules are enforced by the server.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "The id of the event to register for."
+            },
+            "notes": {
+              "description": "Optional note for the organizers.",
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "event_id"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
