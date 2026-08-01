@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, LogOut, Search, Sparkles, User as UserIcon } from "lucide-react";
+import { Bell, LogOut, Mail, Search, Sparkles, User as UserIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,11 +15,19 @@ import { useAuth } from "@/hooks/use-auth";
 import { desktopNavLinks } from "@/lib/navigation";
 import { JesupLogoMark } from "@/components/branding";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
+import { fetchNotifications } from "@/modules/notifications";
 
 export function PublicNav() {
   const { user, isAdmin } = useAuth();
   const { institutionName, isGuest } = useInstitutionTheme();
   const navigate = useNavigate();
+  const { data: messageUpdates = [] } = useQuery({
+    queryKey: ["header-message-count", user?.id],
+    enabled: !!user,
+    queryFn: () => fetchNotifications({ userId: user!.id, audience: "user", limit: 100 }),
+    refetchInterval: 30_000,
+  });
+  const unreadMessages = messageUpdates.filter((item) => !item.isRead).length;
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -52,6 +61,24 @@ export function PublicNav() {
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
+          {user && (
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="relative rounded-none"
+              aria-label={`Messages${unreadMessages ? `, ${unreadMessages} unread` : ""}`}
+            >
+              <Link to="/me/messages">
+                <Mail className="h-5 w-5" />
+                {unreadMessages > 0 && (
+                  <span className="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full bg-destructive px-1 text-[10px] font-black text-destructive-foreground">
+                    {unreadMessages > 99 ? "99+" : unreadMessages}
+                  </span>
+                )}
+              </Link>
+            </Button>
+          )}
           <Button
             asChild
             variant="outline"

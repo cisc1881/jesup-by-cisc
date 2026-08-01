@@ -17,13 +17,7 @@
 }
 
 .jesup-splash--tone-dark .jesup-splash__backdrop {
-  background: linear-gradient(
-    165deg,
-    oklch(0.24 0.1 22) 0%,
-    oklch(0.32 0.13 22) 38%,
-    oklch(0.4 0.16 22) 72%,
-    oklch(0.3 0.12 22) 100%
-  );
+  background: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
 }
 
 .jesup-splash--tone-light .jesup-splash__backdrop {

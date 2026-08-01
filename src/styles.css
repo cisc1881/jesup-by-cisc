@@ -58,10 +58,10 @@
   --radius: 1.25rem;
 
   /* JESUP universal network palette */
-  --primary: oklch(0.3 0.1 270);
+  --primary: #004aad;
   --primary-foreground: oklch(0.99 0 0);
-  --primary-mid: oklch(0.39 0.14 276);
-  --primary-bright: oklch(0.5 0.16 281);
+  --primary-mid: #168bd1;
+  --primary-bright: #5de0e6;
 
   /* Affiliation accents are changed by InstitutionThemeProvider after sign-in. */
   --institution-accent: oklch(0.64 0.12 78);
@@ -136,17 +136,11 @@
   --bottom-nav-offset: 6rem;
 
   /* Signature gradients & shadows */
-  --gradient-jesup: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-mid) 58%,
-    var(--primary-bright) 100%
-  );
+  --gradient-jesup: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
   --gradient-jesup-soft: linear-gradient(
-    135deg,
-    color-mix(in oklch, var(--primary) 96%, transparent) 0%,
-    color-mix(in oklch, var(--primary-mid) 90%, transparent) 58%,
-    color-mix(in oklch, var(--primary-bright) 86%, transparent) 100%
+    90deg,
+    color-mix(in srgb, #5de0e6 88%, transparent) 0%,
+    color-mix(in srgb, #004aad 92%, transparent) 100%
   );
   /* Legacy aliases keep existing screens visually continuous during migration. */
   --gradient-crimson: var(--gradient-jesup);

@@ -53,6 +53,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as EventsIdEvaluationRouteImport } from './routes/events.$id.evaluation'
 import { Route as AuthenticatedMeWeatherAlertsRouteImport } from './routes/_authenticated/me.weather-alerts'
 import { Route as AuthenticatedMeNotificationsRouteImport } from './routes/_authenticated/me.notifications'
+import { Route as AuthenticatedMeMessagesRouteImport } from './routes/_authenticated/me.messages'
 import { Route as AuthenticatedAdminVolunteersRouteImport } from './routes/_authenticated/admin/volunteers'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSurveysRouteImport } from './routes/_authenticated/admin/surveys'
@@ -317,6 +318,11 @@ const AuthenticatedMeNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedMeRoute,
   } as any)
+const AuthenticatedMeMessagesRoute = AuthenticatedMeMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedMeRoute,
+} as any)
 const AuthenticatedAdminVolunteersRoute =
   AuthenticatedAdminVolunteersRouteImport.update({
     id: '/volunteers',
@@ -655,6 +661,7 @@ export interface FileRoutesByFullPath {
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/me/messages': typeof AuthenticatedMeMessagesRoute
   '/me/notifications': typeof AuthenticatedMeNotificationsRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
@@ -736,6 +743,7 @@ export interface FileRoutesByTo {
   '/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/me/messages': typeof AuthenticatedMeMessagesRoute
   '/me/notifications': typeof AuthenticatedMeNotificationsRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
@@ -822,6 +830,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/surveys': typeof AuthenticatedAdminSurveysRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/_authenticated/me/messages': typeof AuthenticatedMeMessagesRoute
   '/_authenticated/me/notifications': typeof AuthenticatedMeNotificationsRoute
   '/_authenticated/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
@@ -908,6 +917,7 @@ export interface FileRouteTypes {
     | '/admin/surveys'
     | '/admin/users'
     | '/admin/volunteers'
+    | '/me/messages'
     | '/me/notifications'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
@@ -989,6 +999,7 @@ export interface FileRouteTypes {
     | '/admin/surveys'
     | '/admin/users'
     | '/admin/volunteers'
+    | '/me/messages'
     | '/me/notifications'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
@@ -1074,6 +1085,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/surveys'
     | '/_authenticated/admin/users'
     | '/_authenticated/admin/volunteers'
+    | '/_authenticated/me/messages'
     | '/_authenticated/me/notifications'
     | '/_authenticated/me/weather-alerts'
     | '/events/$id/evaluation'
@@ -1432,6 +1444,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/me/notifications'
       preLoaderRoute: typeof AuthenticatedMeNotificationsRouteImport
+      parentRoute: typeof AuthenticatedMeRoute
+    }
+    '/_authenticated/me/messages': {
+      id: '/_authenticated/me/messages'
+      path: '/messages'
+      fullPath: '/me/messages'
+      preLoaderRoute: typeof AuthenticatedMeMessagesRouteImport
       parentRoute: typeof AuthenticatedMeRoute
     }
     '/_authenticated/admin/volunteers': {
@@ -1842,12 +1861,14 @@ const AuthenticatedFunderRouteWithChildren =
   AuthenticatedFunderRoute._addFileChildren(AuthenticatedFunderRouteChildren)
 
 interface AuthenticatedMeRouteChildren {
+  AuthenticatedMeMessagesRoute: typeof AuthenticatedMeMessagesRoute
   AuthenticatedMeNotificationsRoute: typeof AuthenticatedMeNotificationsRoute
   AuthenticatedMeWeatherAlertsRoute: typeof AuthenticatedMeWeatherAlertsRoute
   AuthenticatedMeIndexRoute: typeof AuthenticatedMeIndexRoute
 }
 
 const AuthenticatedMeRouteChildren: AuthenticatedMeRouteChildren = {
+  AuthenticatedMeMessagesRoute: AuthenticatedMeMessagesRoute,
   AuthenticatedMeNotificationsRoute: AuthenticatedMeNotificationsRoute,
   AuthenticatedMeWeatherAlertsRoute: AuthenticatedMeWeatherAlertsRoute,
   AuthenticatedMeIndexRoute: AuthenticatedMeIndexRoute,
