@@ -57,16 +57,23 @@
 :root {
   --radius: 1.25rem;
 
-  /* JESUP crimson palette */
-  --primary: oklch(0.36 0.14 22);
+  /* JESUP universal network palette */
+  --primary: oklch(0.3 0.1 270);
   --primary-foreground: oklch(0.99 0 0);
-  --primary-mid: oklch(0.44 0.17 22);
-  --primary-bright: oklch(0.52 0.20 22);
+  --primary-mid: oklch(0.39 0.14 276);
+  --primary-bright: oklch(0.5 0.16 281);
+
+  /* Affiliation accents are changed by InstitutionThemeProvider after sign-in. */
+  --institution-accent: oklch(0.64 0.12 78);
+  --institution-accent-strong: oklch(0.54 0.12 72);
+  --institution-accent-soft: oklch(0.94 0.035 82);
+  --institution-accent-foreground: oklch(0.18 0.025 265);
+  --institution-secondary: oklch(0.4 0.14 272);
 
   /* Metallic gold — accents only */
   --gold: oklch(0.66 0.08 75);
   --gold-light: oklch(0.72 0.09 82);
-  --gold-dark: oklch(0.56 0.10 68);
+  --gold-dark: oklch(0.56 0.1 68);
 
   /* Neutrals */
   --background: oklch(0.97 0.003 90);
@@ -85,16 +92,16 @@
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.87 0.002 90);
   --input: oklch(0.9 0.002 90);
-  --ring: oklch(0.44 0.17 22);
+  --ring: oklch(0.44 0.14 276);
 
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.22 0 0);
-  --sidebar-primary: oklch(0.36 0.14 22);
+  --sidebar-primary: var(--institution-accent);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.005 22);
-  --sidebar-accent-foreground: oklch(0.36 0.14 22);
+  --sidebar-accent: var(--institution-accent-soft);
+  --sidebar-accent-foreground: var(--institution-accent-strong);
   --sidebar-border: oklch(0.9 0.002 90);
-  --sidebar-ring: oklch(0.44 0.17 22);
+  --sidebar-ring: var(--institution-accent);
 
   /* Typography scale */
   --text-xs: 0.6875rem;
@@ -129,12 +136,29 @@
   --bottom-nav-offset: 6rem;
 
   /* Signature gradients & shadows */
-  --gradient-crimson: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 55%, var(--primary-bright) 100%);
-  --gradient-crimson-soft: linear-gradient(135deg, color-mix(in oklch, var(--primary) 92%, transparent) 0%, color-mix(in oklch, var(--primary-mid) 82%, transparent) 55%, color-mix(in oklch, var(--primary-bright) 75%, transparent) 100%);
+  --gradient-jesup: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-mid) 58%,
+    var(--primary-bright) 100%
+  );
+  --gradient-jesup-soft: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--primary) 96%, transparent) 0%,
+    color-mix(in oklch, var(--primary-mid) 90%, transparent) 58%,
+    color-mix(in oklch, var(--primary-bright) 86%, transparent) 100%
+  );
+  /* Legacy aliases keep existing screens visually continuous during migration. */
+  --gradient-crimson: var(--gradient-jesup);
+  --gradient-crimson-soft: var(--gradient-jesup-soft);
   --gradient-gold: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 100%);
   --gradient-hero-overlay: var(--gradient-crimson-soft);
-  --shadow-soft: 0 4px 20px -6px color-mix(in oklch, var(--foreground) 8%, transparent), 0 2px 6px -2px color-mix(in oklch, var(--foreground) 4%, transparent);
-  --shadow-lift: 0 12px 40px -12px color-mix(in oklch, var(--foreground) 18%, transparent), 0 4px 10px -4px color-mix(in oklch, var(--foreground) 6%, transparent);
+  --shadow-soft:
+    0 4px 20px -6px color-mix(in oklch, var(--foreground) 8%, transparent),
+    0 2px 6px -2px color-mix(in oklch, var(--foreground) 4%, transparent);
+  --shadow-lift:
+    0 12px 40px -12px color-mix(in oklch, var(--foreground) 18%, transparent),
+    0 4px 10px -4px color-mix(in oklch, var(--foreground) 6%, transparent);
   --shadow-crimson: 0 20px 50px -20px color-mix(in oklch, var(--primary) 45%, transparent);
 
   /* Button tokens */
@@ -152,45 +176,47 @@
 }
 
 .dark {
-  --background: oklch(0.15 0.005 22);
+  --background: oklch(0.14 0.018 270);
   --foreground: oklch(0.98 0 0);
-  --card: oklch(0.19 0.008 22);
+  --card: oklch(0.19 0.022 270);
   --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.19 0.008 22);
+  --popover: oklch(0.19 0.022 270);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.52 0.20 22);
+  --primary: oklch(0.58 0.14 278);
   --primary-foreground: oklch(0.99 0 0);
-  --primary-mid: oklch(0.48 0.18 22);
-  --primary-bright: oklch(0.58 0.22 22);
-  --secondary: oklch(0.24 0.005 22);
+  --primary-mid: oklch(0.5 0.15 275);
+  --primary-bright: oklch(0.65 0.15 282);
+  --secondary: oklch(0.24 0.025 270);
   --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.24 0.005 22);
+  --muted: oklch(0.24 0.022 270);
   --muted-foreground: oklch(0.7 0 0);
   --accent: oklch(0.72 0.09 82);
   --accent-foreground: oklch(0.15 0 0);
   --gold: oklch(0.72 0.09 82);
-  --gold-light: oklch(0.78 0.10 82);
-  --gold-dark: oklch(0.62 0.10 68);
+  --gold-light: oklch(0.78 0.1 82);
+  --gold-dark: oklch(0.62 0.1 68);
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.52 0.20 22);
-  --sidebar: oklch(0.19 0.008 22);
+  --ring: var(--institution-accent);
+  --sidebar: oklch(0.19 0.022 270);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.52 0.20 22);
+  --sidebar-primary: var(--institution-accent);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.24 0.008 22);
+  --sidebar-accent: color-mix(in oklch, var(--institution-accent) 18%, oklch(0.19 0.022 270));
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.52 0.20 22);
+  --sidebar-ring: var(--institution-accent);
   --shadow-soft: 0 4px 20px -6px oklch(0 0 0 / 35%), 0 2px 6px -2px oklch(0 0 0 / 20%);
   --shadow-lift: 0 12px 40px -12px oklch(0 0 0 / 45%), 0 4px 10px -4px oklch(0 0 0 / 25%);
   --shadow-crimson: 0 20px 50px -20px color-mix(in oklch, var(--primary) 55%, transparent);
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * {
+    border-color: var(--color-border);
+  }
   html {
     width: 100%;
     max-width: 100%;
@@ -209,7 +235,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-feature-settings: "cv02","cv03","cv04","cv11";
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   #root {
     position: fixed;
@@ -237,7 +263,10 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     max-width: 100%;
     overflow-wrap: anywhere;
     text-wrap: balance;
@@ -245,8 +274,14 @@
     letter-spacing: -0.02em;
     font-weight: 700;
   }
-  h1 { line-height: 1.14 !important; }
-  h2, h3, h4 { line-height: 1.2 !important; }
+  h1 {
+    line-height: 1.14 !important;
+  }
+  h2,
+  h3,
+  h4 {
+    line-height: 1.2 !important;
+  }
 }
 
 @utility gold-bar {
@@ -260,12 +295,35 @@
 @utility gold-divider {
   height: 1px;
   width: 100%;
-  background: linear-gradient(90deg, transparent, var(--color-gold) 30%, var(--color-gold) 70%, transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold) 30%,
+    var(--color-gold) 70%,
+    transparent
+  );
   opacity: 0.55;
 }
 
 @utility grad-crimson {
   background-image: var(--gradient-crimson);
+}
+
+@utility grad-jesup {
+  background-image: var(--gradient-jesup);
+}
+
+@utility institution-accent-bg {
+  background-color: var(--institution-accent);
+  color: var(--institution-accent-foreground);
+}
+
+@utility institution-accent-text {
+  color: var(--institution-accent-strong);
+}
+
+@utility institution-accent-border {
+  border-color: var(--institution-accent);
 }
 
 @utility grad-crimson-text {

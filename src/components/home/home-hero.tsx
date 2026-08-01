@@ -1,141 +1,110 @@
-import { useEffect, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CalendarDays, Network, ShieldCheck, Users } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import type { HomeHeroSlide } from "@/lib/home";
-import { AppButton, BrandMark } from "@/components/design-system";
-import { cn } from "@/lib/utils";
+import { useInstitutionTheme } from "@/components/institution-theme-provider";
 
-type HomeHeroProps = {
-  slides: HomeHeroSlide[];
-};
+type HomeHeroProps = { slides: HomeHeroSlide[] };
 
 function welcomeLabel(email?: string | null) {
-  if (!email) return "Welcome";
+  if (!email) return "JESUP for the 1890 network";
   const name = email.split("@")[0]?.split(/[._-]/)[0];
-  if (!name) return "Welcome back";
-  return `Welcome, ${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+  return name ? `Welcome, ${name.charAt(0).toUpperCase()}${name.slice(1)}` : "Welcome back";
 }
 
 export function HomeHero({ slides }: HomeHeroProps) {
   const { user } = useAuth();
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: slides.length > 1, align: "start" });
-  const [selected, setSelected] = useState(0);
-
-  useEffect(() => {
-    if (!emblaApi || slides.length <= 1) return;
-    const onSelect = () => setSelected(emblaApi.selectedScrollSnap());
-    emblaApi.on("select", onSelect);
-    const id = setInterval(() => emblaApi.scrollNext(), 7000);
-    return () => {
-      clearInterval(id);
-      emblaApi.off("select", onSelect);
-    };
-  }, [emblaApi, slides.length]);
-
-  const active = slides[selected] ?? slides[0];
+  const { institutionName } = useInstitutionTheme();
+  const featured = slides[0];
 
   return (
-    <section
-      className="relative isolate w-full max-w-full overflow-hidden grad-crimson"
-      style={{ contain: "inline-size layout paint" }}
-    >
-      <div className="absolute inset-0 opacity-20" aria-hidden="true">
+    <section className="relative isolate overflow-hidden border-b border-white/10 grad-jesup text-white">
+      <div className="absolute inset-0" aria-hidden="true">
+        <div className="absolute -right-32 -top-40 h-[30rem] w-[30rem] rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-44 left-1/3 h-80 w-80 rounded-full bg-[var(--institution-accent)] opacity-20 blur-3xl" />
         <div
-          className="h-full w-full"
+          className="absolute inset-0 opacity-[0.08]"
           style={{
-            backgroundImage: "radial-gradient(circle at 20% 20%, white 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.45) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
           }}
         />
       </div>
 
-      {slides.length > 0 ? (
-        <div className="absolute inset-0" ref={emblaRef}>
-          <div className="flex h-full">
-            {slides.map((slide, i) => (
-              <div key={slide.id} className="relative min-w-0 flex-[0_0_100%]">
-                <img
-                  src={slide.imageUrl}
-                  alt={slide.imageAlt}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  fetchPriority={i === 0 ? "high" : "auto"}
-                  loading={i === 0 ? "eager" : "lazy"}
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, color-mix(in oklch, var(--primary) 75%, transparent) 55%, color-mix(in oklch, var(--primary) 92%, transparent) 100%)",
-                  }}
-                  aria-hidden="true"
-                />
-              </div>
-            ))}
+      <div className="relative mx-auto grid min-h-[470px] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.4fr_.6fr] lg:py-24">
+        <div className="max-w-3xl">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--institution-accent)]">
+            {welcomeLabel(user?.email)}
+          </p>
+          <h1 className="mt-5 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
+            One professional home for Extension, research, and major events.
+          </h1>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
+            Discover AEA, ARD, and 1890 Land-Grant opportunities, build your agenda, connect with
+            peers, and manage the full conference experience through JESUP.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              to="/events"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full institution-accent-bg px-6 text-sm font-extrabold shadow-lg transition hover:-translate-y-0.5 hover:brightness-105"
+            >
+              View agenda & events <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/join"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 text-sm font-bold text-white backdrop-blur transition hover:bg-white/15"
+            >
+              Join the network <Users className="h-4 w-4" />
+            </Link>
           </div>
         </div>
-      ) : (
-        <div className="absolute inset-0 hero-overlay opacity-60" aria-hidden="true" />
-      )}
 
-      <div className="relative z-10 mx-auto flex min-h-[min(72vh,520px)] w-full min-w-0 max-w-7xl flex-col justify-between page-x pb-8 pt-6 sm:min-h-[min(68vh,580px)] sm:pb-10 sm:pt-8">
-        <BrandMark variant="light" />
-
-        <div className="mt-auto space-y-4">
-          <div>
-            <p className="text-eyebrow grad-gold-text">{welcomeLabel(user?.email)}</p>
-            {active?.title && (
-              <h1 className="mt-2 max-w-xl text-[2rem] font-black leading-[1.05] tracking-[var(--tracking-tight)] text-white sm:text-5xl">
-                {active.title}
-              </h1>
-            )}
-            {active?.subtitle && (
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/85 sm:text-base line-clamp-3">
-                {active.subtitle}
+        <aside
+          className="rounded-[1.75rem] border border-white/15 bg-slate-950/25 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
+          aria-label="JESUP network highlights"
+        >
+          <div className="flex items-center gap-3 border-b border-white/10 pb-5">
+            <span className="grid h-11 w-11 place-items-center rounded-2xl institution-accent-bg">
+              <Network className="h-5 w-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/55">
+                Your network
               </p>
-            )}
+              <p className="truncate text-sm font-extrabold text-white">
+                {institutionName ?? "1890 Land-Grant Institutions"}
+              </p>
+            </div>
           </div>
-
-          {active?.linkLabel && (
-            <AppButton
-              variant="inverse"
-              size="lg"
-              shape="pill"
-              asChild
-              className="w-full max-w-full sm:w-auto"
+          <div className="grid gap-3 py-5">
+            <div className="flex items-center gap-3 text-sm text-white/80">
+              <CalendarDays className="h-4 w-4 text-[var(--institution-accent)]" /> Personal agendas
+              and live event access
+            </div>
+            <div className="flex items-center gap-3 text-sm text-white/80">
+              <Users className="h-4 w-4 text-[var(--institution-accent)]" /> Attendee, speaker, and
+              partner connections
+            </div>
+            <div className="flex items-center gap-3 text-sm text-white/80">
+              <ShieldCheck className="h-4 w-4 text-[var(--institution-accent)]" /> Secure
+              registration, check-in, and credentials
+            </div>
+          </div>
+          {featured?.title ? (
+            <Link
+              to={featured.linkTo}
+              {...(featured.linkParams ? { params: featured.linkParams } : {})}
+              className="block rounded-2xl bg-white/10 p-4 transition hover:bg-white/15"
             >
-              <Link to={active.linkTo} {...(active.linkParams ? { params: active.linkParams } : {})}>
-                <span className="truncate">{active.linkLabel}</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </AppButton>
-          )}
-        </div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--institution-accent)]">
+                Featured now
+              </p>
+              <p className="mt-1 line-clamp-2 text-sm font-bold text-white">{featured.title}</p>
+            </Link>
+          ) : null}
+        </aside>
       </div>
-
-      {slides.length > 1 && (
-        <div className="relative z-10 flex justify-center gap-1.5 pb-6">
-          {slides.map((slide, i) => (
-            <button
-              key={slide.id}
-              type="button"
-              onClick={() => emblaApi?.scrollTo(i)}
-              className="grid h-11 w-11 touch-manipulation place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-              aria-label={slide.imageAlt}
-              aria-current={i === selected ? "true" : undefined}
-            >
-              <span
-                className={cn(
-                  "h-1.5 rounded-full transition-all",
-                  i === selected ? "w-8 bg-white" : "w-1.5 bg-white/45",
-                )}
-                aria-hidden="true"
-              />
-            </button>
-          ))}
-        </div>
-      )}
     </section>
   );
 }

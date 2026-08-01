@@ -3,7 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LoadingState, QueryErrorState } from "@/components/design-system";
 import { InstitutionFields } from "@/components/institutions";
-import { StudentAcademicFields, type StudentAcademicValue } from "@/components/institutions/student-academic-fields";
+import {
+  StudentAcademicFields,
+  type StudentAcademicValue,
+} from "@/components/institutions/student-academic-fields";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, updateMyProfileInstitution } from "@/lib/profile";
 import {
@@ -81,7 +84,9 @@ export function ProfileInstitutionForm() {
         institutionId: resolvedInstitution.institutionId,
         institutionType: resolvedInstitution.institutionType,
         schoolName: resolvedInstitution.schoolName,
-        is1890LandGrant: resolvedInstitution.institutionId ? resolvedInstitution.is1890LandGrant : null,
+        is1890LandGrant: resolvedInstitution.institutionId
+          ? resolvedInstitution.is1890LandGrant
+          : null,
         academicLevel: academic.academicLevel || null,
         majorOrInterest: academic.major.trim() || null,
         expectedGraduationYear: Number.isFinite(graduationYear) ? graduationYear : null,
@@ -107,7 +112,9 @@ export function ProfileInstitutionForm() {
   return (
     <form onSubmit={handleSave} className="space-y-6" aria-busy={busy}>
       <p className="text-sm text-muted-foreground">
-        All fields are optional. Share your school or institution to help us match you with programs and opportunities.
+        Choose your school to personalize JESUP with its colors and receive more relevant events,
+        programs, people, and opportunities. The universal JESUP interface remains consistent across
+        the network.
       </p>
 
       <InstitutionFields

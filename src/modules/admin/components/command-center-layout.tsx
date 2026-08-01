@@ -25,9 +25,11 @@ import { NotificationBellDropdown } from "./notification-bell-dropdown";
 import { GlobalSearchDialog } from "@/components/search/global-search-dialog";
 import { JesupLogoMark } from "@/components/branding";
 import { SkipLink } from "@/components/skip-link";
+import { useInstitutionTheme } from "@/components/institution-theme-provider";
 
 export function CommandCenterLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { institutionName } = useInstitutionTheme();
 
   return (
     <SidebarProvider>
@@ -36,7 +38,7 @@ export function CommandCenterLayout() {
         <Sidebar collapsible="icon">
           <SidebarHeader>
             <Link to="/admin" className="flex items-center gap-2 px-2 py-1">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md grad-crimson text-white font-black">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md institution-accent-bg font-black">
                 J
               </span>
               <span className="group-data-[collapsible=icon]:hidden">
@@ -111,6 +113,12 @@ export function CommandCenterLayout() {
             <SidebarTrigger />
             <div className="min-w-0 truncate text-sm font-black tracking-tight text-foreground">
               {COMMAND_CENTER_TITLE}
+            </div>
+            <div className="hidden min-w-0 items-center gap-2 rounded-full bg-[var(--institution-accent-soft)] px-3 py-1.5 text-xs font-bold institution-accent-text md:flex">
+              <span className="h-2 w-2 shrink-0 rounded-full institution-accent-bg" />
+              <span className="max-w-52 truncate">
+                {institutionName ?? "1890 Land-Grant Network"}
+              </span>
             </div>
             <div className="ml-auto flex items-center gap-2">
               <GlobalSearchDialog />

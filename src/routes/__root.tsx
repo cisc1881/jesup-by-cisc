@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { OfflineBanner } from "@/components/offline-banner";
 import { JesupSplashGate } from "@/components/branding";
 import { JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL } from "@/lib/seo";
+import { InstitutionThemeProvider } from "@/components/institution-theme-provider";
 
 function NotFoundComponent() {
   return (
@@ -78,7 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "oklch(0.36 0.14 22)" },
+      { name: "theme-color", content: "#101b46" },
       { title: "JESUP · The Digital Extension Wagon" },
       {
         name: "description",
@@ -91,12 +92,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Powered by the Carver Integrative Sustainability Center at Tuskegee University.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: new URL(JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL).toString() },
+      {
+        property: "og:image",
+        content: new URL(JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL).toString(),
+      },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "JESUP by CISC" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: new URL(JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL).toString() },
+      {
+        name: "twitter:image",
+        content: new URL(JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL).toString(),
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -139,7 +146,8 @@ function RootComponent() {
       if (root && root.scrollLeft !== 0) root.scrollLeft = 0;
       if (document.documentElement.scrollLeft !== 0) document.documentElement.scrollLeft = 0;
       if (document.body.scrollLeft !== 0) document.body.scrollLeft = 0;
-      if (window.scrollX !== 0) window.scrollTo({ left: 0, top: window.scrollY, behavior: "instant" });
+      if (window.scrollX !== 0)
+        window.scrollTo({ left: 0, top: window.scrollY, behavior: "instant" });
     };
 
     resetHorizontalPosition();
@@ -170,15 +178,17 @@ function RootComponent() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <JesupSplashGate>
-          <OfflineBanner />
-          <Outlet />
-          <Toaster
-            richColors
-            position="top-center"
-            className="sm:!top-4 sm:!right-4 sm:!left-auto"
-          />
-        </JesupSplashGate>
+        <InstitutionThemeProvider>
+          <JesupSplashGate>
+            <OfflineBanner />
+            <Outlet />
+            <Toaster
+              richColors
+              position="top-center"
+              className="sm:!top-4 sm:!right-4 sm:!left-auto"
+            />
+          </JesupSplashGate>
+        </InstitutionThemeProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

@@ -13,9 +13,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { desktopNavLinks } from "@/lib/navigation";
 import { JesupLogoMark } from "@/components/branding";
+import { useInstitutionTheme } from "@/components/institution-theme-provider";
 
 export function PublicNav() {
   const { user, isAdmin } = useAuth();
+  const { institutionName, isGuest } = useInstitutionTheme();
   const navigate = useNavigate();
 
   async function signOut() {
@@ -33,6 +35,20 @@ export function PublicNav() {
             className="items-start"
             imageClassName="h-9 max-w-[7.75rem] sm:max-w-[9rem]"
           />
+        </Link>
+
+        <Link
+          to={user ? "/me" : "/partners"}
+          className="hidden max-w-[17rem] items-center gap-2 rounded-full border border-border/70 bg-secondary/65 px-3 py-1.5 text-xs font-semibold text-foreground lg:flex"
+          title={institutionName ?? "1890 Land-Grant Network"}
+        >
+          <span
+            className="h-2 w-2 shrink-0 rounded-full institution-accent-bg"
+            aria-hidden="true"
+          />
+          <span className="truncate">
+            {isGuest ? "1890 Land-Grant Network" : (institutionName ?? "Choose your institution")}
+          </span>
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
@@ -93,7 +109,7 @@ export function PublicNav() {
             <Button
               asChild
               size="sm"
-              className="rounded-full grad-crimson text-white shadow-[var(--shadow-crimson)] hover:opacity-95"
+              className="rounded-full grad-jesup text-white shadow-[var(--shadow-crimson)] hover:opacity-95"
             >
               <Link to="/auth">Sign in</Link>
             </Button>
@@ -109,7 +125,9 @@ export function PublicNav() {
             to="/"
             className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
             activeOptions={{ exact: true }}
-            activeProps={{ className: "bg-secondary text-primary" }}
+            activeProps={{
+              className: "bg-[var(--institution-accent-soft)] institution-accent-text",
+            }}
           >
             Home
           </Link>
@@ -118,7 +136,9 @@ export function PublicNav() {
               key={l.to}
               to={l.to}
               className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
-              activeProps={{ className: "bg-secondary text-primary" }}
+              activeProps={{
+                className: "bg-[var(--institution-accent-soft)] institution-accent-text",
+              }}
             >
               {l.label}
             </Link>

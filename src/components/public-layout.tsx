@@ -37,10 +37,10 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               </div>
               <div className="text-xs leading-relaxed text-muted-foreground">
                 <div className="text-sm font-black tracking-tight text-foreground">
-                  The Digital Extension Wagon
+                  The 1890 Digital Extension Network
                 </div>
                 <div className="mt-1">Powered by the Carver Integrative Sustainability Center</div>
-                <div>A Center of Excellence · Tuskegee University Cooperative Extension</div>
+                <div>Extension · Research · Events · Community</div>
               </div>
             </div>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
@@ -72,14 +72,14 @@ export function PublicLayout({ children }: { children: ReactNode }) {
           </div>
           <div className="border-t border-border/60">
             <p className="mx-auto max-w-7xl px-4 py-6 text-[11px] leading-relaxed text-muted-foreground sm:px-6 sm:text-xs">
-              It is the policy of Tuskegee University Cooperative Extension Program to provide
-              equal employment opportunities and to offer educational programs, resources and
-              materials to eligible participants without regard to race, color, national origin,
-              religion, sexual orientation, disability, age, marital or veteran status, political
-              beliefs, or reprisal or retaliation for prior civil rights activity, in any program
-              or activity conducted or funded by USDA (not all bases apply to all programs). For
-              all reasonable accommodation requests, please contact Shirley Brown, Director,
-              Office of Civil Rights Compliance at {" "}
+              It is the policy of Tuskegee University Cooperative Extension Program to provide equal
+              employment opportunities and to offer educational programs, resources and materials to
+              eligible participants without regard to race, color, national origin, religion, sexual
+              orientation, disability, age, marital or veteran status, political beliefs, or
+              reprisal or retaliation for prior civil rights activity, in any program or activity
+              conducted or funded by USDA (not all bases apply to all programs). For all reasonable
+              accommodation requests, please contact Shirley Brown, Director, Office of Civil Rights
+              Compliance at{" "}
               <a
                 href="mailto:sbrown@tuskegee.edu"
                 className="font-medium text-foreground underline underline-offset-2 hover:text-primary"

@@ -2,14 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Calendar, MapPin } from "lucide-react";
 import type { HomeEvent, HomeSectionMeta } from "@/lib/home";
 import { fmtDateTime } from "@/lib/format";
-import {
-  EmptyState,
-  HomeSection,
-  HorizontalScroll,
-  HorizontalScrollItem,
-  MediaCard,
-  SectionActionLink,
-} from "@/components/design-system";
+import { EmptyState, HomeSection, SectionActionLink } from "@/components/design-system";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type UpcomingEventsSectionProps = {
@@ -22,13 +15,11 @@ export function UpcomingEventsSection({ events, meta, isLoading }: UpcomingEvent
   return (
     <HomeSection sectionId={meta.id} meta={meta}>
       {isLoading ? (
-        <HorizontalScroll>
+        <div className="grid gap-4 md:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <HorizontalScrollItem key={i}>
-              <Skeleton className="h-56 w-[75vw] rounded-2xl sm:w-64" />
-            </HorizontalScrollItem>
+            <Skeleton key={i} className="h-48 rounded-2xl" />
           ))}
-        </HorizontalScroll>
+        </div>
       ) : events.length === 0 ? (
         <EmptyState
           icon={Calendar}
@@ -41,30 +32,41 @@ export function UpcomingEventsSection({ events, meta, isLoading }: UpcomingEvent
           }
         />
       ) : (
-        <HorizontalScroll>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {events.map((e) => (
-            <HorizontalScrollItem key={e.id}>
-              <Link to="/events/$id" params={{ id: e.id }} className="block">
-                <MediaCard imageUrl={e.imageUrl} imageAlt={e.title}>
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] grad-gold-text">
-                    {fmtDateTime(e.startsAt)}
-                  </div>
-                  <h3 className="mt-1 line-clamp-2 text-[15px] font-bold text-foreground">{e.title}</h3>
-                  {e.location && (
-                    <p className="mt-1 flex items-center gap-1 truncate text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
-                      {e.location}
-                    </p>
-                  )}
-                  <span className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-xs font-bold text-foreground">
-                    {e.registrationOpen ? "Register" : "Learn more"}
-                    <ArrowRight className="size-3.5" aria-hidden="true" />
-                  </span>
-                </MediaCard>
-              </Link>
-            </HorizontalScrollItem>
+            <Link
+              key={e.id}
+              to="/events/$id"
+              params={{ id: e.id }}
+              className="group block rounded-2xl border border-border/70 bg-card p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--institution-accent)] hover:shadow-[var(--shadow-lift)]"
+            >
+              <div className="flex h-full flex-col">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] grad-gold-text">
+                  {fmtDateTime(e.startsAt)}
+                </div>
+                <h3 className="mt-3 line-clamp-3 text-lg font-extrabold text-foreground">
+                  {e.title}
+                </h3>
+                {e.location && (
+                  <p className="mt-3 flex items-center gap-2 truncate text-sm text-muted-foreground">
+                    <MapPin
+                      className="h-4 w-4 shrink-0 institution-accent-text"
+                      aria-hidden="true"
+                    />
+                    {e.location}
+                  </p>
+                )}
+                <span className="mt-8 inline-flex items-center gap-2 text-sm font-extrabold institution-accent-text">
+                  {e.registrationOpen ? "Register" : "Learn more"}
+                  <ArrowRight
+                    className="size-4 transition group-hover:translate-x-1"
+                    aria-hidden="true"
+                  />
+                </span>
+              </div>
+            </Link>
           ))}
-        </HorizontalScroll>
+        </div>
       )}
     </HomeSection>
   );

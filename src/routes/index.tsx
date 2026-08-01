@@ -4,16 +4,12 @@ import { PageContainer, AppButton } from "@/components/design-system";
 import { useHomeData } from "@/hooks/use-home-data";
 import {
   CommunityImpactSection,
-  FeaturedPodcastSection,
   FeaturedProgramsSection,
   HomeCtaSection,
   HomeHero,
   HomeQuickActionsSection,
   HomeWeatherSection,
   LatestPublicationsSection,
-  NewsHomeSection,
-  FarmersMarketsHomeSection,
-  StrategicPartnersHomeSection,
   UpcomingEventsSection,
 } from "@/components/home";
 import { fetchHomePageData, createEmptyHomePageData, DEFAULT_SECTION_META } from "@/lib/home";
@@ -67,7 +63,11 @@ function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
           >
             Try again
           </AppButton>
-          <AppButton type="button" variant="outline" onClick={() => router.navigate({ to: "/programs" })}>
+          <AppButton
+            type="button"
+            variant="outline"
+            onClick={() => router.navigate({ to: "/programs" })}
+          >
             Browse programs
           </AppButton>
         </div>
@@ -87,22 +87,32 @@ function Home() {
     <PublicLayout>
       <HomeHero slides={data?.heroSlides ?? []} />
 
-      <PageContainer size="lg" className="space-y-[var(--space-10)] pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-[var(--space-12)] sm:pt-[var(--space-8)]">
+      <PageContainer
+        size="lg"
+        className="space-y-[var(--space-10)] pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-[var(--space-12)] sm:pt-[var(--space-8)]"
+      >
         <HomeWeatherSection />
-        <HomeQuickActionsSection />
-        <FeaturedProgramsSection programs={data?.programs ?? []} meta={sections.programs} isLoading={isLoading} />
-        <UpcomingEventsSection events={data?.events ?? []} meta={sections.events} isLoading={isLoading} />
-        <LatestPublicationsSection publications={data?.publications ?? []} meta={sections.publications} isLoading={isLoading} />
-        <NewsHomeSection
-          featured={data?.featuredNews ?? null}
-          latest={data?.latestNews ?? []}
-          meta={sections.news}
+        <UpcomingEventsSection
+          events={data?.events ?? []}
+          meta={sections.events}
           isLoading={isLoading}
         />
-        <FeaturedPodcastSection episode={data?.featuredPodcast ?? null} meta={sections.podcast} isLoading={isLoading} />
-        <StrategicPartnersHomeSection partners={data?.partners ?? []} meta={sections.partners} isLoading={isLoading} />
-        <FarmersMarketsHomeSection markets={data?.markets ?? []} meta={sections.market} isLoading={isLoading} />
-        <CommunityImpactSection stats={data?.impactStats ?? []} meta={sections.impact} isLoading={isLoading} />
+        <HomeQuickActionsSection />
+        <FeaturedProgramsSection
+          programs={data?.programs ?? []}
+          meta={sections.programs}
+          isLoading={isLoading}
+        />
+        <LatestPublicationsSection
+          publications={data?.publications ?? []}
+          meta={sections.publications}
+          isLoading={isLoading}
+        />
+        <CommunityImpactSection
+          stats={data?.impactStats ?? []}
+          meta={sections.impact}
+          isLoading={isLoading}
+        />
         <HomeCtaSection cta={data?.cta ?? null} />
       </PageContainer>
     </PublicLayout>
