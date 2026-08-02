@@ -38,6 +38,8 @@ export type ProgramListItem = {
   isFeatured: boolean;
   isActive: boolean;
   sortOrder: number;
+  institutionIds: string[];
+  networkWide: boolean;
 };
 
 export type ProgramAttachment = {

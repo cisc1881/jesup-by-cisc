@@ -16,7 +16,7 @@ export const Route = createFileRoute("/programs/$slug")({
     const program = await fetchProgramBySlug(params.slug);
     if (!program) throw notFound();
     const allPrograms = await fetchPrograms();
-    const related = allPrograms.filter((p) => p.slug !== program.slug).slice(0, 3);
+    const related = allPrograms.filter((p: Awaited<ReturnType<typeof fetchPrograms>>[number]) => p.slug !== program.slug).slice(0, 3);
     return { program, related };
   },
   head: ({ loaderData }) => {
