@@ -110,9 +110,7 @@ async function fetchVerifiedCountyFromDatabase(
 
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const countyContacts = (supabaseAdmin as unknown as {
-      from: (table: string) => ReturnType<typeof supabaseAdmin.from>;
-    }).from("county_emergency_contacts");
+    const countyContacts = supabaseAdmin.from("county_emergency_contacts");
 
     let query = countyContacts
       .select("*")

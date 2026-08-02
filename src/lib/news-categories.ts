@@ -16,9 +16,9 @@ export type NewsCategory = (typeof NEWS_CATEGORIES)[number];
 
 export function newsFilterCategories(existing: (string | null | undefined)[]) {
   const used = new Set(existing.filter(Boolean) as string[]);
-  const ordered = NEWS_CATEGORIES.filter((c) => used.has(c));
+  const ordered: string[] = NEWS_CATEGORIES.filter((c) => used.has(c));
   for (const c of used) {
-    if (!NEWS_CATEGORIES.includes(c as NewsCategory)) ordered.push(c);
+    if (!(NEWS_CATEGORIES as readonly string[]).includes(c)) ordered.push(c);
   }
   return ["All", ...ordered];
 }

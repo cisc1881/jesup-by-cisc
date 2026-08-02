@@ -12,7 +12,7 @@ export class CloudflareWeatherCache implements WeatherCacheAdapter {
 
   private get cache(): Cache | null {
     try {
-      return typeof caches !== "undefined" ? caches.default : null;
+      return typeof caches !== "undefined" ? (caches as unknown as { default: Cache }).default : null;
     } catch {
       return null;
     }

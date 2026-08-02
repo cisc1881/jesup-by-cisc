@@ -109,7 +109,7 @@ export async function recordSubscriptionFailure(subscriptionId: string): Promise
   if (readError) throw readError;
 
   const nextCount = Number((data as { failure_count?: number }).failure_count ?? 0) + 1;
-  const updates: Record<string, unknown> = { failure_count: nextCount };
+  const updates: { failure_count: number; is_active?: boolean; revoked_at?: string } = { failure_count: nextCount };
   if (nextCount >= 5) {
     updates.is_active = false;
     updates.revoked_at = new Date().toISOString();

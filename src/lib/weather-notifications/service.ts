@@ -63,9 +63,7 @@ function mapAdminSubscriptionRow(row: Record<string, unknown>): AdminPushSubscri
 
 export async function fetchAdminWeatherNotificationSummary(): Promise<AdminWeatherNotificationSummary> {
   const { supabase } = await import("@/integrations/supabase/client");
-  const db = supabase as unknown as {
-    from: (table: string) => ReturnType<typeof supabase.from>;
-  };
+  const db = supabase;
 
   const [
     enabledRes,
@@ -220,9 +218,7 @@ export async function fetchAdminWeatherNotificationSummary(): Promise<AdminWeath
 
 export async function listAdminFailedPushSubscriptions(): Promise<AdminPushSubscriptionRow[]> {
   const { supabase } = await import("@/integrations/supabase/client");
-  const db = supabase as unknown as {
-    from: (table: string) => ReturnType<typeof supabase.from>;
-  };
+  const db = supabase;
 
   const { data, error } = await db
     .from("push_subscriptions")
