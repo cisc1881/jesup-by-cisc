@@ -7,13 +7,6 @@ import type {
 } from "@/lib/weather/county-directory-types";
 import { mapCountyRecordToPreparedness } from "@/lib/weather/county-directory-service";
 
-// Table added in 20260712160000_county_emergency_contacts.sql — regenerate Supabase types after migration.
-function countyTable() {
-  return (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }).from(
-    "county_emergency_contacts",
-  );
-}
-
 function mapRow(row: Record<string, unknown>): CountyEmergencyRecord {
   return {
     id: row.id as string,
@@ -82,7 +75,7 @@ export function emptyCountyEmergencyForm(): CountyEmergencyFormData {
 }
 
 export async function fetchAdminCountyEmergencyContacts(): Promise<CountyEmergencyListItem[]> {
-  const { data, error } = await countyTable()
+  const { data, error } = await supabase.from("county_emergency_contacts")
     .select(
       "id, county_name, state_name, state_code, agency_name, primary_phone, verification_status, verified_date, is_active, archived_at, updated_at",
     )
@@ -94,7 +87,7 @@ export async function fetchAdminCountyEmergencyContacts(): Promise<CountyEmergen
 }
 
 export async function fetchCountyEmergencyContact(id: string): Promise<CountyEmergencyRecord> {
-  const { data, error } = await countyTable().select("*").eq("id", id).single();
+  const { data, error } = await supabase.from("county_emergency_contacts").select("*").eq("id", id).single();
   if (error) throw error;
   return mapRow(data as Record<string, unknown>);
 }
@@ -126,18 +119,18 @@ export async function saveCountyEmergencyContact(
   };
 
   if (id) {
-    const { error } = await countyTable().update(payload).eq("id", id);
+    const { error } = await supabase.from("county_emergency_contacts").update(payload).eq("id", id);
     if (error) throw error;
     return id;
   }
 
-  const { data, error } = await countyTable().insert(payload).select("id").single();
+  const { data, error } = await supabase.from("county_emergency_contacts").insert(payload).select("id").single();
   if (error) throw error;
   return data.id as string;
 }
 
 export async function archiveCountyEmergencyContact(id: string): Promise<void> {
-  const { error } = await countyTable()
+  const { error } = await supabase.from("county_emergency_contacts")
     .update({ is_active: false, archived_at: new Date().toISOString() })
     .eq("id", id);
   if (error) throw error;
