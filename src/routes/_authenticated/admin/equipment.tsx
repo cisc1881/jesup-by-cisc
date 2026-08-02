@@ -84,7 +84,7 @@ function AdminEquipment() {
     if (!managing) return;
     setSavingRequest(true);
     const { error } = await supabase.from("equipment_checkouts").update({
-      status: requestForm.status,
+      status: requestForm.status as any,
       admin_notes: requestForm.admin_notes || null,
       condition_out: requestForm.condition_out || null,
       condition_in: requestForm.condition_in || null,

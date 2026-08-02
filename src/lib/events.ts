@@ -716,7 +716,7 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
       id: g.id,
       imageUrl: g.image_url,
       caption: g.caption ?? "",
-      altText: g.alt_text ?? "",
+      altText: g.alt_text ?? null,
       sortOrder: g.sort_order,
       isCover: g.is_cover ?? false,
     })),
@@ -737,66 +737,66 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
     supabase.from("event_speakers").delete().eq("event_id", eventId),
   ]);
 
-  const inserts: Promise<unknown>[] = [];
+  const inserts: PromiseLike<unknown>[] = [];
 
   if (form.programIds.length) {
     inserts.push(
-      Promise.resolve(supabase.from("program_events").insert(
+      supabase.from("program_events").insert(
         form.programIds.map((programId, index) => ({
           event_id: eventId,
           program_id: programId,
           sort_order: index,
         })),
-      )),
+      ),
     );
   }
   if (form.publicationIds.length) {
     inserts.push(
-      Promise.resolve(supabase.from("publication_events").insert(
+      supabase.from("publication_events").insert(
         form.publicationIds.map((publicationId, index) => ({
           event_id: eventId,
           publication_id: publicationId,
           sort_order: index,
         })),
-      )),
+      ),
     );
   }
   if (form.podcastIds.length) {
     inserts.push(
-      Promise.resolve(supabase.from("event_podcast_episodes").insert(
+      supabase.from("event_podcast_episodes").insert(
         form.podcastIds.map((podcastId, index) => ({
           event_id: eventId,
           podcast_episode_id: podcastId,
           sort_order: index,
         })),
-      )),
+      ),
     );
   }
   if (form.partnerIds.length) {
     inserts.push(
-      Promise.resolve(supabase.from("event_partners").insert(
+      supabase.from("event_partners").insert(
         form.partnerIds.map((partnerId, index) => ({
           event_id: eventId,
           partner_id: partnerId,
           sort_order: index,
         })),
-      )),
+      ),
     );
   }
   if (form.grantIds.length) {
     inserts.push(
-      Promise.resolve(supabase.from("event_grants").insert(
+      supabase.from("event_grants").insert(
         form.grantIds.map((grantId, index) => ({
           event_id: eventId,
           grant_id: grantId,
           sort_order: index,
         })),
-      )),
+      ),
     );
   }
   if (form.sessions.length) {
     inserts.push(
-      Promise.resolve(supabase.from("event_sessions").insert(
+      supabase.from("event_sessions").insert(
         form.sessions.map((session, index) => ({
           event_id: eventId,
           title: session.title,
@@ -806,12 +806,12 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
           location: session.location || null,
           sort_order: index,
         })),
-      )),
+      ),
     );
   }
   if (form.speakers.length) {
     inserts.push(
-      Promise.resolve(supabase.from("event_speakers").insert(
+      supabase.from("event_speakers").insert(
         form.speakers.map((speaker, index) => ({
           event_id: eventId,
           name: speaker.name,
@@ -820,7 +820,7 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
           photo_url: speaker.photoUrl || null,
           sort_order: index,
         })),
-      )),
+      ),
     );
   }
 

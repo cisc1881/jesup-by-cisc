@@ -294,10 +294,10 @@ export async function getInquiry(id: string) {
 }
 
 export async function updateInquiryStatus(id: string, status: InquiryStatus, assignedTo?: string | null) {
-  const payload: { status: InquiryStatus; assigned_to?: string | null } = { status };
+  const payload: Record<string, unknown> = { status };
   if (assignedTo !== undefined) payload.assigned_to = assignedTo;
 
-  const { error } = await supabase.from("inquiries").update(payload).eq("id", id);
+  const { error } = await supabase.from("inquiries").update(payload as never).eq("id", id);
   if (error) throw error;
 }
 

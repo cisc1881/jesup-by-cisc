@@ -21,9 +21,9 @@ import {
   filterMarkets,
   partitionMarkets,
   type MarketProductCategory,
+  type MarketListItem,
 } from "@/lib/markets";
 import { listPageHead } from "@/lib/seo";
-import type { MarketListItem } from "@/lib/markets";
 
 export const Route = createFileRoute("/markets")({
   head: () => listPageHead({ title: "Farmers Markets", description: "Find farmers markets near you — locally grown food, SNAP/EBT, and community agriculture from CISC.", path: "/markets" }),
@@ -72,7 +72,7 @@ function MarketsPage() {
     () => (markets ?? []).filter((m) => savedIds.has(m.id)),
     [markets, savedIds],
   );
-  const showInitialSkeleton = isLoading && (markets ?? []).length === 0;
+  const showInitialSkeleton = isLoading && !(markets ?? []).length;
 
   const handleRefresh = useCallback(async () => {
     await refetch();

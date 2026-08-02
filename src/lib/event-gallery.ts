@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 import { EVENT_IMAGES_BUCKET, uploadEventImage } from "@/lib/events";
-import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export type GallerySource = "admin" | "participant";
 export type GallerySubmissionStatus = "pending" | "approved" | "rejected";
@@ -273,7 +272,7 @@ export async function updateEventGalleryItem(
   itemId: string,
   updates: GalleryItemUpdate,
 ): Promise<EventGalleryItem> {
-  const payload: TablesUpdate<"event_gallery"> = {};
+  const payload: Record<string, unknown> = {};
   if (updates.caption !== undefined) payload.caption = updates.caption;
   if (updates.altText !== undefined) payload.alt_text = updates.altText;
   if (updates.photographerOrSource !== undefined) payload.photographer_or_source = updates.photographerOrSource;
@@ -282,7 +281,7 @@ export async function updateEventGalleryItem(
 
   const { data, error } = await supabase
     .from("event_gallery")
-    .update(payload)
+    .update(payload as never)
     .eq("id", itemId)
     .select("*")
     .single();

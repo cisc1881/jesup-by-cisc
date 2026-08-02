@@ -9,15 +9,14 @@ import {
   ProgramDetailHero,
 } from "@/components/programs";
 import { buildPageHead, programJsonLd } from "@/lib/seo";
-import { fetchProgramBySlug, fetchPrograms } from "@/lib/programs";
-import type { ProgramListItem } from "@/lib/programs";
+import { fetchProgramBySlug, fetchPrograms, type ProgramListItem } from "@/lib/programs";
 
 export const Route = createFileRoute("/programs/$slug")({
   loader: async ({ params }) => {
     const program = await fetchProgramBySlug(params.slug);
     if (!program) throw notFound();
     const allPrograms = await fetchPrograms();
-    const related = allPrograms.filter((p: Awaited<ReturnType<typeof fetchPrograms>>[number]) => p.slug !== program.slug).slice(0, 3);
+    const related = allPrograms.filter((p) => p.slug !== program.slug).slice(0, 3);
     return { program, related };
   },
   head: ({ loaderData }) => {
@@ -80,7 +79,7 @@ function ProgramDetail() {
           <section className="mt-16 border-t border-border/60 pt-10">
             <h2 className="mb-5 text-2xl font-black tracking-tight">More programs</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {(related as ProgramListItem[]).map((p) => (
+              {related.map((p: ProgramListItem) => (
                 <ProgramCard key={p.id} program={p} variant="compact" />
               ))}
             </div>

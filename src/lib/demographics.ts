@@ -1,10 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { AcademicLevel } from "@/lib/institutions";
 import { ACADEMIC_LEVEL_LABELS, INSTITUTION_TYPE_LABELS } from "@/lib/institutions";
-import type { Database } from "@/integrations/supabase/types";
-
-type MyDemographicsRpcArgs = Database["public"]["Functions"]["upsert_my_participant_demographics"]["Args"];
-type AnonEvaluationDemographicsRpcArgs = Database["public"]["Functions"]["upsert_anonymous_evaluation_demographics"]["Args"];
 
 export type DemographicSourceType = "registration" | "walk_in" | "evaluation" | "attendance";
 
@@ -200,20 +196,20 @@ function triStateToBoolean(value: TriStateBoolean): boolean | null {
 
 function toRpcPayload(form: DemographicFormData) {
   return {
-    p_age_range: form.ageRange || undefined,
-    p_race: form.race || undefined,
-    p_ethnicity: form.ethnicity || undefined,
-    p_gender: form.gender || undefined,
-    p_veteran_status: form.veteranStatus || undefined,
-    p_disability_status: form.disabilityStatus || undefined,
-    p_farmer_producer_status: form.farmerProducerStatus || undefined,
-    p_beginning_farmer: triStateToBoolean(form.beginningFarmer) ?? undefined,
-    p_limited_resource_producer: triStateToBoolean(form.limitedResourceProducer) ?? undefined,
-    p_county: form.county?.trim() || undefined,
-    p_state: form.state?.trim() || undefined,
-    p_rural_urban: form.ruralUrban || undefined,
-    p_institution_id: form.institutionId || undefined,
-    p_academic_level: (form.academicLevel || undefined) as MyDemographicsRpcArgs["p_academic_level"],
+    p_age_range: form.ageRange || null,
+    p_race: form.race || null,
+    p_ethnicity: form.ethnicity || null,
+    p_gender: form.gender || null,
+    p_veteran_status: form.veteranStatus || null,
+    p_disability_status: form.disabilityStatus || null,
+    p_farmer_producer_status: form.farmerProducerStatus || null,
+    p_beginning_farmer: triStateToBoolean(form.beginningFarmer),
+    p_limited_resource_producer: triStateToBoolean(form.limitedResourceProducer),
+    p_county: form.county?.trim() || null,
+    p_state: form.state?.trim() || null,
+    p_rural_urban: form.ruralUrban || null,
+    p_institution_id: form.institutionId || null,
+    p_academic_level: form.academicLevel || null,
     p_consent_demographics: true,
   };
 }
@@ -229,12 +225,11 @@ export async function submitMyParticipantDemographics(
   }
   if (!hasAnyDemographicField(form)) return null;
 
-  const payload: MyDemographicsRpcArgs = {
+  const { data, error } = await supabase.rpc("upsert_my_participant_demographics", {
     p_source_type: sourceType,
     p_source_id: sourceId,
     ...toRpcPayload(form),
-  };
-  const { data, error } = await supabase.rpc("upsert_my_participant_demographics", payload);
+  } as never);
   if (error) throw error;
   return data as string;
 }
@@ -287,12 +282,11 @@ export async function submitAnonymousEvaluationDemographics(
   }
   if (!hasAnyDemographicField(form)) return null;
 
-  const anonPayload: AnonEvaluationDemographicsRpcArgs = {
+  const { data, error } = await supabase.rpc("upsert_anonymous_evaluation_demographics", {
     p_response_id: responseId,
     p_access_token: accessToken,
     ...toRpcPayload(form),
-  };
-  const { data, error } = await supabase.rpc("upsert_anonymous_evaluation_demographics", anonPayload);
+  } as never);
   if (error) throw error;
   return data as string;
 }

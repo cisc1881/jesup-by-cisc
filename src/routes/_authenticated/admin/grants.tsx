@@ -82,13 +82,12 @@ function AdminGrants() {
   function openEdit(r: GrantRow) {
     setEditing(r);
     setForm({
-      ...empty,
-      ...r,
+      title: r.title ?? "",
       funder: r.funder ?? "",
       description: r.description ?? "",
       amount: r.amount ?? "",
-      url: r.url ?? "",
       deadline: r.deadline ?? "",
+      url: r.url ?? "",
     });
     setSourceNotes("");
     setOpen(true);

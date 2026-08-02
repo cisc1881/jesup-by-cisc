@@ -2,18 +2,6 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ContentEntityType } from "@/modules/core";
 import type { RelationshipDef } from "./types";
 
-type DynResult = { data: unknown; error: { message: string } | null };
-interface DynBuilder extends PromiseLike<DynResult> {
-  select: (cols: string) => DynBuilder;
-  eq: (col: string, val: unknown) => DynBuilder;
-  order: (col: string) => DynBuilder;
-  delete: () => DynBuilder;
-  insert: (rows: Record<string, unknown>[]) => DynBuilder;
-}
-function dynFrom(table: string): DynBuilder {
-  return (supabase as unknown as { from: (table: string) => DynBuilder }).from(table);
-}
-
 /**
  * Config-driven relationship engine.
  * Maps entity types to existing junction tables — no code changes needed to connect content.
@@ -50,11 +38,12 @@ export async function fetchRelatedIds(
   );
   if (!def) return [];
 
-  const { data, error } = await dynFrom(def.junctionTable)
+  const { data, error } = await supabase
+    .from(def.junctionTable as never)
     .select(def.targetColumn)
     .eq(def.sourceColumn, sourceId);
   if (error) throw error;
-  return ((data ?? []) as Record<string, string>[]).map((row) => row[def.targetColumn]);
+  return ((data ?? []) as unknown as Record<string, string>[]).map((row) => row[def.targetColumn]);
 }
 
 export async function saveRelationships(
@@ -68,15 +57,15 @@ export async function saveRelationships(
   );
   if (!def) return;
 
-  await dynFrom(def.junctionTable).delete().eq(def.sourceColumn, sourceId);
+  await supabase.from(def.junctionTable as never).delete().eq(def.sourceColumn, sourceId);
   if (targetIds.length === 0) return;
 
-  const { error } = await dynFrom(def.junctionTable).insert(
+  const { error } = await supabase.from(def.junctionTable as never).insert(
     targetIds.map((targetId, index) => ({
       [def.sourceColumn]: sourceId,
       [def.targetColumn]: targetId,
       sort_order: index,
-    })),
+    })) as never,
   );
   if (error) throw error;
 }
@@ -94,19 +83,23 @@ export async function fetchRelationshipOptions(targetType: ContentEntityType) {
     equipment: { table: "equipment", idCol: "id", labelCol: "name" },
     survey: { table: "surveys", idCol: "id", labelCol: "title" },
     internship: { table: "internships", idCol: "id", labelCol: "title" },
-    twofas: { table: "internships", idCol: "id", labelCol: "title", filter: { is_2fas: true } },
+    twofas: { table: "twofas_applications", idCol: "id", labelCol: "id" },
   };
 
   const config = tableMap[targetType];
   if (!config) return [];
 
-  let query = dynFrom(config.table).select(`${config.idCol}, ${config.labelCol}`).order(config.labelCol);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query: any = supabase
+    .from(config.table as never)
+    .select(`${config.idCol}, ${config.labelCol}`)
+    .order(config.labelCol);
   if (config.filter) {
     for (const [col, val] of Object.entries(config.filter)) {
       query = query.eq(col, val);
     }
   }
-  const { data, error } = await query;
+  const { data, error } = (await query) as { data: unknown; error: { message: string } | null };
   if (error) throw error;
   return ((data ?? []) as Record<string, string>[]).map((row) => ({
     id: row[config.idCol],

@@ -39,7 +39,7 @@ import { EventAgendaNotice, EventChatRoom } from "@/components/events";
 import { PublicLayout } from "@/components/public-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchEventById, fetchUserEventRegistration } from "@/lib/events";
+import { fetchEventById, fetchUserEventRegistration, type EventSession } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +52,17 @@ export const Route = createFileRoute("/events/$id/hub")({
 });
 
 type HubTab = "home" | "agenda" | "attendees" | "community" | "more";
+
+type EventAttendee = {
+  id: string;
+  user_id: string | null;
+  status: string;
+  checked_in_at: string | null;
+  full_name: string;
+  affiliation: string | null;
+  school_name: string | null;
+  major_or_interest: string | null;
+};
 
 const additionalTools = [
   ["Announcements & reminders", BellRing],
@@ -72,20 +83,9 @@ const additionalTools = [
   ["Accessibility requests", Accessibility],
 ] as const;
 
-type HubAttendee = {
-  id: string;
-  user_id: string | null;
-  full_name: string;
-  affiliation: string | null;
-  school_name: string | null;
-  major_or_interest: string | null;
-};
-
 function EventHubPage() {
   const { id } = Route.useParams();
-  const { event } = Route.useLoaderData() as {
-    event: Awaited<ReturnType<typeof fetchEventById>>;
-  };
+  const { event } = Route.useLoaderData();
   const { user, isAdmin } = useAuth();
   const [tab, setTab] = useState<HubTab>("home");
   const [search, setSearch] = useState("");
@@ -107,23 +107,27 @@ function EventHubPage() {
     queryFn: () => fetchUserEventRegistration(id, user!.id),
   });
   const registered = !!registration || isAdmin;
-  const { data: attendees = [], isLoading: attendeesLoading } = useQuery<HubAttendee[]>({
+  const { data: attendees = [], isLoading: attendeesLoading } = useQuery({
     queryKey: ["event-attendee-directory", id],
     enabled: registered,
-    queryFn: async () => {
+    queryFn: async (): Promise<EventAttendee[]> => {
       const { data, error } = await supabase
         .from("event_registrations")
-        .select("id, user_id, attendee_name")
+        .select(
+          "id, user_id, status, checked_in_at, attendee_name, profiles(full_name, affiliation, school_name, major_or_interest)",
+        )
         .eq("event_id", id)
-        .order("attendee_name", { ascending: true });
+        .neq("status", "cancelled");
       if (error) throw error;
       return (data ?? []).map((row) => ({
         id: row.id,
         user_id: row.user_id,
-        full_name: row.attendee_name ?? "Event attendee",
-        affiliation: null,
-        school_name: null,
-        major_or_interest: null,
+        status: row.status,
+        checked_in_at: row.checked_in_at,
+        full_name: row.profiles?.full_name || row.attendee_name || "JESUP attendee",
+        affiliation: row.profiles?.affiliation ?? null,
+        school_name: row.profiles?.school_name ?? null,
+        major_or_interest: row.profiles?.major_or_interest ?? null,
       }));
     },
   });
@@ -131,7 +135,7 @@ function EventHubPage() {
   const visibleSessions = useMemo(() => {
     const query = search.trim().toLowerCase();
     return (
-      event?.sessions.filter((session) => {
+      event?.sessions.filter((session: EventSession) => {
         if (agendaMode === "mine" && !savedSessions.includes(session.id)) return false;
         return (
           !query ||
@@ -340,7 +344,7 @@ function EventHubPage() {
                 <EventAgendaNotice metadata={event.metadata} />
               </div>
               <div className="divide-y">
-                {visibleSessions.map((session) => (
+                {visibleSessions.map((session: EventSession) => (
                   <article
                     key={session.id}
                     className="grid grid-cols-[86px_minmax(0,1fr)_44px] gap-3 px-4 py-5 sm:px-6"

@@ -10,7 +10,6 @@ import {
   UpcomingEventsSection,
 } from "@/components/home";
 import { fetchHomePageData, createEmptyHomePageData, DEFAULT_SECTION_META } from "@/lib/home";
-import type { HomePageData } from "@/lib/home";
 import { buildPageHead } from "@/lib/seo";
 import { HOME_PAGE_QUERY_KEY } from "@/lib/query-config";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
@@ -79,9 +78,7 @@ function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 function Home() {
-  const loaderData = Route.useLoaderData();
-  const { data: queryData, isLoading } = useHomeData();
-  const data: HomePageData | undefined = queryData ?? (loaderData as HomePageData | undefined);
+  const { data, isLoading } = useHomeData();
   const sections = data?.sections ?? DEFAULT_SECTION_META;
   const { institutionId } = useInstitutionTheme();
   const relevantEvents = useMemo(

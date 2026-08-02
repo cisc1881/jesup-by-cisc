@@ -449,10 +449,8 @@ async function submitNativeInternshipApplication(input: SubmitInternshipApplicat
   const { data, error } = await supabase
     .from("internship_applications")
     .insert({
+      user_id: auth.user.id,
       internship_id: input.internshipId,
-      user_id: input.userId,
-      cohort_id: input.cohortId ?? null,
-      track: input.track ?? null,
       cover_letter: input.coverLetter || null,
       resume_url: input.resumeUrl || null,
       school_name: input.schoolName || null,
@@ -463,13 +461,14 @@ async function submitNativeInternshipApplication(input: SubmitInternshipApplicat
       is_1890_land_grant: input.is1890LandGrant ?? null,
       academic_level: input.academicLevel ?? null,
       emergency_contact: (input.emergencyContact ?? {}) as never,
+      submitted_at: new Date().toISOString(),
     })
     .select("id")
     .single();
 
   if (error) throw error;
   if (!data) throw new Error("Application was not created.");
-  return data.id as string;
+  return data.id;
 }
 
 export async function listMy2FASApplications(userId: string) {

@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { WeatherNotificationPreferences, WeatherNotificationPreferencesInput } from "./types";
 
 function weatherPrefsTable() {
-  return supabase.from("weather_notification_preferences");
+  return (supabase as any).from("weather_notification_preferences");
 }
 
 function mapRow(row: Record<string, unknown>): WeatherNotificationPreferences {

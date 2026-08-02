@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 import { parseCsv, toCsv, type CsvColumn } from "@/lib/csv";
-import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export type AttendanceStatus =
   | "registered"
@@ -390,7 +389,7 @@ export async function updateAttendanceStatus(input: MarkAttendanceInput) {
     .single();
   if (fetchError) throw fetchError;
 
-  const payload: TablesUpdate<"event_attendance"> = {
+  const payload: Record<string, unknown> = {
     status: input.status,
     notes: input.notes ?? undefined,
   };
@@ -407,7 +406,10 @@ export async function updateAttendanceStatus(input: MarkAttendanceInput) {
     payload.attendance_method = null;
   }
 
-  const { error } = await supabase.from("event_attendance").update(payload).eq("id", input.attendanceId);
+  const { error } = await supabase
+    .from("event_attendance")
+    .update(payload as never)
+    .eq("id", input.attendanceId);
   if (error) throw error;
 
   if (

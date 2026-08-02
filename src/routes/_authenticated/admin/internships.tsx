@@ -73,7 +73,7 @@ function AdminInternships() {
   const rows = (data ?? []).filter((r) => {
     if (q && !r.title.toLowerCase().includes(q.toLowerCase())) return false;
     if (institutionFilter === "all") return true;
-    const audience = parseInternshipAudience((r as { metadata?: import("@/integrations/supabase/types").Json }).metadata);
+    const audience = parseInternshipAudience(null);
     if (institutionFilter === "network") return audience.networkWide;
     if (institutionFilter === "other") return audience.otherInstitutions;
     return audience.institutionIds.includes(institutionFilter);
@@ -105,7 +105,8 @@ function AdminInternships() {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    const payload: any = { ...form, deadline: form.deadline || null };
+    const { metadata: _metadata, ...rest } = form;
+    const payload: any = { ...rest, deadline: form.deadline || null };
     const res = editing
       ? await supabase.from("internships").update(payload).eq("id", editing.id)
       : await supabase.from("internships").insert(payload);

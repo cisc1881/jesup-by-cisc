@@ -29,7 +29,6 @@ import {
   FileText,
 } from "lucide-react";
 import type { ModuleId } from "@/modules/core";
-import type { Database } from "@/integrations/supabase/types";
 
 export type CommandCenterNavGroupId =
   "overview" | "content" | "operations" | "community" | "analytics" | "system";
@@ -48,7 +47,7 @@ export type DashboardWidget = {
   label: string;
   to: string;
   icon: LucideIcon;
-  table?: keyof Database["public"]["Tables"];
+  table?: string;
   countQuery?: "table" | "registrations" | "pending_approvals" | "media" | "notifications";
   group: "content" | "operations" | "platform";
 };

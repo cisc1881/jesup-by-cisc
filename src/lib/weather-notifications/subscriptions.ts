@@ -3,7 +3,7 @@ import { normalizePushSubscriptionJson } from "./subscription-normalize";
 import type { PushSubscriptionInput, PushSubscriptionRecord } from "./types";
 
 function pushSubsTable() {
-  return supabase.from("push_subscriptions");
+  return (supabase as any).from("push_subscriptions");
 }
 
 function mapRow(row: Record<string, unknown>): PushSubscriptionRecord {
@@ -32,7 +32,7 @@ export async function listPushSubscriptions(userId: string): Promise<PushSubscri
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
-  return (data ?? []).map((row) => mapRow(row as Record<string, unknown>));
+  return (data ?? []).map((row: Record<string, unknown>) => mapRow(row as Record<string, unknown>));
 }
 
 export async function subscribeDevice(
@@ -109,7 +109,7 @@ export async function recordSubscriptionFailure(subscriptionId: string): Promise
   if (readError) throw readError;
 
   const nextCount = Number((data as { failure_count?: number }).failure_count ?? 0) + 1;
-  const updates: { failure_count: number; is_active?: boolean; revoked_at?: string } = { failure_count: nextCount };
+  const updates: Record<string, unknown> = { failure_count: nextCount };
   if (nextCount >= 5) {
     updates.is_active = false;
     updates.revoked_at = new Date().toISOString();
