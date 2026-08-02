@@ -19,14 +19,28 @@ import { useAuth } from "@/hooks/use-auth";
 import { fmtDate } from "@/lib/format";
 import { Briefcase } from "lucide-react";
 import { listPageHead } from "@/lib/seo";
+import { useInstitutionTheme } from "@/components/institution-theme-provider";
+import {
+  InstitutionScopeFilter,
+  type InstitutionScope,
+} from "@/components/institution-scope-filter";
+import { listInstitutions } from "@/lib/institutions";
+import { parseInternshipAudience } from "@/lib/internships";
 
 export const Route = createFileRoute("/internships")({
-  head: () => listPageHead({ title: "Internships", description: "Open internship positions and student opportunities at CISC.", path: "/internships" }),
+  head: () =>
+    listPageHead({
+      title: "Internships",
+      description: "Open internship positions and student opportunities at CISC.",
+      path: "/internships",
+    }),
   component: InternshipsPage,
 });
 
 function InternshipsPage() {
   const { user } = useAuth();
+  const { institutionId, institutionName } = useInstitutionTheme();
+  const [scope, setScope] = useState<InstitutionScope>(institutionId ? "mine" : "all");
   const { data } = useQuery({
     queryKey: ["internships"],
     queryFn: async () => {
@@ -38,6 +52,11 @@ function InternshipsPage() {
       if (error) throw error;
       return data;
     },
+  });
+
+  const { data: institutions = [] } = useQuery({
+    queryKey: ["institutions", "internship-directory"],
+    queryFn: () => listInstitutions({ activeOnly: true, includeOther: true }),
   });
 
   const { data: applicationIds = [] } = useQuery({
@@ -54,21 +73,37 @@ function InternshipsPage() {
   });
   const applied = new Set(applicationIds);
 
-  const has2fas = (data ?? []).some((row) => row.is_2fas);
+  const selectedInstitution = institutions.find((institution) => institution.id === institutionId);
+  const filtered = (data ?? []).filter((internship) => {
+    if (scope === "all" || !institutionId) return true;
+    const audience = parseInternshipAudience(internship.metadata);
+    const belongsToMine =
+      audience.institutionIds.includes(institutionId) ||
+      (!!selectedInstitution && audience.institutionSlugs.includes(selectedInstitution.slug));
+    if (scope === "mine") return audience.networkWide || belongsToMine;
+    return audience.otherInstitutions || (!audience.networkWide && !belongsToMine);
+  });
+  const has2fas = filtered.some((row) => row.is_2fas);
 
   return (
     <PublicLayout>
       <PageHeader
-        title="Internships"
-        description="Gain experience while contributing to community impact."
+        eyebrow={institutionName ?? "1890 Land-Grant Network"}
+        title="Internship Applications"
+        description="Search and apply for internships across your institution and the shared 1890 network."
       />
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
+        <InstitutionScopeFilter
+          value={scope}
+          onChange={setScope}
+          hasInstitution={!!institutionId}
+        />
         <EligibilityBanner />
         <div className="grid gap-4 md:grid-cols-2">
-          {(!data || data.length === 0) && (
+          {filtered.length === 0 && (
             <p className="text-muted-foreground md:col-span-2">No open internships at this time.</p>
           )}
-          {data?.map((internship) => (
+          {filtered.map((internship) => (
             <InternshipCard
               key={internship.id}
               internship={internship}
@@ -89,6 +124,7 @@ type InternshipRow = {
   department: string | null;
   deadline: string | null;
   is_2fas: boolean;
+  metadata: import("@/integrations/supabase/types").Json;
 };
 
 function InternshipCard({

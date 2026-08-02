@@ -239,6 +239,7 @@ export const starterInternships = [
     track: "fellow",
     is_2fas: true,
     is_open: true,
+    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
   {
     slug: "sei-high-school",
@@ -251,6 +252,7 @@ export const starterInternships = [
     track: "high_school",
     is_2fas: true,
     is_open: true,
+    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
   {
     slug: "sei-undergraduates",
@@ -263,6 +265,7 @@ export const starterInternships = [
     track: "undergraduate",
     is_2fas: true,
     is_open: true,
+    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
   {
     slug: "graduate-extension-interns-fellows",
@@ -275,6 +278,7 @@ export const starterInternships = [
     track: "graduate",
     is_2fas: true,
     is_open: true,
+    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
 ] satisfies Insert<"internships">[];
 
@@ -363,16 +367,15 @@ export const starterEvents = [
   },
   {
     slug: "ard-research-symposium-recap-2026",
-    title: "2026 ARD Research Symposium Recap",
+    title: "22nd ARD Research Symposium",
     description:
       "A public recap of research, collaboration, agricultural advancement, sustainability, community resilience, and innovation across the 1890 land-grant network.",
     starts_at: "2026-03-28T09:00:00-05:00",
     ends_at: "2026-03-31T17:00:00-05:00",
     location: "New Orleans, Louisiana",
     image_url: COVERS.extension,
-    metadata: { image_note: "AI-generated illustrative image" },
-    external_url:
-      "https://cisc1881.org/news/2026-ard-research-symposium-recap-advancing-research-collaboration-and-impact/",
+    metadata: { network_wide: true, organization: "1890 ARD", source: "official" },
+    external_url: "https://wwwcp.umes.edu/ard/1890symposium/",
     status: "published",
     is_active: true,
     is_featured: false,
@@ -576,8 +579,7 @@ export const starterPartners = [
     description:
       "CAENS prepares students and serves communities through agriculture, environment, nutrition, research, and Cooperative Extension.",
     category: "University",
-    logo_url:
-      "https://www.tuskegee.edu/_files/images/logos/TU_logo_horizontal_transparent_red.png",
+    logo_url: "https://www.tuskegee.edu/_files/images/logos/TU_logo_horizontal_transparent_red.png",
     website_url: "https://www.tuskegee.edu/caens",
     partnership_areas: ["Research", "Education", "Extension", "Student development"],
     social_links: {},

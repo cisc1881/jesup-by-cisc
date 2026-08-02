@@ -281,9 +281,9 @@ export function CommandCenterDashboard() {
               className="bg-white/15 text-primary-foreground hover:bg-white/25"
               asChild
             >
-              <Link to="/admin/2fas/applications">
+              <Link to="/admin/internships">
                 <GraduationCap className="mr-1.5 h-4 w-4" />
-                Review 2FAS Applications
+                Internship Applications
               </Link>
             </Button>
           </div>
