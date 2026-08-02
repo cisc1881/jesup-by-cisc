@@ -61,6 +61,7 @@ function MarketDetailPage() {
   }
 
   async function handleShare() {
+    if (!market) return;
     try {
       await shareMarket(market);
       toast.success("Link copied to clipboard");
