@@ -23,6 +23,7 @@ import {
   type MarketProductCategory,
 } from "@/lib/markets";
 import { listPageHead } from "@/lib/seo";
+import type { MarketListItem } from "@/lib/markets";
 
 export const Route = createFileRoute("/markets")({
   head: () => listPageHead({ title: "Farmers Markets", description: "Find farmers markets near you — locally grown food, SNAP/EBT, and community agriculture from CISC.", path: "/markets" }),
@@ -42,7 +43,7 @@ function MarketsPage() {
     isLoading,
     isFetching,
     refetch,
-  } = useQuery({
+  } = useQuery<MarketListItem[]>({
     queryKey: ["markets", coords?.lat, coords?.lng],
     queryFn: () => fetchMarkets({ coords }),
   });

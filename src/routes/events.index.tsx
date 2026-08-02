@@ -15,6 +15,7 @@ import {
 import { DirectoryResultList } from "@/components/directory-result-list";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { fetchEventCategories, fetchEvents, filterEvents } from "@/lib/events";
+import type { EventListItem } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
 import { listPageHead } from "@/lib/seo";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
@@ -51,7 +52,7 @@ function EventsPage() {
     isLoading,
     isFetching,
     refetch,
-  } = useQuery({
+  } = useQuery<EventListItem[]>({
     queryKey: ["events"],
     queryFn: () => fetchEvents({ upcomingOnly: false }),
   });
