@@ -9,7 +9,7 @@ import {
   ProgramDetailHero,
 } from "@/components/programs";
 import { buildPageHead, programJsonLd } from "@/lib/seo";
-import { fetchProgramBySlug, fetchPrograms } from "@/lib/programs";
+import { fetchProgramBySlug, fetchPrograms, type ProgramListItem } from "@/lib/programs";
 
 export const Route = createFileRoute("/programs/$slug")({
   loader: async ({ params }) => {
