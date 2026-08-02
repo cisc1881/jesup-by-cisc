@@ -80,8 +80,11 @@ export type PartnerSortMode = "alphabetical" | "featured" | "newest";
 
 const listSelect = `
   id, slug, name, short_description, description, category, logo_url, website_url,
-  email, phone, is_featured, is_published, partnership_areas, sort_order, created_at
+  is_featured, is_published, partnership_areas, sort_order, created_at
 `;
+// Note: `email` and `phone` columns do not exist on the `partners` table in the
+// generated DB types. They remain part of the app-level PartnerListItem/
+// PartnerFormData shape but are always mapped to null / not persisted.
 
 function mapListRow(row: Record<string, unknown>): PartnerListItem {
   return {
@@ -93,8 +96,8 @@ function mapListRow(row: Record<string, unknown>): PartnerListItem {
     category: (row.category as string | null) ?? null,
     logoUrl: (row.logo_url as string | null) ?? null,
     websiteUrl: (row.website_url as string | null) ?? null,
-    email: (row.email as string | null) ?? null,
-    phone: (row.phone as string | null) ?? null,
+    email: null,
+    phone: null,
     isFeatured: (row.is_featured as boolean) ?? false,
     isPublished: row.is_published as boolean,
     partnershipAreas: (row.partnership_areas as string[] | null) ?? [],
@@ -314,8 +317,8 @@ export async function fetchAdminPartnerForm(partnerId: string): Promise<PartnerF
     category: row.category ?? "",
     logoUrl: row.logo_url ?? "",
     websiteUrl: row.website_url ?? "",
-    email: row.email ?? "",
-    phone: row.phone ?? "",
+    email: "",
+    phone: "",
     address: row.address ?? "",
     notes: row.notes ?? "",
     socialLinks: (row.social_links as PartnerSocialLinks) ?? {},
@@ -422,8 +425,6 @@ export async function savePartner(partnerId: string | null, form: PartnerFormDat
     category: form.category || null,
     logo_url: form.logoUrl.trim() || null,
     website_url: form.websiteUrl.trim() || null,
-    email: form.email.trim() || null,
-    phone: form.phone.trim() || null,
     address: form.address.trim() || null,
     notes: form.notes.trim() || null,
     social_links: form.socialLinks,
