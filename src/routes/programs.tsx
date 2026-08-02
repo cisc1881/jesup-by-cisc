@@ -21,7 +21,7 @@ import {
   type InstitutionScope,
 } from "@/components/institution-scope-filter";
 
-export const Route = createFileRoute("/__zzz_test")({
+export const Route = createFileRoute("/programs")({
   head: () =>
     listPageHead({
       title: "Programs",
