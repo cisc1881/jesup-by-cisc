@@ -19,3 +19,4 @@ export {
 export { EventRegistrationPanel } from "./event-registration-panel";
 export { EventWorkspaceMenu } from "./event-workspace-menu";
 export { EventChatRoom } from "./event-chat-room";
+export { EventAgendaNotice } from "./event-agenda-notice";

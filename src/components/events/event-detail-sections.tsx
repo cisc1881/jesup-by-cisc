@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { fmtDateTime } from "@/lib/format";
 import { Calendar, MapPin } from "lucide-react";
+import { EventAgendaNotice } from "./event-agenda-notice";
 
 type EventDetailHeroProps = {
   event: EventDetail;
@@ -93,6 +94,7 @@ export function EventAgenda({ event }: { event: EventDetail }) {
     <section aria-labelledby="event-agenda-heading" className="space-y-4">
       <SectionHeader title="Agenda" titleId="event-agenda-heading" />
       <div className="gold-divider" />
+      <EventAgendaNotice metadata={event.metadata} />
       <div className="space-y-3">
         {event.sessions.map((session) => (
           <AppCard key={session.id} variant="elevated" padding="md">

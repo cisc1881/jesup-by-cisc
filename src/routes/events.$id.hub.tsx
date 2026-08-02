@@ -35,7 +35,7 @@ import {
   Users,
   Vote,
 } from "lucide-react";
-import { EventChatRoom } from "@/components/events";
+import { EventAgendaNotice, EventChatRoom } from "@/components/events";
 import { PublicLayout } from "@/components/public-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -313,6 +313,9 @@ function EventHubPage() {
                     </button>
                   ))}
                 </div>
+              </div>
+              <div className="px-4 pt-4 sm:px-6">
+                <EventAgendaNotice metadata={event.metadata} />
               </div>
               <div className="divide-y">
                 {visibleSessions.map((session) => (
