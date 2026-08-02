@@ -1851,6 +1851,7 @@ export type Database = {
           is_2fas: boolean
           is_open: boolean
           max_applicants: number | null
+          metadata: Json
           program_id: string | null
           requirements_html: string | null
           slug: string | null
@@ -1868,6 +1869,7 @@ export type Database = {
           is_2fas?: boolean
           is_open?: boolean
           max_applicants?: number | null
+          metadata?: Json
           program_id?: string | null
           requirements_html?: string | null
           slug?: string | null
@@ -1885,6 +1887,7 @@ export type Database = {
           is_2fas?: boolean
           is_open?: boolean
           max_applicants?: number | null
+          metadata?: Json
           program_id?: string | null
           requirements_html?: string | null
           slug?: string | null
