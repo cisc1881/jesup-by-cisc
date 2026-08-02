@@ -34,7 +34,7 @@ export async function fetchDashboardCounts(): Promise<DashboardCounts> {
 
       if (widget.countQuery === "media" && widget.table) {
         const { count } = await supabase
-          .from(widget.table)
+          .from(widget.table as never)
           .select("*", { count: "exact", head: true })
           .eq("is_active", true);
         counts[widget.key] = count ?? 0;
@@ -43,7 +43,7 @@ export async function fetchDashboardCounts(): Promise<DashboardCounts> {
 
       if (widget.table) {
         const { count } = await supabase
-          .from(widget.table)
+          .from(widget.table as never)
           .select("*", { count: "exact", head: true });
         counts[widget.key] = count ?? 0;
       }

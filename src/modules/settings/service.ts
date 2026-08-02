@@ -94,7 +94,7 @@ export async function savePlatformSetting<K extends PlatformSettingKey>(
 ) {
   const { error } = await supabase.from("platform_settings").upsert({
     key,
-    value: value as unknown as Record<string, unknown>,
+    value: value as unknown as import("@/integrations/supabase/types").Json,
     updated_at: new Date().toISOString(),
   });
   if (error) throw error;
