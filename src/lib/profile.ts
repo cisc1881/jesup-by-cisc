@@ -65,7 +65,7 @@ export async function getMyProfile(userId: string) {
 }
 
 export async function updateMyProfileInstitution(userId: string, input: ProfileInstitutionInput) {
-  const payload: Record<string, unknown> = {
+  const payload = {
     institution_id: input.institutionId ?? null,
     institution_type: input.institutionType ?? null,
     school_name: input.schoolName?.trim() || null,
@@ -73,7 +73,7 @@ export async function updateMyProfileInstitution(userId: string, input: ProfileI
     academic_level: input.academicLevel ?? null,
     major_or_interest: input.majorOrInterest?.trim() || null,
     expected_graduation_year: input.expectedGraduationYear ?? null,
-  };
+  } as const;
 
   const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
   if (error) throw error;

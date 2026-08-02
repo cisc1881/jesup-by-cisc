@@ -446,9 +446,13 @@ async function submitNativeInternshipApplication(input: SubmitInternshipApplicat
     throw new Error("Sign in is required to apply.");
   }
 
-  const { data, error } = await supabase.rpc("submit_internship_application", {
-    p_application: {
+  const { data, error } = await supabase
+    .from("internship_applications")
+    .insert({
       internship_id: input.internshipId,
+      user_id: input.userId,
+      cohort_id: input.cohortId ?? null,
+      track: input.track ?? null,
       cover_letter: input.coverLetter || null,
       resume_url: input.resumeUrl || null,
       school_name: input.schoolName || null,
@@ -459,12 +463,13 @@ async function submitNativeInternshipApplication(input: SubmitInternshipApplicat
       is_1890_land_grant: input.is1890LandGrant ?? null,
       academic_level: input.academicLevel ?? null,
       emergency_contact: input.emergencyContact ?? {},
-    },
-  });
+    })
+    .select("id")
+    .single();
 
   if (error) throw error;
   if (!data) throw new Error("Application was not created.");
-  return data as string;
+  return data.id as string;
 }
 
 export async function listMy2FASApplications(userId: string) {
