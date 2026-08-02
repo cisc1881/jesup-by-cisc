@@ -69,7 +69,8 @@ function ProgramsLayout() {
     [relevantPrograms, search, categoryId],
   );
 
-  const showInitialSkeleton = isLoading && !programs?.length;
+  const programList: ProgramListItem[] = programs ?? [];
+  const showInitialSkeleton = isLoading && programList.length === 0;
 
   const handleRefresh = useCallback(async () => {
     await refetch();
