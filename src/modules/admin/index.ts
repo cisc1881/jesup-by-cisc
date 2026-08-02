@@ -23,5 +23,6 @@ export {
   type CommandCenterDashboardData,
   type CommandCenterMetrics,
   type CommandCenterActivityItem,
+  type CommandCenterActivityType,
   type CommandCenterPendingItem,
 } from "./services/command-center-dashboard";

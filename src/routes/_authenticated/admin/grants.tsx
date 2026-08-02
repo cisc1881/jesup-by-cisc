@@ -81,7 +81,15 @@ function AdminGrants() {
   }
   function openEdit(r: GrantRow) {
     setEditing(r);
-    setForm({ ...empty, ...r, deadline: r.deadline ?? "" });
+    setForm({
+      ...empty,
+      ...r,
+      funder: r.funder ?? "",
+      description: r.description ?? "",
+      amount: r.amount ?? "",
+      url: r.url ?? "",
+      deadline: r.deadline ?? "",
+    });
     setSourceNotes("");
     setOpen(true);
   }
@@ -125,8 +133,8 @@ function AdminGrants() {
     if (!accessGrant || !funderUserId) return;
     const { error } = await supabase.rpc("set_funder_grant_access", {
       p_grant_id: accessGrant.id,
-      p_user_id: funderUserId,
-      p_enabled: true,
+      p_funder_user_id: funderUserId,
+      p_granted: true,
     });
     if (error) return toast.error(error.message);
     toast.success("Grant assigned to funder portal");

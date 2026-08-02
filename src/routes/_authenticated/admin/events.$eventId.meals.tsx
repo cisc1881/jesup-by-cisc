@@ -68,8 +68,14 @@ function EventMealsPage() {
   }
 
   async function redeem(code: string) {
-    if (!activeDayId) return toast.error("Select the active meal service first.");
-    if (!code.trim()) return toast.error("Scan or enter an attendee code.");
+    if (!activeDayId) {
+      toast.error("Select the active meal service first.");
+      return;
+    }
+    if (!code.trim()) {
+      toast.error("Scan or enter an attendee code.");
+      return;
+    }
     setRedeeming(true);
     setLastResult(null);
     try {

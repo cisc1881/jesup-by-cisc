@@ -1,5 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
+
+type SupabaseCtx = Parameters<Parameters<typeof requireSupabaseAuth.server>[0]>[0]["context"]["supabase"];
+
+async function upsertStarterRows<Table extends keyof Database["public"]["Tables"]>(
+  supabase: SupabaseCtx,
+  table: Table,
+  rows: Database["public"]["Tables"][Table]["Insert"][],
+): Promise<number> {
+  const { data, error } = await supabase
+    .from(table)
+    .upsert(rows, { onConflict: "slug" })
+    .select("id");
+  if (error) throw new Error(`${table}: ${error.message}`);
+  return data?.length ?? 0;
+}
 
 export const importStarterContentServerFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -23,23 +39,13 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
     } = await import("./starter-content");
     // The official partner roster and supplied brand assets are managed separately
     // so a starter-content refresh cannot overwrite approved logos or republish placeholders.
-    const imports = [
-      ["programs", starterPrograms],
-      ["events", starterEvents],
-      ["news_articles", starterNews],
-      ["markets", starterMarkets],
-      ["podcast_episodes", starterPodcasts],
-      ["internships", starterInternships],
-    ] as const;
     const result: Record<string, number> = {};
-    for (const [table, rows] of imports) {
-      const { data, error } = await context.supabase
-        .from(table)
-        .upsert(rows, { onConflict: "slug" })
-        .select("id");
-      if (error) throw new Error(`${table}: ${error.message}`);
-      result[table] = data?.length ?? 0;
-    }
+    result.programs = await upsertStarterRows(context.supabase, "programs", starterPrograms);
+    result.events = await upsertStarterRows(context.supabase, "events", starterEvents);
+    result.news_articles = await upsertStarterRows(context.supabase, "news_articles", starterNews);
+    result.markets = await upsertStarterRows(context.supabase, "markets", starterMarkets);
+    result.podcast_episodes = await upsertStarterRows(context.supabase, "podcast_episodes", starterPodcasts);
+    result.internships = await upsertStarterRows(context.supabase, "internships", starterInternships);
 
     const { error: retiredProgramsError } = await context.supabase
       .from("programs")
