@@ -68,7 +68,6 @@ function ProgramsLayout() {
     () => filterPrograms(relevantPrograms, search, categoryId),
     [relevantPrograms, search, categoryId],
   );
-  const _x: number = programs;
 
   const showInitialSkeleton = isLoading && !programs?.length;
 
