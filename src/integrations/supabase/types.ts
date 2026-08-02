@@ -4300,6 +4300,16 @@ export type Database = {
           message: string
         }[]
       }
+      list_event_attendees: {
+        Args: { p_event_id: string }
+        Returns: {
+          affiliation: string | null
+          full_name: string
+          major_or_interest: string | null
+          school_name: string | null
+          user_id: string
+        }[]
+      }
       mark_my_attendance_evaluation_complete: {
         Args: { p_attendance_id: string }
         Returns: undefined

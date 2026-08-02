@@ -9,9 +9,30 @@ import hero3 from "@/assets/jesup/hero-3.jpg";
 type Slide = { img: string; eyebrow: string; title: string; body: string; to: string; cta: string };
 
 const slides: Slide[] = [
-  { img: hero1, eyebrow: "Welcome to JESUP", title: "The Digital Extension Wagon", body: "Programs, resources, and opportunities from the Carver Integrative Sustainability Center at Tuskegee University.", to: "/programs", cta: "Explore programs" },
-  { img: hero2, eyebrow: "For the growers", title: "Small farms, deep roots.", body: "Technical assistance, training, and community for small and limited-resource farmers across the Black Belt.", to: "/programs/small-farm", cta: "See how we help" },
-  { img: hero3, eyebrow: "For the next generation", title: "Future leaders, planted today.", body: "The 2FAS pipeline is preparing students for careers across agriculture, research, and policy.", to: "/programs/2fas", cta: "Meet 2FAS" },
+  {
+    img: hero1,
+    eyebrow: "Welcome to JESUP",
+    title: "The Digital Extension Wagon",
+    body: "Programs, resources, and opportunities from the Carver Integrative Sustainability Center at Tuskegee University.",
+    to: "/programs",
+    cta: "Explore programs",
+  },
+  {
+    img: hero2,
+    eyebrow: "For the growers",
+    title: "Small farms, deep roots.",
+    body: "Technical assistance, training, and community for small and limited-resource farmers across the Black Belt.",
+    to: "/programs/small-farm",
+    cta: "See how we help",
+  },
+  {
+    img: hero3,
+    eyebrow: "For the next generation",
+    title: "Future leaders, planted today.",
+    body: "The 2FAS pipeline is preparing students for careers across agriculture, research, and policy.",
+    to: "/programs/2fas",
+    cta: "Meet 2FAS",
+  },
 ];
 
 export function HeroCarousel() {
@@ -23,7 +44,10 @@ export function HeroCarousel() {
     const onSelect = () => setSelected(emblaApi.selectedScrollSnap());
     emblaApi.on("select", onSelect);
     const id = setInterval(() => emblaApi.scrollNext(), 6000);
-    return () => { clearInterval(id); emblaApi.off("select", onSelect); };
+    return () => {
+      clearInterval(id);
+      emblaApi.off("select", onSelect);
+    };
   }, [emblaApi]);
 
   return (
@@ -33,8 +57,20 @@ export function HeroCarousel() {
           {slides.map((s, i) => (
             <div key={i} className="relative min-w-0 flex-[0_0_100%]">
               <div className="relative h-[560px] w-full overflow-hidden sm:h-[640px] md:h-[720px]">
-                <img src={s.img} alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority={i === 0 ? "high" : "auto"} loading={i === 0 ? "eager" : "lazy"} />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(122,12,22,0.55) 55%, rgba(122,12,22,0.85) 100%)" }} />
+                <img
+                  src={s.img}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                  fetchPriority={i === 0 ? "high" : "auto"}
+                  loading={i === 0 ? "eager" : "lazy"}
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(93,224,230,0.12) 0%, rgba(0,74,173,0.60) 55%, rgba(0,74,173,0.94) 100%)",
+                  }}
+                />
                 <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-5 pb-16 pt-24 text-white sm:px-8 sm:pb-20 md:pb-24">
                   <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85">
                     <span className="grad-gold-text">{s.eyebrow}</span>
@@ -65,7 +101,10 @@ export function HeroCarousel() {
             className="pointer-events-auto grid h-11 w-11 touch-manipulation place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             aria-label={`Slide ${i + 1}`}
           >
-            <span className={`h-1.5 rounded-full transition-all ${i === selected ? "w-8 bg-white" : "w-1.5 bg-white/50"}`} aria-hidden="true" />
+            <span
+              className={`h-1.5 rounded-full transition-all ${i === selected ? "w-8 bg-white" : "w-1.5 bg-white/50"}`}
+              aria-hidden="true"
+            />
           </button>
         ))}
       </div>

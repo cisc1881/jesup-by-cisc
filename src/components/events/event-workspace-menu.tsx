@@ -141,6 +141,16 @@ export function EventWorkspaceMenu({
             </SheetHeader>
           </div>
           <nav className="divide-y divide-border/70" aria-label="Event workspace">
+            <SheetClose asChild>
+              <Link
+                to="/events/$id/hub"
+                params={{ id: event.id }}
+                className="flex min-h-16 items-center gap-4 bg-primary/5 px-5 py-3 text-sm font-black text-foreground hover:bg-primary/10"
+              >
+                <Menu className="h-5 w-5 institution-accent-text" />
+                Open complete Event Hub
+              </Link>
+            </SheetClose>
             {actions.map((item) => {
               const Icon = item.icon;
               const content = (

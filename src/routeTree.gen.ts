@@ -50,6 +50,7 @@ import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated/me.index'
 import { Route as AuthenticatedFunderIndexRouteImport } from './routes/_authenticated/funder.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as EventsIdHubRouteImport } from './routes/events.$id.hub'
 import { Route as EventsIdEvaluationRouteImport } from './routes/events.$id.evaluation'
 import { Route as AuthenticatedMeWeatherAlertsRouteImport } from './routes/_authenticated/me.weather-alerts'
 import { Route as AuthenticatedMeNotificationsRouteImport } from './routes/_authenticated/me.notifications'
@@ -300,6 +301,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const EventsIdHubRoute = EventsIdHubRouteImport.update({
+  id: '/hub',
+  path: '/hub',
+  getParentRoute: () => EventsIdRoute,
 } as any)
 const EventsIdEvaluationRoute = EventsIdEvaluationRouteImport.update({
   id: '/evaluation',
@@ -665,6 +671,7 @@ export interface FileRoutesByFullPath {
   '/me/notifications': typeof AuthenticatedMeNotificationsRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
+  '/events/$id/hub': typeof EventsIdHubRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/funder/': typeof AuthenticatedFunderIndexRoute
   '/me/': typeof AuthenticatedMeIndexRoute
@@ -747,6 +754,7 @@ export interface FileRoutesByTo {
   '/me/notifications': typeof AuthenticatedMeNotificationsRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
+  '/events/$id/hub': typeof EventsIdHubRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/funder': typeof AuthenticatedFunderIndexRoute
   '/me': typeof AuthenticatedMeIndexRoute
@@ -834,6 +842,7 @@ export interface FileRoutesById {
   '/_authenticated/me/notifications': typeof AuthenticatedMeNotificationsRoute
   '/_authenticated/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
+  '/events/$id/hub': typeof EventsIdHubRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/funder/': typeof AuthenticatedFunderIndexRoute
   '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
@@ -921,6 +930,7 @@ export interface FileRouteTypes {
     | '/me/notifications'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
+    | '/events/$id/hub'
     | '/admin/'
     | '/funder/'
     | '/me/'
@@ -1003,6 +1013,7 @@ export interface FileRouteTypes {
     | '/me/notifications'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
+    | '/events/$id/hub'
     | '/admin'
     | '/funder'
     | '/me'
@@ -1089,6 +1100,7 @@ export interface FileRouteTypes {
     | '/_authenticated/me/notifications'
     | '/_authenticated/me/weather-alerts'
     | '/events/$id/evaluation'
+    | '/events/$id/hub'
     | '/_authenticated/admin/'
     | '/_authenticated/funder/'
     | '/_authenticated/me/'
@@ -1424,6 +1436,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/events/$id/hub': {
+      id: '/events/$id/hub'
+      path: '/hub'
+      fullPath: '/events/$id/hub'
+      preLoaderRoute: typeof EventsIdHubRouteImport
+      parentRoute: typeof EventsIdRoute
     }
     '/events/$id/evaluation': {
       id: '/events/$id/evaluation'
@@ -1966,10 +1985,12 @@ const PublicationsRouteWithChildren = PublicationsRoute._addFileChildren(
 
 interface EventsIdRouteChildren {
   EventsIdEvaluationRoute: typeof EventsIdEvaluationRoute
+  EventsIdHubRoute: typeof EventsIdHubRoute
 }
 
 const EventsIdRouteChildren: EventsIdRouteChildren = {
   EventsIdEvaluationRoute: EventsIdEvaluationRoute,
+  EventsIdHubRoute: EventsIdHubRoute,
 }
 
 const EventsIdRouteWithChildren = EventsIdRoute._addFileChildren(

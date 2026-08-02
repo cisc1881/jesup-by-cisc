@@ -26,7 +26,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
   }
 
   return (
-    <section className="relative isolate w-full overflow-hidden bg-slate-950 text-white">
+    <section className="relative isolate w-full overflow-hidden bg-[#004aad] text-white">
       <div className="relative min-h-[520px] sm:min-h-[600px]">
         {slides.map((slide, index) => (
           <img
@@ -42,8 +42,8 @@ export function HomeHero({ slides }: HomeHeroProps) {
             loading={index === 0 ? "eager" : "lazy"}
           />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/20" />
-        <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(13,24,63,.88)_0%,rgba(13,24,63,.28)_65%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,74,173,.94)_0%,rgba(0,74,173,.58)_56%,rgba(93,224,230,.16)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(93,224,230,.48)_0%,rgba(0,74,173,.50)_58%,rgba(0,74,173,.14)_100%)]" />
 
         <div className="relative mx-auto flex min-h-[520px] max-w-7xl flex-col justify-end px-4 pb-14 pt-20 sm:min-h-[600px] sm:px-6 sm:pb-16">
           <div className="max-w-3xl">
