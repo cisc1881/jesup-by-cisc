@@ -1,0 +1,1 @@
+ALTER TABLE public.event_registrations ALTER COLUMN user_id DROP NOT NULL;

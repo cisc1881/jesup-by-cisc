@@ -1040,7 +1040,7 @@ export type Database = {
           status: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           accessibility_accommodations?: string | null
@@ -1062,7 +1062,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           accessibility_accommodations?: string | null
@@ -1084,7 +1084,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["event_registration_record_status"]
           ticket_code?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
