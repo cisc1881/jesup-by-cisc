@@ -47,8 +47,8 @@ export function normalizePushSubscriptionJson(
     endpoint,
     p256dh,
     auth,
-    userAgent: meta?.userAgent ?? null,
-    deviceLabel: meta?.deviceLabel ?? null,
+    userAgent: meta?.userAgent ?? undefined,
+    deviceLabel: meta?.deviceLabel ?? undefined,
     endpointHost: maskEndpointHost(endpoint),
   };
 }

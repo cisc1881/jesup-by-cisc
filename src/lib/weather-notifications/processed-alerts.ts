@@ -6,9 +6,7 @@ import type {
 } from "./types";
 
 function processedAlertsTable() {
-  return (
-    supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }
-  ).from("processed_weather_alerts");
+  return supabase.from("processed_weather_alerts");
 }
 
 function mapRow(row: Record<string, unknown>): ProcessedWeatherAlertRecord {

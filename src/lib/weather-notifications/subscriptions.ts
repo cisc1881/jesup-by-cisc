@@ -3,9 +3,7 @@ import { normalizePushSubscriptionJson } from "./subscription-normalize";
 import type { PushSubscriptionInput, PushSubscriptionRecord } from "./types";
 
 function pushSubsTable() {
-  return (
-    supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }
-  ).from("push_subscriptions");
+  return supabase.from("push_subscriptions");
 }
 
 function mapRow(row: Record<string, unknown>): PushSubscriptionRecord {

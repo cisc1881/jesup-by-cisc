@@ -168,7 +168,7 @@ export async function deliverAlertToUserDevices(
     sent > 0 ? (options?.test ? "test" : "sent") : "failed";
 
   await recordProcessedAlertForUser(db, userId, alert, deliveryStatus, {
-    failureReason: sent > 0 ? null : pushErrorMessage("All device deliveries failed"),
+    failureReason: sent > 0 ? undefined : pushErrorMessage("All device deliveries failed"),
   });
 
   return { sent, failed, deactivated };
