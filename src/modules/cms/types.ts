@@ -38,7 +38,7 @@ export type ContentTag = {
 
 export type SearchResult = {
   id: string;
-  entityType: ContentEntityType;
+  entityType: string;
   title: string;
   subtitle: string | null;
   href: string;
@@ -55,8 +55,6 @@ export type RelationshipDef = {
   targetColumn: string;
   label: string;
 };
-
-export type NotificationRecord = import("@/modules/notifications/types").NotificationRecord;
 
 export type PlatformSettingKey =
   | "organization"

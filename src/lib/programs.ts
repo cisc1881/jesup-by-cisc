@@ -8,8 +8,6 @@ export type ProgramCategory = {
   name: string;
   slug: string;
   sortOrder: number;
-  institutionIds: string[];
-  networkWide: boolean;
 };
 
 export type ProgramGalleryImage = {
@@ -38,6 +36,8 @@ export type ProgramListItem = {
   isFeatured: boolean;
   isActive: boolean;
   sortOrder: number;
+  institutionIds: string[];
+  networkWide: boolean;
 };
 
 export type ProgramAttachment = {
