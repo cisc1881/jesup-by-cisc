@@ -73,7 +73,7 @@ function AdminInternships() {
   const rows = (data ?? []).filter((r) => {
     if (q && !r.title.toLowerCase().includes(q.toLowerCase())) return false;
     if (institutionFilter === "all") return true;
-    const audience = parseInternshipAudience(r.metadata);
+    const audience = parseInternshipAudience((r as { metadata?: import("@/integrations/supabase/types").Json }).metadata);
     if (institutionFilter === "network") return audience.networkWide;
     if (institutionFilter === "other") return audience.otherInstitutions;
     return audience.institutionIds.includes(institutionFilter);

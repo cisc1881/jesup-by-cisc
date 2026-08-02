@@ -1,4 +1,5 @@
 import type { ContentEntityType, ContentMeta, ContentStatus, SeoMeta } from "@/modules/core";
+import type { SearchEntityType } from "@/lib/search";
 
 export type { ContentMeta, ContentStatus, SeoMeta };
 
@@ -38,7 +39,7 @@ export type ContentTag = {
 
 export type SearchResult = {
   id: string;
-  entityType: ContentEntityType;
+  entityType: SearchEntityType;
   title: string;
   subtitle: string | null;
   href: string;

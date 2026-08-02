@@ -2,6 +2,11 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ContentEntityType } from "@/modules/core";
 import type { RelationshipDef } from "./types";
 
+type DynamicTable = ReturnType<typeof supabase.from>;
+function dynFrom(table: string): DynamicTable {
+  return (supabase as unknown as { from: (table: string) => DynamicTable }).from(table);
+}
+
 /**
  * Config-driven relationship engine.
  * Maps entity types to existing junction tables — no code changes needed to connect content.
@@ -38,12 +43,11 @@ export async function fetchRelatedIds(
   );
   if (!def) return [];
 
-  const { data, error } = await supabase
-    .from(def.junctionTable)
+  const { data, error } = await dynFrom(def.junctionTable)
     .select(def.targetColumn)
     .eq(def.sourceColumn, sourceId);
   if (error) throw error;
-  return (data ?? []).map((row) => (row as Record<string, string>)[def.targetColumn]);
+  return ((data ?? []) as Record<string, string>[]).map((row) => row[def.targetColumn]);
 }
 
 export async function saveRelationships(
@@ -57,10 +61,10 @@ export async function saveRelationships(
   );
   if (!def) return;
 
-  await supabase.from(def.junctionTable).delete().eq(def.sourceColumn, sourceId);
+  await dynFrom(def.junctionTable).delete().eq(def.sourceColumn, sourceId);
   if (targetIds.length === 0) return;
 
-  const { error } = await supabase.from(def.junctionTable).insert(
+  const { error } = await dynFrom(def.junctionTable).insert(
     targetIds.map((targetId, index) => ({
       [def.sourceColumn]: sourceId,
       [def.targetColumn]: targetId,
@@ -83,12 +87,13 @@ export async function fetchRelationshipOptions(targetType: ContentEntityType) {
     equipment: { table: "equipment", idCol: "id", labelCol: "name" },
     survey: { table: "surveys", idCol: "id", labelCol: "title" },
     internship: { table: "internships", idCol: "id", labelCol: "title" },
+    twofas: { table: "internships", idCol: "id", labelCol: "title", filter: { is_2fas: true } },
   };
 
   const config = tableMap[targetType];
   if (!config) return [];
 
-  let query = supabase.from(config.table).select(`${config.idCol}, ${config.labelCol}`).order(config.labelCol);
+  let query = dynFrom(config.table).select(`${config.idCol}, ${config.labelCol}`).order(config.labelCol);
   if (config.filter) {
     for (const [col, val] of Object.entries(config.filter)) {
       query = query.eq(col, val);
@@ -96,9 +101,9 @@ export async function fetchRelationshipOptions(targetType: ContentEntityType) {
   }
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []).map((row) => ({
-    id: (row as Record<string, string>)[config.idCol],
-    label: (row as Record<string, string>)[config.labelCol],
+  return ((data ?? []) as Record<string, string>[]).map((row) => ({
+    id: row[config.idCol],
+    label: row[config.labelCol],
   }));
 }
 

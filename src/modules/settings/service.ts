@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { PlatformSettingKey } from "@/modules/cms";
+import type { Json } from "@/integrations/supabase/types";
 
 export type OrganizationSettings = {
   name: string;
@@ -94,7 +95,7 @@ export async function savePlatformSetting<K extends PlatformSettingKey>(
 ) {
   const { error } = await supabase.from("platform_settings").upsert({
     key,
-    value: value as unknown as Record<string, unknown>,
+    value: value as unknown as Json,
     updated_at: new Date().toISOString(),
   });
   if (error) throw error;

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import type {
   NotificationAudience,
   NotificationChannel,
@@ -174,7 +175,7 @@ export async function createNotification(input: {
       body: input.body ?? null,
       channel: input.channel ?? "in_app",
       status: "sent",
-      notification_type: input.notificationType ?? null,
+      notification_type: (input.notificationType ?? null) as Database["public"]["Enums"]["notification_type"] | null,
       priority: input.priority ?? "normal",
       action_url: input.actionUrl ?? null,
       audience: input.audience ?? (input.userId ? "user" : "admin"),

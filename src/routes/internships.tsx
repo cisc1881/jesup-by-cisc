@@ -76,7 +76,7 @@ function InternshipsPage() {
   const selectedInstitution = institutions.find((institution) => institution.id === institutionId);
   const filtered = (data ?? []).filter((internship) => {
     if (scope === "all" || !institutionId) return true;
-    const audience = parseInternshipAudience(internship.metadata);
+    const audience = parseInternshipAudience((internship as { metadata?: import("@/integrations/supabase/types").Json }).metadata);
     const belongsToMine =
       audience.institutionIds.includes(institutionId) ||
       (!!selectedInstitution && audience.institutionSlugs.includes(selectedInstitution.slug));
@@ -124,7 +124,7 @@ type InternshipRow = {
   department: string | null;
   deadline: string | null;
   is_2fas: boolean;
-  metadata: import("@/integrations/supabase/types").Json;
+  metadata?: import("@/integrations/supabase/types").Json;
 };
 
 function InternshipCard({

@@ -1,8 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-type SupabaseCtx = Parameters<Parameters<typeof requireSupabaseAuth.server>[0]>[0]["context"]["supabase"];
+type SupabaseCtx = SupabaseClient<Database>;
 
 async function upsertStarterRows<Table extends keyof Database["public"]["Tables"]>(
   supabase: SupabaseCtx,
