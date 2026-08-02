@@ -39,7 +39,7 @@ import { EventAgendaNotice, EventChatRoom } from "@/components/events";
 import { PublicLayout } from "@/components/public-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchEventById, fetchUserEventRegistration } from "@/lib/events";
+import { fetchEventById, fetchUserEventRegistration, type EventSession } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -135,7 +135,7 @@ function EventHubPage() {
   const visibleSessions = useMemo(() => {
     const query = search.trim().toLowerCase();
     return (
-      event?.sessions.filter((session) => {
+      event?.sessions.filter((session: EventSession) => {
         if (agendaMode === "mine" && !savedSessions.includes(session.id)) return false;
         return (
           !query ||
