@@ -96,13 +96,24 @@ function EventHubPage() {
     queryFn: () => fetchUserEventRegistration(id, user!.id),
   });
   const registered = !!registration || isAdmin;
-  const { data: attendees = [], isLoading: attendeesLoading } = useQuery({
+  const { data: attendees = [], isLoading: attendeesLoading } = useQuery<HubAttendee[]>({
     queryKey: ["event-attendee-directory", id],
     enabled: registered,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("list_event_attendees", { p_event_id: id });
+      const { data, error } = await supabase
+        .from("event_registrations")
+        .select("id, user_id, attendee_name")
+        .eq("event_id", id)
+        .order("attendee_name", { ascending: true });
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []).map((row) => ({
+        id: row.id,
+        user_id: row.user_id,
+        full_name: row.attendee_name ?? "Event attendee",
+        affiliation: null,
+        school_name: null,
+        major_or_interest: null,
+      }));
     },
   });
 
