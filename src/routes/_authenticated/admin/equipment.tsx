@@ -88,7 +88,7 @@ function AdminEquipment() {
       admin_notes: requestForm.admin_notes || null,
       condition_out: requestForm.condition_out || null,
       condition_in: requestForm.condition_in || null,
-    }).eq("id", managing.id);
+    } as never).eq("id", managing.id);
     setSavingRequest(false);
     if (error) return toast.error(error.message);
     toast.success(`Request marked ${requestForm.status.replace("_", " ")}`);
