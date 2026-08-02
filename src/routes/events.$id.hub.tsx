@@ -72,9 +72,20 @@ const additionalTools = [
   ["Accessibility requests", Accessibility],
 ] as const;
 
+type HubAttendee = {
+  id: string;
+  user_id: string | null;
+  full_name: string;
+  affiliation: string | null;
+  school_name: string | null;
+  major_or_interest: string | null;
+};
+
 function EventHubPage() {
   const { id } = Route.useParams();
-  const { event } = Route.useLoaderData();
+  const { event } = Route.useLoaderData() as {
+    event: Awaited<ReturnType<typeof fetchEventById>>;
+  };
   const { user, isAdmin } = useAuth();
   const [tab, setTab] = useState<HubTab>("home");
   const [search, setSearch] = useState("");
