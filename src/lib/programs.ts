@@ -338,11 +338,15 @@ export async function fetchProgramCategories(): Promise<ProgramCategory[]> {
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
   if (error) throw error;
+  // Note: `institution_ids`/`network_wide` do not exist on `program_categories`
+  // in the DB. They are always defaulted here (empty list / network-wide).
   return (data ?? []).map((c) => ({
     id: c.id,
     name: c.name,
     slug: c.slug,
     sortOrder: c.sort_order,
+    institutionIds: [],
+    networkWide: true,
   }));
 }
 
@@ -364,6 +368,8 @@ export async function saveProgramCategory(name: string) {
     name: row.name,
     slug: row.slug,
     sortOrder: row.sort_order,
+    institutionIds: [],
+    networkWide: true,
   } satisfies ProgramCategory;
 }
 

@@ -462,7 +462,7 @@ async function submitNativeInternshipApplication(input: SubmitInternshipApplicat
       institution_type: input.institutionType ?? null,
       is_1890_land_grant: input.is1890LandGrant ?? null,
       academic_level: input.academicLevel ?? null,
-      emergency_contact: input.emergencyContact ?? {},
+      emergency_contact: (input.emergencyContact ?? {}) as never,
     })
     .select("id")
     .single();

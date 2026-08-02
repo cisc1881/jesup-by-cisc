@@ -1,6 +1,17 @@
 import { supabase } from "@/integrations/supabase/client";
 import { DASHBOARD_WIDGETS } from "../config/nav-items";
 
+type DynCountResult = PromiseLike<{ count: number | null; error: { message: string } | null }>;
+interface DynCountBuilder extends DynCountResult {
+  eq: (col: string, val: unknown) => DynCountBuilder;
+}
+interface DynFromBuilder {
+  select: (cols: string, opts: { count: "exact"; head: true }) => DynCountBuilder;
+}
+function dynFrom(table: string): DynFromBuilder {
+  return (supabase as unknown as { from: (table: string) => DynFromBuilder }).from(table);
+}
+
 export type DashboardCounts = Record<string, number>;
 
 export async function fetchDashboardCounts(): Promise<DashboardCounts> {
@@ -33,8 +44,7 @@ export async function fetchDashboardCounts(): Promise<DashboardCounts> {
       }
 
       if (widget.countQuery === "media" && widget.table) {
-        const { count } = await supabase
-          .from(widget.table)
+        const { count } = await dynFrom(widget.table)
           .select("*", { count: "exact", head: true })
           .eq("is_active", true);
         counts[widget.key] = count ?? 0;
@@ -42,8 +52,7 @@ export async function fetchDashboardCounts(): Promise<DashboardCounts> {
       }
 
       if (widget.table) {
-        const { count } = await supabase
-          .from(widget.table)
+        const { count } = await dynFrom(widget.table)
           .select("*", { count: "exact", head: true });
         counts[widget.key] = count ?? 0;
       }

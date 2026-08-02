@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { parseCsv, toCsv, type CsvColumn } from "@/lib/csv";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export type AttendanceStatus =
   | "registered"
@@ -389,7 +390,7 @@ export async function updateAttendanceStatus(input: MarkAttendanceInput) {
     .single();
   if (fetchError) throw fetchError;
 
-  const payload: Record<string, unknown> = {
+  const payload: TablesUpdate<"event_attendance"> = {
     status: input.status,
     notes: input.notes ?? undefined,
   };

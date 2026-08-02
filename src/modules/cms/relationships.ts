@@ -2,9 +2,16 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ContentEntityType } from "@/modules/core";
 import type { RelationshipDef } from "./types";
 
-type DynamicTable = ReturnType<typeof supabase.from>;
-function dynFrom(table: string): DynamicTable {
-  return (supabase as unknown as { from: (table: string) => DynamicTable }).from(table);
+type DynResult = { data: unknown; error: { message: string } | null };
+interface DynBuilder extends PromiseLike<DynResult> {
+  select: (cols: string) => DynBuilder;
+  eq: (col: string, val: unknown) => DynBuilder;
+  order: (col: string) => DynBuilder;
+  delete: () => DynBuilder;
+  insert: (rows: Record<string, unknown>[]) => DynBuilder;
+}
+function dynFrom(table: string): DynBuilder {
+  return (supabase as unknown as { from: (table: string) => DynBuilder }).from(table);
 }
 
 /**

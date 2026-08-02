@@ -5,14 +5,23 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 type SupabaseCtx = SupabaseClient<Database>;
 
+type DynUpsertResult = { data: { id: string }[] | null; error: { message: string } | null };
+interface DynUpsertBuilder extends PromiseLike<DynUpsertResult> {
+  select: (cols: string) => DynUpsertBuilder;
+}
+interface DynUpsertFrom {
+  upsert: (rows: Record<string, unknown>[], opts: { onConflict: string }) => DynUpsertBuilder;
+}
+
 async function upsertStarterRows<Table extends keyof Database["public"]["Tables"]>(
   supabase: SupabaseCtx,
   table: Table,
   rows: Database["public"]["Tables"][Table]["Insert"][],
 ): Promise<number> {
-  const { data, error } = await supabase
+  const client = supabase as unknown as { from: (table: Table) => DynUpsertFrom };
+  const { data, error } = await client
     .from(table)
-    .upsert(rows, { onConflict: "slug" })
+    .upsert(rows as unknown as Record<string, unknown>[], { onConflict: "slug" })
     .select("id");
   if (error) throw new Error(`${table}: ${error.message}`);
   return data?.length ?? 0;

@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toCsv, type CsvColumn } from "@/lib/csv";
+import type { Json, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 
 export type EvaluationQuestionType =
   | "rating"
@@ -351,10 +352,10 @@ export async function createEvaluationQuestion(input: EvaluationQuestionInput): 
       prompt: input.prompt.trim(),
       help_text: input.helpText?.trim() || null,
       is_required: input.isRequired ?? false,
-      options: input.options ?? null,
+      options: (input.options ?? null) as Json,
       is_demographic: input.isDemographic ?? false,
       is_default: input.isDefault ?? false,
-    })
+    } satisfies TablesInsert<"event_evaluation_questions">)
     .select(QUESTION_SELECT)
     .single();
   if (error) throw error;
@@ -365,12 +366,12 @@ export async function updateEvaluationQuestion(
   questionId: string,
   patch: Partial<Omit<EvaluationQuestionInput, "evaluationId">>,
 ): Promise<EvaluationQuestion> {
-  const payload: Record<string, unknown> = {};
+  const payload: TablesUpdate<"event_evaluation_questions"> = {};
   if (patch.questionType) payload.question_type = patch.questionType;
   if (patch.prompt !== undefined) payload.prompt = patch.prompt.trim();
   if (patch.helpText !== undefined) payload.help_text = patch.helpText?.trim() || null;
   if (patch.isRequired !== undefined) payload.is_required = patch.isRequired;
-  if (patch.options !== undefined) payload.options = patch.options;
+  if (patch.options !== undefined) payload.options = patch.options as Json;
   if (patch.isDemographic !== undefined) payload.is_demographic = patch.isDemographic;
   if (patch.isDefault !== undefined) payload.is_default = patch.isDefault;
   if (patch.sortOrder !== undefined) payload.sort_order = patch.sortOrder;
@@ -531,11 +532,11 @@ export async function submitAnonymousEvaluationAnswers(
   accessToken: string,
   answers: EvaluationAnswerInput[],
 ) {
-  const payload = answers.map((answer) => ({
+  const payload: Json = answers.map((answer) => ({
     question_id: answer.questionId,
     value_text: answer.valueText ?? null,
     value_number: answer.valueNumber ?? null,
-    value_json: answer.valueJson ?? null,
+    value_json: (answer.valueJson as Json) ?? null,
   }));
 
   const { error } = await supabase.rpc("submit_anonymous_evaluation_answers", {
@@ -661,7 +662,7 @@ export async function submitIdentifiedEvaluationAnswers(
         question_id: answer.questionId,
         value_text: answer.valueText ?? null,
         value_number: answer.valueNumber ?? null,
-        value_json: (answer.valueJson as object | null) ?? null,
+        value_json: (answer.valueJson as Json | null) ?? null,
       },
       { onConflict: "response_id,question_id" },
     );
