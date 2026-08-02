@@ -47,7 +47,7 @@ function ProgramsLayout() {
     isFetching,
     isError,
     refetch,
-  } = useQuery({
+  } = useQuery<ProgramListItem[]>({
     queryKey: ["programs"],
     queryFn: () => fetchPrograms(),
   });

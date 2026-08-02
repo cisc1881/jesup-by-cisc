@@ -21,6 +21,7 @@ import {
   filterMarkets,
   partitionMarkets,
   type MarketProductCategory,
+  type MarketListItem,
 } from "@/lib/markets";
 import { listPageHead } from "@/lib/seo";
 
@@ -42,7 +43,7 @@ function MarketsPage() {
     isLoading,
     isFetching,
     refetch,
-  } = useQuery({
+  } = useQuery<MarketListItem[]>({
     queryKey: ["markets", coords?.lat, coords?.lng],
     queryFn: () => fetchMarkets({ coords }),
   });
