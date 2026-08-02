@@ -72,7 +72,7 @@ function MarketsPage() {
     () => (markets ?? []).filter((m) => savedIds.has(m.id)),
     [markets, savedIds],
   );
-  const showInitialSkeleton = isLoading && !markets?.length;
+  const showInitialSkeleton = isLoading && !(markets ?? []).length;
 
   const handleRefresh = useCallback(async () => {
     await refetch();

@@ -5,14 +5,13 @@ import {
   CommandCenterPageHeader,
   fetchCommandCenterDashboard,
   type CommandCenterActivityItem,
-  type CommandCenterActivityType,
 } from "@/modules/admin";
 import { Card, CardContent } from "@/components/ui/card";
 import { fmtDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/activity")({ component: AdminActivity });
 
-const ACTIVITY_LABELS: Record<CommandCenterActivityType, string> = {
+const ACTIVITY_LABELS: Record<CommandCenterActivityItem["type"], string> = {
   event_registration: "Event registration",
   twofas_application: "2FAS application",
   publication: "Publication",

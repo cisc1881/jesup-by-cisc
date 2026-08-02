@@ -74,7 +74,7 @@ function EventsPage() {
     [relevantEvents, search, categoryId, showSavedOnly, savedIds],
   );
 
-  const showInitialSkeleton = isLoading && !events?.length;
+  const showInitialSkeleton = isLoading && !(events ?? []).length;
 
   const handleRefresh = useCallback(async () => {
     await refetch();

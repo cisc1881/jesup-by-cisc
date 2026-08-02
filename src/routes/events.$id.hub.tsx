@@ -344,7 +344,7 @@ function EventHubPage() {
                 <EventAgendaNotice metadata={event.metadata} />
               </div>
               <div className="divide-y">
-                {visibleSessions.map((session) => (
+                {visibleSessions.map((session: EventSession) => (
                   <article
                     key={session.id}
                     className="grid grid-cols-[86px_minmax(0,1fr)_44px] gap-3 px-4 py-5 sm:px-6"

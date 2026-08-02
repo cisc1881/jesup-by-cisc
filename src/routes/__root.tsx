@@ -170,7 +170,7 @@ function RootComponent() {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") {
-        queryClient.invalidateQueries({ predicate: (q) => q.queryKey[0] !== "home-page" });
+        queryClient.invalidateQueries({ predicate: (q: { queryKey: readonly unknown[] }) => q.queryKey[0] !== "home-page" });
       }
     });
     return () => sub.subscription.unsubscribe();
