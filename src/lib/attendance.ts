@@ -406,7 +406,10 @@ export async function updateAttendanceStatus(input: MarkAttendanceInput) {
     payload.attendance_method = null;
   }
 
-  const { error } = await supabase.from("event_attendance").update(payload).eq("id", input.attendanceId);
+  const { error } = await supabase
+    .from("event_attendance")
+    .update(payload as never)
+    .eq("id", input.attendanceId);
   if (error) throw error;
 
   if (

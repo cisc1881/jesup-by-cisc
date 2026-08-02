@@ -18,7 +18,7 @@ export function partnerFilterCategories(existing: (string | null | undefined)[])
   const used = new Set(existing.filter(Boolean) as string[]);
   const ordered = PARTNER_CATEGORIES.filter((c) => used.has(c));
   for (const c of used) {
-    if (!PARTNER_CATEGORIES.includes(c as PartnerCategory)) ordered.push(c);
+    if (!(PARTNER_CATEGORIES as readonly string[]).includes(c)) ordered.push(c);
   }
   return ["All", ...ordered];
 }

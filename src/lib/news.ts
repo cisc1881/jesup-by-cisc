@@ -223,7 +223,7 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsDetail | null> 
       };
     }),
     events: (eventsRes.data ?? []).map((item) => {
-      const event = item.events as { id: string; title: string; starts_at: string };
+      const event = item.events as { id: string; title: string; starts_at: string; slug: string | null };
       return {
         id: event.id,
         title: event.title,

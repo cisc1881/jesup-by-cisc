@@ -75,6 +75,6 @@ export async function updateMyProfileInstitution(userId: string, input: ProfileI
     expected_graduation_year: input.expectedGraduationYear ?? null,
   };
 
-  const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
+  const { error } = await supabase.from("profiles").update(payload as never).eq("id", userId);
   if (error) throw error;
 }

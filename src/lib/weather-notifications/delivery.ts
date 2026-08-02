@@ -16,15 +16,11 @@ import {
 type AdminDb = SupabaseClient;
 
 function pushSubsTable(db: AdminDb) {
-  return (db as unknown as { from: (table: string) => ReturnType<AdminDb["from"]> }).from(
-    "push_subscriptions",
-  );
+  return (db as any).from("push_subscriptions");
 }
 
 function processedTable(db: AdminDb) {
-  return (db as unknown as { from: (table: string) => ReturnType<AdminDb["from"]> }).from(
-    "processed_weather_alerts",
-  );
+  return (db as any).from("processed_weather_alerts");
 }
 
 export async function listActiveSubscriptionsForUser(
@@ -39,7 +35,7 @@ export async function listActiveSubscriptionsForUser(
 
   if (error) throw error;
 
-  return (data ?? []).map((row) => {
+  return (data ?? []).map((row: Record<string, unknown>) => {
     const r = row as Record<string, unknown>;
     return {
       id: r.id as string,
@@ -94,7 +90,7 @@ export async function recordProcessedAlertForUser(
   userId: string,
   alert: MappedNwsAlertForDelivery,
   deliveryStatus: WeatherAlertDeliveryStatus,
-  options?: { failureReason?: string; sentAt?: string },
+  options?: { failureReason?: string | null; sentAt?: string },
 ): Promise<void> {
   const payload = {
     user_id: userId,

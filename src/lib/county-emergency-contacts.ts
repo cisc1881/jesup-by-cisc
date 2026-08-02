@@ -8,8 +8,26 @@ import type {
 import { mapCountyRecordToPreparedness } from "@/lib/weather/county-directory-service";
 
 // Table added in 20260712160000_county_emergency_contacts.sql — regenerate Supabase types after migration.
-function countyTable() {
-  return (supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }).from(
+type CountyTableClient = {
+  select: (columns: string) => {
+    order: (column: string) => {
+      order: (column: string) => Promise<{ data: Record<string, unknown>[] | null; error: unknown }>;
+    };
+    eq: (column: string, value: string) => {
+      single: () => Promise<{ data: Record<string, unknown>; error: unknown }>;
+      maybeSingle: () => Promise<{ data: Record<string, unknown> | null; error: unknown }>;
+    };
+  };
+  insert: (
+    payload: Record<string, unknown>,
+  ) => { select: (columns: string) => { single: () => Promise<{ data: Record<string, unknown>; error: unknown }> } };
+  update: (
+    payload: Record<string, unknown>,
+  ) => { eq: (column: string, value: string) => Promise<{ error: unknown }> };
+};
+
+function countyTable(): CountyTableClient {
+  return (supabase as unknown as { from: (table: string) => CountyTableClient }).from(
     "county_emergency_contacts",
   );
 }

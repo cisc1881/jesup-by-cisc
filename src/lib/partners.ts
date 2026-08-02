@@ -132,7 +132,7 @@ export async function fetchPartners(options?: {
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []).map((row) => mapListRow(row as Record<string, unknown>));
+  return (data ?? []).map((row) => mapListRow(row as unknown as Record<string, unknown>));
 }
 
 export function computePartnerImpactCounts(partners: PartnerListItem[]): PartnerImpactCounts {
@@ -209,7 +209,7 @@ export async function fetchPartnerBySlug(slug: string): Promise<PartnerDetail | 
   if (error) throw error;
   if (!row) return null;
 
-  const partnerId = row.id as string;
+  const partnerId = (row as unknown as { id: string }).id;
   const [programsRes, eventsRes, publicationsRes, podcastsRes] = await Promise.all([
     supabase
       .from("program_partners")
@@ -237,12 +237,13 @@ export async function fetchPartnerBySlug(slug: string): Promise<PartnerDetail | 
     if (res.error) throw res.error;
   }
 
-  const base = mapListRow(row as Record<string, unknown>);
+  const rowData = row as unknown as Record<string, unknown>;
+  const base = mapListRow(rowData);
   return {
     ...base,
-    mission: (row.mission as string | null) ?? null,
-    address: (row.address as string | null) ?? null,
-    socialLinks: (row.social_links as PartnerSocialLinks) ?? {},
+    mission: (rowData.mission as string | null) ?? null,
+    address: (rowData.address as string | null) ?? null,
+    socialLinks: (rowData.social_links as PartnerSocialLinks) ?? {},
     programs: (programsRes.data ?? []).map((item) => {
       const program = item.programs as { id: string; name: string; slug: string };
       return {
@@ -291,12 +292,13 @@ export async function fetchAdminPartners() {
     .order("sort_order", { ascending: true })
     .order("name");
   if (error) throw error;
-  return (data ?? []).map((row) => mapListRow(row as Record<string, unknown>));
+  return (data ?? []).map((row) => mapListRow(row as unknown as Record<string, unknown>));
 }
 
 export async function fetchAdminPartnerForm(partnerId: string): Promise<PartnerFormData> {
-  const { data: row, error } = await supabase.from("partners").select("*").eq("id", partnerId).single();
+  const { data: rowRaw, error } = await supabase.from("partners").select("*").eq("id", partnerId).single();
   if (error) throw error;
+  const row = rowRaw as typeof rowRaw & { email?: string | null; phone?: string | null };
 
   const [programsRes, eventsRes, publicationsRes, podcastsRes] = await Promise.all([
     supabase.from("program_partners").select("program_id").eq("partner_id", partnerId),
@@ -435,10 +437,10 @@ export async function savePartner(partnerId: string | null, form: PartnerFormDat
 
   let id = partnerId;
   if (partnerId) {
-    const { error } = await supabase.from("partners").update(payload).eq("id", partnerId);
+    const { error } = await supabase.from("partners").update(payload as never).eq("id", partnerId);
     if (error) throw publishingWriteError(error, "Partner");
   } else {
-    const { data, error } = await supabase.from("partners").insert(payload).select("id").single();
+    const { data, error } = await supabase.from("partners").insert(payload as never).select("id").single();
     if (error) throw publishingWriteError(error, "Partner");
     id = data.id as string;
   }

@@ -716,7 +716,9 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
       id: g.id,
       imageUrl: g.image_url,
       caption: g.caption ?? "",
+      altText: g.alt_text ?? null,
       sortOrder: g.sort_order,
+      isCover: g.is_cover ?? false,
     })),
     surveyTitle: evaluationRes.data?.title ?? surveyRes.data?.title ?? "Post-event survey",
     surveyUrl: evaluationRes.data?.qualtrics_url ?? surveyRes.data?.qualtrics_url ?? "",
@@ -735,7 +737,7 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
     supabase.from("event_speakers").delete().eq("event_id", eventId),
   ]);
 
-  const inserts: Promise<unknown>[] = [];
+  const inserts: PromiseLike<unknown>[] = [];
 
   if (form.programIds.length) {
     inserts.push(

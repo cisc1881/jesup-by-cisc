@@ -53,6 +53,17 @@ export const Route = createFileRoute("/events/$id/hub")({
 
 type HubTab = "home" | "agenda" | "attendees" | "community" | "more";
 
+type EventAttendee = {
+  id: string;
+  user_id: string | null;
+  status: string;
+  checked_in_at: string | null;
+  full_name: string;
+  affiliation: string | null;
+  school_name: string | null;
+  major_or_interest: string | null;
+};
+
 const additionalTools = [
   ["Announcements & reminders", BellRing],
   ["QR check-in & badges", QrCode],
@@ -99,10 +110,25 @@ function EventHubPage() {
   const { data: attendees = [], isLoading: attendeesLoading } = useQuery({
     queryKey: ["event-attendee-directory", id],
     enabled: registered,
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("list_event_attendees", { p_event_id: id });
+    queryFn: async (): Promise<EventAttendee[]> => {
+      const { data, error } = await supabase
+        .from("event_registrations")
+        .select(
+          "id, user_id, status, checked_in_at, attendee_name, profiles(full_name, affiliation, school_name, major_or_interest)",
+        )
+        .eq("event_id", id)
+        .neq("status", "cancelled");
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []).map((row) => ({
+        id: row.id,
+        user_id: row.user_id,
+        status: row.status,
+        checked_in_at: row.checked_in_at,
+        full_name: row.profiles?.full_name || row.attendee_name || "JESUP attendee",
+        affiliation: row.profiles?.affiliation ?? null,
+        school_name: row.profiles?.school_name ?? null,
+        major_or_interest: row.profiles?.major_or_interest ?? null,
+      }));
     },
   });
 
