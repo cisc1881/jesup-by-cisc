@@ -117,7 +117,7 @@ function Home() {
         <UpcomingEventsSection
           events={relevantEvents}
           meta={sections.events}
-          isLoading={isLoading}
+          isLoading={isLoading && !data}
         />
       </PageContainer>
     </PublicLayout>
