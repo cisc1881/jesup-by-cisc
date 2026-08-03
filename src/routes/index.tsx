@@ -78,7 +78,9 @@ function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 function Home() {
-  const { data, isLoading } = useHomeData();
+  const loaderData = Route.useLoaderData();
+  const { data: queryData, isLoading } = useHomeData();
+  const data = queryData ?? loaderData;
   const sections = data?.sections ?? DEFAULT_SECTION_META;
   const { institutionId } = useInstitutionTheme();
   const relevantEvents = useMemo(
@@ -99,6 +101,7 @@ function Home() {
       ),
     [data?.heroSlides, institutionId],
   );
+
 
   return (
     <PublicLayout>
