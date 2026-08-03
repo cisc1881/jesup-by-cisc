@@ -351,7 +351,7 @@ export async function createEvaluationQuestion(input: EvaluationQuestionInput): 
       prompt: input.prompt.trim(),
       help_text: input.helpText?.trim() || null,
       is_required: input.isRequired ?? false,
-      options: input.options ?? null,
+      options: (input.options ?? null) as never,
       is_demographic: input.isDemographic ?? false,
       is_default: input.isDefault ?? false,
     })
@@ -377,7 +377,7 @@ export async function updateEvaluationQuestion(
 
   const { data, error } = await supabase
     .from("event_evaluation_questions")
-    .update(payload)
+    .update(payload as never)
     .eq("id", questionId)
     .select(QUESTION_SELECT)
     .single();
@@ -541,7 +541,7 @@ export async function submitAnonymousEvaluationAnswers(
   const { error } = await supabase.rpc("submit_anonymous_evaluation_answers", {
     p_response_id: responseId,
     p_access_token: accessToken,
-    p_answers: payload,
+    p_answers: payload as never,
   });
   if (error) throw error;
 
@@ -661,7 +661,7 @@ export async function submitIdentifiedEvaluationAnswers(
         question_id: answer.questionId,
         value_text: answer.valueText ?? null,
         value_number: answer.valueNumber ?? null,
-        value_json: (answer.valueJson as object | null) ?? null,
+        value_json: (answer.valueJson as never) ?? null,
       },
       { onConflict: "response_id,question_id" },
     );

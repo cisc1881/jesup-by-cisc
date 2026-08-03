@@ -6,9 +6,7 @@ import type {
 } from "./types";
 
 function processedAlertsTable() {
-  return (
-    supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }
-  ).from("processed_weather_alerts");
+  return (supabase as any).from("processed_weather_alerts");
 }
 
 function mapRow(row: Record<string, unknown>): ProcessedWeatherAlertRecord {
@@ -36,7 +34,7 @@ export async function listProcessedAlertsForUser(
     .limit(100);
 
   if (error) throw error;
-  return (data ?? []).map((row) => mapRow(row as Record<string, unknown>));
+  return (data ?? []).map((row: Record<string, unknown>) => mapRow(row as Record<string, unknown>));
 }
 
 export async function isAlertAlreadyProcessed(

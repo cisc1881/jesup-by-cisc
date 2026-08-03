@@ -5,7 +5,7 @@ import type {
   SevereWeatherAlert,
   WeatherConditionCode,
   WeatherSeverity,
-} from "../types";
+} from "./types";
 import type {
   NwsAlertProperties,
   NwsForecastPeriod,

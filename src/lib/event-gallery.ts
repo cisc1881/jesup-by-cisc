@@ -281,7 +281,7 @@ export async function updateEventGalleryItem(
 
   const { data, error } = await supabase
     .from("event_gallery")
-    .update(payload)
+    .update(payload as never)
     .eq("id", itemId)
     .select("*")
     .single();

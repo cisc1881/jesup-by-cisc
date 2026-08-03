@@ -229,7 +229,7 @@ export async function submitMyParticipantDemographics(
     p_source_type: sourceType,
     p_source_id: sourceId,
     ...toRpcPayload(form),
-  });
+  } as never);
   if (error) throw error;
   return data as string;
 }
@@ -286,7 +286,7 @@ export async function submitAnonymousEvaluationDemographics(
     p_response_id: responseId,
     p_access_token: accessToken,
     ...toRpcPayload(form),
-  });
+  } as never);
   if (error) throw error;
   return data as string;
 }

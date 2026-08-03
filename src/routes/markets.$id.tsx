@@ -23,6 +23,10 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/markets/$id")({
+  loader: async ({ params }) => {
+    const market = await fetchMarketById(params.id);
+    return { market };
+  },
   head: ({ loaderData }) => ({
     meta: [
       {
@@ -31,10 +35,6 @@ export const Route = createFileRoute("/markets/$id")({
       { name: "description", content: loaderData?.market?.description ?? "Farmers market details from CISC." },
     ],
   }),
-  loader: async ({ params }) => {
-    const market = await fetchMarketById(params.id);
-    return { market };
-  },
   component: MarketDetailPage,
 });
 
@@ -62,6 +62,7 @@ function MarketDetailPage() {
 
   async function handleShare() {
     try {
+      if (!market) return;
       await shareMarket(market);
       toast.success("Link copied to clipboard");
     } catch {

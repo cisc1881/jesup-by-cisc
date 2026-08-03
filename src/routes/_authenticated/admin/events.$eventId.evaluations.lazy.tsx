@@ -169,7 +169,7 @@ function AdminEventEvaluationsPage() {
         <CardContent className="p-0">
           {isLoading && <LoadingState label="Loading responses…" className="p-6" />}
           {isError && (
-            <QueryErrorState message="Could not load evaluation responses." onRetry={() => void refetch()} className="p-6" />
+            <QueryErrorState description="Could not load evaluation responses." onRetry={() => void refetch()} className="p-6" />
           )}
           {!isLoading && !isError && filtered.length === 0 && (
             <EmptyState title="No responses" description="Evaluation responses will appear here." className="p-6" />

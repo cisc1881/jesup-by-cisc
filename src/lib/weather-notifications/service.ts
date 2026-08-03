@@ -63,9 +63,7 @@ function mapAdminSubscriptionRow(row: Record<string, unknown>): AdminPushSubscri
 
 export async function fetchAdminWeatherNotificationSummary(): Promise<AdminWeatherNotificationSummary> {
   const { supabase } = await import("@/integrations/supabase/client");
-  const db = supabase as unknown as {
-    from: (table: string) => ReturnType<typeof supabase.from>;
-  };
+  const db = supabase as any;
 
   const [
     enabledRes,
@@ -159,7 +157,7 @@ export async function fetchAdminWeatherNotificationSummary(): Promise<AdminWeath
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const processedLast7 = (recentRes.data ?? []).filter(
-    (row) => String((row as { created_at?: string }).created_at ?? "") >= sevenDaysAgo,
+    (row: Record<string, unknown>) => String((row as { created_at?: string }).created_at ?? "") >= sevenDaysAgo,
   ).length;
 
   const latestPoll = pollRes.data?.[0] as Record<string, unknown> | undefined;
@@ -174,7 +172,7 @@ export async function fetchAdminWeatherNotificationSummary(): Promise<AdminWeath
     suppressedAlerts: suppressedRes.count ?? 0,
     delayedAlertsPending: delayedPendingRes.count ?? 0,
     processedAlertsLast7Days: processedLast7,
-    recentProcessedAlerts: (recentRes.data ?? []).map((row) => {
+    recentProcessedAlerts: (recentRes.data ?? []).map((row: Record<string, unknown>) => {
       const r = row as Record<string, unknown>;
       return {
         id: r.id as string,
@@ -185,10 +183,10 @@ export async function fetchAdminWeatherNotificationSummary(): Promise<AdminWeath
         createdAt: r.created_at as string,
       };
     }),
-    subscriptionsByDevice: (deviceSubsRes.data ?? []).map((row) =>
+    subscriptionsByDevice: (deviceSubsRes.data ?? []).map((row: Record<string, unknown>) =>
       mapAdminSubscriptionRow(row as Record<string, unknown>),
     ),
-    delayedAlerts: (delayedRes.data ?? []).map((row) => {
+    delayedAlerts: (delayedRes.data ?? []).map((row: Record<string, unknown>) => {
       const r = row as Record<string, unknown>;
       return {
         id: r.id as string,
@@ -220,9 +218,7 @@ export async function fetchAdminWeatherNotificationSummary(): Promise<AdminWeath
 
 export async function listAdminFailedPushSubscriptions(): Promise<AdminPushSubscriptionRow[]> {
   const { supabase } = await import("@/integrations/supabase/client");
-  const db = supabase as unknown as {
-    from: (table: string) => ReturnType<typeof supabase.from>;
-  };
+  const db = supabase as any;
 
   const { data, error } = await db
     .from("push_subscriptions")
@@ -235,5 +231,5 @@ export async function listAdminFailedPushSubscriptions(): Promise<AdminPushSubsc
 
   if (error) throw error;
 
-  return (data ?? []).map((row) => mapAdminSubscriptionRow(row as Record<string, unknown>));
+  return (data ?? []).map((row: Record<string, unknown>) => mapAdminSubscriptionRow(row as Record<string, unknown>));
 }

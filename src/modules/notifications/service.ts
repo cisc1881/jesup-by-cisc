@@ -174,7 +174,7 @@ export async function createNotification(input: {
       body: input.body ?? null,
       channel: input.channel ?? "in_app",
       status: "sent",
-      notification_type: input.notificationType ?? null,
+      notification_type: (input.notificationType ?? null) as never,
       priority: input.priority ?? "normal",
       action_url: input.actionUrl ?? null,
       audience: input.audience ?? (input.userId ? "user" : "admin"),

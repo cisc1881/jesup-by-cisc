@@ -239,7 +239,6 @@ export const starterInternships = [
     track: "fellow",
     is_2fas: true,
     is_open: true,
-    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
   {
     slug: "sei-high-school",
@@ -252,7 +251,6 @@ export const starterInternships = [
     track: "high_school",
     is_2fas: true,
     is_open: true,
-    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
   {
     slug: "sei-undergraduates",
@@ -265,7 +263,6 @@ export const starterInternships = [
     track: "undergraduate",
     is_2fas: true,
     is_open: true,
-    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
   {
     slug: "graduate-extension-interns-fellows",
@@ -278,7 +275,6 @@ export const starterInternships = [
     track: "graduate",
     is_2fas: true,
     is_open: true,
-    metadata: { network_wide: false, institution_slugs: ["tuskegee-university"] },
   },
 ] satisfies Insert<"internships">[];
 

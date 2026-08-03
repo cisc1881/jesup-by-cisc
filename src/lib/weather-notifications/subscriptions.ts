@@ -3,9 +3,7 @@ import { normalizePushSubscriptionJson } from "./subscription-normalize";
 import type { PushSubscriptionInput, PushSubscriptionRecord } from "./types";
 
 function pushSubsTable() {
-  return (
-    supabase as unknown as { from: (table: string) => ReturnType<typeof supabase.from> }
-  ).from("push_subscriptions");
+  return (supabase as any).from("push_subscriptions");
 }
 
 function mapRow(row: Record<string, unknown>): PushSubscriptionRecord {
@@ -34,7 +32,7 @@ export async function listPushSubscriptions(userId: string): Promise<PushSubscri
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
-  return (data ?? []).map((row) => mapRow(row as Record<string, unknown>));
+  return (data ?? []).map((row: Record<string, unknown>) => mapRow(row as Record<string, unknown>));
 }
 
 export async function subscribeDevice(

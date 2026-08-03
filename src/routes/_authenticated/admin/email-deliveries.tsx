@@ -132,7 +132,7 @@ function AdminEmailDeliveries() {
               <div className="min-w-0 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-semibold text-foreground">{delivery.subject}</p>
-                  <Badge variant={STATUS_VARIANT[delivery.status]}>{delivery.status}</Badge>
+                  <Badge variant={STATUS_VARIANT[delivery.status as EmailDeliveryStatus]}>{delivery.status}</Badge>
                 </div>
                 <p className="break-all text-sm text-muted-foreground">{delivery.recipient}</p>
                 <p className="text-sm text-muted-foreground">{delivery.body}</p>

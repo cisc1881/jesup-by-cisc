@@ -47,7 +47,7 @@ function ProgramsLayout() {
     isFetching,
     isError,
     refetch,
-  } = useQuery({
+  } = useQuery<ProgramListItem[]>({
     queryKey: ["programs"],
     queryFn: () => fetchPrograms(),
   });
@@ -69,7 +69,7 @@ function ProgramsLayout() {
     [relevantPrograms, search, categoryId],
   );
 
-  const showInitialSkeleton = isLoading && !programs?.length;
+  const showInitialSkeleton = isLoading && !(programs ?? []).length;
 
   const handleRefresh = useCallback(async () => {
     await refetch();

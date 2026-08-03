@@ -203,18 +203,18 @@ export async function submitInquiry(input: SubmitInquiryInput) {
     p_email: input.email.trim(),
     p_inquiry_type: input.inquiryType,
     p_consent_contact: true,
-    p_phone: input.phone?.trim() || null,
+    p_phone: input.phone?.trim() || undefined,
     p_preferred_contact: input.preferredContact ?? "either",
-    p_organization_or_school: input.organizationOrSchool?.trim() || null,
-    p_institution_id: input.institutionId ?? null,
-    p_institution_type: input.institutionType ?? null,
-    p_city: input.city?.trim() || null,
-    p_state: input.state?.trim() || null,
-    p_county: input.county?.trim() || null,
-    p_program_id: input.programId ?? null,
-    p_message: input.message?.trim() || null,
+    p_organization_or_school: input.organizationOrSchool?.trim() || undefined,
+    p_institution_id: input.institutionId ?? undefined,
+    p_institution_type: input.institutionType ?? undefined,
+    p_city: input.city?.trim() || undefined,
+    p_state: input.state?.trim() || undefined,
+    p_county: input.county?.trim() || undefined,
+    p_program_id: input.programId ?? undefined,
+    p_message: input.message?.trim() || undefined,
     p_newsletter_opt_in: Boolean(input.newsletterOptIn),
-    p_user_id: input.userId ?? null,
+    p_user_id: input.userId ?? undefined,
   });
   if (error) throw error;
   if (!data) throw new Error("Inquiry was not created.");
@@ -297,7 +297,7 @@ export async function updateInquiryStatus(id: string, status: InquiryStatus, ass
   const payload: Record<string, unknown> = { status };
   if (assignedTo !== undefined) payload.assigned_to = assignedTo;
 
-  const { error } = await supabase.from("inquiries").update(payload).eq("id", id);
+  const { error } = await supabase.from("inquiries").update(payload as never).eq("id", id);
   if (error) throw error;
 }
 

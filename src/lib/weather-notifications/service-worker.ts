@@ -12,7 +12,8 @@ export async function registerWeatherServiceWorker(): Promise<ServiceWorkerRegis
 
 export async function getWeatherServiceWorkerRegistration(): Promise<ServiceWorkerRegistration | null> {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) return null;
-  return navigator.serviceWorker.getRegistration("/");
+  const registration = await navigator.serviceWorker.getRegistration("/");
+  return registration ?? null;
 }
 
 export { urlBase64ToUint8Array } from "./subscription-normalize";

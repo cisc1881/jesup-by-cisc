@@ -4,7 +4,6 @@ export type {
   ContentTag,
   SearchResult,
   RelationshipDef,
-  NotificationRecord,
   PlatformSettingKey,
   ContentMeta,
   ContentStatus,

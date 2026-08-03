@@ -35,7 +35,7 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
     for (const [table, rows] of imports) {
       const { data, error } = await context.supabase
         .from(table)
-        .upsert(rows, { onConflict: "slug" })
+        .upsert(rows as never, { onConflict: "slug" })
         .select("id");
       if (error) throw new Error(`${table}: ${error.message}`);
       result[table] = data?.length ?? 0;

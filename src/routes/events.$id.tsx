@@ -22,16 +22,16 @@ import { ArrowLeft } from "lucide-react";
 import { AppButton } from "@/components/design-system";
 
 export const Route = createFileRoute("/events/$id")({
+  loader: async ({ params }) => {
+    const event = await fetchEventById(params.id);
+    return { event };
+  },
   head: ({ loaderData }) => ({
     meta: [
       { title: loaderData?.event ? `${loaderData.event.title} · Events · JESUP` : "Event · JESUP" },
       { name: "description", content: loaderData?.event?.description ?? "CISC event details" },
     ],
   }),
-  loader: async ({ params }) => {
-    const event = await fetchEventById(params.id);
-    return { event };
-  },
   component: EventDetailPage,
 });
 

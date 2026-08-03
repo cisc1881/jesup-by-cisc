@@ -105,16 +105,11 @@ function AdminInternships() {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    const payload: any = { ...form, deadline: form.deadline || null };
-    let res = editing
+    const { metadata: _metadata, ...rest } = form;
+    const payload: any = { ...rest, deadline: form.deadline || null };
+    const res = editing
       ? await supabase.from("internships").update(payload).eq("id", editing.id)
       : await supabase.from("internships").insert(payload);
-    if (res.error?.message.includes("metadata")) {
-      const { metadata: _metadata, ...legacyPayload } = payload;
-      res = editing
-        ? await supabase.from("internships").update(legacyPayload).eq("id", editing.id)
-        : await supabase.from("internships").insert(legacyPayload);
-    }
     if (res.error) return toast.error(res.error.message);
     toast.success("Saved");
     setOpen(false);
