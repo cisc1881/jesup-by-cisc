@@ -27,7 +27,10 @@ export function HomeHero({ slides }: HomeHeroProps) {
 
   return (
     <section className="relative isolate w-full overflow-hidden bg-[var(--institution-accent-strong)] text-[var(--institution-accent-foreground)]">
-      <div className="absolute inset-0 bg-[var(--gradient-hero-institution)]" aria-hidden="true" />
+      <div
+        className="absolute inset-0 [background-image:var(--gradient-hero-institution)]"
+        aria-hidden="true"
+      />
       <div
         className="absolute inset-0 opacity-30 [background-image:linear-gradient(color-mix(in_srgb,var(--institution-accent-foreground)_18%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--institution-accent-foreground)_18%,transparent)_1px,transparent_1px)] [background-size:48px_48px]"
         aria-hidden="true"
