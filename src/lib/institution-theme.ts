@@ -11,17 +11,17 @@ export type InstitutionTheme = {
 export const JESUP_NETWORK_THEME: InstitutionTheme = {
   key: "jesup-network",
   label: "1890 Land-Grant Network",
-  accent: "#168bd1",
-  accentStrong: "#004aad",
-  accentSoft: "#e8f5fb",
+  accent: "#3f3f46",
+  accentStrong: "#171717",
+  accentSoft: "#f1f1f1",
   accentForeground: "#ffffff",
-  secondary: "#334155",
+  secondary: "#a1a1aa",
 };
 
 type ThemeRule = InstitutionTheme & { matches: string[] };
 
-// School colors are intentionally used as accents. JESUP's navy/indigo shell
-// remains constant so a multi-institution event still feels like one platform.
+// School colors are applied only after a recognized institution is selected.
+// The unaffiliated network experience stays intentionally neutral.
 const INSTITUTION_THEMES: ThemeRule[] = [
   {
     key: "alabama-am",
@@ -227,4 +227,8 @@ export function resolveInstitutionTheme(name?: string | null): InstitutionTheme 
       label: name!.trim(),
     }
   );
+}
+
+export function hasRecognizedInstitutionTheme(theme: InstitutionTheme): boolean {
+  return theme.key !== JESUP_NETWORK_THEME.key && theme.key !== "affiliated-institution";
 }

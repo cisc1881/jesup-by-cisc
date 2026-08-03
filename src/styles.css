@@ -57,23 +57,24 @@
 :root {
   --radius: 1.25rem;
 
-  /* JESUP universal network palette */
-  --primary: #004aad;
+  /* Neutral JESUP network palette. InstitutionThemeProvider adds school color
+     only after a recognized institution is selected. */
+  --primary: #171717;
   --primary-foreground: oklch(0.99 0 0);
-  --primary-mid: #168bd1;
-  --primary-bright: #5de0e6;
+  --primary-mid: #3f3f46;
+  --primary-bright: #a1a1aa;
 
   /* Affiliation accents are changed by InstitutionThemeProvider after sign-in. */
-  --institution-accent: #168bd1;
-  --institution-accent-strong: #004aad;
-  --institution-accent-soft: #e8f5fb;
+  --institution-accent: #3f3f46;
+  --institution-accent-strong: #171717;
+  --institution-accent-soft: #f1f1f1;
   --institution-accent-foreground: #ffffff;
-  --institution-secondary: #334155;
+  --institution-secondary: #a1a1aa;
 
-  /* Metallic gold — accents only */
-  --gold: oklch(0.66 0.08 75);
-  --gold-light: oklch(0.72 0.09 82);
-  --gold-dark: oklch(0.56 0.1 68);
+  /* Legacy accent tokens remain neutral until an institution is selected. */
+  --gold: var(--institution-accent);
+  --gold-light: var(--institution-secondary);
+  --gold-dark: var(--institution-accent-strong);
 
   /* Neutrals */
   --background: oklch(0.97 0.003 90);
@@ -86,13 +87,13 @@
   --secondary-foreground: oklch(0.22 0 0);
   --muted: oklch(0.94 0.002 90);
   --muted-foreground: oklch(0.5 0 0);
-  --accent: #168bd1;
+  --accent: #3f3f46;
   --accent-foreground: #ffffff;
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.87 0.002 90);
   --input: oklch(0.9 0.002 90);
-  --ring: oklch(0.44 0.14 276);
+  --ring: #52525b;
 
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.22 0 0);
@@ -136,16 +137,21 @@
   --bottom-nav-offset: 6rem;
 
   /* Signature gradients & shadows */
-  --gradient-jesup: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
+  --gradient-jesup: linear-gradient(115deg, #050505 0%, #303034 68%, #737373 135%);
   --gradient-jesup-soft: linear-gradient(
     90deg,
-    color-mix(in srgb, #5de0e6 88%, transparent) 0%,
-    color-mix(in srgb, #004aad 92%, transparent) 100%
+    color-mix(in srgb, #050505 88%, transparent) 0%,
+    color-mix(in srgb, #737373 82%, transparent) 100%
   );
   /* Legacy aliases keep existing screens visually continuous during migration. */
   --gradient-crimson: var(--gradient-jesup);
   --gradient-crimson-soft: var(--gradient-jesup-soft);
-  --gradient-gold: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 100%);
+  --gradient-gold: linear-gradient(
+    135deg,
+    var(--institution-accent-strong) 0%,
+    var(--institution-accent) 65%,
+    var(--institution-secondary) 135%
+  );
   --gradient-hero-overlay: var(--gradient-crimson-soft);
   --shadow-soft:
     0 4px 20px -6px color-mix(in oklch, var(--foreground) 8%, transparent),
@@ -170,35 +176,40 @@
 }
 
 .dark {
-  --background: oklch(0.14 0.018 270);
+  --background: oklch(0.12 0 0);
   --foreground: oklch(0.98 0 0);
-  --card: oklch(0.19 0.022 270);
+  --card: oklch(0.18 0 0);
   --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.19 0.022 270);
+  --popover: oklch(0.18 0 0);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.58 0.14 278);
-  --primary-foreground: oklch(0.99 0 0);
-  --primary-mid: oklch(0.5 0.15 275);
-  --primary-bright: oklch(0.65 0.15 282);
-  --secondary: oklch(0.24 0.025 270);
+  --primary: #f4f4f5;
+  --primary-foreground: #18181b;
+  --primary-mid: #d4d4d8;
+  --primary-bright: #ffffff;
+  --institution-accent: #d4d4d8;
+  --institution-accent-strong: #f4f4f5;
+  --institution-accent-soft: #27272a;
+  --institution-accent-foreground: #18181b;
+  --institution-secondary: #71717a;
+  --secondary: oklch(0.24 0 0);
   --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.24 0.022 270);
+  --muted: oklch(0.24 0 0);
   --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.72 0.09 82);
-  --accent-foreground: oklch(0.15 0 0);
-  --gold: oklch(0.72 0.09 82);
-  --gold-light: oklch(0.78 0.1 82);
-  --gold-dark: oklch(0.62 0.1 68);
+  --accent: #d4d4d8;
+  --accent-foreground: #18181b;
+  --gold: var(--institution-accent);
+  --gold-light: var(--institution-secondary);
+  --gold-dark: var(--institution-accent-strong);
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
   --ring: var(--institution-accent);
-  --sidebar: oklch(0.19 0.022 270);
+  --sidebar: oklch(0.18 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
   --sidebar-primary: var(--institution-accent);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: color-mix(in oklch, var(--institution-accent) 18%, oklch(0.19 0.022 270));
+  --sidebar-accent: color-mix(in oklch, var(--institution-accent) 18%, oklch(0.18 0 0));
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: var(--institution-accent);
@@ -318,6 +329,14 @@
 
 @utility institution-accent-border {
   border-color: var(--institution-accent);
+}
+
+@utility institution-secondary-bg {
+  background-color: var(--institution-secondary);
+}
+
+@utility institution-secondary-text {
+  color: var(--institution-secondary);
 }
 
 @utility grad-crimson-text {

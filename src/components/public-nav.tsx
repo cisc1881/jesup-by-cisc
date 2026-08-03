@@ -35,7 +35,7 @@ export function PublicNav() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-card/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-card/85 backdrop-blur-xl after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[var(--gradient-jesup)]">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center" aria-label="JESUP home">
           <JesupLogoMark
@@ -136,7 +136,7 @@ export function PublicNav() {
             <Button
               asChild
               size="sm"
-              className="rounded-full grad-jesup text-white shadow-[var(--shadow-crimson)] hover:opacity-95"
+              className="rounded-full grad-jesup text-primary-foreground shadow-[var(--shadow-crimson)] hover:opacity-95"
             >
               <Link to="/auth">Sign in</Link>
             </Button>

@@ -5,6 +5,7 @@ import { getInstitutionById } from "@/lib/institutions";
 import { getMyProfile } from "@/lib/profile";
 import {
   JESUP_NETWORK_THEME,
+  hasRecognizedInstitutionTheme,
   resolveInstitutionTheme,
   type InstitutionTheme,
 } from "@/lib/institution-theme";
@@ -14,6 +15,7 @@ type InstitutionThemeContextValue = {
   institutionName: string | null;
   institutionId: string | null;
   isGuest: boolean;
+  hasInstitutionTheme: boolean;
 };
 
 const InstitutionThemeContext = createContext<InstitutionThemeContextValue>({
@@ -21,6 +23,7 @@ const InstitutionThemeContext = createContext<InstitutionThemeContextValue>({
   institutionName: null,
   institutionId: null,
   isGuest: true,
+  hasInstitutionTheme: false,
 });
 
 export function InstitutionThemeProvider({ children }: { children: ReactNode }) {
@@ -41,16 +44,35 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
     () => (user ? resolveInstitutionTheme(institutionName) : JESUP_NETWORK_THEME),
     [institutionName, user],
   );
+  const hasInstitutionTheme = hasRecognizedInstitutionTheme(theme);
 
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.institutionTheme = theme.key;
-    root.style.setProperty("--institution-accent", theme.accent);
-    root.style.setProperty("--institution-accent-strong", theme.accentStrong);
-    root.style.setProperty("--institution-accent-soft", theme.accentSoft);
-    root.style.setProperty("--institution-accent-foreground", theme.accentForeground);
-    root.style.setProperty("--institution-secondary", theme.secondary);
-  }, [theme]);
+    root.dataset.institutionSelected = String(hasInstitutionTheme);
+
+    const themedProperties: Record<string, string> = {
+      "--institution-accent": theme.accent,
+      "--institution-accent-strong": theme.accentStrong,
+      "--institution-accent-soft": `color-mix(in srgb, ${theme.accent} 14%, var(--background))`,
+      "--institution-accent-foreground": theme.accentForeground,
+      "--institution-secondary": theme.secondary,
+      "--primary": theme.accentStrong,
+      "--primary-mid": theme.accent,
+      "--primary-bright": theme.secondary,
+      "--primary-foreground": theme.accentForeground,
+      "--accent": theme.accent,
+      "--accent-foreground": theme.accentForeground,
+      "--ring": theme.accent,
+      "--gradient-jesup": `linear-gradient(115deg, ${theme.accentStrong} 0%, ${theme.accent} 72%, ${theme.secondary} 135%)`,
+      "--gradient-jesup-soft": `linear-gradient(115deg, color-mix(in srgb, ${theme.accentStrong} 88%, transparent) 0%, color-mix(in srgb, ${theme.accent} 82%, transparent) 72%, color-mix(in srgb, ${theme.secondary} 45%, transparent) 135%)`,
+    };
+
+    Object.entries(themedProperties).forEach(([property, value]) => {
+      if (hasInstitutionTheme) root.style.setProperty(property, value);
+      else root.style.removeProperty(property);
+    });
+  }, [hasInstitutionTheme, theme]);
 
   const value = useMemo(
     () => ({
@@ -58,8 +80,9 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
       institutionName,
       institutionId: profile?.institutionId ?? null,
       isGuest: !loading && !user,
+      hasInstitutionTheme,
     }),
-    [theme, institutionName, profile?.institutionId, loading, user],
+    [theme, institutionName, profile?.institutionId, loading, user, hasInstitutionTheme],
   );
 
   return (

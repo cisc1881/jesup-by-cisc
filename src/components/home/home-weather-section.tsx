@@ -36,10 +36,13 @@ export function HomeWeatherSection() {
 
   return (
     <section aria-labelledby="local-forecast-title">
-      <AppCard padding="md" className="overflow-hidden border-primary/10 bg-gradient-to-br from-card to-secondary/35">
+      <AppCard
+        padding="md"
+        className="overflow-hidden border-primary/10 bg-gradient-to-br from-card to-secondary/35"
+      >
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] institution-accent-text">
               <CloudSun className="size-4" aria-hidden="true" />
               Local forecast
             </div>
@@ -54,7 +57,12 @@ export function HomeWeatherSection() {
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
-            <AppButton type="button" variant="outline" size="sm" onClick={locationState.requestLiveLocation}>
+            <AppButton
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={locationState.requestLiveLocation}
+            >
               <LocateFixed className="size-4" aria-hidden="true" />
               Use my location
             </AppButton>
@@ -65,24 +73,32 @@ export function HomeWeatherSection() {
         </div>
 
         {isLoading && !displayData ? (
-          <div className="mt-6 h-32 animate-pulse rounded-2xl bg-muted" role="status" aria-label="Loading local forecast" />
+          <div
+            className="mt-6 h-32 animate-pulse rounded-2xl bg-muted"
+            role="status"
+            aria-label="Loading local forecast"
+          />
         ) : displayData ? (
           <div className="mt-6 grid gap-5 lg:grid-cols-[14rem_1fr] lg:items-center">
             <div className="flex items-center gap-4">
               <WeatherConditionIcon
                 code={displayData.current.conditionCode}
                 label={displayData.current.condition}
-                className="size-14 shrink-0 text-accent"
+                className="size-14 shrink-0 institution-accent-text"
               />
               <div>
-                <p className="text-4xl font-black tabular-nums">{displayData.current.temperatureF}°F</p>
+                <p className="text-4xl font-black tabular-nums">
+                  {displayData.current.temperatureF}°F
+                </p>
                 <p className="text-sm text-muted-foreground">{displayData.current.condition}</p>
               </div>
             </div>
             <ForecastStrip days={displayData.forecast.slice(0, 5)} />
           </div>
         ) : (
-          <p className="mt-5 text-sm text-muted-foreground">Choose your location to view the forecast.</p>
+          <p className="mt-5 text-sm text-muted-foreground">
+            Choose your location to view the forecast.
+          </p>
         )}
       </AppCard>
     </section>

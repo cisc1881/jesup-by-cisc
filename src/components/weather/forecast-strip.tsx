@@ -18,7 +18,7 @@ function ForecastDayCard({ day }: { day: ForecastDay }) {
       <WeatherConditionIcon
         code={day.conditionCode}
         label={day.condition}
-        className="size-8 text-accent"
+        className="size-8 institution-accent-text"
       />
       <p className="sr-only">{day.condition}</p>
       <div className="flex items-baseline gap-1.5 text-sm tabular-nums">

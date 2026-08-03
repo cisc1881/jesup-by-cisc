@@ -51,12 +51,14 @@ export function PageHeader({ title, description, eyebrow, action, className }: P
       <div className="mx-auto max-w-7xl page-x py-[var(--space-10)] sm:py-[var(--space-12)]">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
-            {eyebrow && <div className="mb-3 text-eyebrow grad-gold-text">{eyebrow}</div>}
+            {eyebrow && <div className="mb-3 text-eyebrow institution-accent-text">{eyebrow}</div>}
             <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
               {title}
             </h1>
             {description && (
-              <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">{description}</p>
+              <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
+                {description}
+              </p>
             )}
           </div>
           {action}
