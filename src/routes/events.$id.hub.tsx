@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -44,7 +44,13 @@ import { EventAgendaNotice, EventChatRoom } from "@/components/events";
 import { PublicLayout } from "@/components/public-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchEventById, fetchUserEventRegistration, type EventSession } from "@/lib/events";
+import {
+  fetchEventById,
+  fetchRegistrationSessionSelections,
+  fetchUserEventRegistration,
+  saveRegistrationSessionSelections,
+  type EventSession,
+} from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -94,6 +100,9 @@ function EventHubPage() {
   const { user, isAdmin } = useAuth();
   const [tab, setTab] = useState<HubTab>("home");
   const [search, setSearch] = useState("");
+  const [searchDraft, setSearchDraft] = useState("");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [locationFilter, setLocationFilter] = useState("all");
   const [savedSessions, setSavedSessions] = useState<string[]>([]);
   const [agendaMode, setAgendaMode] = useState<"full" | "mine">("full");
   const [selectedSession, setSelectedSession] = useState<EventSession | null>(null);
@@ -113,6 +122,20 @@ function EventHubPage() {
     queryFn: () => fetchUserEventRegistration(id, user!.id),
   });
   const registered = !!registration || isAdmin;
+  const { data: registeredSessionIds = [] } = useQuery({
+    queryKey: ["registration-session-plan", registration?.id],
+    enabled: !!registration?.id,
+    queryFn: () => fetchRegistrationSessionSelections(registration!.id),
+  });
+
+  useEffect(() => {
+    if (registeredSessionIds.length === 0) return;
+    setSavedSessions((current) => {
+      const next = [...new Set([...current, ...registeredSessionIds])];
+      window.localStorage.setItem(storageKey, JSON.stringify(next));
+      return next;
+    });
+  }, [registeredSessionIds, storageKey]);
   const { data: attendees = [], isLoading: attendeesLoading } = useQuery({
     queryKey: ["event-attendee-directory", id],
     enabled: registered,
@@ -143,6 +166,13 @@ function EventHubPage() {
     return (
       event?.sessions.filter((session: EventSession) => {
         if (agendaMode === "mine" && !savedSessions.includes(session.id)) return false;
+        if (
+          dateFilter !== "all" &&
+          (!session.startsAt ||
+            new Date(session.startsAt).toISOString().slice(0, 10) !== dateFilter)
+        )
+          return false;
+        if (locationFilter !== "all" && session.location !== locationFilter) return false;
         return (
           !query ||
           [session.title, session.location, session.description].some((value) =>
@@ -151,7 +181,31 @@ function EventHubPage() {
         );
       }) ?? []
     );
-  }, [agendaMode, event?.sessions, savedSessions, search]);
+  }, [agendaMode, dateFilter, event?.sessions, locationFilter, savedSessions, search]);
+
+  const sessionDates = useMemo(
+    () => [
+      ...new Set(
+        (event?.sessions ?? [])
+          .map((session: EventSession) =>
+            session.startsAt ? new Date(session.startsAt).toISOString().slice(0, 10) : null,
+          )
+          .filter((value): value is string => Boolean(value)),
+      ),
+    ],
+    [event?.sessions],
+  );
+  const sessionLocations = useMemo(
+    () =>
+      [
+        ...new Set(
+          (event?.sessions ?? [])
+            .map((session: EventSession) => session.location)
+            .filter((value): value is string => Boolean(value)),
+        ),
+      ].sort(),
+    [event?.sessions],
+  );
 
   const visibleAttendees = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -173,6 +227,14 @@ function EventHubPage() {
       : [...savedSessions, sessionId];
     setSavedSessions(next);
     window.localStorage.setItem(storageKey, JSON.stringify(next));
+    if (registration?.id) {
+      void saveRegistrationSessionSelections(registration.id, next);
+    }
+  }
+
+  function submitSessionSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSearch(searchDraft.trim());
   }
 
   if (!event) return null;
@@ -230,6 +292,7 @@ function EventHubPage() {
                 onClick={() => {
                   setTab(item);
                   setSearch("");
+                  setSearchDraft("");
                 }}
                 className={cn(
                   "min-h-14 border-b-4 px-1 text-xs font-bold capitalize sm:text-sm",
@@ -460,15 +523,76 @@ function EventHubPage() {
               ) : (
                 <>
                   <div className="grad-jesup p-4 text-white sm:p-6">
-                    <label className="flex min-h-12 items-center gap-3 bg-white px-4 text-foreground">
-                      <Search className="h-5 w-5 text-muted-foreground" />
-                      <input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="min-w-0 flex-1 bg-transparent outline-none"
-                        placeholder="Search sessions, rooms, speakers…"
-                      />
-                    </label>
+                    <form onSubmit={submitSessionSearch} className="flex items-stretch gap-2">
+                      <label className="flex min-h-12 min-w-0 flex-1 items-center gap-3 bg-white px-4 text-foreground">
+                        <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+                        <span className="sr-only">Search event sessions</span>
+                        <input
+                          id={`event-${id}-session-search`}
+                          name="session_search"
+                          value={searchDraft}
+                          onChange={(e) => setSearchDraft(e.target.value)}
+                          className="min-w-0 flex-1 bg-transparent outline-none"
+                          placeholder="Search sessions, rooms, speakers…"
+                        />
+                      </label>
+                      <button
+                        type="submit"
+                        className="min-h-12 bg-slate-900 px-5 text-sm font-extrabold text-white hover:bg-slate-800"
+                      >
+                        Search
+                      </button>
+                    </form>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <label>
+                        <span className="sr-only">Filter sessions by date</span>
+                        <select
+                          value={dateFilter}
+                          onChange={(event) => setDateFilter(event.target.value)}
+                          className="min-h-11 w-full border border-white/60 bg-white px-3 text-sm font-bold text-slate-900"
+                        >
+                          <option value="all">All dates</option>
+                          {sessionDates.map((date) => (
+                            <option key={date} value={date}>
+                              {new Date(`${date}T12:00:00`).toLocaleDateString(undefined, {
+                                weekday: "short",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span className="sr-only">Filter sessions by room</span>
+                        <select
+                          value={locationFilter}
+                          onChange={(event) => setLocationFilter(event.target.value)}
+                          className="min-h-11 w-full border border-white/60 bg-white px-3 text-sm font-bold text-slate-900"
+                        >
+                          <option value="all">All rooms and locations</option>
+                          {sessionLocations.map((location) => (
+                            <option key={location} value={location}>
+                              {location}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    {(search || dateFilter !== "all" || locationFilter !== "all") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearch("");
+                          setSearchDraft("");
+                          setDateFilter("all");
+                          setLocationFilter("all");
+                        }}
+                        className="mt-3 text-sm font-bold text-white underline underline-offset-4"
+                      >
+                        Clear search and filters
+                      </button>
+                    )}
                     <div className="mt-3 grid grid-cols-2 border border-white/70">
                       {(["full", "mine"] as const).map((mode) => (
                         <button

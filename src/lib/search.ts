@@ -4,6 +4,7 @@ export type SearchEntityType =
   | "program"
   | "publication"
   | "event"
+  | "session"
   | "market"
   | "twofas"
   | "grant"
@@ -38,6 +39,7 @@ export const SEARCH_ENTITY_LABELS: Record<SearchEntityType, string> = {
   program: "Programs",
   publication: "Publications",
   event: "Events",
+  session: "Event Sessions",
   market: "Farmers Markets",
   twofas: "2FAS Opportunities",
   grant: "Grants",
@@ -49,6 +51,7 @@ export const SEARCH_ENTITY_LABELS: Record<SearchEntityType, string> = {
 export const SEARCH_GROUP_ORDER: SearchEntityType[] = [
   "program",
   "event",
+  "session",
   "market",
   "publication",
   "twofas",
@@ -79,7 +82,12 @@ function bestScore(fields: (string | null | undefined)[], q: string) {
 
 function stripHtml(html: string | null | undefined) {
   if (!html) return null;
-  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || null;
+  return (
+    html
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim() || null
+  );
 }
 
 function buildResult(
@@ -99,11 +107,13 @@ export function groupSearchResults(results: UniversalSearchResult[]): SearchResu
     byType.set(result.entityType, list);
   }
 
-  return SEARCH_GROUP_ORDER.filter((type) => (byType.get(type)?.length ?? 0) > 0).map((entityType) => ({
-    entityType,
-    label: SEARCH_ENTITY_LABELS[entityType],
-    results: (byType.get(entityType) ?? []).sort((a, b) => b.score - a.score),
-  }));
+  return SEARCH_GROUP_ORDER.filter((type) => (byType.get(type)?.length ?? 0) > 0).map(
+    (entityType) => ({
+      entityType,
+      label: SEARCH_ENTITY_LABELS[entityType],
+      results: (byType.get(entityType) ?? []).sort((a, b) => b.score - a.score),
+    }),
+  );
 }
 
 export async function universalSearch(
@@ -117,32 +127,61 @@ export async function universalSearch(
 
   const limit = options?.limit ?? 40;
 
-  const [programsRes, eventsRes, marketsRes, publicationsRes, twofasRes, grantsRes, partnersRes, podcastsRes, newsRes] =
-    await Promise.all([
-      supabase.from("programs").select("id, slug, name, tagline, short, cover_image_url").eq("is_active", true),
-      supabase
-        .from("events")
-        .select("id, slug, title, description, location, image_url")
-        .eq("is_active", true)
-        .eq("status", "published"),
-      supabase.from("markets").select("id, slug, name, description, city, state, image_url").eq("is_active", true),
-      supabase
-        .from("publications")
-        .select("id, slug, title, description, author, cover_image_url")
-        .eq("is_active", true),
-      supabase
-        .from("internships")
-        .select("id, slug, title, description, department, requirements_html, is_2fas, is_open")
-        .eq("is_2fas", true)
-        .eq("is_open", true),
-      supabase.from("grants").select("id, title, funder, description"),
-      supabase.from("partners").select("id, slug, name, short_description, description, category, logo_url").eq("is_published", true),
-      supabase.from("podcast_episodes").select("id, slug, title, description, guest, cover_url").eq("is_published", true),
-      supabase
-        .from("news_articles")
-        .select("id, slug, title, summary, author, category, cover_image_url")
-        .eq("is_published", true),
-    ]);
+  const [
+    programsRes,
+    eventsRes,
+    sessionsRes,
+    marketsRes,
+    publicationsRes,
+    twofasRes,
+    grantsRes,
+    partnersRes,
+    podcastsRes,
+    newsRes,
+  ] = await Promise.all([
+    supabase
+      .from("programs")
+      .select("id, slug, name, tagline, short, cover_image_url")
+      .eq("is_active", true),
+    supabase
+      .from("events")
+      .select("id, slug, title, description, location, image_url")
+      .eq("is_active", true)
+      .eq("status", "published"),
+    supabase
+      .from("event_sessions")
+      .select(
+        "id, event_id, title, description, starts_at, location, events!inner(id, slug, title, is_active, status)",
+      )
+      .eq("events.is_active", true)
+      .eq("events.status", "published"),
+    supabase
+      .from("markets")
+      .select("id, slug, name, description, city, state, image_url")
+      .eq("is_active", true),
+    supabase
+      .from("publications")
+      .select("id, slug, title, description, author, cover_image_url")
+      .eq("is_active", true),
+    supabase
+      .from("internships")
+      .select("id, slug, title, description, department, requirements_html, is_2fas, is_open")
+      .eq("is_2fas", true)
+      .eq("is_open", true),
+    supabase.from("grants").select("id, title, funder, description"),
+    supabase
+      .from("partners")
+      .select("id, slug, name, short_description, description, category, logo_url")
+      .eq("is_published", true),
+    supabase
+      .from("podcast_episodes")
+      .select("id, slug, title, description, guest, cover_url")
+      .eq("is_published", true),
+    supabase
+      .from("news_articles")
+      .select("id, slug, title, summary, author, category, cover_image_url")
+      .eq("is_published", true),
+  ]);
 
   const results: UniversalSearchResult[] = [];
 
@@ -174,6 +213,31 @@ export async function universalSearch(
         hrefParams: { id: row.slug ?? row.id },
         imageUrl: row.image_url,
         scoreFields: [row.title, row.description, row.location],
+      },
+      q,
+    );
+    if (hit) results.push(hit);
+  }
+
+  for (const row of sessionsRes.data ?? []) {
+    const parent = row.events as { id: string; slug: string | null; title: string } | null;
+    const hit = buildResult(
+      {
+        id: row.id,
+        entityType: "session",
+        title: row.title,
+        description:
+          [
+            parent?.title,
+            row.location,
+            row.starts_at ? new Date(row.starts_at).toLocaleString() : null,
+          ]
+            .filter(Boolean)
+            .join(" · ") || row.description,
+        href: "/events/$id/hub",
+        hrefParams: { id: parent?.slug ?? parent?.id ?? row.event_id },
+        imageUrl: null,
+        scoreFields: [row.title, row.description, row.location, parent?.title],
       },
       q,
     );
@@ -309,7 +373,10 @@ export async function universalSearch(
 }
 
 /** Flat list for legacy callers */
-export async function flatUniversalSearch(query: string, limit = 30): Promise<UniversalSearchResult[]> {
+export async function flatUniversalSearch(
+  query: string,
+  limit = 30,
+): Promise<UniversalSearchResult[]> {
   const { groups } = await universalSearch(query, { limit });
   return groups.flatMap((g) => g.results);
 }

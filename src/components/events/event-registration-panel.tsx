@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import type { EventDetail } from "@/lib/events";
-import { registerForEvent, saveRegistrationAccommodations } from "@/lib/events";
+import {
+  fetchRegistrationSessionSelections,
+  registerForEvent,
+  saveRegistrationAccommodations,
+  saveRegistrationSessionSelections,
+} from "@/lib/events";
 import { triggerEmailDelivery } from "@/lib/email-delivery";
 import { downloadEventIcs, googleMapsDirectionsUrl, shareEvent } from "@/lib/event-calendar";
 import { useAuth } from "@/hooks/use-auth";
@@ -22,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarPlus, ExternalLink, QrCode, Share2 } from "lucide-react";
+import { CalendarPlus, ExternalLink, QrCode, Search, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { EventbriteCheckout } from "@/components/events/eventbrite-checkout";
 
@@ -54,15 +59,68 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     buildEmptyDemographicForm(),
   );
   const [savingDemographics, setSavingDemographics] = useState(false);
-  const registrationProvider = event.metadata.registration_provider === "eventbrite" ? "eventbrite" : "jesup";
-  const eventbriteEventId = typeof event.metadata.eventbrite_event_id === "string" ? event.metadata.eventbrite_event_id : "";
-  const eventbriteEventUrl = typeof event.metadata.eventbrite_event_url === "string" ? event.metadata.eventbrite_event_url : "";
-  const ticketPriceLabel = typeof event.metadata.ticket_price_label === "string" ? event.metadata.ticket_price_label : null;
+  const [selectedSessionIds, setSelectedSessionIds] = useState<string[]>([]);
+  const [sessionQuery, setSessionQuery] = useState("");
+  const [savingSessions, setSavingSessions] = useState(false);
+  const registrationProvider =
+    event.metadata.registration_provider === "eventbrite" ? "eventbrite" : "jesup";
+  const eventbriteEventId =
+    typeof event.metadata.eventbrite_event_id === "string"
+      ? event.metadata.eventbrite_event_id
+      : "";
+  const eventbriteEventUrl =
+    typeof event.metadata.eventbrite_event_url === "string"
+      ? event.metadata.eventbrite_event_url
+      : "";
+  const ticketPriceLabel =
+    typeof event.metadata.ticket_price_label === "string"
+      ? event.metadata.ticket_price_label
+      : null;
 
   const canRegister =
     event.registrationStatus === "open" ||
     event.registrationStatus === "waiting_list" ||
     event.registrationStatus === "invite_only";
+
+  const visibleSessions = useMemo(() => {
+    const query = sessionQuery.trim().toLowerCase();
+    return event.sessions.filter(
+      (session) =>
+        !query ||
+        [session.title, session.description, session.location].some((value) =>
+          value?.toLowerCase().includes(query),
+        ),
+    );
+  }, [event.sessions, sessionQuery]);
+
+  useEffect(() => {
+    if (!registration?.id) return;
+    fetchRegistrationSessionSelections(registration.id)
+      .then(setSelectedSessionIds)
+      .catch(() => undefined);
+  }, [registration?.id]);
+
+  function toggleSession(sessionId: string) {
+    setSelectedSessionIds((current) =>
+      current.includes(sessionId)
+        ? current.filter((id) => id !== sessionId)
+        : [...current, sessionId],
+    );
+  }
+
+  async function updateSessionPlan(targetRegistrationId: string) {
+    setSavingSessions(true);
+    try {
+      await saveRegistrationSessionSelections(targetRegistrationId, selectedSessionIds);
+      toast.success("Your session agenda is saved");
+      void qc.invalidateQueries({ queryKey: ["registration-session-plan", targetRegistrationId] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Session choices could not be saved");
+      throw error;
+    } finally {
+      setSavingSessions(false);
+    }
+  }
 
   async function handleRegister() {
     if (!user) {
@@ -75,10 +133,15 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
         dietaryRestrictions.trim() || foodAllergies.trim() || accessibilityAccommodations.trim(),
       );
       if (hasAccommodationDetails && !accommodationConsent) {
-        toast.error("Please authorize JESUP to use these details to coordinate your accommodations.");
+        toast.error(
+          "Please authorize JESUP to use these details to coordinate your accommodations.",
+        );
         return;
       }
       const result = await registerForEvent(event.id, user.id, notes, inviteCode);
+      if (selectedSessionIds.length > 0) {
+        await saveRegistrationSessionSelections(result.id, selectedSessionIds);
+      }
       if (hasAccommodationDetails) {
         try {
           await saveRegistrationAccommodations(result.id, {
@@ -88,7 +151,9 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
             consent: accommodationConsent,
           });
         } catch {
-          toast.warning("Registration completed, but accommodation details could not be saved. Please contact the event team.");
+          toast.warning(
+            "Registration completed, but accommodation details could not be saved. Please contact the event team.",
+          );
         }
       }
       triggerEmailDelivery();
@@ -188,7 +253,9 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
             priceLabel={ticketPriceLabel}
           />
         ) : registrationProvider === "eventbrite" ? (
-          <p className="text-muted-foreground">Ticket checkout is being prepared. Please check back soon.</p>
+          <p className="text-muted-foreground">
+            Ticket checkout is being prepared. Please check back soon.
+          </p>
         ) : registration ? (
           <div className="space-y-3">
             <p className="font-semibold text-green-700">
@@ -212,6 +279,27 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
               <p className="text-sm text-muted-foreground">
                 Checked in {new Date(registration.checked_in_at).toLocaleString()}
               </p>
+            )}
+            {event.sessions.length > 0 && (
+              <SessionPlanner
+                eventId={event.id}
+                sessions={visibleSessions}
+                totalSessions={event.sessions.length}
+                query={sessionQuery}
+                onQueryChange={setSessionQuery}
+                selectedIds={selectedSessionIds}
+                onToggle={toggleSession}
+              />
+            )}
+            {event.sessions.length > 0 && (
+              <AppButton
+                variant="primary"
+                size="sm"
+                onClick={() => void updateSessionPlan(registration.id)}
+                disabled={savingSessions}
+              >
+                {savingSessions ? "Saving agenda…" : "Save my session agenda"}
+              </AppButton>
             )}
             <AppButton
               variant="outline"
@@ -245,8 +333,21 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
                 />
               </div>
             )}
+            {event.sessions.length > 0 && (
+              <SessionPlanner
+                eventId={event.id}
+                sessions={visibleSessions}
+                totalSessions={event.sessions.length}
+                query={sessionQuery}
+                onQueryChange={setSessionQuery}
+                selectedIds={selectedSessionIds}
+                onToggle={toggleSession}
+              />
+            )}
             <div>
-              <Label htmlFor={`event-${event.id}-dietary`}>Dietary preferences or restrictions (optional)</Label>
+              <Label htmlFor={`event-${event.id}-dietary`}>
+                Dietary preferences or restrictions (optional)
+              </Label>
               <Textarea
                 id={`event-${event.id}-dietary`}
                 value={dietaryRestrictions}
@@ -264,7 +365,9 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
               />
             </div>
             <div>
-              <Label htmlFor={`event-${event.id}-accessibility`}>Accessibility accommodations (optional)</Label>
+              <Label htmlFor={`event-${event.id}-accessibility`}>
+                Accessibility accommodations (optional)
+              </Label>
               <Textarea
                 id={`event-${event.id}-accessibility`}
                 value={accessibilityAccommodations}
@@ -273,7 +376,9 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
               />
             </div>
             <div>
-              <Label htmlFor={`event-${event.id}-registration-notes`}>Other registration notes (optional)</Label>
+              <Label htmlFor={`event-${event.id}-registration-notes`}>
+                Other registration notes (optional)
+              </Label>
               <Textarea
                 id={`event-${event.id}-registration-notes`}
                 value={notes}
@@ -286,8 +391,13 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
                 checked={accommodationConsent}
                 onCheckedChange={(value) => setAccommodationConsent(value === true)}
               />
-              <Label htmlFor={`event-${event.id}-accommodation-consent`} className="text-sm font-normal leading-relaxed">
-                I authorize JESUP/CISC event staff to use the dietary, allergy, and accessibility details I provide solely to coordinate this event. I understand this form is not for emergency medical instructions.
+              <Label
+                htmlFor={`event-${event.id}-accommodation-consent`}
+                className="text-sm font-normal leading-relaxed"
+              >
+                I authorize JESUP/CISC event staff to use the dietary, allergy, and accessibility
+                details I provide solely to coordinate this event. I understand this form is not for
+                emergency medical instructions.
               </Label>
             </div>
             <AppButton
@@ -334,5 +444,79 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
         </AppButton>
       </div>
     </div>
+  );
+}
+
+type SessionPlannerProps = {
+  eventId: string;
+  sessions: EventDetail["sessions"];
+  totalSessions: number;
+  query: string;
+  onQueryChange: (value: string) => void;
+  selectedIds: string[];
+  onToggle: (sessionId: string) => void;
+};
+
+function SessionPlanner({
+  eventId,
+  sessions,
+  totalSessions,
+  query,
+  onQueryChange,
+  selectedIds,
+  onToggle,
+}: SessionPlannerProps) {
+  return (
+    <fieldset className="border border-border bg-muted/20 p-4">
+      <legend className="px-2 text-sm font-black">Plan the sessions you expect to attend</legend>
+      <p className="mb-3 text-xs leading-5 text-muted-foreground">
+        Your choices automatically appear in My Agenda. You can change them later.
+      </p>
+      {totalSessions > 6 && (
+        <label className="mb-3 flex min-h-11 items-center gap-2 border bg-background px-3">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <span className="sr-only">Filter registration sessions</span>
+          <Input
+            id={`event-${eventId}-session-search`}
+            name="session_search"
+            value={query}
+            onChange={(event) => onQueryChange(event.target.value)}
+            placeholder="Find a session, room, or topic"
+            className="h-9 border-0 px-0 shadow-none focus-visible:ring-0"
+          />
+        </label>
+      )}
+      <div className="max-h-72 divide-y overflow-y-auto border bg-background">
+        {sessions.map((session) => (
+          <label
+            key={session.id}
+            className="flex cursor-pointer items-start gap-3 p-3 hover:bg-muted/50"
+          >
+            <Checkbox
+              checked={selectedIds.includes(session.id)}
+              onCheckedChange={() => onToggle(session.id)}
+              aria-label={`Add ${session.title} to my agenda`}
+            />
+            <span className="min-w-0">
+              <span className="block text-sm font-bold">{session.title}</span>
+              <span className="mt-1 block text-xs text-muted-foreground">
+                {[
+                  session.startsAt ? new Date(session.startsAt).toLocaleString() : null,
+                  session.location,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "Time and room to be announced"}
+              </span>
+            </span>
+          </label>
+        ))}
+        {sessions.length === 0 && (
+          <p className="p-4 text-sm text-muted-foreground">No sessions match your search.</p>
+        )}
+      </div>
+      <p className="mt-3 text-xs font-bold text-primary">
+        {selectedIds.length} session{selectedIds.length === 1 ? "" : "s"} selected
+      </p>
+    </fieldset>
   );
 }

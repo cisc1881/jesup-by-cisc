@@ -41,12 +41,22 @@ export const askJESUPServerFn = createServerFn({ method: "POST" })
       ],
     );
     const config = await loadAiProviderConfig(supabaseAdmin);
+    const { data: roles } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+    const role = (roles ?? []).some((entry) => entry.role === "admin")
+      ? "admin"
+      : (roles ?? []).some((entry) => entry.role === "funder")
+        ? "funder"
+        : "user";
     const result = await executeJESUPStream({
       db: supabaseAdmin,
       userId: context.userId,
       question: data.question,
       history: data.history,
       config,
+      role,
     }).catch((error: unknown) => {
       const errorName = error instanceof Error ? error.name : "UnknownAiError";
       console.error(`[Ask JESUP] Request failed: ${errorName}`);

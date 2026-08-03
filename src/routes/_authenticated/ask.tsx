@@ -22,6 +22,8 @@ const SUGGESTED_QUESTIONS = [
   "Find a farmers market near me",
   "What upcoming events can I attend?",
   "Show me publications for farmers",
+  "Find a session and add it to my agenda",
+  "Where can I manage my registration?",
 ] as const;
 
 function AskJESUPPage() {

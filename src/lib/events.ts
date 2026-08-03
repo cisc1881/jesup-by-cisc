@@ -979,6 +979,35 @@ export async function registerForEvent(
   return data[0];
 }
 
+export async function fetchRegistrationSessionSelections(
+  registrationId: string,
+): Promise<string[]> {
+  const { data, error } = await (supabase as any)
+    .from("event_registration_sessions")
+    .select("session_id")
+    .eq("registration_id", registrationId);
+  if (error) throw error;
+  return (data ?? []).map((row: { session_id: string }) => row.session_id);
+}
+
+export async function saveRegistrationSessionSelections(
+  registrationId: string,
+  sessionIds: string[],
+) {
+  const table = (supabase as any).from("event_registration_sessions");
+  const { error: deleteError } = await table.delete().eq("registration_id", registrationId);
+  if (deleteError) throw deleteError;
+  if (sessionIds.length === 0) return;
+
+  const { error: insertError } = await table.insert(
+    [...new Set(sessionIds)].map((sessionId) => ({
+      registration_id: registrationId,
+      session_id: sessionId,
+    })),
+  );
+  if (insertError) throw insertError;
+}
+
 export async function saveRegistrationAccommodations(
   registrationId: string,
   input: {

@@ -19,6 +19,7 @@ export type ExecuteJESUPRequest = {
   search?: AiSearch;
   client?: AiProviderClient;
   timeoutMs?: number;
+  role?: "admin" | "funder" | "user";
 };
 
 export type ExecuteJESUPResult = AiCompletionResult & { context: AiRagContext };
@@ -26,6 +27,47 @@ export type ExecuteJESUPStreamResult = {
   stream: ReadableStream<Uint8Array>;
   context: AiRagContext;
 };
+
+function roleNavigationContext(role: ExecuteJESUPRequest["role"] = "user") {
+  const shared = `JESUP NAVIGATION FOR ALL SIGNED-IN USERS:
+- Home and personalized activity: / and /me
+- Events and event registration: /events
+- Event agenda, sessions, attendee tools, community, messages, QR admission, and meal tickets: open an event and choose Event Hub
+- Workshops and training: /workshops
+- Programs: /programs
+- Internship applications: /internships
+- Resources, publications, markets, grants, partners, podcasts, news, donations, weather, and emergency information: /resources
+- Ask JESUP: /ask
+- Profile and account settings: /me and /me/settings`;
+  if (role === "admin") {
+    return `${shared}
+
+ADMIN-ONLY NAVIGATION:
+- Administration command center: /admin
+- Events, sessions, registration review, attendance, badges, meal tickets, reports, content publishing, users, messaging, and settings are available from /admin.
+- Never expose private attendee records, accommodation details, or administrative data in an answer. Direct the admin to the appropriate protected dashboard instead.`;
+  }
+  if (role === "funder") {
+    return `${shared}
+
+FUNDER NAVIGATION:
+- Restricted grant metrics and approved reports: /funder
+- Funders may only access metrics for grants assigned to their account. Never imply access to attendee-level or unrelated grant data.`;
+  }
+  return `${shared}
+
+USER ACCESS:
+- Users may view their own registrations, session agenda, applications, messages, QR codes, meal tickets, profile, and accommodation requests. Never imply access to another person's information or admin tools.`;
+}
+
+function buildSystemPrompt(context: AiRagContext, role: ExecuteJESUPRequest["role"]) {
+  return `${JESUP_SYSTEM_PROMPT}
+
+${roleNavigationContext(role)}
+
+JESUP CONTEXT:
+${context.promptContext}`;
+}
 
 export function buildConversationMessages(
   question: string,
@@ -64,7 +106,7 @@ export async function executeJESUPRequest(input: ExecuteJESUPRequest): Promise<E
 
   try {
     const result = await client.complete({
-      systemPrompt: `${JESUP_SYSTEM_PROMPT}\n\nJESUP CONTEXT:\n${context.promptContext}`,
+      systemPrompt: buildSystemPrompt(context, input.role),
       messages: buildConversationMessages(context.query, input.history),
       signal: controller.signal,
     });
@@ -98,7 +140,7 @@ export async function executeJESUPStream(
 
   try {
     const result = await client.stream({
-      systemPrompt: `${JESUP_SYSTEM_PROMPT}\n\nJESUP CONTEXT:\n${context.promptContext}`,
+      systemPrompt: buildSystemPrompt(context, input.role),
       messages: buildConversationMessages(context.query, input.history),
       signal: controller.signal,
     });
