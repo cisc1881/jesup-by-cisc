@@ -76,7 +76,9 @@ function InternshipsPage() {
   const selectedInstitution = institutions.find((institution) => institution.id === institutionId);
   const filtered = (data ?? []).filter((internship) => {
     if (scope === "all" || !institutionId) return true;
-    const audience = parseInternshipAudience(internship.metadata);
+    const audience = parseInternshipAudience(internship.metadata, {
+      is2fas: internship.is_2fas,
+    });
     const belongsToMine =
       audience.institutionIds.includes(institutionId) ||
       (!!selectedInstitution && audience.institutionSlugs.includes(selectedInstitution.slug));

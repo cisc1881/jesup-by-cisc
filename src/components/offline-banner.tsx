@@ -2,22 +2,48 @@ import { useEffect, useState } from "react";
 import { WifiOff } from "lucide-react";
 
 export function OfflineBanner() {
-  const [offline, setOffline] = useState(
-    typeof navigator !== "undefined" ? !navigator.onLine : false,
-  );
+  // Keep the server and first client render identical. Reading navigator.onLine
+  // during render caused a hydration mismatch, and several iOS/PWA webviews can
+  // report false even while same-origin requests are succeeding.
+  const [offline, setOffline] = useState(false);
 
   useEffect(() => {
-    function onOnline() {
-      setOffline(false);
+    let disposed = false;
+    let activeController: AbortController | null = null;
+
+    async function verifyConnectivity() {
+      activeController?.abort();
+      const controller = new AbortController();
+      activeController = controller;
+      const timeout = window.setTimeout(() => controller.abort(), 5000);
+
+      try {
+        await fetch(`/favicon.ico?connectivity=${Date.now()}`, {
+          method: "HEAD",
+          cache: "no-store",
+          credentials: "same-origin",
+          signal: controller.signal,
+        });
+        if (!disposed) setOffline(false);
+      } catch {
+        if (!disposed) setOffline(!navigator.onLine);
+      } finally {
+        window.clearTimeout(timeout);
+      }
     }
-    function onOffline() {
-      setOffline(true);
+
+    function onNetworkChange() {
+      void verifyConnectivity();
     }
-    window.addEventListener("online", onOnline);
-    window.addEventListener("offline", onOffline);
+
+    void verifyConnectivity();
+    window.addEventListener("online", onNetworkChange);
+    window.addEventListener("offline", onNetworkChange);
     return () => {
-      window.removeEventListener("online", onOnline);
-      window.removeEventListener("offline", onOffline);
+      disposed = true;
+      activeController?.abort();
+      window.removeEventListener("online", onNetworkChange);
+      window.removeEventListener("offline", onNetworkChange);
     };
   }, []);
 

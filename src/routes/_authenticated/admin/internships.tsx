@@ -73,7 +73,7 @@ function AdminInternships() {
   const rows = (data ?? []).filter((r) => {
     if (q && !r.title.toLowerCase().includes(q.toLowerCase())) return false;
     if (institutionFilter === "all") return true;
-    const audience = parseInternshipAudience(r.metadata);
+    const audience = parseInternshipAudience(r.metadata, { is2fas: r.is_2fas });
     if (institutionFilter === "network") return audience.networkWide;
     if (institutionFilter === "other") return audience.otherInstitutions;
     return audience.institutionIds.includes(institutionFilter);
@@ -106,9 +106,15 @@ function AdminInternships() {
   async function save(e: React.FormEvent) {
     e.preventDefault();
     const payload: any = { ...form, deadline: form.deadline || null };
-    const res = editing
+    let res = editing
       ? await supabase.from("internships").update(payload).eq("id", editing.id)
       : await supabase.from("internships").insert(payload);
+    if (res.error?.message.includes("metadata")) {
+      const { metadata: _metadata, ...legacyPayload } = payload;
+      res = editing
+        ? await supabase.from("internships").update(legacyPayload).eq("id", editing.id)
+        : await supabase.from("internships").insert(legacyPayload);
+    }
     if (res.error) return toast.error(res.error.message);
     toast.success("Saved");
     setOpen(false);
