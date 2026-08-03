@@ -500,7 +500,7 @@ function EventHubPage() {
                     </h3>
                     {event.publications.length > 0 ? (
                       <div className="divide-y">
-                        {event.publications.map((document) => (
+                        {event.publications.map((document: EventAttachment) => (
                           <Link
                             key={document.id}
                             to={document.href}
