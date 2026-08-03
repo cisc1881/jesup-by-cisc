@@ -232,3 +232,18 @@ export function resolveInstitutionTheme(name?: string | null): InstitutionTheme 
 export function hasRecognizedInstitutionTheme(theme: InstitutionTheme): boolean {
   return theme.key !== JESUP_NETWORK_THEME.key && theme.key !== "affiliated-institution";
 }
+
+export function getReadableForeground(background: string): "#171717" | "#ffffff" {
+  const hex = background.replace("#", "");
+  if (!/^[\da-f]{6}$/i.test(hex)) return "#ffffff";
+
+  const channels = [0, 2, 4].map((offset) => {
+    const channel = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  const luminance = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  const darkContrast = (luminance + 0.05) / 0.05;
+  const lightContrast = 1.05 / (luminance + 0.05);
+
+  return darkContrast >= lightContrast ? "#171717" : "#ffffff";
+}
