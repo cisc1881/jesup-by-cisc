@@ -7,6 +7,15 @@ import {
   starterPodcasts,
   starterPrograms,
 } from "./starter-content";
+import {
+  starterEquipment,
+  starterGrants,
+  starterInstitutionDemos,
+  starterInstitutionEvents,
+  starterProgramWorkshops,
+  starterPublications,
+  starterSurveys,
+} from "./starter-network-content";
 
 describe("starter content database defaults", () => {
   it("explicitly supplies required JSON and boolean fields for bulk upserts", () => {
@@ -62,5 +71,22 @@ describe("starter content database defaults", () => {
       "SEI Undergraduates",
       "Graduate Extension Interns/Fellows",
     ]);
+  });
+
+  it("provides complete institution, program, and resource demo coverage", () => {
+    expect(starterInstitutionDemos).toHaveLength(19);
+    expect(starterInstitutionEvents).toHaveLength(38);
+    expect(starterProgramWorkshops).toHaveLength(starterPrograms.length);
+    expect(
+      new Set(
+        starterInstitutionEvents.map(
+          (event) => (event.metadata as Record<string, unknown>).institution_slug,
+        ),
+      ).size,
+    ).toBe(19);
+    expect(starterPublications.length).toBeGreaterThan(0);
+    expect(starterGrants.length).toBeGreaterThan(0);
+    expect(starterEquipment.length).toBeGreaterThan(0);
+    expect(starterSurveys.length).toBeGreaterThan(0);
   });
 });

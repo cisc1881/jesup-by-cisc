@@ -46,6 +46,8 @@ export type EventListItem = {
   externalUrl: string | null;
   institutionIds: string[];
   networkWide: boolean;
+  themeAccent?: string | null;
+  themeSecondary?: string | null;
 };
 
 export type EventSession = {
@@ -269,6 +271,8 @@ function mapListRow(row: Record<string, unknown>, registrationCount = 0): EventL
     externalUrl: (row.external_url as string | null) ?? null,
     institutionIds,
     networkWide: metadata.network_wide === true || institutionIds.length === 0,
+    themeAccent: typeof metadata.theme_accent === "string" ? metadata.theme_accent : null,
+    themeSecondary: typeof metadata.theme_secondary === "string" ? metadata.theme_secondary : null,
   };
 }
 

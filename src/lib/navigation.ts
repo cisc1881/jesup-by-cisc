@@ -10,6 +10,8 @@ import {
   Newspaper,
   CloudSun,
   LayoutGrid,
+  Package,
+  ClipboardList,
 } from "lucide-react";
 
 /** Routes that belong under the Resources tab (mobile) and hub page. */
@@ -63,6 +65,18 @@ export const resourceHubLinks: ResourceHubLink[] = [
     icon: DollarSign,
     title: "Grants",
     body: "Funding for community and farm projects.",
+  },
+  {
+    to: "/equipment",
+    icon: Package,
+    title: "Equipment checkout",
+    body: "Reserve field tools, sensors, media kits, and workshop equipment.",
+  },
+  {
+    to: "/surveys",
+    icon: ClipboardList,
+    title: "Surveys",
+    body: "Share priorities and help shape future programs and services.",
   },
   {
     to: "/partners",
