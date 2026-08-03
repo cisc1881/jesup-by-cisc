@@ -33,12 +33,14 @@ export function UpcomingEventsSection({ events, meta, isLoading }: UpcomingEvent
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {events.map((e) => (
+          {events.map((e, index) => (
             <Link
               key={e.id}
               to="/events/$id"
               params={{ id: e.id }}
-              className="group block rounded-2xl border border-border/70 bg-card p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--institution-accent)] hover:shadow-[var(--shadow-lift)]"
+              className={`group block rounded-2xl border p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--institution-accent)] hover:shadow-[var(--shadow-lift)] ${
+                index % 2 === 0 ? "institution-surface-primary" : "institution-surface-secondary"
+              }`}
             >
               <div className="flex h-full flex-col">
                 <div className="text-[10px] font-semibold uppercase tracking-[0.14em] grad-gold-text">

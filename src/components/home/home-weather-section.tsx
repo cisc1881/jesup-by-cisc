@@ -36,10 +36,7 @@ export function HomeWeatherSection() {
 
   return (
     <section aria-labelledby="local-forecast-title">
-      <AppCard
-        padding="md"
-        className="overflow-hidden border-primary/10 bg-gradient-to-br from-card to-secondary/35"
-      >
+      <AppCard padding="md" className="institution-surface-secondary overflow-hidden">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] institution-accent-text">

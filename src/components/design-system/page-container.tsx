@@ -47,7 +47,7 @@ type PageHeaderProps = {
 
 export function PageHeader({ title, description, eyebrow, action, className }: PageHeaderProps) {
   return (
-    <div className={cn("border-b border-border/50 bg-card", className)}>
+    <div className={cn("institution-surface-split border-b", className)}>
       <div className="mx-auto max-w-7xl page-x py-[var(--space-10)] sm:py-[var(--space-12)]">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">

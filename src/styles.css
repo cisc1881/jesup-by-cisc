@@ -70,6 +70,15 @@
   --institution-accent-soft: #f1f1f1;
   --institution-accent-foreground: #ffffff;
   --institution-secondary: #a1a1aa;
+  --institution-surface-primary: color-mix(in srgb, #3f3f46 7%, var(--card));
+  --institution-surface-secondary: color-mix(in srgb, #a1a1aa 9%, var(--card));
+  --institution-surface-split: linear-gradient(
+    115deg,
+    color-mix(in srgb, #3f3f46 8%, var(--card)) 0%,
+    color-mix(in srgb, #a1a1aa 10%, var(--card)) 100%
+  );
+  --institution-border-primary: color-mix(in srgb, #3f3f46 22%, var(--border));
+  --institution-border-secondary: color-mix(in srgb, #a1a1aa 26%, var(--border));
 
   /* Legacy accent tokens remain neutral until an institution is selected. */
   --gold: var(--institution-accent);
@@ -191,6 +200,15 @@
   --institution-accent-soft: #27272a;
   --institution-accent-foreground: #18181b;
   --institution-secondary: #71717a;
+  --institution-surface-primary: color-mix(in srgb, #d4d4d8 8%, var(--card));
+  --institution-surface-secondary: color-mix(in srgb, #71717a 12%, var(--card));
+  --institution-surface-split: linear-gradient(
+    115deg,
+    color-mix(in srgb, #d4d4d8 8%, var(--card)) 0%,
+    color-mix(in srgb, #71717a 12%, var(--card)) 100%
+  );
+  --institution-border-primary: color-mix(in srgb, #d4d4d8 18%, var(--border));
+  --institution-border-secondary: color-mix(in srgb, #71717a 24%, var(--border));
   --secondary: oklch(0.24 0 0);
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.24 0 0);
@@ -337,6 +355,21 @@
 
 @utility institution-secondary-text {
   color: var(--institution-secondary);
+}
+
+@utility institution-surface-primary {
+  background: var(--institution-surface-primary);
+  border-color: var(--institution-border-primary);
+}
+
+@utility institution-surface-secondary {
+  background: var(--institution-surface-secondary);
+  border-color: var(--institution-border-secondary);
+}
+
+@utility institution-surface-split {
+  background: var(--institution-surface-split);
+  border-color: var(--institution-border-primary);
 }
 
 @utility grad-crimson-text {
