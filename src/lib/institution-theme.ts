@@ -11,11 +11,11 @@ export type InstitutionTheme = {
 export const JESUP_NETWORK_THEME: InstitutionTheme = {
   key: "jesup-network",
   label: "1890 Land-Grant Network",
-  accent: "oklch(0.64 0.12 78)",
-  accentStrong: "oklch(0.54 0.12 72)",
-  accentSoft: "oklch(0.94 0.035 82)",
-  accentForeground: "oklch(0.18 0.025 265)",
-  secondary: "oklch(0.40 0.14 272)",
+  accent: "#168bd1",
+  accentStrong: "#004aad",
+  accentSoft: "#e8f5fb",
+  accentForeground: "#ffffff",
+  secondary: "#334155",
 };
 
 type ThemeRule = InstitutionTheme & { matches: string[] };

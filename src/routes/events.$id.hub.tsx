@@ -19,13 +19,18 @@ import {
   Gamepad2,
   Handshake,
   HeartHandshake,
+  Heart,
   Map,
+  MapPin,
   MapPinned,
   MessageCircle,
+  NotebookPen,
+  Paperclip,
   Mic2,
   Network,
   QrCode,
   Search,
+  Share2,
   Soup,
   Sparkles,
   Star,
@@ -91,6 +96,7 @@ function EventHubPage() {
   const [search, setSearch] = useState("");
   const [savedSessions, setSavedSessions] = useState<string[]>([]);
   const [agendaMode, setAgendaMode] = useState<"full" | "mine">("full");
+  const [selectedSession, setSelectedSession] = useState<EventSession | null>(null);
   const storageKey = `jesup-event-agenda:${id}:${user?.id ?? "guest"}`;
 
   useEffect(() => {
@@ -315,80 +321,224 @@ function EventHubPage() {
 
           {tab === "agenda" && (
             <section>
-              <div className="grad-jesup p-4 text-white sm:p-6">
-                <label className="flex min-h-12 items-center gap-3 bg-white px-4 text-foreground">
-                  <Search className="h-5 w-5 text-muted-foreground" />
-                  <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="min-w-0 flex-1 bg-transparent outline-none"
-                    placeholder="Search sessions, rooms, speakers…"
-                  />
-                </label>
-                <div className="mt-3 grid grid-cols-2 border border-white/70">
-                  {(["full", "mine"] as const).map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setAgendaMode(mode)}
-                      className={cn(
-                        "min-h-11 font-bold",
-                        agendaMode === mode ? "bg-white text-primary" : "text-white",
-                      )}
-                    >
-                      {mode === "full" ? "Full agenda" : `My agenda (${savedSessions.length})`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="px-4 pt-4 sm:px-6">
-                <EventAgendaNotice metadata={event.metadata} />
-              </div>
-              <div className="divide-y">
-                {visibleSessions.map((session: EventSession) => (
-                  <article
-                    key={session.id}
-                    className="grid grid-cols-[86px_minmax(0,1fr)_44px] gap-3 px-4 py-5 sm:px-6"
-                  >
-                    <div className="text-sm font-bold text-primary">
-                      {session.startsAt
-                        ? fmtDateTime(session.startsAt).split(",").slice(-1)
-                        : "TBA"}
+              {selectedSession ? (
+                <div>
+                  <div className="grad-jesup text-white">
+                    <div className="flex min-h-16 items-center justify-between px-4 sm:px-6">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedSession(null)}
+                        className="inline-flex min-h-11 items-center gap-2 font-bold"
+                      >
+                        <ArrowLeft className="h-5 w-5" /> Agenda
+                      </button>
+                      <span className="font-black">Session details</span>
+                      <button
+                        type="button"
+                        className="grid h-11 w-11 place-items-center"
+                        aria-label="Share session"
+                      >
+                        <Share2 className="h-5 w-5" />
+                      </button>
                     </div>
-                    <div>
-                      <h3 className="font-black">{session.title}</h3>
-                      {session.location && (
-                        <p className="mt-1 text-sm text-muted-foreground">{session.location}</p>
-                      )}
-                      {session.description && (
-                        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                          {session.description}
-                        </p>
-                      )}
-                    </div>
+                  </div>
+
+                  <div className="border-b px-5 py-6 text-center sm:px-8 sm:py-8">
+                    <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+                      Displaying time in the event time zone
+                    </p>
+                    <h2 className="mx-auto mt-5 max-w-3xl text-2xl font-black tracking-tight sm:text-3xl">
+                      {selectedSession.title}
+                    </h2>
+                    {selectedSession.startsAt && (
+                      <p className="mt-4 font-semibold text-muted-foreground">
+                        {fmtDateTime(selectedSession.startsAt)}
+                        {selectedSession.endsAt
+                          ? ` – ${new Date(selectedSession.endsAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" })}`
+                          : ""}
+                      </p>
+                    )}
+                    {selectedSession.location && (
+                      <p className="mt-2 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                        <MapPin className="h-4 w-4" /> {selectedSession.location}
+                      </p>
+                    )}
+                    {selectedSession.description && (
+                      <p className="mx-auto mt-5 max-w-2xl text-left text-sm leading-7 text-muted-foreground sm:text-center">
+                        {selectedSession.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 border-b p-4 sm:p-6">
                     <button
-                      onClick={() => toggleSession(session.id)}
-                      className="grid h-11 w-11 place-items-center"
-                      aria-label={
-                        savedSessions.includes(session.id)
-                          ? "Remove from my agenda"
-                          : "Add to my agenda"
-                      }
+                      type="button"
+                      onClick={() => toggleSession(selectedSession.id)}
+                      className="flex min-h-14 w-full items-center justify-center gap-3 bg-primary px-5 font-extrabold text-primary-foreground"
                     >
                       <Star
                         className={cn(
-                          "h-6 w-6",
-                          savedSessions.includes(session.id) && "fill-primary text-primary",
+                          "h-5 w-5",
+                          savedSessions.includes(selectedSession.id) && "fill-current",
                         )}
                       />
+                      {savedSessions.includes(selectedSession.id)
+                        ? "Remove from My Agenda"
+                        : "Add to My Agenda"}
                     </button>
-                  </article>
-                ))}
-                {visibleSessions.length === 0 && (
-                  <p className="px-6 py-16 text-center text-muted-foreground">
-                    No sessions match this view.
-                  </p>
-                )}
-              </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setTab("community")}
+                        className="flex min-h-12 items-center justify-center gap-2 border border-primary px-2 text-sm font-bold text-primary"
+                      >
+                        <Vote className="h-4 w-4" /> Polls
+                      </button>
+                      <button
+                        type="button"
+                        className="flex min-h-12 items-center justify-center gap-2 border border-primary px-2 text-sm font-bold text-primary"
+                      >
+                        <Heart className="h-4 w-4" /> Like
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTab("community")}
+                        className="flex min-h-12 items-center justify-center gap-2 border border-primary px-2 text-sm font-bold text-primary"
+                      >
+                        <MessageCircle className="h-4 w-4" /> Chat
+                      </button>
+                    </div>
+                  </div>
+
+                  <section className="border-b-[6px] border-muted">
+                    <h3 className="border-b bg-muted/70 px-5 py-3 text-sm font-black uppercase tracking-wide sm:px-6">
+                      Personal notes
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3 p-4 sm:p-6">
+                      <button
+                        type="button"
+                        className="flex min-h-14 items-center justify-center gap-2 bg-muted px-3 font-bold"
+                      >
+                        <Camera className="h-5 w-5" /> Add a photo
+                      </button>
+                      <button
+                        type="button"
+                        className="flex min-h-14 items-center justify-center gap-2 bg-primary px-3 font-bold text-primary-foreground"
+                      >
+                        <NotebookPen className="h-5 w-5" /> Add a note
+                      </button>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h3 className="border-b bg-muted/70 px-5 py-3 text-sm font-black uppercase tracking-wide sm:px-6">
+                      Handouts ({event.publications.length})
+                    </h3>
+                    {event.publications.length > 0 ? (
+                      <div className="divide-y">
+                        {event.publications.map((document) => (
+                          <Link
+                            key={document.id}
+                            to={document.href}
+                            {...(document.hrefParams ? { params: document.hrefParams } : {})}
+                            className="flex min-h-16 items-center gap-3 px-5 py-3 hover:bg-muted/50 sm:px-6"
+                          >
+                            <Paperclip className="h-5 w-5 text-primary" />
+                            <span className="flex-1 font-bold">{document.title}</span>
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="px-5 py-8 text-sm leading-6 text-muted-foreground sm:px-6">
+                        No session handouts have been uploaded yet. Documents added by the organizer
+                        will appear here.
+                      </p>
+                    )}
+                  </section>
+                </div>
+              ) : (
+                <>
+                  <div className="grad-jesup p-4 text-white sm:p-6">
+                    <label className="flex min-h-12 items-center gap-3 bg-white px-4 text-foreground">
+                      <Search className="h-5 w-5 text-muted-foreground" />
+                      <input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="min-w-0 flex-1 bg-transparent outline-none"
+                        placeholder="Search sessions, rooms, speakers…"
+                      />
+                    </label>
+                    <div className="mt-3 grid grid-cols-2 border border-white/70">
+                      {(["full", "mine"] as const).map((mode) => (
+                        <button
+                          key={mode}
+                          onClick={() => setAgendaMode(mode)}
+                          className={cn(
+                            "min-h-11 font-bold",
+                            agendaMode === mode ? "bg-white text-primary" : "text-white",
+                          )}
+                        >
+                          {mode === "full" ? "Full agenda" : `My agenda (${savedSessions.length})`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="px-4 pt-4 sm:px-6">
+                    <EventAgendaNotice metadata={event.metadata} />
+                  </div>
+                  <div className="divide-y">
+                    {visibleSessions.map((session: EventSession) => (
+                      <article
+                        key={session.id}
+                        className="grid grid-cols-[86px_minmax(0,1fr)_44px] gap-3 px-4 py-5 sm:px-6"
+                      >
+                        <div className="text-sm font-bold text-primary">
+                          {session.startsAt
+                            ? fmtDateTime(session.startsAt).split(",").slice(-1)
+                            : "TBA"}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSession(session)}
+                          className="min-w-0 text-left"
+                        >
+                          <h3 className="font-black">{session.title}</h3>
+                          {session.location && (
+                            <p className="mt-1 text-sm text-muted-foreground">{session.location}</p>
+                          )}
+                          {session.description && (
+                            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                              {session.description}
+                            </p>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => toggleSession(session.id)}
+                          className="grid h-11 w-11 place-items-center"
+                          aria-label={
+                            savedSessions.includes(session.id)
+                              ? "Remove from my agenda"
+                              : "Add to my agenda"
+                          }
+                        >
+                          <Star
+                            className={cn(
+                              "h-6 w-6",
+                              savedSessions.includes(session.id) && "fill-primary text-primary",
+                            )}
+                          />
+                        </button>
+                      </article>
+                    ))}
+                    {visibleSessions.length === 0 && (
+                      <p className="px-6 py-16 text-center text-muted-foreground">
+                        No sessions match this view.
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
             </section>
           )}
 

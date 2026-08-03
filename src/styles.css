@@ -64,11 +64,11 @@
   --primary-bright: #5de0e6;
 
   /* Affiliation accents are changed by InstitutionThemeProvider after sign-in. */
-  --institution-accent: oklch(0.64 0.12 78);
-  --institution-accent-strong: oklch(0.54 0.12 72);
-  --institution-accent-soft: oklch(0.94 0.035 82);
-  --institution-accent-foreground: oklch(0.18 0.025 265);
-  --institution-secondary: oklch(0.4 0.14 272);
+  --institution-accent: #168bd1;
+  --institution-accent-strong: #004aad;
+  --institution-accent-soft: #e8f5fb;
+  --institution-accent-foreground: #ffffff;
+  --institution-secondary: #334155;
 
   /* Metallic gold — accents only */
   --gold: oklch(0.66 0.08 75);
@@ -86,8 +86,8 @@
   --secondary-foreground: oklch(0.22 0 0);
   --muted: oklch(0.94 0.002 90);
   --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.66 0.08 75);
-  --accent-foreground: oklch(0.22 0 0);
+  --accent: #168bd1;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.87 0.002 90);

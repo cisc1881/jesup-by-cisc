@@ -92,17 +92,27 @@ function Home() {
       ),
     [data?.events, institutionId],
   );
-  const relevantSlides = useMemo(
-    () =>
-      (data?.heroSlides ?? []).filter(
-        (slide: HomeHeroSlide) =>
-          !institutionId ||
-          slide.networkWide !== false ||
-          slide.institutionIds?.includes(institutionId),
-      ),
-    [data?.heroSlides, institutionId],
-  );
-
+  const relevantSlides = useMemo(() => {
+    const aboutSlide: HomeHeroSlide = {
+      id: "about-jesup",
+      imageUrl: "",
+      imageAlt: "About JESUP and the Digital Extension Wagon",
+      title: "The extension wagon—reimagined for a connected world.",
+      subtitle:
+        "Meet JESUP, the new Digital Extension Wagon connecting the 1890 Land-Grant network to events, programs, knowledge, and opportunity.",
+      linkTo: "/about",
+      linkLabel: "About JESUP",
+      networkWide: true,
+      institutionIds: [],
+    };
+    const filtered = (data?.heroSlides ?? []).filter(
+      (slide: HomeHeroSlide) =>
+        !institutionId ||
+        slide.networkWide !== false ||
+        slide.institutionIds?.includes(institutionId),
+    );
+    return [aboutSlide, ...filtered].slice(0, 5);
+  }, [data?.heroSlides, institutionId]);
 
   return (
     <PublicLayout>
