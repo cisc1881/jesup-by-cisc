@@ -101,7 +101,7 @@ function AdminInquiries() {
     setDrawerOpen(open);
     if (!open) {
       setSelected(null);
-      navigate({ search: {} });
+      navigate({ search: { id: undefined } });
     }
   }
 
