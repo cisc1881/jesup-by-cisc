@@ -5,6 +5,7 @@ import { getInstitutionById } from "@/lib/institutions";
 import { getMyProfile } from "@/lib/profile";
 import {
   JESUP_NETWORK_THEME,
+  getReadableForeground,
   hasRecognizedInstitutionTheme,
   resolveInstitutionTheme,
   type InstitutionTheme,
@@ -57,6 +58,7 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
       "--institution-accent-soft": `color-mix(in srgb, ${theme.accent} 14%, var(--background))`,
       "--institution-accent-foreground": theme.accentForeground,
       "--institution-secondary": theme.secondary,
+      "--institution-secondary-foreground": getReadableForeground(theme.secondary),
       "--institution-surface-primary": `color-mix(in srgb, ${theme.accent} 11%, var(--card))`,
       "--institution-surface-secondary": `color-mix(in srgb, ${theme.secondary} 13%, var(--card))`,
       "--institution-surface-split": `linear-gradient(115deg, color-mix(in srgb, ${theme.accent} 12%, var(--card)) 0%, color-mix(in srgb, ${theme.secondary} 14%, var(--card)) 100%)`,
@@ -70,6 +72,7 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
       "--accent-foreground": theme.accentForeground,
       "--ring": theme.accent,
       "--gradient-jesup": `linear-gradient(115deg, ${theme.accentStrong} 0%, ${theme.accent} 72%, ${theme.secondary} 135%)`,
+      "--gradient-hero-institution": `linear-gradient(115deg, ${theme.accentStrong} 0%, ${theme.accent} 52%, ${theme.secondary} 100%)`,
       "--gradient-jesup-soft": `linear-gradient(115deg, color-mix(in srgb, ${theme.accentStrong} 88%, transparent) 0%, color-mix(in srgb, ${theme.accent} 82%, transparent) 72%, color-mix(in srgb, ${theme.secondary} 45%, transparent) 135%)`,
     };
 

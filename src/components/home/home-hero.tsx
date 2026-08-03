@@ -26,31 +26,31 @@ export function HomeHero({ slides }: HomeHeroProps) {
   }
 
   return (
-    <section className="relative isolate w-full overflow-hidden bg-[#004aad] text-white">
-      <div className="absolute inset-0 bg-[var(--gradient-jesup)]" aria-hidden="true" />
+    <section className="relative isolate w-full overflow-hidden bg-[var(--institution-accent-strong)] text-[var(--institution-accent-foreground)]">
+      <div className="absolute inset-0 bg-[var(--gradient-hero-institution)]" aria-hidden="true" />
       <div
-        className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(255,255,255,.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.12)_1px,transparent_1px)] [background-size:48px_48px]"
+        className="absolute inset-0 opacity-30 [background-image:linear-gradient(color-mix(in_srgb,var(--institution-accent-foreground)_18%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--institution-accent-foreground)_18%,transparent)_1px,transparent_1px)] [background-size:48px_48px]"
         aria-hidden="true"
       />
       <div
-        className="absolute -right-28 -top-36 h-[32rem] w-[32rem] rounded-full border-[72px] border-white/10"
+        className="absolute -right-28 -top-36 h-[32rem] w-[32rem] rounded-full border-[72px] border-[color:color-mix(in_srgb,var(--institution-secondary)_28%,transparent)]"
         aria-hidden="true"
       />
       <div
-        className="absolute -bottom-48 right-[18%] h-96 w-96 rounded-full bg-white/10 blur-3xl"
+        className="absolute -bottom-48 right-[18%] h-96 w-96 rounded-full bg-[color:color-mix(in_srgb,var(--institution-secondary)_22%,transparent)] blur-3xl"
         aria-hidden="true"
       />
 
       <div className="relative mx-auto flex min-h-[500px] max-w-7xl flex-col justify-center px-5 py-20 sm:min-h-[580px] sm:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="max-w-3xl">
-            <p className="inline-flex items-center gap-2 border border-white/40 bg-white/10 px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] backdrop-blur">
+            <p className="inline-flex items-center gap-2 border border-current/40 bg-current/10 px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] backdrop-blur">
               <Sparkles className="h-4 w-4" /> Digital extension for the 1890 network
             </p>
-            <h1 className="mt-6 text-4xl font-black leading-[1.04] tracking-[-0.045em] text-white sm:text-6xl">
+            <h1 className="mt-6 text-4xl font-black leading-[1.04] tracking-[-0.045em] text-current sm:text-6xl">
               {active?.title ?? "Extension, research, and major events—connected through JESUP."}
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
+            <p className="mt-6 max-w-2xl text-base leading-7 opacity-85 sm:text-lg">
               {active?.subtitle ??
                 "Build your agenda, discover opportunities, and stay connected across AEA, ARD, and the 1890 Land-Grant network."}
             </p>
@@ -58,7 +58,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
               <Link
                 to={active?.linkTo ?? "/events"}
                 {...(active?.linkParams ? { params: active.linkParams } : {})}
-                className="inline-flex min-h-12 items-center gap-2 bg-white px-6 text-sm font-extrabold text-[#004aad] shadow-xl transition hover:bg-slate-100"
+                className="inline-flex min-h-12 items-center gap-2 bg-[var(--institution-secondary)] px-6 text-sm font-extrabold text-[var(--institution-secondary-foreground)] shadow-xl transition hover:opacity-90"
               >
                 {active?.linkLabel ?? "Explore events"}
                 <ArrowRight className="h-4 w-4" />
@@ -68,7 +68,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
                   <button
                     type="button"
                     onClick={() => changeSlide(-1)}
-                    className="grid h-12 w-12 place-items-center border border-white/35 bg-black/10 hover:bg-white/15"
+                    className="grid h-12 w-12 place-items-center border border-current/35 bg-current/10 hover:bg-current/15"
                     aria-label="Previous featured item"
                   >
                     <ArrowLeft className="h-5 w-5" />
@@ -76,7 +76,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
                   <button
                     type="button"
                     onClick={() => changeSlide(1)}
-                    className="grid h-12 w-12 place-items-center border border-white/35 bg-black/10 hover:bg-white/15"
+                    className="grid h-12 w-12 place-items-center border border-current/35 bg-current/10 hover:bg-current/15"
                     aria-label="Next featured item"
                   >
                     <ArrowRight className="h-5 w-5" />
@@ -93,7 +93,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
                     onClick={() => setSelected(index)}
                     className={cn(
                       "h-1.5 transition-all",
-                      index === safeSelected ? "w-10 bg-white" : "w-3 bg-white/35",
+                      index === safeSelected ? "w-10 bg-current" : "w-3 bg-current/35",
                     )}
                     aria-label={`Show ${slide.imageAlt}`}
                     aria-current={index === safeSelected ? "true" : undefined}
@@ -103,14 +103,14 @@ export function HomeHero({ slides }: HomeHeroProps) {
             )}
           </div>
 
-          <div className="hidden border-l border-white/25 pl-10 lg:block" aria-hidden="true">
-            <Van className="h-20 w-20 text-white" strokeWidth={1.35} />
-            <div className="mt-8 space-y-5 text-sm font-bold text-white/90">
+          <div className="hidden border-l border-current/25 pl-10 lg:block" aria-hidden="true">
+            <Van className="h-20 w-20 text-current" strokeWidth={1.35} />
+            <div className="mt-8 space-y-5 text-sm font-bold opacity-90">
               <p className="flex items-center gap-3">
                 <Radio className="h-5 w-5" /> One connected network
               </p>
-              <p className="border-t border-white/20 pt-5">Programs · Conferences · Resources</p>
-              <p className="border-t border-white/20 pt-5">
+              <p className="border-t border-current/20 pt-5">Programs · Conferences · Resources</p>
+              <p className="border-t border-current/20 pt-5">
                 Built for communities and institutions
               </p>
             </div>

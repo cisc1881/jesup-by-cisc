@@ -70,6 +70,7 @@
   --institution-accent-soft: #f1f1f1;
   --institution-accent-foreground: #ffffff;
   --institution-secondary: #a1a1aa;
+  --institution-secondary-foreground: #171717;
   --institution-surface-primary: color-mix(in srgb, #3f3f46 7%, var(--card));
   --institution-surface-secondary: color-mix(in srgb, #a1a1aa 9%, var(--card));
   --institution-surface-split: linear-gradient(
@@ -147,6 +148,7 @@
 
   /* Signature gradients & shadows */
   --gradient-jesup: linear-gradient(115deg, #050505 0%, #303034 68%, #737373 135%);
+  --gradient-hero-institution: linear-gradient(115deg, #050505 0%, #3f3f46 52%, #a1a1aa 100%);
   --gradient-jesup-soft: linear-gradient(
     90deg,
     color-mix(in srgb, #050505 88%, transparent) 0%,
@@ -200,6 +202,7 @@
   --institution-accent-soft: #27272a;
   --institution-accent-foreground: #18181b;
   --institution-secondary: #71717a;
+  --institution-secondary-foreground: #ffffff;
   --institution-surface-primary: color-mix(in srgb, #d4d4d8 8%, var(--card));
   --institution-surface-secondary: color-mix(in srgb, #71717a 12%, var(--card));
   --institution-surface-split: linear-gradient(
