@@ -25,6 +25,7 @@ const ENTITY_ICONS: Record<SearchEntityType, LucideIcon> = {
   program: LayoutGrid,
   publication: BookOpen,
   event: Calendar,
+  session: Calendar,
   market: MapPin,
   twofas: GraduationCap,
   grant: DollarSign,
