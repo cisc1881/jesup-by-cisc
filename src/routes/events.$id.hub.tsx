@@ -186,12 +186,12 @@ function EventHubPage() {
 
   const sessionDates = useMemo(
     () => [
-      ...new Set(
+      ...new Set<string>(
         (event?.sessions ?? [])
           .map((session: EventSession) =>
             session.startsAt ? new Date(session.startsAt).toISOString().slice(0, 10) : null,
           )
-          .filter((value): value is string => Boolean(value)),
+          .filter((value: string | null): value is string => Boolean(value)),
       ),
     ],
     [event?.sessions],
@@ -199,10 +199,10 @@ function EventHubPage() {
   const sessionLocations = useMemo(
     () =>
       [
-        ...new Set(
+        ...new Set<string>(
           (event?.sessions ?? [])
             .map((session: EventSession) => session.location)
-            .filter((value): value is string => Boolean(value)),
+            .filter((value: string | null): value is string => Boolean(value)),
         ),
       ].sort(),
     [event?.sessions],
