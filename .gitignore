@@ -10,6 +10,8 @@ lerna-debug.log*
 # Environment (never commit secrets)
 .env
 .env.*
+.envsit
+.envsit.*
 !.env.example
 
 # Supabase CLI temp
