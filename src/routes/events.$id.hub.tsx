@@ -49,6 +49,7 @@ import {
   fetchRegistrationSessionSelections,
   fetchUserEventRegistration,
   saveRegistrationSessionSelections,
+  type EventAttachment,
   type EventSession,
 } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
