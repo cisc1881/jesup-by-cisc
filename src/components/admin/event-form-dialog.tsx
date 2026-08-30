@@ -140,6 +140,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
           <Tabs defaultValue="basics">
             <TabsList className="flex h-auto flex-wrap gap-1">
               <TabsTrigger value="basics">Basics</TabsTrigger>
+              <TabsTrigger value="gis">GIS & geofence</TabsTrigger>
               <TabsTrigger value="agenda">Agenda</TabsTrigger>
               <TabsTrigger value="speakers">Speakers</TabsTrigger>
               <TabsTrigger value="gallery">Gallery</TabsTrigger>
@@ -382,6 +383,85 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                   </label>
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="gis" className="space-y-5 pt-4">
+              <div className="border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+                Define the event site for maps, proximity check-in, attendance validation, and
+                location reporting. JESUP requests attendee permission before checking location.
+              </div>
+              <div className="flex items-center justify-between border-b border-border pb-4">
+                <div>
+                  <Label htmlFor="event-geofence-enabled">Enable event geofence</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Use these coordinates and radius as the approved event area.
+                  </p>
+                </div>
+                <Switch
+                  id="event-geofence-enabled"
+                  checked={form.geofenceEnabled}
+                  onCheckedChange={(checked) =>
+                    setForm((f) => ({ ...f, geofenceEnabled: checked }))
+                  }
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <Label htmlFor="event-gis-lat">Latitude</Label>
+                  <Input
+                    id="event-gis-lat"
+                    inputMode="decimal"
+                    value={form.lat}
+                    onChange={(e) => setForm((f) => ({ ...f, lat: e.target.value }))}
+                    placeholder="32.4302"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="event-gis-lng">Longitude</Label>
+                  <Input
+                    id="event-gis-lng"
+                    inputMode="decimal"
+                    value={form.lng}
+                    onChange={(e) => setForm((f) => ({ ...f, lng: e.target.value }))}
+                    placeholder="-85.7077"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="event-geofence-radius">Radius (meters)</Label>
+                  <Input
+                    id="event-geofence-radius"
+                    type="number"
+                    min="25"
+                    max="50000"
+                    value={form.geofenceRadiusMeters}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, geofenceRadiusMeters: e.target.value }))
+                    }
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="event-gis-boundary">Optional GeoJSON boundary</Label>
+                <Textarea
+                  id="event-gis-boundary"
+                  value={form.gisBoundaryGeoJson}
+                  onChange={(e) => setForm((f) => ({ ...f, gisBoundaryGeoJson: e.target.value }))}
+                  rows={9}
+                  spellCheck={false}
+                  placeholder={'{"type":"Polygon","coordinates":[...]}'}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Accepts a GeoJSON Feature, Polygon, or MultiPolygon.
+                </p>
+              </div>
+              {form.lat && form.lng && (
+                <iframe
+                  title="Event geofence map preview"
+                  className="h-72 w-full border border-border"
+                  loading="lazy"
+                  src={`https://www.google.com/maps?q=${form.lat},${form.lng}&z=16&output=embed`}
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="agenda" className="space-y-4 pt-4">

@@ -3,6 +3,7 @@ import {
   Cloud,
   CloudLightning,
   CloudRain,
+  CloudSnow,
   CloudSun,
   Sun,
   ThermometerSun,
@@ -15,6 +16,7 @@ const CONDITION_ICONS: Record<WeatherConditionCode, LucideIcon> = {
   "partly-cloudy": CloudSun,
   cloudy: Cloud,
   rain: CloudRain,
+  snow: CloudSnow,
   thunderstorm: CloudLightning,
   wind: Wind,
   hot: ThermometerSun,
@@ -26,9 +28,30 @@ type WeatherConditionIconProps = {
   label?: string;
 };
 
-export function WeatherConditionIcon({ code, className }: WeatherConditionIconProps) {
+export function WeatherConditionIcon({ code, className, label }: WeatherConditionIconProps) {
   const Icon = CONDITION_ICONS[code] ?? CloudSun;
-  return <Icon className={className} aria-hidden="true" />;
+  const animated = code === "thunderstorm" || code === "snow";
+  return (
+    <span
+      className={`relative inline-grid place-items-center ${animated ? "weather-condition-animated" : ""}`}
+      role={label ? "img" : undefined}
+      aria-label={label}
+    >
+      <Icon className={className} aria-hidden="true" />
+      {code === "thunderstorm" && (
+        <span className="weather-lightning" aria-hidden="true">
+          ϟ
+        </span>
+      )}
+      {code === "snow" && (
+        <span className="weather-snow" aria-hidden="true">
+          <i>•</i>
+          <i>•</i>
+          <i>•</i>
+        </span>
+      )}
+    </span>
+  );
 }
 
 export function formatWeatherTime(iso: string): string {

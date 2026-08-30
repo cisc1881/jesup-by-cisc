@@ -17,6 +17,7 @@ const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 export function mapShortForecastToConditionCode(shortForecast: string): WeatherConditionCode {
   const text = shortForecast.toLowerCase();
   if (text.includes("thunder")) return "thunderstorm";
+  if (text.includes("snow") || text.includes("sleet") || text.includes("flurr")) return "snow";
   if (text.includes("shower") || text.includes("rain") || text.includes("drizzle")) return "rain";
   if (text.includes("hot")) return "hot";
   if (text.includes("wind")) return "wind";
@@ -146,9 +147,7 @@ export function mapObservationToCurrent(
 ): CurrentConditions {
   const tempC = observation.temperature?.value;
   const temperatureF =
-    tempC != null
-      ? celsiusToFahrenheit(tempC)
-      : (hourlyFallback?.temperature ?? 0);
+    tempC != null ? celsiusToFahrenheit(tempC) : (hourlyFallback?.temperature ?? 0);
 
   const heatIndexC = observation.heatIndex?.value;
   const windChillC = observation.windChill?.value;
@@ -169,9 +168,7 @@ export function mapObservationToCurrent(
         : 0;
 
   const condition =
-    observation.textDescription?.trim() ||
-    hourlyFallback?.shortForecast ||
-    "Current conditions";
+    observation.textDescription?.trim() || hourlyFallback?.shortForecast || "Current conditions";
 
   return {
     temperatureF,

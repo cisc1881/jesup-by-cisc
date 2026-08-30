@@ -125,6 +125,9 @@ export type EventFormData = {
   locationAddress: string;
   lat: string;
   lng: string;
+  geofenceEnabled: boolean;
+  geofenceRadiusMeters: string;
+  gisBoundaryGeoJson: string;
   timezone: string;
   capacity: string;
   coverImageUrl: string;
@@ -583,6 +586,9 @@ export function emptyEventForm(): EventFormData {
     locationAddress: "",
     lat: "",
     lng: "",
+    geofenceEnabled: false,
+    geofenceRadiusMeters: "250",
+    gisBoundaryGeoJson: "",
     timezone: "America/Chicago",
     capacity: "",
     coverImageUrl: "",
@@ -675,6 +681,15 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     locationAddress: row.location_address ?? "",
     lat: row.lat != null ? String(row.lat) : "",
     lng: row.lng != null ? String(row.lng) : "",
+    geofenceEnabled: metadata.geofence_enabled === true,
+    geofenceRadiusMeters:
+      typeof metadata.geofence_radius_meters === "number"
+        ? String(metadata.geofence_radius_meters)
+        : "250",
+    gisBoundaryGeoJson:
+      metadata.gis_boundary_geojson && typeof metadata.gis_boundary_geojson === "object"
+        ? JSON.stringify(metadata.gis_boundary_geojson, null, 2)
+        : "",
     timezone: row.timezone ?? "America/Chicago",
     capacity: row.capacity != null ? String(row.capacity) : "",
     coverImageUrl: row.image_url ?? "",
@@ -856,12 +871,23 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
   const registrationOpen =
     form.registrationProvider === "jesup" &&
     (form.registrationStatus === "open" || form.registrationStatus === "waiting_list");
+  let gisBoundaryGeoJson: Record<string, unknown> | null = null;
+  if (form.gisBoundaryGeoJson.trim()) {
+    const parsed = JSON.parse(form.gisBoundaryGeoJson) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+      throw new Error("GIS boundary must be a valid GeoJSON object.");
+    gisBoundaryGeoJson = parsed as Record<string, unknown>;
+  }
+  const radius = Math.max(25, Math.min(50_000, Number(form.geofenceRadiusMeters) || 250));
   const metadata = {
     ...form.metadata,
     registration_provider: form.registrationProvider,
     eventbrite_event_id: form.eventbriteEventId.trim() || null,
     eventbrite_event_url: form.eventbriteEventUrl.trim() || null,
     ticket_price_label: form.ticketPriceLabel.trim() || null,
+    geofence_enabled: form.geofenceEnabled,
+    geofence_radius_meters: radius,
+    gis_boundary_geojson: gisBoundaryGeoJson,
   };
   const payload = {
     slug,

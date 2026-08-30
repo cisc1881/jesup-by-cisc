@@ -165,6 +165,81 @@ function PendingRow({ item }: { item: CommandCenterPendingItem }) {
   );
 }
 
+const DEFAULT_GOALS: Partial<Record<keyof CommandCenterMetrics, number>> = {
+  eventRegistrations: 250,
+  upcomingEvents: 12,
+  activePrograms: 20,
+  publications: 30,
+};
+
+function OperationalGoals({ metrics }: { metrics: CommandCenterMetrics }) {
+  const [goals, setGoals] = useState(() => {
+    if (typeof window === "undefined") return DEFAULT_GOALS;
+    try {
+      return {
+        ...DEFAULT_GOALS,
+        ...JSON.parse(window.localStorage.getItem("jesup-admin-goals") ?? "{}"),
+      };
+    } catch {
+      return DEFAULT_GOALS;
+    }
+  });
+  const items = METRIC_CARDS.filter((item) => goals[item.key] != null).map((item) => {
+    const goal = Math.max(1, Number(goals[item.key] ?? 1));
+    const value = metrics[item.key];
+    return { ...item, goal, value, percent: Math.min(100, Math.round((value / goal) * 100)) };
+  });
+  function updateGoal(key: keyof CommandCenterMetrics, raw: string) {
+    const next = { ...goals, [key]: Math.max(1, Number(raw) || 1) };
+    setGoals(next);
+    window.localStorage.setItem("jesup-admin-goals", JSON.stringify(next));
+  }
+  return (
+    <Card className="border border-border bg-card shadow-token-soft">
+      <CardHeader>
+        <CardTitle className="text-base">Goals and progress</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {items.map((item) => (
+          <div key={item.key}>
+            <div className="mb-2 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold">{item.label}</p>
+                <p className="text-xs text-muted-foreground">
+                  {item.value.toLocaleString()} of {item.goal.toLocaleString()} · {item.percent}%
+                </p>
+              </div>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                Goal{" "}
+                <Input
+                  className="h-8 w-24"
+                  type="number"
+                  min="1"
+                  value={item.goal}
+                  onChange={(event) => updateGoal(item.key, event.target.value)}
+                />
+              </label>
+            </div>
+            <div
+              className="h-3 bg-muted"
+              role="progressbar"
+              aria-label={`${item.label} progress`}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={item.percent}
+            >
+              <div
+                className="h-full bg-primary transition-[width]"
+                style={{ width: `${item.percent}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function CommandCenterDashboard() {
   const qc = useQueryClient();
   const [programOpen, setProgramOpen] = useState(false);
@@ -316,6 +391,8 @@ export function CommandCenterDashboard() {
           </div>
         )}
       </section>
+
+      {data?.metrics && <OperationalGoals metrics={data.metrics} />}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-0 bg-card shadow-token-soft">

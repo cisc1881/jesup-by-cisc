@@ -6,13 +6,7 @@ import type { WeatherRadarInfo } from "./radar";
 export type WeatherSeverity = "advisory" | "watch" | "warning" | "emergency";
 
 export type WeatherConditionCode =
-  | "clear"
-  | "partly-cloudy"
-  | "cloudy"
-  | "rain"
-  | "thunderstorm"
-  | "wind"
-  | "hot";
+  "clear" | "partly-cloudy" | "cloudy" | "rain" | "snow" | "thunderstorm" | "wind" | "hot";
 
 export type LocationSource = "live" | "manual" | "default";
 
