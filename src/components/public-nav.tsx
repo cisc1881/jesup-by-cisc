@@ -83,7 +83,7 @@ export function PublicNav() {
             asChild
             variant="outline"
             size="icon"
-            className="rounded-full"
+            className="hidden rounded-none sm:inline-flex"
             aria-label="Search JESUP"
           >
             <Link to="/search">
@@ -96,7 +96,7 @@ export function PublicNav() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2 rounded-full border-border/70"
+                  className="hidden gap-2 rounded-none border-border/70 sm:inline-flex"
                   aria-label="Open account menu"
                 >
                   <UserIcon className="h-4 w-4" />

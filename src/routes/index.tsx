@@ -6,6 +6,7 @@ import { useHomeData } from "@/hooks/use-home-data";
 import {
   HomeHero,
   HomeWeatherSection,
+  InstitutionPromotionsSection,
   MyJesupHomeSection,
   UpcomingEventsSection,
 } from "@/components/home";
@@ -124,6 +125,7 @@ function Home() {
       >
         <MyJesupHomeSection />
         <HomeWeatherSection />
+        <InstitutionPromotionsSection slides={relevantSlides} />
         <UpcomingEventsSection
           events={relevantEvents}
           meta={sections.events}

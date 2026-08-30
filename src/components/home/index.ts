@@ -1,4 +1,5 @@
 export { HomeHero } from "./home-hero";
+export { InstitutionPromotionsSection } from "./institution-promotions-section";
 export { HomeQuickActionsSection } from "./home-quick-actions";
 export { FeaturedProgramsSection } from "./featured-programs-section";
 export { UpcomingEventsSection } from "./upcoming-events-section";
