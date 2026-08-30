@@ -49,6 +49,7 @@ import {
   fetchRegistrationSessionSelections,
   fetchUserEventRegistration,
   saveRegistrationSessionSelections,
+  type EventAttachment,
   type EventSession,
 } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
@@ -185,12 +186,12 @@ function EventHubPage() {
 
   const sessionDates = useMemo(
     () => [
-      ...new Set(
+      ...new Set<string>(
         (event?.sessions ?? [])
           .map((session: EventSession) =>
             session.startsAt ? new Date(session.startsAt).toISOString().slice(0, 10) : null,
           )
-          .filter((value): value is string => Boolean(value)),
+          .filter((value: string | null): value is string => Boolean(value)),
       ),
     ],
     [event?.sessions],
@@ -198,10 +199,10 @@ function EventHubPage() {
   const sessionLocations = useMemo(
     () =>
       [
-        ...new Set(
+        ...new Set<string>(
           (event?.sessions ?? [])
             .map((session: EventSession) => session.location)
-            .filter((value): value is string => Boolean(value)),
+            .filter((value: string | null): value is string => Boolean(value)),
         ),
       ].sort(),
     [event?.sessions],
@@ -499,7 +500,7 @@ function EventHubPage() {
                     </h3>
                     {event.publications.length > 0 ? (
                       <div className="divide-y">
-                        {event.publications.map((document) => (
+                        {event.publications.map((document: EventAttachment) => (
                           <Link
                             key={document.id}
                             to={document.href}
