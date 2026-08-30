@@ -106,7 +106,7 @@ export function BottomNav() {
             className="group relative flex min-h-[62px] flex-col items-center justify-end gap-0.5 pb-1.5 text-[9px] font-black institution-accent-text sm:text-[10px]"
             aria-label="Open my JESUP QR code"
           >
-            <span className="allow-round absolute -top-7 grid h-16 w-16 place-items-center border-[5px] border-card institution-accent-bg shadow-[var(--shadow-lift)] transition group-active:scale-95">
+            <span className="absolute -top-7 grid h-16 w-16 place-items-center border-[5px] border-card institution-accent-bg shadow-[var(--shadow-lift)] transition group-active:scale-95">
               <QrCode className="h-8 w-8" aria-hidden="true" />
             </span>
             <span>My QR</span>

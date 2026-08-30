@@ -498,13 +498,11 @@
   }
 }
 
-/* Option C: crisp, professional public surfaces. The primary QR action is the sole exception. */
-.public-app * {
+/* Option C: one crisp, square-edged visual system across public, account, and admin views. */
+body *,
+body *::before,
+body *::after {
   border-radius: 0 !important;
-}
-
-.public-app .allow-round {
-  border-radius: 9999px !important;
 }
 
 @media print {
