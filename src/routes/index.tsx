@@ -6,6 +6,7 @@ import { useHomeData } from "@/hooks/use-home-data";
 import {
   HomeHero,
   HomeWeatherSection,
+  EventDiscoveryHomeSection,
   InstitutionPromotionsSection,
   MyJesupHomeSection,
   UpcomingEventsSection,
@@ -124,6 +125,7 @@ function Home() {
         className="space-y-[var(--space-10)] pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-[var(--space-12)] sm:pt-[var(--space-8)]"
       >
         <MyJesupHomeSection />
+        <EventDiscoveryHomeSection />
         <HomeWeatherSection />
         <InstitutionPromotionsSection slides={relevantSlides} />
         <UpcomingEventsSection

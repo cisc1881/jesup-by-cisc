@@ -1,12 +1,18 @@
 import type { ReactNode } from "react";
+import { Info } from "lucide-react";
 import { PublicNav } from "./public-nav";
 import { BottomNav } from "./bottom-nav";
 import { SkipLink } from "./skip-link";
 import { Link } from "@tanstack/react-router";
-import ciscLogo from "@/assets/cisc-logo.png.asset.json";
-import { JesupLogoMark } from "@/components/branding";
-import { CiscTabStory } from "@/components/cisc-tab-story";
 import { FloatingUtilityDock } from "@/components/floating-utility-dock";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
@@ -16,80 +22,73 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col pb-bottom-nav md:pb-0">
         <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 outline-none">
           {children}
-          <CiscTabStory />
         </main>
-        <footer className="mt-8 border-t border-border/60 bg-card">
-          <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex shrink-0 flex-col items-start gap-3">
-                <JesupLogoMark
-                  size="md"
-                  tone="on-light"
-                  className="items-start"
-                  imageClassName="h-12 max-w-[10rem]"
-                />
-                <img
-                  src={ciscLogo.url}
-                  alt="Carver Integrative Sustainability Center"
-                  className="h-10 w-auto rounded-md"
-                  loading="lazy"
-                />
-              </div>
-              <div className="text-xs leading-relaxed text-muted-foreground">
-                <div className="text-sm font-black tracking-tight text-foreground">
-                  The 1890 Digital Extension Network
-                </div>
-                <div className="mt-1">Powered by the Carver Integrative Sustainability Center</div>
-                <div>Extension · Research · Events · Community</div>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
-              <Link to="/join" className="hover:text-primary">
+        <Sheet>
+          <SheetTrigger asChild>
+            <button
+              type="button"
+              className="fixed bottom-24 left-0 z-30 inline-flex min-h-11 items-center gap-2 border border-l-0 border-border bg-card px-3 text-xs font-bold text-muted-foreground shadow-sm md:bottom-6"
+              aria-label="Open JESUP information and policies"
+            >
+              <Info className="h-4 w-4" /> Information
+            </button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[90vw] overflow-y-auto sm:max-w-md">
+            <SheetHeader className="pr-8">
+              <SheetTitle>JESUP information</SheetTitle>
+              <SheetDescription>
+                The 1890 Digital Extension Network, powered by the Carver Integrative Sustainability
+                Center.
+              </SheetDescription>
+            </SheetHeader>
+            <nav className="my-6 grid divide-y border-y text-sm font-bold">
+              <Link to="/join" className="px-1 py-3 hover:text-primary">
                 Join / Connect
               </Link>
-              <Link to="/programs" className="hover:text-primary">
+              <Link to="/programs" className="px-1 py-3 hover:text-primary">
                 Programs
               </Link>
-              <Link to="/events" className="hover:text-primary">
+              <Link to="/events" className="px-1 py-3 hover:text-primary">
                 Events
               </Link>
-              <Link to="/podcasts" className="hover:text-primary">
+              <Link to="/podcasts" className="px-1 py-3 hover:text-primary">
                 Podcasts
               </Link>
-              <Link to="/partners" className="hover:text-primary">
+              <Link to="/partners" className="px-1 py-3 hover:text-primary">
                 Partners
               </Link>
-              <Link to="/donate" className="hover:text-primary">
+              <Link to="/donate" className="px-1 py-3 hover:text-primary">
                 Donate
               </Link>
-              <Link to="/privacy" className="hover:text-primary">
+              <Link to="/privacy" className="px-1 py-3 hover:text-primary">
                 Privacy
               </Link>
-              <Link to="/terms" className="hover:text-primary">
+              <Link to="/terms" className="px-1 py-3 hover:text-primary">
                 Terms
               </Link>
+            </nav>
+            <div className="border-t pt-5">
+              <h2 className="text-sm font-black">Equal opportunity and accommodation</h2>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                It is the policy of Tuskegee University Cooperative Extension Program to provide
+                equal employment opportunities and to offer educational programs, resources and
+                materials to eligible participants without regard to race, color, national origin,
+                religion, sexual orientation, disability, age, marital or veteran status, political
+                beliefs, or reprisal or retaliation for prior civil rights activity, in any program
+                or activity conducted or funded by USDA (not all bases apply to all programs). For
+                all reasonable accommodation requests, please contact Shirley Brown, Director,
+                Office of Civil Rights Compliance at{" "}
+                <a
+                  href="mailto:sbrown@tuskegee.edu"
+                  className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
+                >
+                  sbrown@tuskegee.edu
+                </a>
+                .
+              </p>
             </div>
-          </div>
-          <div className="border-t border-border/60">
-            <p className="mx-auto max-w-7xl px-4 py-6 text-[11px] leading-relaxed text-muted-foreground sm:px-6 sm:text-xs">
-              It is the policy of Tuskegee University Cooperative Extension Program to provide equal
-              employment opportunities and to offer educational programs, resources and materials to
-              eligible participants without regard to race, color, national origin, religion, sexual
-              orientation, disability, age, marital or veteran status, political beliefs, or
-              reprisal or retaliation for prior civil rights activity, in any program or activity
-              conducted or funded by USDA (not all bases apply to all programs). For all reasonable
-              accommodation requests, please contact Shirley Brown, Director, Office of Civil Rights
-              Compliance at{" "}
-              <a
-                href="mailto:sbrown@tuskegee.edu"
-                className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
-              >
-                sbrown@tuskegee.edu
-              </a>
-              .
-            </p>
-          </div>
-        </footer>
+          </SheetContent>
+        </Sheet>
       </div>
       <FloatingUtilityDock />
       <BottomNav />

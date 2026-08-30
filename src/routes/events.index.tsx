@@ -18,6 +18,9 @@ import { fetchEventCategories, fetchEvents, filterEvents, type EventListItem } f
 import { fmtDateTime } from "@/lib/format";
 import { listPageHead } from "@/lib/seo";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import {
   InstitutionScopeFilter,
   matchesInstitutionScope,
@@ -25,6 +28,9 @@ import {
 } from "@/components/institution-scope-filter";
 
 export const Route = createFileRoute("/events/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    view: search.view === "mine" ? ("mine" as const) : ("explore" as const),
+  }),
   head: () =>
     listPageHead({
       title: "Events",
@@ -36,7 +42,13 @@ export const Route = createFileRoute("/events/")({
 });
 
 function EventsPage() {
+  const { view } = Route.useSearch();
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
+  const [discoveryMode, setDiscoveryMode] = useState<"mine" | "explore">(view);
+  const [format, setFormat] = useState<"all" | "conference" | "workshop" | "meeting" | "seminar">(
+    "all",
+  );
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<EventViewMode>("list");
   const [showSavedOnly, setShowSavedOnly] = useState(false);
@@ -61,6 +73,20 @@ function EventsPage() {
     queryFn: fetchEventCategories,
   });
 
+  const { data: registeredEventIds = [] } = useQuery({
+    queryKey: ["event-directory-registrations", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("event_registrations")
+        .select("event_id")
+        .eq("user_id", user!.id)
+        .neq("status", "cancelled");
+      if (error) throw error;
+      return (data ?? []).map((row) => row.event_id);
+    },
+  });
+
   const relevantEvents = useMemo(
     () =>
       (events ?? []).filter((event) =>
@@ -69,10 +95,26 @@ function EventsPage() {
     [events, institutionId, institutionScope],
   );
 
-  const filtered = useMemo(
-    () => filterEvents(relevantEvents, search, categoryId, showSavedOnly, savedIds),
-    [relevantEvents, search, categoryId, showSavedOnly, savedIds],
-  );
+  const filtered = useMemo(() => {
+    const base = filterEvents(relevantEvents, search, categoryId, showSavedOnly, savedIds);
+    return base.filter((event) => {
+      if (discoveryMode === "mine" && !registeredEventIds.includes(event.id)) return false;
+      if (format === "all") return true;
+      const content =
+        `${event.categoryName ?? ""} ${event.categorySlug ?? ""} ${event.title}`.toLowerCase();
+      if (format === "workshop") return /workshop|training|field day|demonstration/.test(content);
+      return content.includes(format);
+    });
+  }, [
+    categoryId,
+    discoveryMode,
+    format,
+    registeredEventIds,
+    relevantEvents,
+    savedIds,
+    search,
+    showSavedOnly,
+  ]);
 
   const showInitialSkeleton = isLoading && !(events ?? []).length;
 
@@ -84,6 +126,7 @@ function EventsPage() {
     setSearch("");
     setCategoryId(null);
     setShowSavedOnly(false);
+    setFormat("all");
     setViewMode("list");
   }, []);
 
@@ -94,19 +137,44 @@ function EventsPage() {
           size="lg"
           className="space-y-8 pb-bottom-nav md:space-y-10 md:pb-[var(--page-py)]"
         >
-          <header className="space-y-3">
-            <p className="text-eyebrow institution-accent-text">
-              {institutionName ?? "1890 Land-Grant Network"}
-            </p>
-            <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
-              Events
-            </h1>
-            {relevantEvents.length > 0 && (
-              <p className="max-w-2xl text-base text-muted-foreground">
-                {filtered.length} relevant event{filtered.length === 1 ? "" : "s"} from your
-                institution and the shared 1890 network.
+          <header className="-mx-[var(--page-px)] border-b bg-card sm:mx-0 sm:border">
+            <div className="institution-primary-surface px-[var(--page-px)] py-7 sm:px-6">
+              <p className="text-eyebrow institution-accent-text">
+                {institutionName ?? "1890 Land-Grant Network"}
               </p>
-            )}
+              <h1 className="text-4xl font-black tracking-[var(--tracking-tight)] text-foreground sm:text-5xl">
+                Events
+              </h1>
+              {relevantEvents.length > 0 && (
+                <p className="max-w-2xl text-base text-muted-foreground">
+                  {filtered.length} relevant event{filtered.length === 1 ? "" : "s"} from your
+                  institution and the shared 1890 network.
+                </p>
+              )}
+            </div>
+            <div
+              className="grid grid-cols-2 border-t border-border"
+              role="tablist"
+              aria-label="Event discovery"
+            >
+              {(["mine", "explore"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  role="tab"
+                  aria-selected={discoveryMode === mode}
+                  onClick={() => setDiscoveryMode(mode)}
+                  className={cn(
+                    "min-h-14 border-b-4 px-4 text-sm font-black",
+                    discoveryMode === mode
+                      ? "border-[var(--institution-accent)] institution-accent-text"
+                      : "border-transparent text-muted-foreground",
+                  )}
+                >
+                  {mode === "mine" ? "My Events" : "Explore Events"}
+                </button>
+              ))}
+            </div>
           </header>
 
           <InstitutionScopeFilter
@@ -114,6 +182,26 @@ function EventsPage() {
             onChange={setInstitutionScope}
             hasInstitution={!!institutionId}
           />
+
+          <div
+            className="-mx-[var(--page-px)] flex overflow-x-auto border-y bg-card sm:mx-0"
+            aria-label="Event type"
+          >
+            {(["all", "conference", "workshop", "meeting", "seminar"] as const).map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setFormat(item)}
+                aria-pressed={format === item}
+                className={cn(
+                  "min-h-12 shrink-0 border-r px-5 text-sm font-bold capitalize",
+                  format === item ? "institution-accent-bg" : "bg-card text-muted-foreground",
+                )}
+              >
+                {item === "all" ? "All" : `${item}s`}
+              </button>
+            ))}
+          </div>
 
           {showInitialSkeleton ? (
             <EventsPageSkeleton />
@@ -160,7 +248,7 @@ function EventsPage() {
 
                   {viewMode === "list" && (
                     <DirectoryResultList
-                      title="Events"
+                      title={discoveryMode === "mine" ? "My events" : "Upcoming events"}
                       className="-mx-[var(--page-px)] sm:mx-0"
                       results={filtered.map((event) => ({
                         id: event.id,
