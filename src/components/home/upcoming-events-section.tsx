@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Calendar, MapPin } from "lucide-react";
+import { ChevronRight, Calendar } from "lucide-react";
 import type { HomeEvent, HomeSectionMeta } from "@/lib/home";
 import { fmtDateTime } from "@/lib/format";
 import { EmptyState, HomeSection, SectionActionLink } from "@/components/design-system";
@@ -32,42 +32,34 @@ export function UpcomingEventsSection({ events, meta, isLoading }: UpcomingEvent
           }
         />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {events.map((e, index) => (
-            <Link
-              key={e.id}
-              to="/events/$id"
-              params={{ id: e.id }}
-              className={`group block rounded-2xl border p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--institution-accent)] hover:shadow-[var(--shadow-lift)] ${
-                index % 2 === 0 ? "institution-surface-primary" : "institution-surface-secondary"
-              }`}
-            >
-              <div className="flex h-full flex-col">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] grad-gold-text">
-                  {fmtDateTime(e.startsAt)}
-                </div>
-                <h3 className="mt-3 line-clamp-3 text-lg font-extrabold text-foreground">
-                  {e.title}
-                </h3>
-                {e.location && (
-                  <p className="mt-3 flex items-center gap-2 truncate text-sm text-muted-foreground">
-                    <MapPin
-                      className="h-4 w-4 shrink-0 institution-accent-text"
-                      aria-hidden="true"
-                    />
-                    {e.location}
-                  </p>
-                )}
-                <span className="mt-8 inline-flex items-center gap-2 text-sm font-extrabold institution-accent-text">
-                  {e.registrationOpen ? "Register" : "Learn more"}
-                  <ArrowRight
-                    className="size-4 transition group-hover:translate-x-1"
-                    aria-hidden="true"
-                  />
+        <div className="divide-y border-y">
+          {events.slice(0, 5).map((e) => {
+            const date = new Date(e.startsAt);
+            return (
+              <Link
+                key={e.id}
+                to="/events/$id"
+                params={{ id: e.id }}
+                className="group grid min-h-28 grid-cols-[64px_minmax(0,1fr)_24px] items-center gap-4 py-4 hover:bg-muted/50"
+              >
+                <time dateTime={e.startsAt} className="text-center font-black leading-none">
+                  <span className="block text-xs uppercase tracking-wider institution-accent-text">
+                    {date.toLocaleDateString(undefined, { month: "short" })}
+                  </span>
+                  <span className="mt-1 block text-3xl">{date.getDate()}</span>
+                </time>
+                <span className="min-w-0">
+                  <h3 className="line-clamp-2 text-base font-extrabold text-foreground sm:text-lg">
+                    {e.title}
+                  </h3>
+                  <span className="mt-2 block truncate text-sm text-muted-foreground">
+                    {e.location ?? fmtDateTime(e.startsAt)}
+                  </span>
                 </span>
-              </div>
-            </Link>
-          ))}
+                <ChevronRight className="h-5 w-5 text-foreground" />
+              </Link>
+            );
+          })}
         </div>
       )}
     </HomeSection>

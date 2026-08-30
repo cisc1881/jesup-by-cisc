@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Radio, Sparkles, Van } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import type { HomeHeroSlide } from "@/lib/home";
 import { cn } from "@/lib/utils";
 
@@ -35,22 +35,13 @@ export function HomeHero({ slides }: HomeHeroProps) {
         className="absolute inset-0 opacity-30 [background-image:linear-gradient(color-mix(in_srgb,var(--institution-accent-foreground)_18%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--institution-accent-foreground)_18%,transparent)_1px,transparent_1px)] [background-size:48px_48px]"
         aria-hidden="true"
       />
-      <div
-        className="absolute -right-28 -top-36 h-[32rem] w-[32rem] rounded-full border-[72px] border-[color:color-mix(in_srgb,var(--institution-secondary)_28%,transparent)]"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-48 right-[18%] h-96 w-96 rounded-full bg-[color:color-mix(in_srgb,var(--institution-secondary)_22%,transparent)] blur-3xl"
-        aria-hidden="true"
-      />
-
-      <div className="relative mx-auto flex min-h-[500px] max-w-7xl flex-col justify-center px-5 py-20 sm:min-h-[580px] sm:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="relative mx-auto flex min-h-[360px] max-w-7xl flex-col justify-center px-5 py-14 sm:min-h-[420px] sm:px-8">
+        <div>
           <div className="max-w-3xl">
             <p className="inline-flex items-center gap-2 border border-current/40 bg-current/10 px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] backdrop-blur">
               <Sparkles className="h-4 w-4" /> Digital extension for the 1890 network
             </p>
-            <h1 className="mt-6 text-4xl font-black leading-[1.04] tracking-[-0.045em] text-current sm:text-6xl">
+            <h1 className="mt-6 text-4xl font-black leading-[1.04] tracking-[-0.045em] text-current sm:text-5xl">
               {active?.title ?? "Extension, research, and major events—connected through JESUP."}
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-7 opacity-85 sm:text-lg">
@@ -104,19 +95,6 @@ export function HomeHero({ slides }: HomeHeroProps) {
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="hidden border-l border-current/25 pl-10 lg:block" aria-hidden="true">
-            <Van className="h-20 w-20 text-current" strokeWidth={1.35} />
-            <div className="mt-8 space-y-5 text-sm font-bold opacity-90">
-              <p className="flex items-center gap-3">
-                <Radio className="h-5 w-5" /> One connected network
-              </p>
-              <p className="border-t border-current/20 pt-5">Programs · Conferences · Resources</p>
-              <p className="border-t border-current/20 pt-5">
-                Built for communities and institutions
-              </p>
-            </div>
           </div>
         </div>
       </div>

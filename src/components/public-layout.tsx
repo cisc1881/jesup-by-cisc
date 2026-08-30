@@ -16,7 +16,7 @@ import {
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-hidden bg-background">
+    <div className="public-app flex min-h-screen w-full max-w-full flex-col overflow-x-hidden bg-background">
       <SkipLink />
       <PublicNav />
       <div className="flex min-w-0 flex-1 flex-col pb-bottom-nav md:pb-0">

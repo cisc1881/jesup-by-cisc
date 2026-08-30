@@ -1,14 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { HomeProgram, HomeSectionMeta } from "@/lib/home";
-import {
-  EmptyState,
-  HomeSection,
-  HorizontalScroll,
-  HorizontalScrollItem,
-  PortraitMediaCard,
-  SectionActionLink,
-} from "@/components/design-system";
-import { LayoutGrid } from "lucide-react";
+import { EmptyState, HomeSection, SectionActionLink } from "@/components/design-system";
+import { ChevronRight, LayoutGrid } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type FeaturedProgramsSectionProps = {
@@ -17,17 +10,19 @@ type FeaturedProgramsSectionProps = {
   isLoading?: boolean;
 };
 
-export function FeaturedProgramsSection({ programs, meta, isLoading }: FeaturedProgramsSectionProps) {
+export function FeaturedProgramsSection({
+  programs,
+  meta,
+  isLoading,
+}: FeaturedProgramsSectionProps) {
   return (
     <HomeSection sectionId={meta.id} meta={meta}>
       {isLoading ? (
-        <HorizontalScroll>
+        <div className="grid gap-px bg-border sm:grid-cols-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <HorizontalScrollItem key={i}>
-              <Skeleton className="aspect-[4/5] w-[75vw] rounded-2xl sm:w-64" />
-            </HorizontalScrollItem>
+            <Skeleton key={i} className="h-28 w-full" />
           ))}
-        </HorizontalScroll>
+        </div>
       ) : programs.length === 0 ? (
         <EmptyState
           icon={LayoutGrid}
@@ -40,21 +35,36 @@ export function FeaturedProgramsSection({ programs, meta, isLoading }: FeaturedP
           }
         />
       ) : (
-        <HorizontalScroll>
-          {programs.map((p) => (
-            <HorizontalScrollItem key={p.slug}>
-              <Link to="/programs/$slug" params={{ slug: p.slug }}>
-                <PortraitMediaCard
-                  imageUrl={p.imageUrl}
-                  imageAlt={p.name}
-                  eyebrow={p.categoryName}
-                  title={p.short}
-                  description={p.tagline}
-                />
-              </Link>
-            </HorizontalScrollItem>
+        <div className="grid gap-px border bg-border sm:grid-cols-2">
+          {programs.slice(0, 6).map((p) => (
+            <Link
+              key={p.slug}
+              to="/programs/$slug"
+              params={{ slug: p.slug }}
+              className="grid min-h-28 grid-cols-[84px_minmax(0,1fr)_20px] items-center gap-4 bg-card p-4 hover:bg-muted/50"
+            >
+              {p.imageUrl ? (
+                <img src={p.imageUrl} alt="" className="h-20 w-20 object-cover" loading="lazy" />
+              ) : (
+                <span className="grid h-20 w-20 place-items-center institution-surface-secondary">
+                  <LayoutGrid className="h-6 w-6 institution-accent-text" />
+                </span>
+              )}
+              <span className="min-w-0">
+                {p.categoryName && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider institution-accent-text">
+                    {p.categoryName}
+                  </span>
+                )}
+                <span className="mt-1 block line-clamp-2 font-black">{p.short}</span>
+                <span className="mt-1 block truncate text-xs text-muted-foreground">
+                  {p.tagline}
+                </span>
+              </span>
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+            </Link>
           ))}
-        </HorizontalScroll>
+        </div>
       )}
     </HomeSection>
   );

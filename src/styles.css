@@ -498,6 +498,15 @@
   }
 }
 
+/* Option C: crisp, professional public surfaces. The primary QR action is the sole exception. */
+.public-app * {
+  border-radius: 0 !important;
+}
+
+.public-app .allow-round {
+  border-radius: 9999px !important;
+}
+
 @media print {
   .no-print {
     display: none !important;

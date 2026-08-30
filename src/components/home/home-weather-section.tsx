@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
-import { CloudSun, LocateFixed, MapPin } from "lucide-react";
+import { CloudSun, LocateFixed } from "lucide-react";
 import { useWeatherData, resolveWeatherDisplayData } from "@/hooks/use-weather-data";
 import { useWeatherLocation } from "@/hooks/use-weather-location";
-import { AppButton, AppCard } from "@/components/design-system";
-import { ForecastStrip, WeatherCenter } from "@/components/weather";
+import { AppButton } from "@/components/design-system";
+import { WeatherCenter } from "@/components/weather";
 import { WeatherConditionIcon } from "@/components/weather/weather-icons";
 import type { WeatherCenterStatus } from "@/lib/weather/types";
 
@@ -36,24 +36,34 @@ export function HomeWeatherSection() {
 
   return (
     <section aria-labelledby="local-forecast-title">
-      <AppCard padding="md" className="institution-surface-secondary overflow-hidden">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] institution-accent-text">
-              <CloudSun className="size-4" aria-hidden="true" />
-              Local forecast
-            </div>
-            <h2 id="local-forecast-title" className="mt-2 text-2xl font-black tracking-tight">
-              {displayData?.location.label ?? "Weather near you"}
-            </h2>
-            {displayData ? (
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                <MapPin className="size-4" aria-hidden="true" />
-                {displayData.location.county}
-              </p>
-            ) : null}
-          </div>
-          <div className="flex flex-wrap gap-2">
+      <div className="institution-surface-secondary flex min-h-20 items-center border-l-[6px] border-[var(--institution-accent)] px-4 py-3 sm:px-6">
+        {isLoading && !displayData ? (
+          <div
+            className="h-7 w-full animate-pulse bg-muted"
+            role="status"
+            aria-label="Loading local forecast"
+          />
+        ) : displayData ? (
+          <Link to="/weather" className="flex min-w-0 flex-1 items-center gap-3">
+            <WeatherConditionIcon
+              code={displayData.current.conditionCode}
+              label={displayData.current.condition}
+              className="size-8 shrink-0 institution-accent-text"
+            />
+            <span className="min-w-0 flex-1">
+              <span id="local-forecast-title" className="block truncate text-sm font-bold">
+                {displayData.location.label} · {displayData.current.condition}
+              </span>
+              <span className="block text-xs text-muted-foreground">Local weather</span>
+            </span>
+            <span className="text-3xl font-black tabular-nums">
+              {displayData.current.temperatureF}°
+            </span>
+          </Link>
+        ) : (
+          <div className="flex w-full items-center gap-3">
+            <CloudSun className="size-7 institution-accent-text" />
+            <span className="flex-1 text-sm font-bold">Weather near you</span>
             <AppButton
               type="button"
               variant="outline"
@@ -63,41 +73,9 @@ export function HomeWeatherSection() {
               <LocateFixed className="size-4" aria-hidden="true" />
               Use my location
             </AppButton>
-            <AppButton asChild variant="ghost" size="sm">
-              <Link to="/weather">Weather resources</Link>
-            </AppButton>
           </div>
-        </div>
-
-        {isLoading && !displayData ? (
-          <div
-            className="mt-6 h-32 animate-pulse rounded-2xl bg-muted"
-            role="status"
-            aria-label="Loading local forecast"
-          />
-        ) : displayData ? (
-          <div className="mt-6 grid gap-5 lg:grid-cols-[14rem_1fr] lg:items-center">
-            <div className="flex items-center gap-4">
-              <WeatherConditionIcon
-                code={displayData.current.conditionCode}
-                label={displayData.current.condition}
-                className="size-14 shrink-0 institution-accent-text"
-              />
-              <div>
-                <p className="text-4xl font-black tabular-nums">
-                  {displayData.current.temperatureF}°F
-                </p>
-                <p className="text-sm text-muted-foreground">{displayData.current.condition}</p>
-              </div>
-            </div>
-            <ForecastStrip days={displayData.forecast.slice(0, 5)} />
-          </div>
-        ) : (
-          <p className="mt-5 text-sm text-muted-foreground">
-            Choose your location to view the forecast.
-          </p>
         )}
-      </AppCard>
+      </div>
     </section>
   );
 }

@@ -7,8 +7,7 @@ import {
   HomeHero,
   HomeWeatherSection,
   EventDiscoveryHomeSection,
-  InstitutionPromotionsSection,
-  MyJesupHomeSection,
+  FeaturedProgramsSection,
   UpcomingEventsSection,
 } from "@/components/home";
 import { fetchHomePageData, createEmptyHomePageData, DEFAULT_SECTION_META } from "@/lib/home";
@@ -122,15 +121,18 @@ function Home() {
 
       <PageContainer
         size="lg"
-        className="space-y-[var(--space-10)] pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-[var(--space-12)] sm:pt-[var(--space-8)]"
+        className="space-y-10 pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-12 sm:pt-[var(--space-8)]"
       >
-        <MyJesupHomeSection />
-        <EventDiscoveryHomeSection />
         <HomeWeatherSection />
-        <InstitutionPromotionsSection slides={relevantSlides} />
+        <EventDiscoveryHomeSection />
         <UpcomingEventsSection
           events={relevantEvents}
-          meta={sections.events}
+          meta={{ ...sections.events, title: "Upcoming for you" }}
+          isLoading={isLoading && !data}
+        />
+        <FeaturedProgramsSection
+          programs={data?.programs ?? []}
+          meta={sections.programs}
           isLoading={isLoading && !data}
         />
       </PageContainer>
