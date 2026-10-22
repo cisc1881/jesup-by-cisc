@@ -34,6 +34,7 @@ import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { listInstitutions } from "@/lib/institutions";
 import { ConferenceSettingsPanel } from "./conference-settings-panel";
+import { ConferenceOperationsPanel } from "./conference-operations-panel";
 
 type EventFormDialogProps = {
   open: boolean;
@@ -157,6 +158,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
               <TabsTrigger value="registration">Registration</TabsTrigger>
               <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
               <TabsTrigger value="conference">Conference shell</TabsTrigger>
+              {eventId && <TabsTrigger value="operations">Conference operations</TabsTrigger>}
             </TabsList>
 
             <TabsContent value="basics" className="space-y-4 pt-4">
@@ -840,6 +842,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
             <TabsContent value="conference" className="space-y-4 pt-4">
               <ConferenceSettingsPanel eventId={eventId} form={form} onMetadata={(metadata) => setForm(current => ({ ...current, metadata }))} />
             </TabsContent>
+            {eventId && <TabsContent value="operations" className="pt-4"><ConferenceOperationsPanel eventId={eventId} /></TabsContent>}
           </Tabs>
 
           <Button type="submit" className="w-full" disabled={saving}>

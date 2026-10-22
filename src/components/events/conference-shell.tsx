@@ -15,6 +15,7 @@ import { EventAgenda, EventSpeakers, EventRelatedSections } from "./event-detail
 import { EventRegistrationPanel } from "./event-registration-panel";
 import { EventChatRoom } from "./event-chat-room";
 import { EventMapView } from "./event-map-view";
+import { ConferenceWallet } from "./conference-wallet";
 
 export function ConferenceShell({ event }: { event: EventDetail }) {
   const [selected, setSelected] = useState<ConferenceSection>("home");
@@ -48,7 +49,7 @@ export function ConferenceShell({ event }: { event: EventDetail }) {
           {tab === "map" && <div className="space-y-5"><h2 className="text-2xl font-bold">Map & Parking</h2>{event.lat != null && event.lng != null && <EventMapView events={[event]} />}{[["Campus map",event.metadata.map_url],["Parking information",event.metadata.parking_url]].map(([label,url]) => safeEventUrl(url) && <Button key={String(label)} variant="outline" asChild><a href={safeEventUrl(url)} target="_blank" rel="noreferrer">{String(label)}</a></Button>)}</div>}
           {tab === "community" && <EventChatRoom eventId={event.id} registered={registration?.status === "registered"} />}
           {tab === "my-event" && <section className="space-y-5"><h2 className="text-2xl font-bold">My Event</h2>{!user ? signIn : registration ? <><p className="text-muted-foreground">Registration: {registration.status.replaceAll("_"," ")}</p><EventRegistrationPanel event={event} registration={registration} /></> : <p className="text-muted-foreground">No registration is linked to your account yet.</p>}</section>}
-          {tab === "wallet" && <section className="space-y-5"><h2 className="text-2xl font-bold">Wallet</h2>{!user ? signIn : !registration ? <p className="text-muted-foreground">No registration is linked to your account yet.</p> : <><p className="text-sm text-muted-foreground">{registration.status === "registered" ? "Your event credentials" : "Registration is not active."}</p>{registration.ticket_code && registration.status === "registered" && <div className="credential-qr w-fit border p-5"><QRCodeSVG value={registration.ticket_code} size={200} /><p className="mt-3 text-sm font-semibold">Event admission</p></div>}</>}</section>}
+          {tab === "wallet" && (!user ? signIn : <ConferenceWallet eventId={event.id} claimEnabled={event.metadata.eventbrite_claim_enabled === true} />)}
         </div>
       </div>
     </PageContainer>

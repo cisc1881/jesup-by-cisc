@@ -15,5 +15,6 @@
 - Staff authorization and redemption/check-in/claim operations are event-scoped database functions with explicit execution grants and locking; UI gates never substitute for authorization.
 - Square seller configuration is admin-only and database-enforced non-live; payment processing, secrets and OAuth are outside the foundation.
 - Public connection configuration follows managed VITE environment settings rather than hardcoded historical project endpoints, so recovered code and Cloud migrations use the same backend.
-- The first recovery delivery exposes only the conference shell; already-applied commerce/staff schema remains dormant and must not be presented as a completed workflow.
+- Conference operations use authenticated server functions and event-scoped RPCs; checkout stays disabled, issuance is explicitly admin-only, and imported identity claims require verified email plus an original one-time barcode.
+- Staff operation retries use request IDs and database locks; badge issuance records a print request, not confirmation that a physical printer succeeded.
 - The role policy helper is callable for public policies but returns false for anonymous callers and only checks the caller's own identity, preserving public reads without role enumeration.
