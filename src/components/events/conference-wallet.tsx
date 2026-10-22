@@ -8,7 +8,7 @@ import {Label} from '@/components/ui/label';
 import {conferenceWorkspace,claimConferenceRegistration} from '@/lib/conference-operations.functions';
 export function ConferenceWallet({eventId,claimEnabled}:{eventId:string;claimEnabled:boolean}){
  const read=useServerFn(conferenceWorkspace),claim=useServerFn(claimConferenceRegistration),qc=useQueryClient();
- const query=useQuery({queryKey:['conference-wallet',eventId],queryFn:()=>read({data:{eventId}})});
+ const query=useQuery({queryKey:['conference-wallet',eventId],queryFn:()=>read({data:{eventId,wallet:true}})});
  const [code,setCode]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  async function link(){setBusy(true);setMessage('');try{await claim({data:{eventId,credential:code}});setCode('');await qc.invalidateQueries();setMessage('Eventbrite registration linked')}catch(e){setMessage(e instanceof Error?e.message:'Could not link ticket')}finally{setBusy(false)}}
  if(query.isPending)return <p role="status">Loading credentials…</p>;

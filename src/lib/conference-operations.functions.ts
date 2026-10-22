@@ -3,7 +3,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { z } from 'zod';
 import { issueInput, operationInput, productInput, staffRoles } from './conference-operations';
 
-const eventInput = z.object({ eventId:z.string().uuid() });
+const eventInput = z.object({ eventId:z.string().uuid(), wallet:z.boolean().optional() });
 export const conferenceWorkspace = createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(eventInput).handler(async ({data,context}) => {
   const db = context.supabase;
   const {data:admin,error:roleError} = await db.rpc('has_role',{_user_id:context.userId,_role:'admin'});
@@ -15,8 +15,8 @@ export const conferenceWorkspace = createServerFn({method:'POST'}).middleware([r
   }));
   const [products,entitlements,registrations,staff,sellers,audit,meals] = await Promise.all([
     db.from('event_products').select('*').eq('event_id',data.eventId).order('sort_order'),
-    db.from('event_entitlements').select('*,event_products(name,kind,beneficiary),event_entitlement_redemptions(id)').eq('event_id',data.eventId).order('created_at',{ascending:false}),
-    db.from('event_registrations').select('id,attendee_name,status,user_id').eq('event_id',data.eventId),
+    data.wallet ? db.from('event_entitlements').select('*,event_products(name,kind,beneficiary),event_entitlement_redemptions(id),event_registrations!inner(user_id)').eq('event_id',data.eventId).eq('event_registrations.user_id',context.userId).order('created_at',{ascending:false}) : db.from('event_entitlements').select('*,event_products(name,kind,beneficiary),event_entitlement_redemptions(id)').eq('event_id',data.eventId).order('created_at',{ascending:false}),
+    data.wallet ? db.from('event_registrations').select('id,attendee_name,status,user_id').eq('event_id',data.eventId).eq('user_id',context.userId) : db.from('event_registrations').select('id,attendee_name,status,user_id').eq('event_id',data.eventId),
     db.from('event_staff_assignments').select('*').eq('event_id',data.eventId),
     admin ? db.from('event_seller_connections').select('*').eq('event_id',data.eventId) : Promise.resolve({data:[],error:null}),
     admin ? db.from('event_operation_audit').select('id,operation,actor_id,created_at,registration_id,entitlement_id').eq('event_id',data.eventId).order('created_at',{ascending:false}).limit(50) : Promise.resolve({data:[],error:null}),
