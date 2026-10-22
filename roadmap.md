@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Active external preview repair
+- [ ] Diagnose hosted FC135 failure and public data-loading boundary.
+- [ ] Repair hosted public reads without changing event data or permissions.
+- [ ] Verify home, events and FC135 externally; record any access blocker.
+
 ## Active second increment
 - [x] Inspect dormant schema and existing import, auth, meal, QR and badge systems.
 - [x] Harden claiming, issuance, staff operations and audit/replay safeguards.
