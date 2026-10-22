@@ -1,5 +1,14 @@
 # FC135 catalog and credential increment
 
+## Confirmed FC135 registration and payment direction (October 22, 2026)
+- Tuskegee University is the FC135 Eventbrite organizer and receives ticket-sale proceeds through its own Eventbrite organizer/payment account.
+- HNCH LLC operates JESUP and is paid separately as a Tuskegee vendor through Tuskegee's vendor payment process, according to the separate agreement/invoice. Eventbrite does not pay HNCH a JESUP application fee; JESUP does not receive, hold, deduct from, or remit FC135 ticket proceeds.
+- This FC135 direction supersedes any earlier Square/application-fee proposal for FC135. Native Square/Stripe checkout remains disabled; no payment integration, account connection or payout-setting change is authorized.
+- Eventbrite event `2003462000776` is an unpublished draft. Its draft URL is not a public purchase link. Keep FC135 registration closed and all nine existing product drafts inactive.
+- Before opening registration, Tuskegee must publish the Eventbrite event and confirm its payout setup and authorized public registration URL. Admin Registration settings must select Eventbrite, configure the matching HTTPS Eventbrite `/e/` URL and event ID, explicitly confirm publication and URL authorization, then enable registration with an open/waiting-list status. The conference Tickets section also requires explicit enablement. `registration_open` remains false for Eventbrite to prevent native JESUP registration; `registration_status` controls the external registration link.
+- FC135's public action links to that approved Eventbrite URL, rather than launching native or embedded payment. Changing the URL or event ID invalidates URL authorization. These settings record organizer confirmation; they do not verify publication or payouts through Eventbrite's API.
+- Attendee CSV/API imports, verified-email/original-barcode claims, issued Wallet credentials, provisional schedule and draft ticket products are preserved. Do not assume HNCH can access Tuskegee's Eventbrite account or payout settings.
+
 ## Implemented
 - Event-scoped admin product catalog: ticket, meal, activity, parking, sponsor and company packages; self, guest and company beneficiaries; nullable cents price, capacity and active state.
 - Explicit administrator-only issuance/revocation. Unpriced issuance requires an explicit approval flag; no automatic entitlements from imports or registration. Product capacity is serialized under a database lock.
@@ -24,17 +33,17 @@ Admin event editor → Conference operations manages products, credentials, assi
 - Ticket/add-on names, prices or approved free issuance, beneficiary rules, quantities/capacities, meal/activity service windows, parking policy, sponsor/company package contents and confirmed sponsors/exhibitors.
 - Approved event artwork, registration provider/URL/Eventbrite ID, campus/parking links, resource links, and explicit decisions to enable community, My Event, Wallet, catalog, claiming and staff operations.
 - Eventbrite provider credentials and live import verification, product mapping and automatic entitlement issuance are not supplied in this pass.
-- Square legal seller/account/location/currency consent, reviewed OAuth/token handling, application-fee eligibility and consent, priced orders/reservations/webhooks/refunds/reconciliation and sandbox testing remain future work. No payment credentials are requested or stored here.
+- For future non-FC135 Square events, legal seller/account/location/currency consent, reviewed OAuth/token handling, application-fee eligibility and consent, priced orders/reservations/webhooks/refunds/reconciliation and sandbox testing remain future work. No payment credentials are requested or stored here.
 - Physical badge printing, reprint workflow, camera hardware verification, offline scanning, bulk issuance and guest-account transfers remain deferred.
 
 ## Square remains non-live
 Seller records retain merchant, location, application and application-fee fields only. The database forbids live payments. No checkout, secrets, OAuth tokens, payment requests or fund movement exist in this increment.
 
-### Platform-wide seller rule (all institutions, all events)
-- For every institution's event, the institution itself is the Square seller of record and receives that event's ticket-sale proceeds directly in its own Square account. This rule is reusable across the platform, not specific to FC135.
+### Platform-wide seller rule for future Square events
+- For every institution's event using Square in the future, the institution itself is the Square seller of record and receives that event's ticket-sale proceeds directly in its own Square account. FC135 uses Tuskegee's Eventbrite account instead, as confirmed above.
 - HNCH LLC is the JESUP application operator only. It may receive an application fee solely when that fee has been separately approved for that seller/event; no fee amount is specified by this documentation.
 - Institutional ticket-sale revenue must never be processed through an HNCH merchant transaction, for any institution or event.
-- Seller authorization and application-fee consent are per institution and per event: the institution's authorized Square account owner completes seller OAuth, and fee consent is granted separately for each seller/event. FC135 is one example (Tuskegee University is its seller); the same arrangement applies to every institution's event.
+- Seller authorization and application-fee consent are per institution and per event: the institution's authorized Square account owner completes seller OAuth, and fee consent is granted separately for each seller/event. This is not FC135 onboarding or permission to charge an FC135 application fee.
 - Sandbox first; keep Sandbox and Production distinct, and retain payment-disabled safeguards until seller authorization, fee terms, a secure callback, and end-to-end verification are complete.
 
 Required before a future payment pass:
