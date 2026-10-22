@@ -12,7 +12,7 @@ import {QrTicketScanner} from '@/components/admin/qr-ticket-scanner';
 import {conferenceWorkspace,operateConferenceCredential} from '@/lib/conference-operations.functions';
 import {printEventBadge} from '@/lib/badge-printing';
 import {buildPageHead} from '@/lib/seo';
-export const Route=createFileRoute('/_authenticated/events/$id/scan')({head:()=>buildPageHead({title:'Event staff scanner · JESUP',description:'Authorized event admission, entitlement redemption and badge issuance.'}),component:StaffScanner});
+export const Route=createFileRoute('/_authenticated/events/scan')({head:()=>buildPageHead({title:'Event staff scanner · JESUP',description:'Authorized event admission, entitlement redemption and badge issuance.'}),component:StaffScanner});
 function StaffScanner(){
  const {id}=Route.useParams(),read=useServerFn(conferenceWorkspace),operate=useServerFn(operateConferenceCredential);
  const query=useQuery({queryKey:['staff-workspace',id],queryFn:()=>read({data:{eventId:id}})});
