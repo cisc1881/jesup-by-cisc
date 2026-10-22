@@ -1,11 +1,11 @@
 # FC135 recovery
 
 ## Active reusable Event Experience pass
-- [ ] Audit existing builder, attendee sections, credentials and integration preparation.
-- [ ] Complete safe reusable admin configuration and attendee UI without factual FC135 content.
-- [ ] Run the full existing test suite and check automatic build results.
-- [ ] Verify the repaired hosted home, /events and /events/fc135, or record the exact access blocker.
-- [ ] Document remaining content and integration requirements.
+- [x] Audit existing builder, attendee sections, credentials and integration preparation.
+- [x] Complete date-only editing, event organizer/resource links, product descriptions/order, seller configuration editing and active-product section gating; no factual FC135 content added.
+- [x] Full test suite: 35 files / 138 tests passed. Automatic build OK; signed-in settings save and private product save/read-back passed and original test product restored.
+- [x] External editor-preview home, /events and /events/fc135 return 200 with correct titles/headings. Distinct hosted lovable.app preview remains unverified: direct requests return 401, its viewer times out, and cross-origin browser fetch fails. Hosted status still identifies prior cb4a7475, not this pass.
+- [x] Document exact remaining content and integration requirements in docs/FC135_OPERATIONS.md.
 
 ## Active external preview repair
 - [x] Confirm hosted FC135 HTTP 500 in preview logs; identify browser-configured SSR reads as a deployment-specific failure path (exact underlying provider error not present in logs).

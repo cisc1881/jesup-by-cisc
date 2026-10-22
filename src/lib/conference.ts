@@ -55,12 +55,12 @@ export function safeEventUrl(value: unknown): string | undefined {
   try { const url = new URL(value); return url.protocol === "https:" ? url.href : undefined; } catch { return undefined; }
 }
 
-export function eventDateLabel(event: { startsAt: string; endsAt: string | null; metadata?: Record<string, unknown> }) {
+export function eventDateLabel(event: { startsAt: string; endsAt: string | null; timezone?: string | null; metadata?: Record<string, unknown> }) {
   const metadata = event.metadata;
   if (metadata?.date_only === true && typeof metadata.start_date === "string" && typeof metadata.end_date === "string") {
     return `${formatInTimeZone(`${metadata.start_date}T12:00:00Z`, "UTC", "MMMM d")}–${formatInTimeZone(`${metadata.end_date}T12:00:00Z`, "UTC", "d, yyyy")}`;
   }
-  const timezone = typeof metadata?.event_timezone === "string" ? metadata.event_timezone : "America/Chicago";
+  const timezone = event.timezone || (typeof metadata?.event_timezone === "string" ? metadata.event_timezone : "America/Chicago");
   return formatInTimeZone(event.startsAt, timezone, "MMM d, yyyy · h:mm a zzz");
 }
 
