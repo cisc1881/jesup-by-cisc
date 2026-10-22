@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { authorizedEventbriteRegistrationUrl } from "./eventbrite-registration";
+import { visibleConferenceSections } from "./conference";
+import type { EventDetail } from "./events";
 
 const configured = {
   registrationStatus: "open",
@@ -32,5 +34,11 @@ describe("Eventbrite public registration authorization", () => {
     for (const eventbrite_event_url of ["javascript:alert(1)", "https://eventbrite.com.evil.test/e/2003462000776", "https://www.eventbrite.com/manage/events/2003462000776", "https://www.eventbrite.com/e/123", "https://user:pass@eventbrite.com/e/2003462000776"]) {
       expect(authorizedEventbriteRegistrationUrl({ ...configured, metadata: { ...configured.metadata, eventbrite_event_url } })).toBeUndefined();
     }
+  });
+  it("does not expose conference Tickets solely because the draft URL exists", () => {
+    const event = { ...configured, registrationOpen: false, sessions: [], speakers: [], sponsors: [], publications: [], podcasts: [], lat: null, lng: null, metadata: { ...configured.metadata, sections: { tickets: true } } } as unknown as EventDetail;
+    expect(visibleConferenceSections({ ...event, metadata: { ...event.metadata, eventbrite_event_status: "draft" } }).map(([id]) => id)).toEqual(["home"]);
+    expect(visibleConferenceSections(event).map(([id]) => id)).toEqual(["home", "tickets"]);
+    expect(visibleConferenceSections({ ...event, registrationStatus: "closed" }).map(([id]) => id)).toEqual(["home"]);
   });
 });

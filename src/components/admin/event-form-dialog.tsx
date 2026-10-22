@@ -815,6 +815,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                           setForm((f) => ({
                             ...f,
                             eventbriteEventId: e.target.value.replace(/\D/g, ""),
+                            metadata: { ...f.metadata, eventbrite_registration_authorized: false },
                           }))
                         }
                         placeholder="1234567890123"
