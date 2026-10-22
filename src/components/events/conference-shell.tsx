@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { QRCodeSVG } from "qrcode.react";
 import { CalendarPlus, ArrowLeft, Ticket, Settings2 } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer } from "@/components/design-system";
@@ -15,10 +14,16 @@ import { EventAgenda, EventSpeakers, EventRelatedSections } from "./event-detail
 import { EventRegistrationPanel } from "./event-registration-panel";
 import { EventChatRoom } from "./event-chat-room";
 import { EventMapView } from "./event-map-view";
+import { ConferenceWallet } from "./conference-wallet";
+import { ConferenceCatalog } from "./conference-catalog";
+import { useServerFn } from "@tanstack/react-start";
+import { conferenceWorkspace } from "@/lib/conference-operations.functions";
 
 export function ConferenceShell({ event }: { event: EventDetail }) {
   const [selected, setSelected] = useState<ConferenceSection>("home");
   const { user, isAdmin } = useAuth();
+  const readWorkspace = useServerFn(conferenceWorkspace);
+  const { data: workspace } = useQuery({queryKey:["conference-staff-access",event.id,user?.id],enabled:Boolean(user)&&event.metadata.staff_operations_enabled===true,queryFn:()=>readWorkspace({data:{eventId:event.id,wallet:true}})});
   const sections = visibleConferenceSections(event);
   const tab = sections.some(([id]) => id === selected) ? selected : "home";
   const { data: registration } = useQuery({
@@ -31,6 +36,7 @@ export function ConferenceShell({ event }: { event: EventDetail }) {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Button variant="ghost" size="sm" asChild><Link to="/events" search={{ view:"explore" }}><ArrowLeft className="size-4" />All events</Link></Button>
         {isAdmin && <div className="flex gap-2"><Button variant="outline" size="sm" asChild><Link to="/admin/events"><Settings2 className="size-4" />Manage conference</Link></Button></div>}
+        {workspace?.permissions.some(p=>p.allowed) && <Button variant="outline" asChild><Link to="/events/$id/scan" params={{id:event.id}}>Staff scanner</Link></Button>}
       </div>
       <div className="conference-shell" data-event-theme={event.metadata.theme_preset === "tuskegee" ? "tuskegee" : "network"}>
         <ConferenceHero event={event} />
@@ -42,13 +48,13 @@ export function ConferenceShell({ event }: { event: EventDetail }) {
           </div>}
           {tab === "schedule" && <EventAgenda event={event} />}
           {tab === "speakers" && <EventSpeakers event={event} />}
-          {tab === "tickets" && <div className="max-w-2xl"><EventRegistrationPanel event={event} registration={registration} /></div>}
+          {tab === "tickets" && <div className="space-y-6">{event.metadata.catalog_enabled===true && <ConferenceCatalog eventId={event.id}/>}<div className="max-w-2xl"><EventRegistrationPanel event={event} registration={registration} /></div></div>}
           {tab === "sponsors" && <EventRelatedSections event={{ ...event, programs:[],publications:[],podcasts:[],partners:[] }} />}
           {tab === "resources" && <EventRelatedSections event={{ ...event, programs:[],partners:[],sponsors:[] }} />}
           {tab === "map" && <div className="space-y-5"><h2 className="text-2xl font-bold">Map & Parking</h2>{event.lat != null && event.lng != null && <EventMapView events={[event]} />}{[["Campus map",event.metadata.map_url],["Parking information",event.metadata.parking_url]].map(([label,url]) => safeEventUrl(url) && <Button key={String(label)} variant="outline" asChild><a href={safeEventUrl(url)} target="_blank" rel="noreferrer">{String(label)}</a></Button>)}</div>}
           {tab === "community" && <EventChatRoom eventId={event.id} registered={registration?.status === "registered"} />}
           {tab === "my-event" && <section className="space-y-5"><h2 className="text-2xl font-bold">My Event</h2>{!user ? signIn : registration ? <><p className="text-muted-foreground">Registration: {registration.status.replaceAll("_"," ")}</p><EventRegistrationPanel event={event} registration={registration} /></> : <p className="text-muted-foreground">No registration is linked to your account yet.</p>}</section>}
-          {tab === "wallet" && <section className="space-y-5"><h2 className="text-2xl font-bold">Wallet</h2>{!user ? signIn : !registration ? <p className="text-muted-foreground">No registration is linked to your account yet.</p> : <><p className="text-sm text-muted-foreground">{registration.status === "registered" ? "Your event credentials" : "Registration is not active."}</p>{registration.ticket_code && registration.status === "registered" && <div className="credential-qr w-fit border p-5"><QRCodeSVG value={registration.ticket_code} size={200} /><p className="mt-3 text-sm font-semibold">Event admission</p></div>}</>}</section>}
+          {tab === "wallet" && (!user ? signIn : <ConferenceWallet eventId={event.id} claimEnabled={event.metadata.eventbrite_claim_enabled === true} />)}
         </div>
       </div>
     </PageContainer>

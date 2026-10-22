@@ -49,7 +49,7 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
     if (roleError) throw roleError;
     if (!role) throw new Error("Forbidden: admin role required.");
 
-    const token = process.env.EVENTBRITE_PRIVATE_TOKEN?.trim();
+    const token = process.env['EVENTBRITE_PRIVATE_TOKEN']?.trim();
     if (!token) throw new Error("EVENTBRITE_PRIVATE_TOKEN is not configured.");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -98,7 +98,6 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
 
         const record = {
           event_id: event.id,
-          user_id: existing?.user_id ?? null,
           attendee_name: attendeeName,
           attendee_email: attendee.profile?.email?.trim() || null,
           registration_source: "eventbrite",
@@ -116,7 +115,7 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
           if (error) throw error;
           updated += 1;
         } else {
-          const { error } = await supabaseAdmin.from("event_registrations").insert(record);
+          const { error } = await supabaseAdmin.from("event_registrations").insert({ ...record, user_id: null });
           if (error) throw error;
           imported += 1;
         }
