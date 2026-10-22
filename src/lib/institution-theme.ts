@@ -305,5 +305,10 @@ export function institutionThemeProperties(theme: InstitutionTheme, dark = false
     "--banner-foreground": getReadableForeground(theme.accentStrong),
     "--banner-highlight": theme.secondary,
     "--banner-highlight-foreground": getReadableForeground(theme.secondary),
+    "--home-gradient": `linear-gradient(115deg, ${theme.accentStrong}, ${theme.accent})`,
+    "--home-foreground": getReadableForeground(theme.accentStrong),
+    "--home-muted": getReadableForeground(theme.accentStrong),
+    "--home-cta": theme.secondary,
+    "--home-cta-foreground": getReadableForeground(theme.secondary),
   };
 }
