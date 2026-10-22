@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer, AppButton } from "@/components/design-system";
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
+function HomeRouteError({ error, reset }: ErrorComponentProps) {
   const router = useRouter();
 
   return (
