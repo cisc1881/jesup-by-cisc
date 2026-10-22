@@ -3,8 +3,9 @@
 ## Active external preview repair
 - [x] Confirm hosted FC135 HTTP 500 in preview logs; identify browser-configured SSR reads as a deployment-specific failure path (exact underlying provider error not present in logs).
 - [x] Move public event reads behind request-scoped anonymous server functions without changing event data or permissions.
-- [ ] Verify home, events and FC135 externally — blocked by preview login (HTTP 401 from sandbox), no active viewer, and hosted build still serving the pre-repair version during this turn; requires the refreshed hosted build and an accessible shared preview link or active preview viewer.
-- Local verification: home, /events, /events/fc135, Programs, Publications and Markets returned HTTP 200; 18 focused tests passed; automatic build OK.
+- [x] Reproduce hosted 500 in a Worker runtime: occurs exactly when the hosted runtime lacks backend connection settings (inherited project binding). Add publishable fallback to the recovered project.
+- [ ] Confirm the hosted preview renders after the next hosted build — blocked: sandbox gets HTTP 401 from preview and no preview tab is open; user must reload the preview.
+- [ ] Platform: re-bind hosted preview/deployment identity (badge points to lost project lovp_0s4ebmzbx19hxvh5nf1270fx8t) and inject this project's server settings — requires Lovable support.
 
 ## Active second increment
 - [x] Inspect dormant schema and existing import, auth, meal, QR and badge systems.
