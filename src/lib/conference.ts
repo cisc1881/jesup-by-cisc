@@ -23,16 +23,26 @@ export function sectionSettings(metadata: Record<string, unknown>): Record<strin
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
 
-export function visibleConferenceSections(event: EventDetail) {
+export function conferenceResourceLinks(metadata: Record<string, unknown>) {
+  if (!Array.isArray(metadata.resource_links)) return [];
+  return metadata.resource_links.flatMap((item: unknown) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) return [];
+    const row = item as Record<string, unknown>;
+    const url = safeEventUrl(row.url);
+    return typeof row.label === "string" && row.label.trim() && url ? [{ label: row.label.trim(), url }] : [];
+  });
+}
+
+export function visibleConferenceSections(event: EventDetail, activeProductCount = 0) {
   const settings = sectionSettings(event.metadata);
   const configured: Record<ConferenceSection, boolean> = {
     home: true,
     schedule: event.sessions.length > 0,
     speakers: event.speakers.length > 0,
-    tickets: event.metadata.catalog_enabled === true || event.registrationOpen || Boolean(event.metadata.eventbrite_event_id && safeEventUrl(event.metadata.eventbrite_event_url)),
+    tickets: event.metadata.catalog_enabled === true && activeProductCount > 0 || event.registrationOpen || Boolean(event.metadata.eventbrite_event_id && safeEventUrl(event.metadata.eventbrite_event_url)),
     sponsors: event.sponsors.length > 0,
     map: Boolean(event.lat != null && event.lng != null || safeEventUrl(event.metadata.parking_url) || safeEventUrl(event.metadata.map_url)),
-    resources: event.publications.length > 0 || event.podcasts.length > 0,
+    resources: event.publications.length > 0 || event.podcasts.length > 0 || conferenceResourceLinks(event.metadata).length > 0,
     community: event.metadata.community_enabled === true,
     "my-event": event.metadata.attendee_workspace_enabled === true,
     wallet: event.metadata.wallet_enabled === true,
@@ -50,7 +60,17 @@ export function eventDateLabel(event: { startsAt: string; endsAt: string | null;
   if (metadata?.date_only === true && typeof metadata.start_date === "string" && typeof metadata.end_date === "string") {
     return `${formatInTimeZone(`${metadata.start_date}T12:00:00Z`, "UTC", "MMMM d")}–${formatInTimeZone(`${metadata.end_date}T12:00:00Z`, "UTC", "d, yyyy")}`;
   }
-  return formatInTimeZone(event.startsAt, "America/Chicago", "MMM d, yyyy · h:mm a zzz");
+  const timezone = typeof metadata?.event_timezone === "string" ? metadata.event_timezone : "America/Chicago";
+  return formatInTimeZone(event.startsAt, timezone, "MMM d, yyyy · h:mm a zzz");
+}
+
+/** Inclusive display dates become an exclusive midnight end in the event timezone. */
+export function conferenceDateRange(start: string, end: string, timezone: string) {
+  const validDate = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+  if (!validDate(start) || !validDate(end) || end < start) throw new Error("Enter valid conference dates, with the last date on or after the first.");
+  const following = new Date(`${end}T00:00:00Z`);
+  following.setUTCDate(following.getUTCDate() + 1);
+  return { startsAt: eventLocalToUtc(`${start}T00:00`, timezone), endsAt: eventLocalToUtc(`${following.toISOString().slice(0, 10)}T00:00`, timezone) };
 }
 
 export function eventLocalInput(iso: string | null, timezone: string) {

@@ -215,21 +215,28 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                     Add
                   </Button>
                 </div>
+                <div className="sm:col-span-2 flex items-center justify-between gap-3">
+                  <Label htmlFor="event-date-only">Dates only · service times unconfirmed</Label>
+                  <Switch id="event-date-only" checked={form.metadata.date_only === true} onCheckedChange={value => setForm(f => ({ ...f, metadata: { ...f.metadata, date_only: value, start_date: f.metadata.start_date ?? f.startsAt.slice(0, 10), end_date: f.metadata.end_date ?? f.endsAt.slice(0, 10) } }))} />
+                </div>
                 <div>
-                  <Label>Starts *</Label>
+                  <Label>{form.metadata.date_only === true ? "First date *" : "Starts *"}</Label>
                   <Input
-                    type="datetime-local"
+                    aria-label={form.metadata.date_only === true ? "First date" : "Starts"}
+                    type={form.metadata.date_only === true ? "date" : "datetime-local"}
                     required
-                    value={form.startsAt}
-                    onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))}
+                    value={form.metadata.date_only === true ? String(form.metadata.start_date ?? "") : form.startsAt}
+                    onChange={(e) => setForm((f) => form.metadata.date_only === true ? { ...f, metadata: { ...f.metadata, start_date: e.target.value } } : { ...f, startsAt: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label>Ends</Label>
+                  <Label>{form.metadata.date_only === true ? "Last date (inclusive) *" : "Ends"}</Label>
                   <Input
-                    type="datetime-local"
-                    value={form.endsAt}
-                    onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))}
+                    aria-label={form.metadata.date_only === true ? "Last date (inclusive)" : "Ends"}
+                    type={form.metadata.date_only === true ? "date" : "datetime-local"}
+                    required={form.metadata.date_only === true}
+                    value={form.metadata.date_only === true ? String(form.metadata.end_date ?? "") : form.endsAt}
+                    onChange={(e) => setForm((f) => form.metadata.date_only === true ? { ...f, metadata: { ...f.metadata, end_date: e.target.value } } : { ...f, endsAt: e.target.value })}
                   />
                 </div>
                 <div>

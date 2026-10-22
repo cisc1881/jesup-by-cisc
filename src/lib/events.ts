@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import type { Json } from "@/integrations/supabase/types";
-import { eventLocalInput, eventLocalToUtc } from "@/lib/conference";
+import { conferenceDateRange, eventLocalInput, eventLocalToUtc } from "@/lib/conference";
 import {
   publishingWriteError,
   validateContentIdentity,
@@ -873,7 +873,11 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
 export async function saveEvent(eventId: string | null, form: EventFormData) {
   const slug = form.slug.trim() || slugify(form.title);
   validateContentIdentity("Event", form.title, slug);
-  validateEventSchedule(form.startsAt, form.endsAt);
+  const dates = form.metadata.date_only === true
+    ? conferenceDateRange(String(form.metadata.start_date ?? ""), String(form.metadata.end_date ?? ""), form.timezone || "America/Chicago")
+    : { startsAt: eventLocalToUtc(form.startsAt, form.timezone || "America/Chicago"), endsAt: eventLocalToUtc(form.endsAt, form.timezone || "America/Chicago") };
+  if (!dates.startsAt) throw new Error("Enter an event start date.");
+  validateEventSchedule(dates.startsAt, dates.endsAt ?? "");
   const registrationOpen =
     form.registrationOpen &&
     form.registrationProvider === "jesup" &&
@@ -888,6 +892,7 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
   const radius = Math.max(25, Math.min(50_000, Number(form.geofenceRadiusMeters) || 250));
   const metadata = {
     ...form.metadata,
+    event_timezone: form.timezone || "America/Chicago",
     registration_provider: form.registrationProvider,
     eventbrite_event_id: form.eventbriteEventId.trim() || null,
     eventbrite_event_url: form.eventbriteEventUrl.trim() || null,
@@ -901,8 +906,8 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
     title: form.title.trim(),
     description: form.description || null,
     description_html: form.descriptionHtml || null,
-    starts_at: eventLocalToUtc(form.startsAt, form.timezone || "America/Chicago") ?? form.startsAt,
-    ends_at: eventLocalToUtc(form.endsAt, form.timezone || "America/Chicago"),
+    starts_at: dates.startsAt,
+    ends_at: dates.endsAt,
     location: form.location || null,
     location_address: form.locationAddress || null,
     lat: form.lat ? Number(form.lat) : null,

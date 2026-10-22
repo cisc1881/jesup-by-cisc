@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
       return { home: fallback, pilot: null };
     }
   },
-  head: ({ loaderData }) => loaderData?.pilot ? conferenceHead(loaderData.pilot) :
+  head: ({ loaderData }) => loaderData?.pilot ? conferenceHead(loaderData.pilot, " · Home") :
     buildPageHead({ title: "JESUP by CISC · The Digital Extension Wagon", description: "Tuskegee University’s digital home for extension events, programs, markets, and trusted resources." }),
   errorComponent: HomeRouteError,
   component: Home,

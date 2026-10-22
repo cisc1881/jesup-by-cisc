@@ -1,5 +1,12 @@
 # FC135 recovery
 
+## Active reusable Event Experience pass
+- [ ] Audit existing builder, attendee sections, credentials and integration preparation.
+- [ ] Complete safe reusable admin configuration and attendee UI without factual FC135 content.
+- [ ] Run the full existing test suite and check automatic build results.
+- [ ] Verify the repaired hosted home, /events and /events/fc135, or record the exact access blocker.
+- [ ] Document remaining content and integration requirements.
+
 ## Active external preview repair
 - [x] Confirm hosted FC135 HTTP 500 in preview logs; identify browser-configured SSR reads as a deployment-specific failure path (exact underlying provider error not present in logs).
 - [x] Move public event reads behind request-scoped anonymous server functions without changing event data or permissions.
