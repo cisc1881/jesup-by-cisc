@@ -10,7 +10,7 @@
 - Existing admin attendance/meal infrastructure is preserved. Event-scoped scanner supports admission, entitlement, configured legacy meal redemption and badge print.
 
 ## Configuration
-Admin event editor → Conference operations manages products, credentials, assignments and non-secret seller identifiers/fees. Conference shell toggles separately enable catalog, claiming, Wallet and staff operations; section toggles are still required for public navigation. FC135 remains Home-only by default.
+Admin event editor → Conference operations manages products, credentials, assignments and non-secret seller identifiers/fees. Conference shell toggles separately enable catalog, claiming, Wallet and staff operations; section toggles are still required for public navigation. FC135 currently enables Home and its explicitly provisional Schedule only.
 
 ## Reusable Event Experience configuration
 - Basics supports a date-only mode with inclusive first/last dates. Saving converts these into event-timezone midnight boundaries, with the end exclusive; timed events and sessions retain timezone-aware conversion.
@@ -34,6 +34,13 @@ Required before a future payment pass:
 2. Obtain seller consent through a reviewed per-seller OAuth onboarding flow, with secure token storage and revocation/refresh handling.
 3. Confirm Square application approval/eligibility for application fees, fee recipient and contractual consent; choose percentage/fixed rules and refund treatment.
 4. Implement server-validated priced orders, inventory reservation, payment idempotency, signed webhooks, reconciliation and refunds; test sandbox before any separate live approval.
+
+## Provisional 134th-program adaptation
+- Seeded 21 editable planning blocks for Thursday–Friday February 18–19, 2027 in America/Chicago, using only the reference times/topics explicitly supplied by the user. Parallel Session I/II/IV/V blocks, listening/opening, breakfast reference, ANR tour block and BBQ reference are retained; missing Session III and ambiguous source gaps are not inferred.
+- Every block carries “Planning draft adapted from 134th program; 2027 details subject to change”; public and admin agenda notices explain that people, venues, services and access are unconfirmed. Speakers/hosts are unassigned and locations blank. No tickets, meal entitlements, tour credentials, sponsor rows or registration opening were created.
+- Existing event metadata stores provisional status, notice, provenance and the 13-part reference structure. Agenda publication controls are editable in Conference shell; individual blocks remain editable in Agenda. Session edits preserve existing IDs to retain attendee session-plan references.
+- Still required: organizer review of all proposed times/topics, resolution of omitted/ambiguous blocks, confirmed people/venues, meal and activity arrangements/routes, awards/committees/partners/impact content, and separately approved products/registration details.
+- Verification: all 143 tests across 36 files passed; automatic build OK. Desktop/mobile schedule and authenticated administrator settings/session save/read-back passed with no page errors. Direct hosted FC135 request returns 401 Unauthorized: the latest external visual rendering remains unverified behind the preview access/binding blocker. Nothing was deployed and RLS/payment/staff protections were unchanged.
 
 ## Deferred
 Checkout/payment processing; seller OAuth and live onboarding; automatic Eventbrite product mapping/entitlement issuance; guest account transfer; badge printer integration/reprint UI; offline scanning and bulk issuance; confirmed FC135 product names/prices and service windows. No unconfirmed products are seeded into FC135.

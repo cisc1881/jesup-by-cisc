@@ -1,9 +1,9 @@
 # FC135 recovery
 
 ## Active provisional 134th-program adaptation
-- [ ] Seed editable provisional FC135 sessions using only supplied reference times/topics, unassigned people and locations, with provenance notice.
-- [ ] Expose reusable agenda status editing and event-timezone day/time display; preserve all unrelated content and protections.
-- [ ] Run full tests, check automatic build, verify desktop/mobile schedule and admin read-back; report missing source/content and external access.
+- [x] Seed 21 editable provisional FC135 sessions using only supplied reference times/topics, unassigned people and locations, with provenance notice; omit ambiguous gaps/Session III.
+- [x] Expose reusable agenda status editing and event-timezone day/time display; preserve session IDs on edits and unrelated content/protections.
+- [x] Full suite: 36 files / 143 tests passed; automatic build OK. Desktop/mobile schedule and signed-in admin settings/session save/read-back passed with no page errors. Hosted FC135 returns 401 Unauthorized, so external rendering remains unverified under the existing platform blocker below.
 
 ## Active recovered Home Hero Redesign
 - [x] Restore image-free HomeHero with About Jesup first, manual labeled slideshow controls, existing Programs/Publications entries and a persistent FC135 link; preserve event-scoped branding.
