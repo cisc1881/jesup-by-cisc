@@ -8,7 +8,7 @@ export function isDraftAgenda(metadata: Record<string, unknown> | null | undefin
 }
 
 export function getDraftAgendaNotice(metadata: Record<string, unknown> | null | undefined) {
-  if (!isDraftAgenda(metadata)) return null;
+  if (!metadata || !isDraftAgenda(metadata)) return null;
 
   return typeof metadata.agenda_notice === "string" && metadata.agenda_notice.trim()
     ? metadata.agenda_notice.trim()
