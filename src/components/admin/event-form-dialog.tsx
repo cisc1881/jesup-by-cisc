@@ -35,6 +35,7 @@ import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { listInstitutions } from "@/lib/institutions";
 import { ConferenceSettingsPanel } from "./conference-settings-panel";
 import { ConferenceOperationsPanel } from "./conference-operations-panel";
+import { EventAgendaNotice } from "@/components/events/event-agenda-notice";
 
 type EventFormDialogProps = {
   open: boolean;
@@ -484,6 +485,8 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
             </TabsContent>
 
             <TabsContent value="agenda" className="space-y-4 pt-4">
+              <EventAgendaNotice metadata={form.metadata} />
+              <p className="text-sm text-muted-foreground">Session times use {form.timezone || "America/Chicago"}. Leave unknown locations blank. Planning blocks do not create meal tickets, tour access or registration.</p>
               {form.sessions.map((session, index) => (
                 <div key={index} className="rounded-lg border p-4 space-y-3">
                   <div className="flex justify-between">
@@ -503,6 +506,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                     </Button>
                   </div>
                   <Input
+                    aria-label={`Session ${index + 1} title`}
                     value={session.title}
                     placeholder="Title"
                     onChange={(e) =>
@@ -515,6 +519,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                     }
                   />
                   <Textarea
+                    aria-label={`Session ${index + 1} description`}
                     value={session.description ?? ""}
                     placeholder="Description"
                     onChange={(e) =>
@@ -528,6 +533,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                   />
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Input
+                      aria-label={`Session ${index + 1} start`}
                       type="datetime-local"
                       value={session.startsAt ?? ""}
                       onChange={(e) =>
@@ -540,6 +546,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                       }
                     />
                     <Input
+                      aria-label={`Session ${index + 1} end`}
                       type="datetime-local"
                       value={session.endsAt ?? ""}
                       onChange={(e) =>
@@ -553,6 +560,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                     />
                   </div>
                   <Input
+                    aria-label={`Session ${index + 1} location`}
                     value={session.location ?? ""}
                     placeholder="Location"
                     onChange={(e) =>
