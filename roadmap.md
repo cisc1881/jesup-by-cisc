@@ -1,7 +1,7 @@
-# FC135 Phase 1
+# FC135 first shippable increment
 
-- [ ] Inspect recovered event data, schema, auth, and reusable conference infrastructure.
-- [ ] Add non-destructive event commerce, staff, entitlement, and integration foundations with secure access.
-- [ ] Publish FC135 and move other public events to draft, preserving records.
-- [ ] Add branded conference shell with admin-controlled sections and homepage entry.
+- [x] Inspect recovered event data, schema, auth, and reusable conference infrastructure.
+- [x] Publish FC135 and move other public events to draft, preserving records.
+- [x] Add branded conference shell with admin-controlled sections and homepage entry.
+- [ ] Narrow delivery to visibility and shell; defer ticket/payment/staff features and remove new scanner surface.
 - [ ] Verify tests, preview, and current build signals; document exact remaining work.
