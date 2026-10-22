@@ -39,3 +39,11 @@ describe("Eventbrite CSV import parsing", () => {
     expect(r.ok && r.rows[0].name).toBe("Lee, Ada");
   });
 });
+
+describe("CSV import never carries accommodation data", () => {
+  it("ignores accommodation-like columns", () => {
+    const r = parseEventbriteCsv("Attendee #,Email,Name,Barcode #,Food allergies,Accommodation consent\nA1,a@b.co,Ada,1234567890,Peanuts,Yes");
+    expect(r.ok && r.rows[0]).not.toHaveProperty("food_allergies");
+    expect(r.ok && r.rows[0]).not.toHaveProperty("accommodation_consent");
+  });
+});

@@ -15,10 +15,15 @@ export type EventbriteApiAttendee = {
 const CONSENT_YES = /^(yes|true|i agree|authorized)$/i;
 /** Same question patterns and consent rule as the original direct-write sync. */
 export function extractAccommodations(a: EventbriteApiAttendee) {
-  const answerFor = (patterns: string[]) =>
-    a.answers?.find((x) => patterns.some((p) => (x.question ?? "").toLowerCase().includes(p)))?.answer?.trim() || null;
+  const consentPatterns = ["authorize jesup", "accommodation consent", "coordinate this event"];
+  const isConsent = (q: string) => consentPatterns.some((p) => q.includes(p));
+  const answerFor = (patterns: string[], consentQuestion = false) =>
+    a.answers?.find((x) => {
+      const q = (x.question ?? "").toLowerCase();
+      return (consentQuestion || !isConsent(q)) && patterns.some((p) => q.includes(p));
+    })?.answer?.trim() || null;
   return {
-    consent: CONSENT_YES.test(answerFor(["authorize jesup", "accommodation consent", "coordinate this event"]) ?? ""),
+    consent: CONSENT_YES.test(answerFor(consentPatterns, true) ?? ""),
     dietary: answerFor(["dietary", "diet preference", "diet restriction"]),
     allergies: answerFor(["food allerg", "allergies"]),
     accessibility: answerFor(["accessibility", "accommodation", "access need"]),

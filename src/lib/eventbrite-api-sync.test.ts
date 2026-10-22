@@ -71,3 +71,33 @@ describe("Eventbrite sync uses the protected import function", () => {
     expect(rpc).not.toHaveBeenCalled();
   });
 });
+
+describe("Eventbrite accommodation answers", () => {
+  const q = (question: string, answer: string) => ({ question, answer });
+  const withAnswers = (answers: { question: string; answer: string }[]) => att("1", "a@b.co", "BARCODE1", { answers });
+  it("imports answers only with explicit consent", () => {
+    const { rows } = normalizeApiAttendees([withAnswers([q("Dietary restrictions", "Vegan"), q("Food allergies", "Peanuts"), q("Accessibility needs", "Wheelchair"), q("Do you authorize JESUP to coordinate this event accommodation?", "Yes")])]);
+    expect(rows[0]).toMatchObject({ accommodation_consent: true, dietary_restrictions: "Vegan", food_allergies: "Peanuts", accessibility_accommodations: "Wheelchair" });
+  });
+  it("drops answers without consent", () => {
+    const { rows } = normalizeApiAttendees([withAnswers([q("Food allergies", "Peanuts"), q("Accommodation consent", "No")])]);
+    expect(rows[0]).not.toHaveProperty("food_allergies");
+    expect(rows[0]).not.toHaveProperty("accommodation_consent");
+  });
+  it("omits blank answers so existing values are never overwritten", () => {
+    const { rows } = normalizeApiAttendees([withAnswers([q("Dietary restrictions", "  "), q("Food allergies", "Shellfish"), q("Accommodation consent", "Yes")])]);
+    expect(rows[0]).not.toHaveProperty("dietary_restrictions");
+    expect(rows[0].food_allergies).toBe("Shellfish");
+  });
+  it("does not read the consent answer as an accessibility answer", () => {
+    const { rows } = normalizeApiAttendees([withAnswers([q("Accommodation consent", "Yes"), q("Accessibility needs", "Captioning")])]);
+    expect(rows[0].accessibility_accommodations).toBe("Captioning");
+  });
+  it("keeps sensitive answers out of sync reports", async () => {
+    const rpc = vi.fn<ImportRpc>().mockResolvedValue({ data: { counts: { new: 1, update: 0, duplicate: 0, conflict: 0, cancelled: 0, invalid: 0 }, issues: [] }, error: null });
+    const body = { attendees: [withAnswers([q("Food allergies", "Peanuts"), q("Accommodation consent", "Yes")]), att("1", "x@b.co", "BARCODE2")], pagination: { has_more_items: false } };
+    const report = await syncOneEvent(event, { token: "t", fetch: pages(ok(body)), rpc, sleep: noSleep });
+    expect(rpc.mock.calls[0][0].p_rows[0].food_allergies).toBe("Peanuts");
+    expect(JSON.stringify(report)).not.toMatch(/Peanuts|a@b\.co|BARCODE/);
+  });
+});
