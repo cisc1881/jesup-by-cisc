@@ -26,11 +26,7 @@ export function FeaturedProgramHero({ program, ctaMode = "explore" }: FeaturedPr
           <div className="absolute inset-0 grad-crimson" aria-hidden="true" />
         )}
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(122,12,22,0.45) 50%, rgba(122,12,22,0.96) 100%)",
-          }}
+          className="program-media-overlay absolute inset-0"
         />
 
         <div className="relative z-10 flex min-h-[340px] flex-col justify-end p-6 sm:min-h-[440px] sm:p-10">

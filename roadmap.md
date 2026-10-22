@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Guest gradient reference
+- [x] Match gradu.png through shared diagonal CSS gradients for splash/entry and scrim-protected Home, banners and accent buttons; preserve neutral cards and selection-only school palettes. Removed maroon program overlays and gradient placeholders; repaired local gradient aliases and foreground pairing for selected-school dark controls.
+- [x] Full suite: 40 files / 164 tests passed; automatic build OK. Desktop/mobile guest light/dark and selected Tuskegee across entry, Home, Programs, Partners, FC135 and TUAIC: 288 rendered contrast checks, minimum 5.04:1, no page errors or horizontal overflow. Splash/reference is a CSS approximation of supplied samples; no bitmap shipped.
+- [ ] Authenticated admin visual check blocked: authorized session mint failed with gateway_error and no cached session exists; shared admin banner/button tokens inspected but signed-in rendering unverified. External preview still HTTP 401 Unauthorized; no publication/domain/data/auth/RLS changes.
+
 ## Selection-only themes and session entry
 - [x] Replaced ownership-driven branding with profile/explicit guest school selection; all unselected pages inherit splash-palette gradient (lightened for readable text) and neutral controls. Header guest school picker switches/resets school for the session; featured content inherits it. Event metadata remains unchanged.
 - [x] First anonymous session shows splash then existing /auth sign-in/create-account screen with Continue as guest; session choice preserves safe public path/query/hash. Signed-in users bypass; reduced motion shortens the splash without animation. Reset/invite/OAuth return parameters bypass entry; invite/recovery type keeps password setup open. Public loaders and permissions unchanged.

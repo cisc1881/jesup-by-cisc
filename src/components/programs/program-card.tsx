@@ -28,15 +28,11 @@ function ProgramImage({
       {program.coverImageUrl ? (
         <img src={program.coverImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
       ) : (
-        <div className="h-full w-full grad-crimson" aria-hidden="true" />
+        <div className="h-full w-full bg-muted" aria-hidden="true" />
       )}
       {overlay && (
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.35) 55%, rgba(122,12,22,0.88) 100%)",
-          }}
+          className="program-media-overlay absolute inset-0"
         />
       )}
     </div>
@@ -119,14 +115,10 @@ function RichProgramCardBody({ program }: { program: ProgramListItem }) {
             loading="lazy"
           />
         ) : (
-          <div className="h-full w-full grad-crimson" aria-hidden="true" />
+          <div className="h-full w-full bg-muted" aria-hidden="true" />
         )}
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.25) 40%, rgba(122,12,22,0.92) 100%)",
-          }}
+          className="program-media-overlay absolute inset-0"
         />
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
@@ -186,7 +178,7 @@ export function ProgramCard({ program, className, variant = "portrait", animatio
           {program.coverImageUrl ? (
             <img src={program.coverImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
           ) : (
-            <div className="h-full w-full grad-crimson" />
+            <div className="h-full w-full bg-muted" />
           )}
         </div>
         <div className="min-w-0 flex-1">
@@ -215,7 +207,7 @@ export function ProgramCard({ program, className, variant = "portrait", animatio
           {program.coverImageUrl ? (
             <img src={program.coverImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
           ) : (
-            <div className="h-full w-full grad-crimson" />
+            <div className="h-full w-full bg-muted" />
           )}
         </div>
         <div className="min-w-0 flex-1">

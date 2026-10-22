@@ -25,4 +25,5 @@
 - Provisional agendas reuse event_sessions and event metadata agenda_status/agenda_notice/agenda_provenance; render proposed times in the event timezone and never create products or entitlements from planning blocks.
 - Public program catalogs and Home program entries read active database records in sort_order; starter imports never create or overwrite programs, so approved content and deletions survive refreshes.
 - Theme selection uses only the signed-in profile school or session-scoped explicit guest school, never event/program ownership or metadata; paired layout-scoped tokens keep unselected content neutral and prevent guest branding leaks.
+- Guest gradients are shared CSS tokens with a separate scrim-protected text-bearing variant and foreground token; keep the reference unobscured behind neutral entry content and preserve school overrides so light/dark controls never borrow incompatible solid-color foregrounds.
 - Session entry is a presentation gate after hydration and session resolution, not a public data/auth guard; auth callbacks bypass it, while guest continuation retains only safe public destinations and lasts in sessionStorage.
