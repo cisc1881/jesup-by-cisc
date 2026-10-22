@@ -1,9 +1,9 @@
 # FC135 recovery
 
 ## Confirmed FC135 Eventbrite direction
-- [ ] Clarify Tuskegee proceeds and separate HNCH vendor payment in documentation and admin settings; preserve inactive products and import/claim.
-- [ ] Gate public registration links on organizer-confirmed publication, authorization, and enabled registration; remove draft purchase configuration.
-- [ ] Run relevant regression checks and verify public FC135 remains closed without purchase links.
+- [x] Clarified Tuskegee Eventbrite proceeds and separate HNCH vendor payment in operations documentation and admin settings; FC135 seller tab no longer offers Square fee configuration. Import/claim and nine inactive products preserved.
+- [x] Shared resolver gates public registration links on organizer-confirmed publication, authorization, matching Eventbrite URL/ID and enabled registration status. FC135 provider set to Eventbrite, draft URL cleared, draft/unauthorized status recorded; native registration and checkout remain disabled.
+- [x] All 193 tests passed (including six new authorization/visibility checks); automatic build OK. Local desktop/mobile FC135 shows no purchase link or Tickets tab, no page errors or overflow. Database read-back confirms closed registration, nine inactive products and no seller connection. Organizer publication/payout verification and authenticated admin visual read-back were not attempted; no deployment or external payment changes.
 
 ## Guest gradient reference
 - [x] Match gradu.png through shared diagonal CSS gradients for splash/entry and scrim-protected Home, banners and accent buttons; preserve neutral cards and selection-only school palettes. Removed maroon program overlays and gradient placeholders; repaired local gradient aliases and foreground pairing for selected-school dark controls.
