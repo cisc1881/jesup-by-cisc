@@ -15,3 +15,5 @@
 - Staff authorization and redemption/check-in/claim operations are event-scoped database functions with explicit execution grants and locking; UI gates never substitute for authorization.
 - Square seller configuration is admin-only and database-enforced non-live; payment processing, secrets and OAuth are outside the foundation.
 - Public connection configuration follows managed VITE environment settings rather than hardcoded historical project endpoints, so recovered code and Cloud migrations use the same backend.
+- Event staff scanner pages live in the signed-in subtree, outside the admin-only subtree, so assigned event staff can operate without global administrator access; each operation is still authorized in the database.
+- The role policy helper is callable for public policies but returns false for anonymous callers and only checks the caller's own identity, preserving public reads without role enumeration.

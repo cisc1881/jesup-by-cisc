@@ -45,7 +45,7 @@ export function ConferenceShell({ event }: { event: EventDetail }) {
     <PageContainer size="lg" className="pb-bottom-nav">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Button variant="ghost" size="sm" asChild><Link to="/events" search={{ view:"explore" }}><ArrowLeft className="size-4" />All events</Link></Button>
-        {isAdmin && <Button variant="outline" size="sm" asChild><Link to="/admin/events"><Settings2 className="size-4" />Manage conference</Link></Button>}
+        {isAdmin && <div className="flex gap-2"><Button variant="outline" size="sm" asChild><Link to="/events/$id/scan" params={{ id: event.id }}>Staff scanner</Link></Button><Button variant="outline" size="sm" asChild><Link to="/admin/events"><Settings2 className="size-4" />Manage conference</Link></Button></div>}
       </div>
       <div className="conference-shell" data-event-theme={event.metadata.theme_preset === "tuskegee" ? "tuskegee" : "network"}>
         <ConferenceHero event={event} />
