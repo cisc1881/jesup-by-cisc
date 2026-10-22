@@ -15,6 +15,13 @@
       "when": 1792639401274,
       "tag": "0001_fc135_restore_policy_helper_and_session_plans",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792640253261,
+      "tag": "0002_fc135_catalog_credentials_and_staff",
+      "breakpoints": true
     }
   ]
 }

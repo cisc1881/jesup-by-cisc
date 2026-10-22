@@ -1104,6 +1104,50 @@ export type Database = {
           },
         ]
       }
+      event_operation_audit: {
+        Row: {
+          actor_id: string
+          created_at: string
+          entitlement_id: string | null
+          event_id: string
+          id: string
+          operation: string
+          registration_id: string | null
+          request_id: string
+          result: Json
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          entitlement_id?: string | null
+          event_id: string
+          id?: string
+          operation: string
+          registration_id?: string | null
+          request_id: string
+          result?: Json
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          entitlement_id?: string | null
+          event_id?: string
+          id?: string
+          operation?: string
+          registration_id?: string | null
+          request_id?: string
+          result?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_operation_audit_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_partners: {
         Row: {
           event_id: string
@@ -4519,10 +4563,12 @@ export type Database = {
         Args: { p_event_id: string; p_operation: string }
         Returns: boolean
       }
-      claim_eventbrite_registration: {
-        Args: { p_event_id: string }
-        Returns: string
-      }
+      claim_eventbrite_registration:
+        | { Args: { p_event_id: string }; Returns: string }
+        | {
+            Args: { p_credential: string; p_event_id: string }
+            Returns: string
+          }
       create_admin_notification: {
         Args: {
           p_action_url?: string
@@ -4642,6 +4688,18 @@ export type Database = {
         Args: { p_token: string }
         Returns: string
       }
+      issue_event_entitlement: {
+        Args: {
+          p_allow_unpriced?: boolean
+          p_beneficiary_name: string
+          p_event_id: string
+          p_product_id: string
+          p_quantity: number
+          p_registration_id: string
+          p_request_id: string
+        }
+        Returns: string
+      }
       list_event_chat: {
         Args: { p_event_id: string }
         Returns: {
@@ -4654,6 +4712,16 @@ export type Database = {
       mark_my_attendance_evaluation_complete: {
         Args: { p_attendance_id: string }
         Returns: undefined
+      }
+      operate_event_credential: {
+        Args: {
+          p_code: string
+          p_event_id: string
+          p_meal_day_id?: string
+          p_operation: string
+          p_request_id: string
+        }
+        Returns: Json
       }
       post_event_chat: {
         Args: { p_event_id: string; p_message: string }
@@ -4692,6 +4760,7 @@ export type Database = {
           ticket_code: string
         }[]
       }
+      revoke_event_entitlement: { Args: { p_id: string }; Returns: undefined }
       save_registration_accommodations: {
         Args: {
           p_accessibility_accommodations?: string
