@@ -29,10 +29,18 @@ Admin event editor → Conference operations manages products, credentials, assi
 
 ## Square remains non-live
 Seller records retain merchant, location, application and application-fee fields only. The database forbids live payments. No checkout, secrets, OAuth tokens, payment requests or fund movement exist in this increment.
+
+### Platform-wide seller rule (all institutions, all events)
+- For every institution's event, the institution itself is the Square seller of record and receives that event's ticket-sale proceeds directly in its own Square account. This rule is reusable across the platform, not specific to FC135.
+- HNCH LLC is the JESUP application operator only. It may receive an application fee solely when that fee has been separately approved for that seller/event; no fee amount is specified by this documentation.
+- Institutional ticket-sale revenue must never be processed through an HNCH merchant transaction, for any institution or event.
+- Seller authorization and application-fee consent are per institution and per event: the institution's authorized Square account owner completes seller OAuth, and fee consent is granted separately for each seller/event. FC135 is one example (Tuskegee University is its seller); the same arrangement applies to every institution's event.
+- Sandbox first; keep Sandbox and Production distinct, and retain payment-disabled safeguards until seller authorization, fee terms, a secure callback, and end-to-end verification are complete.
+
 Required before a future payment pass:
-1. Confirm the legal seller, Square account and eligible locations/currency.
+1. Confirm the legal seller, Square account and eligible locations/currency, per institution/event.
 2. Obtain seller consent through a reviewed per-seller OAuth onboarding flow, with secure token storage and revocation/refresh handling.
-3. Confirm Square application approval/eligibility for application fees, fee recipient and contractual consent; choose percentage/fixed rules and refund treatment.
+3. Confirm Square application approval/eligibility for application fees, fee recipient and contractual consent, approved separately per seller/event; choose percentage/fixed rules and refund treatment.
 4. Implement server-validated priced orders, inventory reservation, payment idempotency, signed webhooks, reconciliation and refunds; test sandbox before any separate live approval.
 
 ## Provisional 134th-program adaptation
