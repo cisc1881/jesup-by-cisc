@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Confirmed FC135 Eventbrite direction
+- [ ] Clarify Tuskegee proceeds and separate HNCH vendor payment in documentation and admin settings; preserve inactive products and import/claim.
+- [ ] Gate public registration links on organizer-confirmed publication, authorization, and enabled registration; remove draft purchase configuration.
+- [ ] Run relevant regression checks and verify public FC135 remains closed without purchase links.
+
 ## Guest gradient reference
 - [x] Match gradu.png through shared diagonal CSS gradients for splash/entry and scrim-protected Home, banners and accent buttons; preserve neutral cards and selection-only school palettes. Removed maroon program overlays and gradient placeholders; repaired local gradient aliases and foreground pairing for selected-school dark controls.
 - [x] Full suite: 40 files / 164 tests passed; automatic build OK. Desktop/mobile guest light/dark and selected Tuskegee across entry, Home, Programs, Partners, FC135 and TUAIC: 288 rendered contrast checks, minimum 5.04:1, no page errors or horizontal overflow. Splash/reference is a CSS approximation of supplied samples; no bitmap shipped.
