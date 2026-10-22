@@ -4688,6 +4688,16 @@ export type Database = {
         Args: { p_token: string }
         Returns: string
       }
+      import_eventbrite_registrations: {
+        Args: {
+          p_dry_run: boolean
+          p_event_id: string
+          p_file_sha256: string
+          p_request_id: string
+          p_rows: Json
+        }
+        Returns: Json
+      }
       issue_event_entitlement: {
         Args: {
           p_allow_unpriced?: boolean
