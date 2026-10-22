@@ -592,3 +592,26 @@ body *::after {
     margin-top: 2rem;
   }
 }
+
+/* Event-scoped tokens leave the network and all other catalogs unchanged. */
+.conference-shell[data-event-theme="tuskegee"] {
+  --primary: #7a0c16;
+  --primary-mid: #9e1b2f;
+  --primary-bright: #c1273d;
+  --primary-foreground: #ffffff;
+  --accent: #c6a15b;
+  --accent-foreground: #171717;
+  --gold: #c6a15b;
+  --gold-light: #dfc28a;
+  --gold-dark: #a87b2d;
+  --institution-accent: var(--primary);
+  --institution-secondary: var(--accent);
+  --gradient-crimson: linear-gradient(135deg, var(--primary), var(--primary-mid));
+}
+.conference-masthead {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.conference-shell, .conference-shell * { letter-spacing: 0; }
+.conference-shell h1 { letter-spacing: 0; }
+.credential-qr { background: #ffffff; color: #171717; }

@@ -54,12 +54,12 @@ import {
 } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { conferenceHead } from "@/lib/conference";
+import { ConferenceShell } from "@/components/events/conference-shell";
 
 export const Route = createFileRoute("/events/$id/hub")({
   loader: async ({ params }) => ({ event: await fetchEventById(params.id) }),
-  head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.event?.title ?? "Event"} Hub · JESUP` }],
-  }),
+  head: ({ loaderData }) => conferenceHead(loaderData?.event ?? null, " Hub"),
   component: EventHubPage,
 });
 
@@ -96,6 +96,12 @@ const additionalTools = [
 ] as const;
 
 function EventHubPage() {
+  const { event } = Route.useLoaderData();
+  if (event?.metadata.conference_shell === true) return <ConferenceShell event={event} />;
+  return <LegacyEventHubPage />;
+}
+
+function LegacyEventHubPage() {
   const { id } = Route.useParams();
   const { event } = Route.useLoaderData();
   const { user, isAdmin } = useAuth();

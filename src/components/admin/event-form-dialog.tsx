@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { listInstitutions } from "@/lib/institutions";
+import { ConferenceSettingsPanel } from "./conference-settings-panel";
 
 type EventFormDialogProps = {
   open: boolean;
@@ -147,6 +148,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
               <TabsTrigger value="relations">Relations</TabsTrigger>
               <TabsTrigger value="registration">Registration</TabsTrigger>
               <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
+              <TabsTrigger value="conference">Conference shell</TabsTrigger>
             </TabsList>
 
             <TabsContent value="basics" className="space-y-4 pt-4">
@@ -826,6 +828,9 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
 
             <TabsContent value="evaluation" className="space-y-4 pt-4">
               <EvaluationConfigPanel eventId={eventId} />
+            </TabsContent>
+            <TabsContent value="conference" className="space-y-4 pt-4">
+              <ConferenceSettingsPanel eventId={eventId} form={form} onMetadata={(metadata) => setForm(current => ({ ...current, metadata }))} />
             </TabsContent>
           </Tabs>
 

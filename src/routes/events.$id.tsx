@@ -20,18 +20,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { fetchEventById, fetchUserEventRegistration } from "@/lib/events";
 import { ArrowLeft } from "lucide-react";
 import { AppButton } from "@/components/design-system";
+import { conferenceHead } from "@/lib/conference";
+import { ConferenceShell } from "@/components/events/conference-shell";
 
 export const Route = createFileRoute("/events/$id")({
   loader: async ({ params }) => {
     const event = await fetchEventById(params.id);
     return { event };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: loaderData?.event ? `${loaderData.event.title} · Events · JESUP` : "Event · JESUP" },
-      { name: "description", content: loaderData?.event?.description ?? "CISC event details" },
-    ],
-  }),
+  head: ({ loaderData }) => conferenceHead(loaderData?.event ?? null),
   component: EventDetailPage,
 });
 
@@ -47,10 +44,12 @@ function EventDetailPage() {
   const { data: registration } = useQuery({
     queryKey: ["event-reg", id, user?.id],
     enabled: !!user && !!event,
-    queryFn: () => fetchUserEventRegistration(id, user!.id),
+    queryFn: () => user ? fetchUserEventRegistration(id, user.id) : Promise.resolve(null),
   });
 
   if (isChild) return <Outlet />;
+
+  if (event?.metadata.conference_shell === true) return <ConferenceShell event={event} />;
 
   if (!event) {
     return (

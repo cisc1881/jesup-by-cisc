@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, type SearchSchemaInput } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
@@ -28,7 +28,7 @@ import {
 } from "@/components/institution-scope-filter";
 
 export const Route = createFileRoute("/events/")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
     view: search.view === "mine" ? ("mine" as const) : ("explore" as const),
   }),
   head: () =>
