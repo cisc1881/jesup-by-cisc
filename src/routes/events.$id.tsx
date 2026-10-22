@@ -37,14 +37,13 @@ function EventDetailPage() {
   const isChild = matches.some(
     (m) => m.routeId === "/events/$id/evaluation" || m.routeId === "/events/$id/hub",
   );
-  const { id } = Route.useParams();
   const { user } = useAuth();
   const { event } = Route.useLoaderData();
 
   const { data: registration } = useQuery({
-    queryKey: ["event-reg", id, user?.id],
-    enabled: !!user && !!event,
-    queryFn: () => user ? fetchUserEventRegistration(id, user.id) : Promise.resolve(null),
+    queryKey: ["event-reg", event?.id, user?.id],
+    enabled: !!user && !!event && event.metadata.conference_shell !== true && !isChild,
+    queryFn: () => user && event ? fetchUserEventRegistration(event.id, user.id) : Promise.resolve(null),
   });
 
   if (isChild) return <Outlet />;
