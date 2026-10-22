@@ -1,5 +1,9 @@
 # FC135 recovery
 
+## One-time owner admin invitation
+- [ ] Invite only info@accessfarmtotable.com through privileged Auth invitation, returning to this project's password setup page; create no password and expose no credentials.
+- [ ] Verify invited user/profile, idempotently grant existing admin role for its exact ID, and preserve existing accounts/RLS/data; report mail acceptance versus verified delivery and preview access limitations.
+
 ## Active official program cleanup
 - [x] Deleted only blank e59237f9-27f1-43aa-b771-f2334775cb0c and MeatMe cab68826-1a98-4e04-bac5-b79751f009e1; five gallery rows cascaded. All nine inquiries preserved, including MeatMe inquiry with its program link cleared. Value Addition record retained inactive/unfeatured; eight official programs ordered 1–8.
 - [x] Removed program demo definitions and program writes from starter imports; Home reads active ordered records with no demo fallback. Seven concise descriptions and eight source links verified against CISC pages. Family INC remains name/source-only due to reported title mismatch; generated program covers/hero metadata, unsupported objectives/taglines/contact details removed. Uploaded storage objects retained, not purged; non-program demo/event content unchanged.
