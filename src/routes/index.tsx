@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
     }
   },
   head: ({ loaderData }) => loaderData?.pilot ? conferenceHead(loaderData.pilot) :
-    conferenceHead(null, " · The Digital Extension Wagon"),
+    buildPageHead({ title: "JESUP by CISC · The Digital Extension Wagon", description: "Tuskegee University’s digital home for extension events, programs, markets, and trusted resources." }),
   errorComponent: HomeRouteError,
   component: Home,
 });

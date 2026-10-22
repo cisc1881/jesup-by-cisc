@@ -11,8 +11,15 @@ describe("FC135 conference rules", () => {
     expect(eventDateLabel(event)).toBe("February 18–19, 2027");
   });
   it("retains confirmed campus and theme", () => {
+    expect(FC135.title).toBe("135th Annual Farmers Conference");
+    expect(FC135.timezone).toBe("America/Chicago");
+    expect(FC135.startDate).toBe("2027-02-18");
+    expect(FC135.endDate).toBe("2027-02-19");
     expect(FC135.location).toBe("Tuskegee University Historic Campus");
     expect(FC135.theme).toBe("A Legacy in the Soil, A Vision in the Seed");
+  });
+  it("keeps Tickets hidden when the configured URL is unsafe", () => {
+    expect(visibleConferenceSections({ ...event, metadata: { sections: { tickets: true }, eventbrite_event_id: "123", eventbrite_event_url: "javascript:alert(1)" } }).map(([id]) => id)).toEqual(["home"]);
   });
   it("hides every unconfigured section even if its toggle is enabled", () => {
     const sections = Object.fromEntries(["schedule","speakers","tickets","sponsors","map","resources","community","my-event","wallet"].map(id => [id,true]));
