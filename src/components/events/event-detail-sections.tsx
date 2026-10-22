@@ -132,7 +132,7 @@ export function EventAgenda({ event }: { event: EventDetail }) {
         <h3 className="border-b py-3 text-lg font-semibold">{day === "unscheduled" ? "Time to be assigned" : formatInTimeZone(`${day}T12:00:00Z`, "UTC", "EEEE, MMMM d, yyyy")}</h3>
         {sessions.map((session) => (
           <AppCard key={session.id} variant="elevated" padding="md">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
               <div className="min-w-0 flex-1">
                 <h4 className="font-bold text-foreground">{session.title}</h4>
                 {session.description && (
