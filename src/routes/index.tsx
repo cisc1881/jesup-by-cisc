@@ -15,7 +15,8 @@ import type { HomeEvent, HomeHeroSlide, HomePageData } from "@/lib/home";
 import { buildPageHead } from "@/lib/seo";
 import { HOME_PAGE_QUERY_KEY } from "@/lib/query-config";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
-import { fetchEventById, type EventDetail } from "@/lib/events";
+import type { EventDetail } from "@/lib/events";
+import { getPublicEvent } from '@/lib/public-events.functions';
 import { conferenceHead } from "@/lib/conference";
 import { ConferenceHero } from "@/components/events/conference-hero";
 
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/")({
         queryKey: HOME_PAGE_QUERY_KEY,
         queryFn: fetchHomePageData,
       });
-      const pilot = await fetchEventById("fc135");
+      const pilot = JSON.parse(await getPublicEvent({ data: { id: 'fc135' } })) as EventDetail | null;
       return { home, pilot };
     } catch (error) {
       if (import.meta.env.DEV) {

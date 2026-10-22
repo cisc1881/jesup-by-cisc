@@ -1,5 +1,11 @@
 # FC135 recovery
 
+## Active external preview repair
+- [x] Confirm hosted FC135 HTTP 500 in preview logs; identify browser-configured SSR reads as a deployment-specific failure path (exact underlying provider error not present in logs).
+- [x] Move public event reads behind request-scoped anonymous server functions without changing event data or permissions.
+- [ ] Verify home, events and FC135 externally — blocked by preview login (HTTP 401 from sandbox), no active viewer, and hosted build still serving the pre-repair version during this turn; requires the refreshed hosted build and an accessible shared preview link or active preview viewer.
+- Local verification: home, /events, /events/fc135, Programs, Publications and Markets returned HTTP 200; 18 focused tests passed; automatic build OK.
+
 ## Active second increment
 - [x] Inspect dormant schema and existing import, auth, meal, QR and badge systems.
 - [x] Harden claiming, issuance, staff operations and audit/replay safeguards.

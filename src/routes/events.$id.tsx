@@ -17,7 +17,8 @@ import {
   EventChatRoom,
 } from "@/components/events";
 import { useAuth } from "@/hooks/use-auth";
-import { fetchEventById, fetchUserEventRegistration } from "@/lib/events";
+import { fetchUserEventRegistration, type EventDetail } from "@/lib/events";
+import { getPublicEvent } from '@/lib/public-events.functions';
 import { ArrowLeft } from "lucide-react";
 import { AppButton } from "@/components/design-system";
 import { conferenceHead } from "@/lib/conference";
@@ -25,7 +26,7 @@ import { ConferenceShell } from "@/components/events/conference-shell";
 
 export const Route = createFileRoute("/events/$id")({
   loader: async ({ params }) => {
-    const event = await fetchEventById(params.id);
+    const event = JSON.parse(await getPublicEvent({ data: { id: params.id } })) as EventDetail | null;
     return { event };
   },
   head: ({ loaderData }) => conferenceHead(loaderData?.event ?? null),
