@@ -28,7 +28,13 @@ export type EventbriteImportRow = {
   name: string;
   barcode: string;
   status: "registered" | "cancelled";
+  /** API sync only; set only when the attendee gave explicit consent. Never returned in previews or logged. */
+  accommodation_consent?: true;
+  dietary_restrictions?: string;
+  food_allergies?: string;
+  accessibility_accommodations?: string;
 };
+export type Accommodations = { consent: boolean; dietary?: string | null; allergies?: string | null; accessibility?: string | null };
 export type EventbriteLineIssue = { line: number; outcome: "invalid"; reason: string };
 export type EventbriteParseResult =
   | { ok: false; error: string }
@@ -107,7 +113,7 @@ export function parseEventbriteCsv(text: string): EventbriteParseResult {
   return { ok: true, rows: validated.rows, issues: validated.issues, ignoredColumns };
 }
 
-export type ImportCandidate = { line: number; external_id: string; barcode: string; email: string; name: string; cancelled: boolean };
+export type ImportCandidate = { line: number; external_id: string; barcode: string; email: string; name: string; cancelled: boolean; accommodations?: Accommodations };
 
 /** Shared row validation for CSV and live API sync; reasons never contain attendee data. */
 export function validateImportCandidates(candidates: ImportCandidate[]) {
@@ -124,7 +130,7 @@ export function validateImportCandidates(candidates: ImportCandidate[]) {
     if (seenIds.has(external_id)) { bad(`Duplicate Attendee # (also on line ${seenIds.get(external_id)})`); continue; }
     if (seenBarcodes.has(barcode)) { bad(`Duplicate Barcode # (also on line ${seenBarcodes.get(barcode)})`); continue; }
     seenIds.set(external_id, line); seenBarcodes.set(barcode, line);
-    rows.push({ line, external_id, email, name, barcode, status: c.cancelled ? "cancelled" : "registered" });
+    rows.push({ line, external_id, email, name, barcode, status: c.cancelled ? "cancelled" : "registered", ...accommodationFields(c.accommodations) });
   }
   return { rows, issues };
 }
@@ -139,4 +145,16 @@ export async function contentRequestId(seed: string) {
 export async function sha256Hex(text: string) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+const clip = (v?: string | null) => { const t = (v ?? "").trim(); return t ? t.slice(0, 1000) : undefined; };
+/** Only explicit consent with at least one nonblank answer produces fields; blanks are omitted so they never overwrite. */
+export function accommodationFields(a?: Accommodations): Partial<EventbriteImportRow> {
+  if (!a || a.consent !== true) return {};
+  const out: Partial<EventbriteImportRow> = {};
+  const d = clip(a.dietary), f = clip(a.allergies), x = clip(a.accessibility);
+  if (d) out.dietary_restrictions = d;
+  if (f) out.food_allergies = f;
+  if (x) out.accessibility_accommodations = x;
+  return Object.keys(out).length ? { accommodation_consent: true, ...out } : {};
 }

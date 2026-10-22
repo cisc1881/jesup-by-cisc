@@ -9,7 +9,21 @@ export type EventbriteApiAttendee = {
   refunded?: boolean;
   profile?: { name?: string; first_name?: string; last_name?: string; email?: string };
   barcodes?: Array<{ barcode?: string; status?: string }>;
+  answers?: Array<{ question?: string; answer?: string }>;
 };
+
+const CONSENT_YES = /^(yes|true|i agree|authorized)$/i;
+/** Same question patterns and consent rule as the original direct-write sync. */
+export function extractAccommodations(a: EventbriteApiAttendee) {
+  const answerFor = (patterns: string[]) =>
+    a.answers?.find((x) => patterns.some((p) => (x.question ?? "").toLowerCase().includes(p)))?.answer?.trim() || null;
+  return {
+    consent: CONSENT_YES.test(answerFor(["authorize jesup", "accommodation consent", "coordinate this event"]) ?? ""),
+    dietary: answerFor(["dietary", "diet preference", "diet restriction"]),
+    allergies: answerFor(["food allerg", "allergies"]),
+    accessibility: answerFor(["accessibility", "accommodation", "access need"]),
+  };
+}
 type Page = { attendees?: EventbriteApiAttendee[]; pagination?: { page_count?: number; has_more_items?: boolean; continuation?: string } };
 export type FetchLike = (url: string, init: { headers: Record<string, string> }) => Promise<{ ok: boolean; status: number; json: () => Promise<unknown> }>;
 
@@ -57,6 +71,7 @@ export function normalizeApiAttendees(attendees: EventbriteApiAttendee[]): { row
     barcode: a.barcodes?.find((b) => b.barcode?.trim())?.barcode ?? "",
     email: a.profile?.email ?? "",
     name: a.profile?.name?.trim() || [a.profile?.first_name, a.profile?.last_name].filter(Boolean).join(" ") || "Eventbrite attendee",
+    accommodations: extractAccommodations(a),
     cancelled: Boolean(a.cancelled || a.refunded) || /(not attending|cancel|refund|deleted|void|transferred)/i.test(a.status ?? ""),
   })));
 }
