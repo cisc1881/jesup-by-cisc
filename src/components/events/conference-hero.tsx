@@ -10,7 +10,7 @@ export function ConferenceHero({ event, entry = false }: { event: EventDetail; e
     <header className="conference-masthead px-5 py-8 sm:px-10 sm:py-12">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-current/25 pb-5">
         <JesupLogoMark tone="on-light" size="md" />
-        <span className="text-sm font-semibold">Tuskegee University · CISC</span>
+        <span className="text-sm font-semibold">{typeof event.metadata.brand_label === "string" && event.metadata.brand_label.trim() ? event.metadata.brand_label : event.slug === "fc135" ? "Tuskegee University · CISC" : "JESUP by CISC"}</span>
       </div>
       <div className="max-w-4xl py-8 sm:py-12">
         <p className="mb-4 text-sm font-semibold text-accent">{event.slug === "fc135" ? "FC135 · February 2027" : "Conference"}</p>

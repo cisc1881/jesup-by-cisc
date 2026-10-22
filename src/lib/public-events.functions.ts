@@ -23,3 +23,13 @@ export const getPublicEvents = createServerFn({ method: 'GET' })
       throw new Error('Events could not be loaded. Please try again.');
     }
   });
+
+export const getPublicConferenceCatalog = createServerFn({ method: 'GET' })
+  .inputValidator(z.object({ eventId: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    const { data: products, error } = await createPublicDataClient().from('event_products')
+      .select('id,name,kind,beneficiary,description,price_cents,currency,sort_order')
+      .eq('event_id', data.eventId).eq('is_active', true).order('sort_order').order('name');
+    if (error) throw new Error('Catalog unavailable. Please try again.');
+    return products ?? [];
+  });

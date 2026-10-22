@@ -12,6 +12,21 @@
 ## Configuration
 Admin event editor → Conference operations manages products, credentials, assignments and non-secret seller identifiers/fees. Conference shell toggles separately enable catalog, claiming, Wallet and staff operations; section toggles are still required for public navigation. FC135 remains Home-only by default.
 
+## Reusable Event Experience configuration
+- Basics supports a date-only mode with inclusive first/last dates. Saving converts these into event-timezone midnight boundaries, with the end exclusive; timed events and sessions retain timezone-aware conversion.
+- Conference shell supports an event-specific organizer label, existing theme presets, map/parking links, and named HTTPS resource links. No FC135 links or organizer content are seeded by this pass.
+- Catalog products support descriptions and display order as well as category, self/guest/company beneficiary, price, capacity and active state. Editing preserves descriptions rather than erasing them. Tickets remain hidden for an empty enabled catalog unless registration or confirmed Eventbrite settings provide content.
+- Public catalog reads use the same request-scoped anonymous connection pattern as event reads. Resource links require a nonempty label, HTTPS URL, and explicit section enablement. Settings-only saves preserve unrelated current metadata and reject concurrent changes.
+- Existing disabled Square configuration can be loaded into the editor before changing merchant, location, application and fee identifiers. This is not seller onboarding or payment authorization.
+
+## Still required from organizers / integrations
+- Confirmed session titles, dates/times, locations and speakers; speaker bios/photos only if supplied.
+- Ticket/add-on names, prices or approved free issuance, beneficiary rules, quantities/capacities, meal/activity service windows, parking policy, sponsor/company package contents and confirmed sponsors/exhibitors.
+- Approved event artwork, registration provider/URL/Eventbrite ID, campus/parking links, resource links, and explicit decisions to enable community, My Event, Wallet, catalog, claiming and staff operations.
+- Eventbrite provider credentials and live import verification, product mapping and automatic entitlement issuance are not supplied in this pass.
+- Square legal seller/account/location/currency consent, reviewed OAuth/token handling, application-fee eligibility and consent, priced orders/reservations/webhooks/refunds/reconciliation and sandbox testing remain future work. No payment credentials are requested or stored here.
+- Physical badge printing, reprint workflow, camera hardware verification, offline scanning, bulk issuance and guest-account transfers remain deferred.
+
 ## Square remains non-live
 Seller records retain merchant, location, application and application-fee fields only. The database forbids live payments. No checkout, secrets, OAuth tokens, payment requests or fund movement exist in this increment.
 Required before a future payment pass:
@@ -24,4 +39,6 @@ Required before a future payment pass:
 Checkout/payment processing; seller OAuth and live onboarding; automatic Eventbrite product mapping/entitlement issuance; guest account transfer; badge printer integration/reprint UI; offline scanning and bulk issuance; confirmed FC135 product names/prices and service windows. No unconfirmed products are seeded into FC135.
 
 ## Verification boundaries
+Reusable configuration pass: the full existing suite passed (35 files, 138 tests). Administrator browser checks saved the existing FC135 shell settings unchanged, confirmed its February 18–19 date-only inputs, saved/read back description and order on an existing private verification product, then restored the original product. Public FC135 remained Home-only; Programs, Publications and Markets loaded without page errors. Automatic preview build reported build OK. External editor-preview requests on the project’s lovableproject.com origin returned 200 for Home, Events and FC135, with correct titles/headings. The separate hosted lovable.app preview returned 401 to direct requests; its viewer did not respond, cross-origin browser fetching failed, and hosted build status still named the prior cb4a7475 version. This pass is not verified on that distinct hosted deployment. No publication/domain change, new factual FC135 content, or RLS/schema change was made.
+
 Authenticated administrator verification exercised actual database issuance, unpriced approval/capacity rejection, request retries, redemption replay rejection, repeat check-in, badge duplicate rejection, and verified-email/barcode claiming. Browser verification read the claimed admission QR through Wallet and checked the scanner error path and admin controls. FC135 settings were restored and test registrations removed; isolated verification events remain draft/inactive with audit records. Camera/printer hardware, live Eventbrite API imports, a separate non-admin staff session, and legacy meal redemption with configured meal data remain unverified.
