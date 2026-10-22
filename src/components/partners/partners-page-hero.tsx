@@ -3,7 +3,7 @@ import { AppButton } from "@/components/design-system";
 
 export function PartnersPageHero() {
   return (
-    <section className="relative overflow-hidden grad-crimson text-primary-foreground">
+    <section className="brand-banner relative overflow-hidden">
       <div className="absolute inset-0 opacity-20" aria-hidden="true">
         <div
           className="h-full w-full"
@@ -14,11 +14,11 @@ export function PartnersPageHero() {
         />
       </div>
       <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
-        <p className="text-eyebrow grad-gold-text">Collaboration</p>
+        <p className="text-eyebrow text-banner-foreground">Collaboration</p>
         <h1 className="mt-2 max-w-3xl text-4xl font-black tracking-[var(--tracking-tight)] sm:text-5xl">
           Strategic Partners
         </h1>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/85 sm:text-lg">
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-banner-foreground sm:text-lg">
           Building stronger communities through collaboration, research, education, innovation, and sustainable
           development.
         </p>
@@ -30,7 +30,6 @@ export function PartnersPageHero() {
             variant="secondary"
             size="lg"
             shape="pill"
-            className="bg-white/15 text-primary-foreground hover:bg-white/25"
             asChild
           >
             <Link to="/programs">View Programs</Link>

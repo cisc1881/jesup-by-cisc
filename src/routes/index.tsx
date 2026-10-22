@@ -14,7 +14,7 @@ import { fetchHomePageData, createEmptyHomePageData, DEFAULT_SECTION_META } from
 import type { HomeEvent, HomeHeroSlide, HomePageData } from "@/lib/home";
 import { buildPageHead } from "@/lib/seo";
 import { HOME_PAGE_QUERY_KEY } from "@/lib/query-config";
-import { useInstitutionTheme } from "@/components/institution-theme-provider";
+import { ContentThemeScope, useInstitutionTheme } from "@/components/institution-theme-provider";
 import type { EventDetail } from "@/lib/events";
 import { getPublicEvent } from '@/lib/public-events.functions';
 import { eventDateLabel } from "@/lib/conference";
@@ -134,18 +134,18 @@ function Home() {
       <HomeHero slides={relevantSlides} />
 
       {loaderData.pilot && (
-        <section aria-label="Featured conference" className="border-b border-border bg-card">
+        <ContentThemeScope content={loaderData.pilot}><section aria-label="Featured conference" className="brand-banner border-b border-border">
           <PageContainer size="lg" className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="mb-1 text-xs font-semibold text-muted-foreground">Featured event · FC135</p>
-              <h2 className="text-lg font-semibold text-foreground">{loaderData.pilot.title}</h2>
-              <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground"><CalendarDays className="size-4 shrink-0" />{eventDateLabel(loaderData.pilot)}</p>
+              <p className="mb-1 text-xs font-semibold text-banner-highlight">Featured event · FC135</p>
+              <h2 className="text-lg font-semibold text-banner-foreground">{loaderData.pilot.title}</h2>
+              <p className="mt-2 flex items-center gap-2 text-sm text-banner-foreground"><CalendarDays className="size-4 shrink-0" />{eventDateLabel(loaderData.pilot)}</p>
             </div>
             <AppButton asChild variant="secondary" shape="square" className="w-fit shrink-0">
               <Link to="/events/$id" params={{ id: loaderData.pilot.slug }}>Explore FC135 <ArrowUpRight /></Link>
             </AppButton>
           </PageContainer>
-        </section>
+        </section></ContentThemeScope>
       )}
 
       <PageContainer

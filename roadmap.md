@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Institution-aware colors and contrast
+- [ ] Resolve event/program ownership and explicit event branding independently of login, preserving profile personalization without leaking page branding to unrelated routes.
+- [ ] Repair shared banner/button/filter/card/navigation foreground pairs and light/dark states across Home, Programs, Partners, Admin and FC135.
+- [ ] Run existing tests/build and rendered desktop/mobile contrast checks; report missing ownership attribution and hosted access blockers. No live deployment.
+
 ## One-time owner admin invitation
 - [x] Auth accepted one invitation for info@accessfarmtotable.com at 2026-10-22 10:38:19 UTC, explicitly returning to the recovered project's allowed preview /auth?mode=reset. No password generated or stored; no invite link/token logged.
 - [x] Verified exact invited auth ID bd648192-50a4-4280-967f-2f0aa94eafff and matching profile; idempotent admin insert and removal of only its automatic user role leaves [admin]. Two prior admins preserved. Email remains unconfirmed and password unset; no RLS/auth configuration/application-code changes or deployment.

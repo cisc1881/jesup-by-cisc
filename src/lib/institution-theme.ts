@@ -11,11 +11,11 @@ export type InstitutionTheme = {
 export const JESUP_NETWORK_THEME: InstitutionTheme = {
   key: "jesup-network",
   label: "1890 Land-Grant Network",
-  accent: "#3f3f46",
-  accentStrong: "#171717",
-  accentSoft: "#f1f1f1",
+  accent: "#166b70",
+  accentStrong: "#12464b",
+  accentSoft: "#e6f2f1",
   accentForeground: "#ffffff",
-  secondary: "#a1a1aa",
+  secondary: "#bde4e1",
 };
 
 type ThemeRule = InstitutionTheme & { matches: string[] };
@@ -224,7 +224,7 @@ export function resolveInstitutionTheme(name?: string | null): InstitutionTheme 
     ) ?? {
       ...JESUP_NETWORK_THEME,
       key: "affiliated-institution",
-      label: name!.trim(),
+      label: name?.trim() ?? JESUP_NETWORK_THEME.label,
     }
   );
 }
@@ -242,8 +242,68 @@ export function getReadableForeground(background: string): "#171717" | "#ffffff"
     return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
   });
   const luminance = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
-  const darkContrast = (luminance + 0.05) / 0.05;
+  const darkChannel = 23 / 255;
+  const darkLuminance = ((darkChannel + 0.055) / 1.055) ** 2.4;
+  const darkContrast = (luminance + 0.05) / (darkLuminance + 0.05);
   const lightContrast = 1.05 / (luminance + 0.05);
 
   return darkContrast >= lightContrast ? "#171717" : "#ffffff";
+}
+
+type ThemeContent = {
+  institutionIds?: string[];
+  metadata?: Record<string, unknown>;
+  themeAccent?: string | null;
+  themeSecondary?: string | null;
+};
+
+/** Explicit branding wins; affiliation/filter scope is not proof of ownership. */
+export function resolveContentTheme(content: ThemeContent, ownerName?: string | null): InstitutionTheme {
+  const metadata = content.metadata ?? {};
+  const namedOwner = typeof metadata.owner_institution_name === "string" ? metadata.owner_institution_name : ownerName;
+  let base = resolveInstitutionTheme(namedOwner);
+  if (metadata.theme_preset === "tuskegee") base = resolveInstitutionTheme("Tuskegee University");
+  // Recovered official CISC program records have verified source provenance but no owner IDs.
+  // This is presentation attribution only; it never changes scope filters or database ownership.
+  if (!namedOwner && metadata.content_source === "CISC program page" && typeof metadata.source_url === "string") {
+    try {
+      if (new URL(metadata.source_url).hostname === "cisc1881.org") base = resolveInstitutionTheme("Tuskegee University");
+    } catch { /* Invalid source URLs cannot confer institution branding. */ }
+  }
+  const accent = content.themeAccent ?? metadata.theme_accent;
+  const secondary = content.themeSecondary ?? metadata.theme_secondary;
+  if (typeof accent !== "string" || !/^#[\da-f]{6}$/i.test(accent)) return base;
+  return { ...base, key: "event-custom", accent, accentStrong: accent,
+    accentForeground: getReadableForeground(accent),
+    secondary: typeof secondary === "string" && /^#[\da-f]{6}$/i.test(secondary) ? secondary : base.secondary };
+}
+
+/** Every theme supplies paired surfaces; dark-mode links differ from filled banner colors. */
+export function institutionThemeProperties(theme: InstitutionTheme, dark = false): Record<string, string> {
+  const primary = dark ? `color-mix(in srgb, ${theme.accent} 35%, #ffffff)` : theme.accentStrong;
+  const mid = dark ? `color-mix(in srgb, ${theme.accent} 25%, #ffffff)` : theme.accentStrong;
+  return {
+    "--primary": primary, "--primary-mid": mid, "--primary-bright": theme.secondary,
+    "--primary-foreground": dark ? "#171717" : getReadableForeground(theme.accentStrong),
+    "--accent": theme.accent, "--accent-foreground": getReadableForeground(theme.accent),
+    "--secondary": theme.secondary, "--secondary-foreground": getReadableForeground(theme.secondary),
+    "--institution-accent": theme.accent, "--institution-accent-strong": primary,
+    "--institution-accent-foreground": getReadableForeground(theme.accent),
+    "--institution-accent-soft": `color-mix(in srgb, ${theme.accent} 12%, var(--card))`,
+    "--institution-secondary": theme.secondary,
+    "--institution-secondary-foreground": getReadableForeground(theme.secondary),
+    "--institution-surface-primary": `color-mix(in srgb, ${theme.accent} 10%, var(--card))`,
+    "--institution-surface-secondary": `color-mix(in srgb, ${theme.secondary} 10%, var(--card))`,
+    "--institution-surface-split": `linear-gradient(115deg, color-mix(in srgb, ${theme.accent} 10%, var(--card)), color-mix(in srgb, ${theme.secondary} 10%, var(--card)))`,
+    "--institution-border-primary": `color-mix(in srgb, ${theme.accent} 35%, var(--border))`,
+    "--institution-border-secondary": `color-mix(in srgb, ${theme.secondary} 35%, var(--border))`,
+    "--ring": dark ? primary : theme.accent,
+    "--gradient-jesup": `linear-gradient(115deg, ${primary}, ${mid})`,
+    "--gradient-hero-institution": `linear-gradient(115deg, ${primary}, ${mid})`,
+    "--gradient-jesup-soft": `linear-gradient(115deg, ${primary}, ${mid})`,
+    "--banner-background": theme.accentStrong,
+    "--banner-foreground": getReadableForeground(theme.accentStrong),
+    "--banner-highlight": theme.secondary,
+    "--banner-highlight-foreground": getReadableForeground(theme.secondary),
+  };
 }

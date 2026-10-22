@@ -293,20 +293,20 @@ export function CommandCenterDashboard() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <section className="relative overflow-hidden rounded-2xl grad-crimson p-6 text-primary-foreground shadow-token-crimson sm:p-8">
+      <section className="brand-banner relative overflow-hidden rounded-2xl p-6 shadow-token-crimson sm:p-8">
         <div className="relative z-10">
           <span className="gold-bar mb-4" />
           <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
             {COMMAND_CENTER_TITLE}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm text-banner-foreground sm:text-base">
             {COMMAND_CENTER_SUBTITLE}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-[44px] bg-white/15 text-primary-foreground hover:bg-white/25"
+              className="min-h-11"
               onClick={refreshDashboard}
               disabled={isFetching}
               aria-label="Refresh dashboard"
@@ -317,7 +317,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-[44px] bg-white/15 text-primary-foreground hover:bg-white/25"
+              className="min-h-11"
               onClick={() => setProgramOpen(true)}
             >
               <LayoutGrid className="mr-1.5 h-4 w-4" />
@@ -326,7 +326,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-white/15 text-primary-foreground hover:bg-white/25"
+              className="min-h-11"
               onClick={() => setEventOpen(true)}
             >
               <CalendarPlus className="mr-1.5 h-4 w-4" />
@@ -335,7 +335,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-white/15 text-primary-foreground hover:bg-white/25"
+              className="min-h-11"
               onClick={() => setMarketOpen(true)}
             >
               <MapPinPlus className="mr-1.5 h-4 w-4" />
@@ -354,7 +354,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-white/15 text-primary-foreground hover:bg-white/25"
+              className="min-h-11"
               asChild
             >
               <Link to="/admin/internships">

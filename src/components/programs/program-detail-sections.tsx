@@ -10,30 +10,26 @@ import {
 } from "@/components/design-system";
 import { RichTextContent } from "@/components/rich-text-editor";
 import { ProgramCtaBar } from "@/components/programs/program-cta-actions";
+import { Button } from "@/components/ui/button";
 
 export function ProgramDetailHero({ program }: { program: ProgramDetail }) {
   return (
     <section className="relative">
-      <div className="relative min-h-[360px] w-full overflow-hidden bg-secondary sm:min-h-[480px]">
+      <div className="program-masthead relative min-h-[360px] w-full overflow-hidden sm:min-h-[480px]">
         {program.coverImageUrl ? (
           <img src={program.coverImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
         ) : (
-          <div className="absolute inset-0 grad-crimson" />
+          <div className="absolute inset-0" />
         )}
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(122,12,22,0.6) 60%, rgba(122,12,22,0.92) 100%)",
-          }}
+          className="program-hero-overlay absolute inset-0"
         />
         <div className="relative z-10 mx-auto flex min-h-[360px] max-w-7xl flex-col justify-end px-5 pb-10 sm:min-h-[480px] sm:px-8 sm:pb-14">
-          <Link
+          <Button asChild variant="secondary" className="mb-4 w-fit"><Link
             to="/programs"
-            className="mb-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-white/25"
           >
             All programs
-          </Link>
+          </Link></Button>
           <div className="flex items-end gap-4">
             {program.logoUrl && (
               <img
@@ -44,19 +40,19 @@ export function ProgramDetailHero({ program }: { program: ProgramDetail }) {
             )}
             <div className="min-w-0 flex-1">
               {program.categoryName && (
-                <span className="rounded-full border border-white/30 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">
+                <span className="border border-current px-2.5 py-1 text-[10px] font-semibold uppercase text-banner-foreground">
                   {program.categoryName}
                 </span>
               )}
               {program.short && (
-                <div className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] grad-gold-text">
+                <div className="mt-3 text-sm font-semibold text-banner-foreground">
                   {program.short}
                 </div>
               )}
-              <h1 className="mt-2 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl">
+              <h1 className="mt-2 max-w-3xl text-4xl font-black leading-[1.05] text-banner-foreground sm:text-6xl">
                 {program.name}
               </h1>
-              {program.tagline && <p className="mt-3 max-w-2xl text-lg text-white/90">{program.tagline}</p>}
+              {program.tagline && <p className="mt-3 max-w-2xl text-lg text-banner-foreground">{program.tagline}</p>}
               <ProgramCtaBar program={program} onDark className="mt-6" />
             </div>
           </div>

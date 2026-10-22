@@ -53,7 +53,7 @@ export function ProgramCtaActions({
   }
 
   const outlineClass = onDark
-    ? "border-white/40 bg-white/10 text-white hover:bg-white/20"
+    ? "bg-secondary text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
     : undefined;
   const learnOutlineClass = onDark ? outlineClass : undefined;
 

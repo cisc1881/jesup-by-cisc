@@ -44,6 +44,8 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-banner-foreground: var(--banner-foreground);
+  --color-banner-highlight: var(--banner-highlight);
   --color-home-foreground: var(--home-foreground);
   --color-home-muted: var(--home-muted);
   --color-sidebar: var(--sidebar);
@@ -61,17 +63,17 @@
 
   /* Neutral JESUP network palette. InstitutionThemeProvider adds school color
      only after a recognized institution is selected. */
-  --primary: #171717;
+  --primary: #12464b;
   --primary-foreground: oklch(0.99 0 0);
-  --primary-mid: #3f3f46;
-  --primary-bright: #a1a1aa;
+  --primary-mid: #166b70;
+  --primary-bright: #bde4e1;
 
   /* Affiliation accents are changed by InstitutionThemeProvider after sign-in. */
-  --institution-accent: #3f3f46;
-  --institution-accent-strong: #171717;
+  --institution-accent: #166b70;
+  --institution-accent-strong: #12464b;
   --institution-accent-soft: #f1f1f1;
   --institution-accent-foreground: #ffffff;
-  --institution-secondary: #a1a1aa;
+  --institution-secondary: #bde4e1;
   --institution-secondary-foreground: #171717;
   --institution-surface-primary: color-mix(in srgb, #3f3f46 7%, var(--card));
   --institution-surface-secondary: color-mix(in srgb, #a1a1aa 9%, var(--card));
@@ -149,7 +151,7 @@
   --bottom-nav-offset: 6rem;
 
   /* Signature gradients & shadows */
-  --gradient-jesup: linear-gradient(115deg, #050505 0%, #303034 68%, #737373 135%);
+  --gradient-jesup: linear-gradient(115deg, var(--primary), var(--primary-mid));
   --gradient-hero-institution: linear-gradient(115deg, #050505 0%, #3f3f46 52%, #a1a1aa 100%);
   --gradient-jesup-soft: linear-gradient(
     90deg,
@@ -181,8 +183,11 @@
 
   /* Fixed network masthead; selected-school colors remain subtle elsewhere. */
   --home-foreground: oklch(0.99 0 0);
-  --home-muted: oklch(0.85 0.006 240);
-  --home-gradient: linear-gradient(115deg, oklch(0.19 0.009 240), oklch(0.29 0.015 220) 65%, oklch(0.39 0.022 190));
+  --home-muted: oklch(0.94 0.006 240);
+  --home-gradient: linear-gradient(115deg, #103b40, #166b70);
+  --banner-background: #12464b;
+  --banner-foreground: #ffffff;
+  --banner-highlight: #bde4e1;
   --home-control-hover: oklch(0.99 0 0 / 10%);
   --home-cta: oklch(0.92 0.004 240);
   --home-cta-foreground: oklch(0.22 0.008 240);
@@ -307,7 +312,7 @@
     overflow-wrap: anywhere;
     text-wrap: balance;
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     font-weight: 700;
   }
   h1 {
@@ -604,29 +609,20 @@ body *::after {
 }
 
 /* Event-scoped tokens leave the network and all other catalogs unchanged. */
-.conference-shell[data-event-theme="tuskegee"] {
-  --primary: #7a0c16;
-  --primary-mid: #9e1b2f;
-  --primary-bright: #c1273d;
-  --primary-foreground: #ffffff;
-  --accent: #c6a15b;
-  --accent-foreground: #171717;
-  --gold: #c6a15b;
-  --gold-light: #dfc28a;
-  --gold-dark: #a87b2d;
-  --institution-accent: var(--primary);
-  --institution-secondary: var(--accent);
-  --gradient-crimson: linear-gradient(135deg, var(--primary), var(--primary-mid));
-}
-.conference-masthead {
-  background: var(--primary);
-  color: var(--primary-foreground);
+.brand-banner, .conference-masthead {
+  background: var(--banner-background);
+  color: var(--banner-foreground);
 }
 .conference-shell, .conference-shell * { letter-spacing: 0; }
 .conference-shell h1 { letter-spacing: 0; }
 .credential-qr { background: #ffffff; color: #171717; }
 
-.home-network-hero { background: var(--home-gradient); }
+.home-network-hero { background: var(--home-gradient); color: var(--home-foreground); }
+.home-network-hero h1 { color: var(--home-foreground); }
+.home-slide-control, .home-slide-control:hover { color: var(--home-foreground); }
+.home-slide-control:focus-visible { outline: 2px solid var(--home-foreground); outline-offset: 4px; }
+.program-masthead { background: var(--banner-background); color: var(--banner-foreground); }
+.program-hero-overlay { background: color-mix(in srgb, var(--banner-background) 90%, transparent); }
 .home-network-hero, .home-network-hero *, .jesup-about, .jesup-about * { letter-spacing: 0; }
 .home-slide-content { min-height: 280px; }
 .home-slide-control:hover { background: var(--home-control-hover); }
