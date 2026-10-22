@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer, AppButton } from "@/components/design-system";
@@ -17,8 +17,8 @@ import { HOME_PAGE_QUERY_KEY } from "@/lib/query-config";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
 import type { EventDetail } from "@/lib/events";
 import { getPublicEvent } from '@/lib/public-events.functions';
-import { conferenceHead } from "@/lib/conference";
-import { ConferenceHero } from "@/components/events/conference-hero";
+import { eventDateLabel } from "@/lib/conference";
+import { ArrowUpRight, CalendarDays } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context: { queryClient } }): Promise<{ home: HomePageData; pilot: EventDetail | null }> => {
@@ -38,8 +38,10 @@ export const Route = createFileRoute("/")({
       return { home: fallback, pilot: null };
     }
   },
-  head: ({ loaderData }) => loaderData?.pilot ? conferenceHead(loaderData.pilot, " · Home") :
-    buildPageHead({ title: "JESUP by CISC · The Digital Extension Wagon", description: "Tuskegee University’s digital home for extension events, programs, markets, and trusted resources." }),
+  head: () => {
+    const head = buildPageHead({ title: "JESUP · The Digital Extension Wagon", description: "Connect with extension knowledge, programs, publications, markets, and the 135th Annual Farmers Conference through JESUP.", path: "/" });
+    return { ...head, meta: head.meta.filter((meta) => !meta.property?.startsWith("og:image") && meta.name !== "twitter:image") };
+  },
   errorComponent: HomeRouteError,
   component: Home,
 });
@@ -98,10 +100,10 @@ function Home() {
     const aboutSlide: HomeHeroSlide = {
       id: "about-jesup",
       imageUrl: "",
-      imageAlt: "About JESUP and the Digital Extension Wagon",
-      title: "The extension wagon—reimagined for a connected world.",
+      imageAlt: "About Jesup",
+      title: "JESUP",
       subtitle:
-        "Meet JESUP, the new Digital Extension Wagon connecting the 1890 Land-Grant network to events, programs, knowledge, and opportunity.",
+        "The Digital Extension Wagon. Rooted in Tuskegee’s extension legacy, connecting people to knowledge, programs, and opportunity today.",
       linkTo: "/about",
       linkLabel: "About JESUP",
       networkWide: true,
@@ -113,12 +115,38 @@ function Home() {
         slide.networkWide !== false ||
         slide.institutionIds?.includes(institutionId),
     );
-    return [aboutSlide, ...filtered].slice(0, 5);
-  }, [data?.heroSlides, institutionId]);
+    const pilot = loaderData.pilot;
+    const eventSlides: HomeHeroSlide[] = pilot ? [{
+      id: "featured-fc135", imageUrl: "", imageAlt: "FC135",
+      title: pilot.title, subtitle: `${eventDateLabel(pilot)} · ${pilot.location ?? ""}`,
+      linkTo: "/events/$id", linkParams: { id: pilot.slug }, linkLabel: "Explore FC135",
+      networkWide: true, institutionIds: [],
+    }] : [];
+    const directorySlides: HomeHeroSlide[] = [
+      { id: "programs", imageUrl: "", imageAlt: "Programs", title: "Programs & research", subtitle: "Connect with extension programs and research initiatives across the network.", linkTo: "/programs", linkLabel: "Explore programs", networkWide: true },
+      { id: "publications", imageUrl: "", imageAlt: "Publications", title: "Knowledge to take with you", subtitle: "Find publications and practical resources to inform your work and community.", linkTo: "/publications", linkLabel: "Browse publications", networkWide: true },
+    ];
+    return [aboutSlide, ...eventSlides, ...directorySlides, ...filtered].slice(0, 6);
+  }, [data?.heroSlides, institutionId, loaderData.pilot]);
 
   return (
     <PublicLayout>
-      {loaderData?.pilot ? <PageContainer size="lg"><div className="conference-shell" data-event-theme={loaderData.pilot.metadata.theme_preset === "tuskegee" ? "tuskegee" : "network"}><ConferenceHero event={loaderData.pilot} entry /></div></PageContainer> : <HomeHero slides={relevantSlides} />}
+      <HomeHero slides={relevantSlides} />
+
+      {loaderData.pilot && (
+        <section aria-label="Featured conference" className="border-b border-border bg-card">
+          <PageContainer size="lg" className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="mb-1 text-xs font-semibold text-muted-foreground">Featured event · FC135</p>
+              <h2 className="text-lg font-semibold text-foreground">{loaderData.pilot.title}</h2>
+              <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground"><CalendarDays className="size-4 shrink-0" />{eventDateLabel(loaderData.pilot)}</p>
+            </div>
+            <AppButton asChild variant="secondary" shape="square" className="w-fit shrink-0">
+              <Link to="/events/$id" params={{ id: loaderData.pilot.slug }}>Explore FC135 <ArrowUpRight /></Link>
+            </AppButton>
+          </PageContainer>
+        </section>
+      )}
 
       <PageContainer
         size="lg"

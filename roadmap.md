@@ -1,5 +1,12 @@
 # FC135 recovery
 
+## Active recovered Home Hero Redesign
+- [x] Restore image-free HomeHero with About Jesup first, manual labeled slideshow controls, existing Programs/Publications entries and a persistent FC135 link; preserve event-scoped branding.
+- [x] Strengthen neutral network secondary/accent and use a home-only charcoal/gray-teal gradient; refine About historical wording and link existing directories without speculative feature claims. Home/About have distinct network metadata without placeholder social images.
+- [x] Existing suite: 35 files / 138 tests passed; automatic build OK at 10:18:02 UTC. Browser Home/About/FC135 and preserved Programs/Publications/Markets return 200 locally; About/slideshow/mobile FC135 link passed, no page errors, no mobile horizontal overflow. Desktop/mobile screenshots inspected.
+- [ ] External preview verification blocked: all three URLs redirect to Lovable's auth-bridge naming inaccessible old project lovp_0s4ebmzbx19hxvh5nf1270fx8t; bridge 200 is not application success. Platform must correct preview authentication/hosting binding to this editor project; latest external pages remain unverified.
+- Shared planning URL yielded only a Chat history heading; implementation follows the user's explicitly confirmed requirements, not unavailable chat details. Data, RLS, auth/admin code, selected institution theme provider, and event theme configuration unchanged; no deployment.
+
 ## Active reusable Event Experience pass
 - [x] Audit existing builder, attendee sections, credentials and integration preparation.
 - [x] Complete date-only editing, event organizer/resource links, product descriptions/order, seller configuration editing and active-product section gating; no factual FC135 content added.

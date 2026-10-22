@@ -1,129 +1,80 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CalendarCheck, MapPinned, Radio, Users, Van, Wifi } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, Sprout, Store } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
+import { AppButton, PageContainer } from "@/components/design-system";
 import { buildPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  head: () =>
-    buildPageHead({
-      title: "About JESUP · The Digital Extension Wagon",
-      description:
-        "Learn how JESUP carries extension, research, events, and trusted resources into one connected digital experience for the 1890 Land-Grant network.",
+  head: () => {
+    const head = buildPageHead({
+      title: "About JESUP · From the Jesup Wagon to Digital Extension",
+      description: "Discover the Tuskegee Jesup Wagon's extension legacy and how JESUP connects people with programs, publications, markets, and events today.",
       path: "/about",
-    }),
+    });
+    return { ...head, meta: head.meta.filter((meta) => !meta.property?.startsWith("og:image") && meta.name !== "twitter:image") };
+  },
   component: AboutJesupPage,
 });
 
-const capabilities = [
-  [
-    CalendarCheck,
-    "Events that work",
-    "Registration, personalized agendas, QR check-in, session attendance, meal tickets, messaging, and post-event reporting.",
-  ],
-  [
-    Users,
-    "A connected 1890 network",
-    "Institution-aware programs, workshops, opportunities, and conferences with one consistent JESUP experience.",
-  ],
-  [
-    MapPinned,
-    "Extension where people are",
-    "Local weather, emergency information, markets, publications, grants, and community resources in one place.",
-  ],
-  [
-    Wifi,
-    "Built for the field",
-    "A mobile-first progressive web app designed for phones, campuses, conferences, community sites, and low-connectivity settings.",
-  ],
+const destinations = [
+  { icon: CalendarDays, title: "Events", description: "Explore published events, including the 135th Annual Farmers Conference.", to: "/events" },
+  { icon: Sprout, title: "Programs", description: "Discover extension programs and research initiatives.", to: "/programs" },
+  { icon: BookOpen, title: "Publications", description: "Read practical knowledge and resources from the network.", to: "/publications" },
+  { icon: Store, title: "Markets", description: "Connect with local markets and their communities.", to: "/markets" },
 ] as const;
 
 function AboutJesupPage() {
   return (
     <PublicLayout>
-      <main>
-        <section className="relative overflow-hidden bg-[var(--gradient-jesup)] text-white">
-          <div
-            className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(255,255,255,.14)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.14)_1px,transparent_1px)] [background-size:52px_52px]"
-            aria-hidden="true"
-          />
-          <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1fr_320px] lg:items-center">
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-white/75">
-                About JESUP
-              </p>
-              <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-[-0.045em] sm:text-6xl">
-                The Digital Extension Wagon
-              </h1>
-              <p className="mt-6 max-w-3xl text-lg leading-8 text-white/85">
-                A new and innovative way to carry the land-grant mission forward—connecting people
-                to knowledge, programs, researchers, institutions, and each other wherever they are.
-              </p>
-            </div>
-            <Van
-              className="hidden h-44 w-44 justify-self-center text-white lg:block"
-              strokeWidth={1.1}
-              aria-hidden="true"
-            />
-          </div>
-        </section>
+      <div className="jesup-about">
+        <header className="home-network-hero text-home-foreground">
+          <PageContainer size="lg" className="py-12 sm:py-16">
+            <p className="text-sm font-semibold text-home-muted">About JESUP</p>
+            <h1 className="mt-4 max-w-3xl text-4xl font-semibold sm:text-5xl">The Digital Extension Wagon</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-home-muted">Carrying the spirit of extension forward: connecting people with knowledge, programs, and opportunity wherever they are.</p>
+          </PageContainer>
+        </header>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
-          <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
+        <section className="border-b border-border">
+          <PageContainer size="lg" className="grid gap-8 py-12 sm:py-16 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
             <div>
-              <Radio className="h-10 w-10 text-primary" />
-              <h2 className="mt-5 text-3xl font-black tracking-tight">
-                From a wagon of knowledge to a digital network
-              </h2>
+              <p className="text-sm font-semibold text-muted-foreground">Our inspiration</p>
+              <h2 className="mt-3 text-3xl font-semibold">The original Jesup Wagon</h2>
             </div>
             <div className="space-y-5 text-base leading-8 text-muted-foreground">
-              <p>
-                Extension has always been about meeting people where they are. The original
-                extension wagon carried practical demonstrations, university expertise, and new
-                ideas directly into communities.
-              </p>
-              <p>
-                JESUP reimagines that mission for today. The Digital Extension Wagon brings trusted
-                information and services to a phone or computer while strengthening the human
-                connections that make extension work.
-              </p>
-              <p>
-                It is more than an event app. JESUP is a shared platform for the 1890 Land-Grant
-                system—supporting conferences, programs, workshops, internships, community
-                resources, impact reporting, and year-round engagement.
-              </p>
+              <p>The historic Jesup Wagon was a mobile agricultural teaching wagon associated with Tuskegee Institute, now Tuskegee University. It brought practical demonstrations and agricultural knowledge to farmers and communities, beyond the campus.</p>
+              <p>Its legacy is a simple idea: education should reach people where they live and work. JESUP takes inspiration from that approach. The Digital Extension Wagon is a contemporary digital platform, not a recreation of the historic wagon.</p>
             </div>
-          </div>
+          </PageContainer>
         </section>
 
-        <section className="border-y bg-slate-50 dark:bg-slate-950">
-          <div className="mx-auto grid max-w-7xl sm:grid-cols-2 lg:grid-cols-4">
-            {capabilities.map(([Icon, title, body]) => (
-              <article key={title} className="border-b p-6 sm:border-r lg:border-b-0 lg:p-8">
-                <Icon className="h-8 w-8 text-primary" />
-                <h2 className="mt-5 text-lg font-black">{title}</h2>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{body}</p>
+        <section>
+          <PageContainer size="lg" className="grid gap-8 py-12 sm:py-16 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
+            <h2 className="text-3xl font-semibold">Extension, connected</h2>
+            <div className="space-y-5 text-base leading-8 text-muted-foreground">
+              <p>JESUP brings events, programs, publications, and markets into a shared digital home for extension communities and the 1890 Land-Grant network.</p>
+              <p>Explore information from a phone or computer and find connections to the people and institutions behind it. Digital access supports the human relationships at the heart of extension—it does not replace them.</p>
+            </div>
+          </PageContainer>
+        </section>
+
+        <section aria-label="Explore JESUP" className="border-y border-border bg-secondary/40">
+          <PageContainer size="lg" className="grid sm:grid-cols-2 lg:grid-cols-4">
+            {destinations.map(({ icon: Icon, title, description, to }) => (
+              <article key={to} className="flex flex-col items-start border-b border-border px-2 py-8 sm:px-5 lg:border-b-0">
+                <Icon className="size-7 text-accent" aria-hidden="true" />
+                <h2 className="mt-5 text-xl font-semibold">{title}</h2>
+                <p className="mb-5 mt-3 text-sm leading-6 text-muted-foreground">{description}</p>
+                <AppButton asChild variant="ghost" shape="square" className="mt-auto px-0"><Link to={to}>Explore {title.toLowerCase()} <ArrowRight /></Link></AppButton>
               </article>
             ))}
-          </div>
+          </PageContainer>
         </section>
-
-        <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
-          <div className="bg-slate-900 px-6 py-12 text-white sm:px-12">
-            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cyan-300">
-              Move the mission forward
-            </p>
-            <h2 className="mt-4 max-w-3xl text-3xl font-black tracking-tight sm:text-4xl">
-              Discover what the Digital Extension Wagon can connect you to today.
-            </h2>
-            <Link
-              to="/programs"
-              className="mt-8 inline-flex min-h-12 items-center gap-2 bg-white px-6 font-extrabold text-slate-900"
-            >
-              Explore programs <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </section>
-      </main>
+        <PageContainer size="lg" className="flex flex-col items-start gap-5 py-12 sm:flex-row sm:items-center sm:justify-between">
+          <div><p className="text-sm text-muted-foreground">Featured conference</p><h2 className="mt-2 text-2xl font-semibold">135th Annual Farmers Conference</h2></div>
+          <AppButton asChild variant="secondary" shape="square"><Link to="/events/$id" params={{ id: "fc135" }}>Explore FC135 <ArrowRight /></Link></AppButton>
+        </PageContainer>
+      </div>
     </PublicLayout>
   );
 }
