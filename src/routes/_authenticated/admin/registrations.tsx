@@ -95,6 +95,9 @@ function AdminRegistrations() {
       await qc.invalidateQueries({ queryKey: ["admin-registrations"] });
       await qc.invalidateQueries({ queryKey: ["command-center-dashboard"] });
       toast.success(`Eventbrite synced: ${result.imported} new, ${result.updated} updated.`);
+      for (const report of result.reports.filter((r) => !r.ok)) toast.error(`${report.title}: ${report.error}`);
+      const flagged = result.reports.reduce((n, r) => n + (r.counts?.conflict ?? 0) + (r.counts?.invalid ?? 0), 0);
+      if (flagged) toast.warning(`${flagged} attendee rows need review (conflicts or invalid). Use the event's Eventbrite CSV import preview for line details.`);
     } catch (syncError) {
       toast.error(syncError instanceof Error ? syncError.message : "Eventbrite sync failed");
     } finally {
