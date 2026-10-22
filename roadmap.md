@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Active provisional 134th-program adaptation
+- [ ] Seed editable provisional FC135 sessions using only supplied reference times/topics, unassigned people and locations, with provenance notice.
+- [ ] Expose reusable agenda status editing and event-timezone day/time display; preserve all unrelated content and protections.
+- [ ] Run full tests, check automatic build, verify desktop/mobile schedule and admin read-back; report missing source/content and external access.
+
 ## Active recovered Home Hero Redesign
 - [x] Restore image-free HomeHero with About Jesup first, manual labeled slideshow controls, existing Programs/Publications entries and a persistent FC135 link; preserve event-scoped branding.
 - [x] Strengthen neutral network secondary/accent and use a home-only charcoal/gray-teal gradient; refine About historical wording and link existing directories without speculative feature claims. Home/About have distinct network metadata without placeholder social images.
