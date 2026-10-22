@@ -1,126 +1,43 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Json } from "@/integrations/supabase/types";
+import { syncOneEvent, type EventSyncReport } from "./eventbrite-api-sync";
 
-type EventbriteAttendee = {
-  id: string;
-  status?: string;
-  profile?: { name?: string; first_name?: string; last_name?: string; email?: string };
-  barcodes?: Array<{ barcode?: string; status?: string }>;
-  answers?: Array<{ question?: string; answer?: string }>;
-};
-
-type EventbriteAttendeePage = {
-  attendees?: EventbriteAttendee[];
-  pagination?: { page_number?: number; page_count?: number; has_more_items?: boolean };
-};
-
-async function listEventbriteAttendees(eventbriteEventId: string, token: string) {
-  const attendees: EventbriteAttendee[] = [];
-  let page = 1;
-
-  while (page <= 100) {
-    const url = new URL(`https://www.eventbriteapi.com/v3/events/${encodeURIComponent(eventbriteEventId)}/attendees/`);
-    url.searchParams.set("page", String(page));
-    url.searchParams.set("page_size", "100");
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-    });
-    if (!response.ok) {
-      throw new Error(`Eventbrite attendee request failed (${response.status}).`);
-    }
-    const payload = (await response.json()) as EventbriteAttendeePage;
-    attendees.push(...(payload.attendees ?? []));
-    if (!payload.pagination?.has_more_items && page >= (payload.pagination?.page_count ?? page)) break;
-    page += 1;
-  }
-
-  return attendees;
-}
-
+/** Admin-only live sync. Every write goes through import_eventbrite_registrations
+ * as the signed-in admin, so the CSV importer's protections and audit apply. */
 export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: role, error: roleError } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (roleError) throw roleError;
-    if (!role) throw new Error("Forbidden: admin role required.");
+    const db = context.supabase;
+    const { data: admin, error: roleError } = await db.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (roleError || !admin) throw new Error("Forbidden: admin role required.");
 
-    const token = process.env['EVENTBRITE_PRIVATE_TOKEN']?.trim();
-    if (!token) throw new Error("EVENTBRITE_PRIVATE_TOKEN is not configured.");
+    const token = process.env["EVENTBRITE_PRIVATE_TOKEN"]?.trim();
+    if (!token) throw new Error("Eventbrite API sync is not configured yet. Use the Eventbrite CSV import in Conference operations.");
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: events, error: eventsError } = await supabaseAdmin
-      .from("events")
-      .select("id, title, metadata")
-      .eq("is_active", true);
-    if (eventsError) throw eventsError;
+    const { data: events, error } = await db.from("events").select("id, title, metadata").eq("is_active", true);
+    if (error) throw new Error("Could not load events.");
 
-    let imported = 0;
-    let updated = 0;
-    let linkedEvents = 0;
-
+    const reports: EventSyncReport[] = [];
     for (const event of events ?? []) {
       const metadata = (event.metadata ?? {}) as Record<string, unknown>;
       if (metadata.registration_provider !== "eventbrite") continue;
-      const externalEventId = String(metadata.eventbrite_event_id ?? "").trim();
-      if (!externalEventId) continue;
-      linkedEvents += 1;
-
-      const attendees = await listEventbriteAttendees(externalEventId, token);
-      for (const attendee of attendees) {
-        const attendeeName = attendee.profile?.name?.trim() ||
-          [attendee.profile?.first_name, attendee.profile?.last_name].filter(Boolean).join(" ").trim() ||
-          "Eventbrite attendee";
-        const barcode = attendee.barcodes?.find((item) => item.barcode)?.barcode?.trim() ?? null;
-        const isCancelled = (attendee.status ?? "").toLowerCase().includes("cancel");
-        const answerFor = (patterns: string[]) =>
-          attendee.answers?.find((answer) =>
-            patterns.some((pattern) => (answer.question ?? "").toLowerCase().includes(pattern)),
-          )?.answer?.trim() || null;
-        const dietaryRestrictions = answerFor(["dietary", "diet preference", "diet restriction"]);
-        const foodAllergies = answerFor(["food allerg", "allergies"]);
-        const accessibilityAccommodations = answerFor(["accessibility", "accommodation", "access need"]);
-        const consentAnswer = answerFor(["authorize jesup", "accommodation consent", "coordinate this event"]);
-        const accommodationConsent = /^(yes|true|i agree|authorized)$/i.test(consentAnswer ?? "");
-
-        const { data: existing, error: existingError } = await supabaseAdmin
-          .from("event_registrations")
-          .select("id, user_id")
-          .eq("event_id", event.id)
-          .eq("registration_source", "eventbrite")
-          .eq("external_registration_id", attendee.id)
-          .maybeSingle();
-        if (existingError) throw existingError;
-
-        const record = {
-          event_id: event.id,
-          attendee_name: attendeeName,
-          attendee_email: attendee.profile?.email?.trim() || null,
-          registration_source: "eventbrite",
-          external_registration_id: attendee.id,
-          external_barcode: barcode,
-          dietary_restrictions: accommodationConsent ? dietaryRestrictions : null,
-          food_allergies: accommodationConsent ? foodAllergies : null,
-          accessibility_accommodations: accommodationConsent ? accessibilityAccommodations : null,
-          accommodation_consent: accommodationConsent,
-          status: isCancelled ? ("cancelled" as const) : ("registered" as const),
-        };
-
-        if (existing) {
-          const { error } = await supabaseAdmin.from("event_registrations").update(record).eq("id", existing.id);
-          if (error) throw error;
-          updated += 1;
-        } else {
-          const { error } = await supabaseAdmin.from("event_registrations").insert({ ...record, user_id: null });
-          if (error) throw error;
-          imported += 1;
-        }
-      }
+      const eventbriteEventId = String(metadata.eventbrite_event_id ?? "").trim();
+      if (!eventbriteEventId) continue;
+      const report = await syncOneEvent(
+        { id: event.id, title: event.title, eventbriteEventId },
+        {
+          token,
+          fetch: (url, init) => fetch(url, init),
+          rpc: async (args) => {
+            const { data, error } = await db.rpc("import_eventbrite_registrations", { ...args, p_rows: args.p_rows as unknown as Json });
+            return { data, error: error ? { message: error.message } : null };
+          },
+        },
+      );
+      if (!report.ok) console.error("Eventbrite sync failed for event", event.id, report.error);
+      reports.push(report);
     }
-
-    return { linkedEvents, imported, updated };
+    const sum = (k: "new" | "update") => reports.reduce((n, r) => n + (r.counts?.[k] ?? 0), 0);
+    return { linkedEvents: reports.length, imported: sum("new"), updated: sum("update"), failed: reports.filter((r) => !r.ok).length, reports };
   });

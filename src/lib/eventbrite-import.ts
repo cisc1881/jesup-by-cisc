@@ -92,11 +92,31 @@ export function parseEventbriteCsv(text: string): EventbriteParseResult {
   const ignoredColumns = records[0].cells.filter((_, i) => !used.has(i));
   const rows: EventbriteImportRow[] = [];
   const issues: EventbriteLineIssue[] = [];
-  const seenIds = new Map<string, number>(), seenBarcodes = new Map<string, number>();
-  for (const { line, cells } of records.slice(1)) {
+  const candidates = records.slice(1).map(({ line, cells }) => {
     const get = (i: number) => (i >= 0 ? (cells[i] ?? "").trim() : "");
-    const external_id = get(idx.externalId), barcode = get(idx.barcode), email = normalizeEmail(get(idx.email));
-    const name = (get(idx.name) || [get(idx.firstName), get(idx.lastName)].filter(Boolean).join(" ")).slice(0, 200);
+    return {
+      line,
+      external_id: get(idx.externalId),
+      barcode: get(idx.barcode),
+      email: get(idx.email),
+      name: get(idx.name) || [get(idx.firstName), get(idx.lastName)].filter(Boolean).join(" "),
+      cancelled: mapEventbriteStatus(get(idx.status)) === "cancelled",
+    };
+  });
+  const validated = validateImportCandidates(candidates);
+  return { ok: true, rows: validated.rows, issues: validated.issues, ignoredColumns };
+}
+
+export type ImportCandidate = { line: number; external_id: string; barcode: string; email: string; name: string; cancelled: boolean };
+
+/** Shared row validation for CSV and live API sync; reasons never contain attendee data. */
+export function validateImportCandidates(candidates: ImportCandidate[]) {
+  const rows: EventbriteImportRow[] = [];
+  const issues: EventbriteLineIssue[] = [];
+  const seenIds = new Map<string, number>(), seenBarcodes = new Map<string, number>();
+  for (const c of candidates) {
+    const line = c.line, external_id = c.external_id.trim(), barcode = c.barcode.trim(), email = normalizeEmail(c.email);
+    const name = c.name.trim().slice(0, 200);
     const bad = (reason: string) => issues.push({ line, outcome: "invalid", reason });
     if (!external_id || external_id.length > 100) { bad("Missing or too-long Attendee #"); continue; }
     if (!EMAIL.test(email)) { bad("Missing or invalid email"); continue; }
@@ -104,9 +124,15 @@ export function parseEventbriteCsv(text: string): EventbriteParseResult {
     if (seenIds.has(external_id)) { bad(`Duplicate Attendee # (also on line ${seenIds.get(external_id)})`); continue; }
     if (seenBarcodes.has(barcode)) { bad(`Duplicate Barcode # (also on line ${seenBarcodes.get(barcode)})`); continue; }
     seenIds.set(external_id, line); seenBarcodes.set(barcode, line);
-    rows.push({ line, external_id, email, name, barcode, status: mapEventbriteStatus(get(idx.status)) });
+    rows.push({ line, external_id, email, name, barcode, status: c.cancelled ? "cancelled" : "registered" });
   }
-  return { ok: true, rows, issues, ignoredColumns };
+  return { rows, issues };
+}
+
+/** Deterministic UUID from content so identical retries replay the stored result. */
+export async function contentRequestId(seed: string) {
+  const h = await sha256Hex(seed);
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`;
 }
 
 /** Hex SHA-256 of the file for the audit record (no attendee data stored). */
