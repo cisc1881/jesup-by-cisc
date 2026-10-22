@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
 import type { Json } from "@/integrations/supabase/types";
 import { eventLocalInput, eventLocalToUtc } from "@/lib/conference";
 import {
@@ -222,11 +224,11 @@ const listSelect = `
   event_categories ( id, name, slug )
 `;
 
-async function fetchRegistrationCounts(eventIds: string[]) {
+async function fetchRegistrationCounts(eventIds: string[], client: SupabaseClient<Database> = supabase) {
   if (eventIds.length === 0) return new Map<string, number>();
   const entries = await Promise.all(
     eventIds.map(async (id) => {
-      const { data, error } = await supabase.rpc("get_event_registration_count", {
+      const { data, error } = await client.rpc("get_event_registration_count", {
         p_event_id: id,
       });
       if (error) throw error;
@@ -313,8 +315,8 @@ export async function fetchEvents(options?: {
   upcomingOnly?: boolean;
   featuredOnly?: boolean;
   limit?: number;
-}): Promise<EventListItem[]> {
-  let query = supabase.from("events").select(listSelect).order("starts_at", { ascending: true });
+}, client: SupabaseClient<Database> = supabase): Promise<EventListItem[]> {
+  let query = client.from("events").select(listSelect).order("starts_at", { ascending: true });
 
   if (options?.activeOnly !== false) {
     query = query.eq("status", "published").eq("is_active", true);
@@ -326,13 +328,13 @@ export async function fetchEvents(options?: {
   const { data, error } = await query;
   if (error) throw error;
   const rows = data ?? [];
-  const countMap = await fetchRegistrationCounts(rows.map((r) => r.id));
+  const countMap = await fetchRegistrationCounts(rows.map((r) => r.id), client);
   return rows.map((row) => mapListRow(row as Record<string, unknown>, countMap.get(row.id) ?? 0));
 }
 
-export async function fetchEventById(idOrSlug: string): Promise<EventDetail | null> {
+export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Database> = supabase): Promise<EventDetail | null> {
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
-  let query = supabase
+  let query = client
     .from("events")
     .select(`${listSelect}, timezone, metadata`)
     .eq("is_active", true)
@@ -344,7 +346,7 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
   if (!row) return null;
 
   const eventId = row.id as string;
-  const countMap = await fetchRegistrationCounts([eventId]);
+  const countMap = await fetchRegistrationCounts([eventId], client);
 
   const [
     sessionsRes,
@@ -357,40 +359,40 @@ export async function fetchEventById(idOrSlug: string): Promise<EventDetail | nu
     grantsRes,
     surveyRes,
   ] = await Promise.all([
-    supabase.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
-    supabase.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
-    supabase
+    client.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
+    client.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
+    client
       .from("event_gallery")
       .select("*")
       .eq("event_id", eventId)
       .eq("is_public_approved", true)
       .order("sort_order"),
-    supabase
+    client
       .from("event_partners")
       .select("sort_order, sponsorship_level, partners ( id, name, slug, logo_url, website_url )")
       .eq("event_id", eventId)
       .order("sort_order"),
-    supabase
+    client
       .from("program_events")
       .select("sort_order, programs ( id, name, slug )")
       .eq("event_id", eventId)
       .order("sort_order"),
-    supabase
+    client
       .from("publication_events")
       .select("sort_order, publications ( id, title, slug )")
       .eq("event_id", eventId)
       .order("sort_order"),
-    supabase
+    client
       .from("event_podcast_episodes")
       .select("sort_order, podcast_episodes ( id, title, slug, guest )")
       .eq("event_id", eventId)
       .order("sort_order"),
-    supabase
+    client
       .from("event_grants")
       .select("sort_order, grants ( id, title, funder )")
       .eq("event_id", eventId)
       .order("sort_order"),
-    supabase.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
+    client.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
   ]);
 
   for (const res of [
