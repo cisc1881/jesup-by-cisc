@@ -1,0 +1,2 @@
+CREATE POLICY registrations_admin_insert ON public.event_registrations FOR INSERT TO authenticated WITH CHECK(public.has_role(auth.uid(),'admin'));
+COMMENT ON POLICY registrations_admin_insert ON public.event_registrations IS 'Allows administrators to explicitly import or enter attendees without granting public write access to imported identity fields.';
