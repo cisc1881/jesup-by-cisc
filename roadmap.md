@@ -1,9 +1,9 @@
 # FC135 recovery
 
 ## Active official program cleanup
-- [ ] Remove blank/MeatMe demos while preserving inquiry history; deactivate genuine Value Addition; order the eight CISC programs.
-- [ ] Remove program demo seeding/fallbacks and unverified imagery/copy; add verified CISC source links.
-- [ ] Run tests/build and verify Home, Programs and details; report exact cleanup and access limitations.
+- [x] Deleted only blank e59237f9-27f1-43aa-b771-f2334775cb0c and MeatMe cab68826-1a98-4e04-bac5-b79751f009e1; five gallery rows cascaded. All nine inquiries preserved, including MeatMe inquiry with its program link cleared. Value Addition record retained inactive/unfeatured; eight official programs ordered 1–8.
+- [x] Removed program demo definitions and program writes from starter imports; Home reads active ordered records with no demo fallback. Seven concise descriptions and eight source links verified against CISC pages. Family INC remains name/source-only due to reported title mismatch; generated program covers/hero metadata, unsupported objectives/taglines/contact details removed. Uploaded storage objects retained, not purged; non-program demo/event content unchanged.
+- [x] Full suite: 38 files / 147 tests passed; automatic build OK. Browser verified eight ordered results, all eight detail/source links, Home six-entry ordered preview, inactive/deleted detail rejection, desktop/mobile and no page errors. External /programs returns 401 Unauthorized: hosted appearance remains unverified behind existing preview access/binding blocker. No deployment, RLS, auth, FC135 or live-domain changes.
 
 ## Active provisional 134th-program adaptation
 - [x] Seed 21 editable provisional FC135 sessions using only supplied reference times/topics, unassigned people and locations, with provenance notice; omit ambiguous gaps/Session III.
