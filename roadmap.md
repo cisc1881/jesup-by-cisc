@@ -17,7 +17,7 @@
 - Second increment: authenticated database checks passed for unpriced approval, capacity, issue retries, redemption retries/replay rejection, repeat admission, duplicate badge prevention, incorrect claim rejection, verified-email/barcode claim and duplicate claim prevention.
 - Browser read-back confirmed admission QR in Wallet, invalid scanner credential rejection, admin catalog/staff/seller screens, Home-only public FC135, and no page errors. Verification records are non-public and retained inactive for audit; FC135 test registration was removed and section settings restored.
 - Physical camera/printer hardware, live Eventbrite provider import, and a separate non-admin staff account are not end-to-end verified.
-- Four focused test files passed: 15 tests.
+- Four focused test files passed: 18 tests in the second increment (15 in the first).
 - Latest automatic build reports build OK.
 - Browser checks passed for public FC135, mobile layout, calendar download, signed-in event view, and admin settings save/read-back; no page errors or failed data requests on the final run.
 - Events list contains only FC135; six earlier event records remain draft/inactive with prior publication settings preserved.
