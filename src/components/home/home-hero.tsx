@@ -45,7 +45,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
         </div>
         {slides.length > 1 && (
           <div className="mt-8 flex items-start gap-3 border-t border-home-muted/30 pt-4 sm:mt-10 sm:items-center">
-            <div className="flex min-w-0 flex-1 flex-wrap gap-x-4 gap-y-1" role="group" aria-label="Featured item selection">
+            <div className="flex min-w-0 flex-1 gap-4 overflow-x-auto" role="group" aria-label="Featured item selection">
               {slides.map((slide, index) => (
                 <AppButton
                   key={slide.id}
@@ -53,12 +53,12 @@ export function HomeHero({ slides }: HomeHeroProps) {
                   type="button"
                   onClick={() => setSelected(index)}
                   className={cn(
-                    "home-slide-control min-h-11 px-0 text-sm",
+                    "home-slide-control min-h-11 shrink-0 px-0 text-sm",
                     index === safeSelected ? "border-b-2 border-home-foreground text-home-foreground" : "text-home-muted",
                   )}
                   aria-label={`Show ${slide.imageAlt}`}
                   aria-current={index === safeSelected ? "true" : undefined}
-                >{slide.imageAlt}</AppButton>
+                ><span className="max-w-48 truncate">{slide.imageAlt}</span></AppButton>
               ))}
             </div>
             <div className="flex shrink-0 gap-1">
