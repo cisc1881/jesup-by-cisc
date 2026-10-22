@@ -24,7 +24,7 @@ export const Route = createFileRoute("/programs/$slug")({
       return buildPageHead({ title: "Program not found", noindex: true });
     }
     const p = loaderData.program;
-    return buildPageHead({
+    const head = buildPageHead({
       title: p.name,
       description: p.tagline ?? p.short ?? p.name,
       path: `/programs/${p.slug}`,
@@ -36,6 +36,10 @@ export const Route = createFileRoute("/programs/$slug")({
         imageUrl: p.coverImageUrl,
       }),
     });
+    if (!p.coverImageUrl?.startsWith("https://")) {
+      head.meta = head.meta.filter((meta) => !meta.property?.startsWith("og:image") && meta.name !== "twitter:image");
+    }
+    return head;
   },
   component: ProgramDetail,
   notFoundComponent: () => (

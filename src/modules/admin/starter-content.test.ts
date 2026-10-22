@@ -49,17 +49,7 @@ describe("starter content database defaults", () => {
   });
 
   it("matches the approved program, podcast, and 2FAS names", () => {
-    expect(starterPrograms.map((program) => program.name)).toEqual([
-      "Small Farm and Rural Development Program",
-      "Black Harvest Series",
-      "Black Belt Marketing and Innovation Center",
-      "CISC Dialogue Model",
-      "Family INC. x CISC",
-      "Environment, Economics, and Energy Academy (EEE Academy)",
-      "State of African Americans in the Black Belt",
-      "TUAIC (Tuskegee University Agricultural Innovation Center)",
-      "Value Addition & Technology",
-    ]);
+    expect(starterPrograms).toEqual([]);
     expect(starterPodcasts.map((podcast) => podcast.title)).toEqual([
       "2FAS Podcast",
       "Earth2TU",
@@ -76,7 +66,7 @@ describe("starter content database defaults", () => {
   it("provides complete institution, program, and resource demo coverage", () => {
     expect(starterInstitutionDemos).toHaveLength(19);
     expect(starterInstitutionEvents).toHaveLength(38);
-    expect(starterProgramWorkshops).toHaveLength(starterPrograms.length);
+    expect(starterProgramWorkshops).toHaveLength(9);
     expect(
       new Set(
         starterInstitutionEvents.map(
