@@ -1,4 +1,11 @@
-# FC135 first shippable increment
+# FC135 recovery
+
+## Active second increment
+- [ ] Inspect dormant schema and existing import, auth, meal, QR and badge systems.
+- [ ] Harden claiming, issuance, staff operations and audit/replay safeguards.
+- [ ] Add admin catalog, entitlement issuance, staff settings and disabled seller configuration.
+- [ ] Add gated Wallet/claim UI and event-scoped staff scanner/badge tools.
+- [ ] Run focused tests and verify authenticated flows, public shell and current build.
 
 - [x] Inspect recovered event data, schema, auth, and reusable conference infrastructure.
 - [x] Publish FC135 and move other public events to draft, preserving records.
@@ -15,6 +22,6 @@
 - Project changes are saved by managed version history; no manual Git commit or deployment was performed.
 
 ## Subsequent passes (outside this increment)
-- Ticket/add-on/payment/staff workflows remain deferred; previously applied foundation schema is dormant, not a delivered workflow.
+- Checkout, seller OAuth/onboarding implementation and payment processing remain deferred.
 - Confirm schedule, speakers, registration details, sponsors, maps, and resources before enabling their sections.
 - Publication and domain changes remain prohibited for this recovery pass.
