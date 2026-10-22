@@ -73,7 +73,7 @@ function HomeRouteError({ error, reset }: ErrorComponentProps) {
           </AppButton>
         </div>
         {import.meta.env.DEV ? (
-          <p className="mt-6 text-left text-xs text-muted-foreground">{error.message}</p>
+          <p className="mt-6 text-left text-xs text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
         ) : null}
       </PageContainer>
     </PublicLayout>
