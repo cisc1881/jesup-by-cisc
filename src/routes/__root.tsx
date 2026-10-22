@@ -16,7 +16,6 @@ import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "@/components/ui/sonner";
 import { OfflineBanner } from "@/components/offline-banner";
 import { JesupSplashGate } from "@/components/branding";
-import { JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL } from "@/lib/seo";
 import { InstitutionThemeProvider } from "@/components/institution-theme-provider";
 
 function NotFoundComponent() {

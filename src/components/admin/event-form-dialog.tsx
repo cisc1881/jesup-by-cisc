@@ -45,6 +45,8 @@ type EventFormDialogProps = {
 export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventFormDialogProps) {
   const [form, setForm] = useState<EventFormData>(emptyEventForm());
   const [saving, setSaving] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [newCategory, setNewCategory] = useState("");
 
@@ -81,13 +83,19 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
 
   useEffect(() => {
     if (!open) return;
+    let cancelled = false;
+    setFormError(null);
     if (!eventId) {
       setForm(emptyEventForm());
+      setLoadingForm(false);
       return;
     }
+    setLoadingForm(true);
     fetchAdminEventForm(eventId)
-      .then(setForm)
-      .catch((err) => toast.error(err.message));
+      .then(value => { if (!cancelled) setForm(value); })
+      .catch((err) => { if (!cancelled) setFormError(err.message); })
+      .finally(() => { if (!cancelled) setLoadingForm(false); });
+    return () => { cancelled = true; };
   }, [open, eventId]);
 
   async function addCategory() {
@@ -137,7 +145,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
         <DialogHeader>
           <DialogTitle>{eventId ? "Edit event" : "Create event"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {loadingForm ? <p role="status">Loading event…</p> : formError ? <p role="alert">{formError}</p> : <form onSubmit={handleSubmit} className="space-y-4">
           <Tabs defaultValue="basics">
             <TabsList className="flex h-auto flex-wrap gap-1">
               <TabsTrigger value="basics">Basics</TabsTrigger>
@@ -843,7 +851,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
               "Save event"
             )}
           </Button>
-        </form>
+        </form>}
       </DialogContent>
     </Dialog>
   );

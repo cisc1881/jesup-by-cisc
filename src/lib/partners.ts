@@ -80,7 +80,7 @@ export type PartnerSortMode = "alphabetical" | "featured" | "newest";
 
 const listSelect = `
   id, slug, name, short_description, description, category, logo_url, website_url,
-  email, phone, is_featured, is_published, partnership_areas, sort_order, created_at
+  is_featured, is_published, partnership_areas, sort_order, created_at
 `;
 
 function mapListRow(row: Record<string, unknown>): PartnerListItem {

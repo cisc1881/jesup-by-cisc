@@ -29,7 +29,9 @@ export function EventDiscoveryHomeSection() {
     queryFn: async (): Promise<TodaySession[]> => {
       const { data, error } = await supabase
         .from("event_sessions")
-        .select("id,title,starts_at,location,event_id,events(title,institution_ids,network_wide)")
+        .select("id,title,starts_at,location,event_id,events!inner(title,metadata,status,is_active)")
+        .eq("events.status", "published")
+        .eq("events.is_active", true)
         .gte("starts_at", start)
         .lt("starts_at", end)
         .order("starts_at")
@@ -38,8 +40,7 @@ export function EventDiscoveryHomeSection() {
       return (data ?? []).map((row) => {
         const event = row.events as unknown as {
           title: string;
-          institution_ids: string[] | null;
-          network_wide: boolean | null;
+          metadata: Record<string, unknown> | null;
         };
         return {
           id: row.id,
@@ -48,8 +49,8 @@ export function EventDiscoveryHomeSection() {
           location: row.location,
           event_id: row.event_id,
           eventTitle: event?.title ?? "JESUP event",
-          institutionIds: event?.institution_ids ?? [],
-          networkWide: event?.network_wide ?? true,
+          institutionIds: Array.isArray(event?.metadata?.institution_ids) ? event.metadata.institution_ids.filter((id): id is string => typeof id === "string") : [],
+          networkWide: event?.metadata?.network_wide !== false,
         };
       });
     },

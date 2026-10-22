@@ -20,6 +20,7 @@ import {
   registrationStatusLabel,
 } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
+import { eventDateLabel } from "@/lib/conference";
 import { useAdminDelete } from "@/hooks/use-admin-delete";
 import { toast } from "sonner";
 import { BarChart3, ClipboardCheck, Copy, FileText, ImageIcon, Pencil, Trash2, UserCheck, Users, Utensils } from "lucide-react";
@@ -211,7 +212,7 @@ function AdminEvents() {
                 {rows.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell className="font-medium">{row.title}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{fmtDateTime(row.startsAt)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{eventDateLabel(row)}</TableCell>
                     <TableCell><Badge variant={row.status === "published" ? "default" : "secondary"}>{eventStatusLabel(row.status)}</Badge></TableCell>
                     <TableCell><Badge variant="outline">{registrationStatusLabel(row.registrationStatus)}</Badge></TableCell>
                     <TableCell className="text-sm text-muted-foreground">
@@ -241,7 +242,7 @@ function AdminEvents() {
               <div key={row.id} className="space-y-3 p-4">
                 <div>
                   <div className="font-medium">{row.title}</div>
-                  <div className="text-sm text-muted-foreground">{fmtDateTime(row.startsAt)}</div>
+                  <div className="text-sm text-muted-foreground">{eventDateLabel(row)}</div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant={row.status === "published" ? "default" : "secondary"}>{eventStatusLabel(row.status)}</Badge>

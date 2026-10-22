@@ -29,7 +29,7 @@ export function visibleConferenceSections(event: EventDetail) {
     home: true,
     schedule: event.sessions.length > 0,
     speakers: event.speakers.length > 0,
-    tickets: event.registrationOpen || Boolean(event.metadata.eventbrite_event_id && event.metadata.eventbrite_event_url),
+    tickets: event.registrationOpen || Boolean(event.metadata.eventbrite_event_id && safeEventUrl(event.metadata.eventbrite_event_url)),
     sponsors: event.sponsors.length > 0,
     map: Boolean(event.lat != null && event.lng != null || safeEventUrl(event.metadata.parking_url) || safeEventUrl(event.metadata.map_url)),
     resources: event.publications.length > 0 || event.podcasts.length > 0,

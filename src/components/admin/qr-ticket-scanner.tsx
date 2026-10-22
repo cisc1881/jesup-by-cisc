@@ -21,7 +21,7 @@ export function QrTicketScanner({
   onDetectedRef.current = onDetected;
 
   useEffect(() => {
-    if (!open || !videoRef.current) return;
+    if (!open || disabled || !videoRef.current) return;
     let cancelled = false;
     detectedRef.current = false;
     const reader = new BrowserQRCodeReader(undefined, { delayBetweenScanAttempts: 250 });
@@ -57,7 +57,7 @@ export function QrTicketScanner({
       controlsRef.current?.stop();
       controlsRef.current = null;
     };
-  }, [continuous, open]);
+  }, [continuous, open, disabled]);
 
   return (
     <div className="space-y-3">
@@ -66,9 +66,9 @@ export function QrTicketScanner({
         {open ? "Stop scanner" : "Scan QR code"}
       </Button>
       {open && (
-        <div className="max-w-md overflow-hidden rounded-xl border bg-black">
+        <div className="max-w-md overflow-hidden rounded-lg border bg-secondary">
           <video ref={videoRef} className="aspect-square w-full object-cover" muted playsInline />
-          <p className="bg-black p-2 text-center text-xs text-white">Center the attendee QR code in the camera.</p>
+          <p className="bg-secondary p-2 text-center text-xs text-secondary-foreground">Center the attendee QR code in the camera.</p>
         </div>
       )}
     </div>
