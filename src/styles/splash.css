@@ -17,10 +17,18 @@
 }
 
 :root {
-  --jesup-splash-gradient: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
+  --guest-gradient-top-left: #59d9e3;
+  --guest-gradient-top-right: #2789c5;
+  --guest-gradient-center: #2f95ca;
+  --guest-gradient-bottom-left: #1770bb;
+  --guest-gradient-bottom-right: #0552b0;
+  --jesup-splash-gradient: linear-gradient(135deg, var(--guest-gradient-top-left) 0%, var(--guest-gradient-top-right) 28%, var(--guest-gradient-center) 50%, var(--guest-gradient-bottom-left) 72%, var(--guest-gradient-bottom-right) 100%);
   --splash-foreground: #171717;
-  /* Light wash preserves the full splash palette while supporting dark AA text. */
-  --jesup-banner-gradient: linear-gradient(90deg, color-mix(in srgb, #5de0e6 45%, white) 0%, color-mix(in srgb, #004aad 35%, white) 100%);
+  --guest-gradient-foreground: #ffffff;
+  --guest-gradient-scrim: rgb(0 0 0 / 48%);
+  /* The unmodified reference remains visible on splash/entry. Text-bearing
+     banners and filled controls add a dark scrim for AA white text. */
+  --jesup-banner-gradient: linear-gradient(var(--guest-gradient-scrim), var(--guest-gradient-scrim)), var(--jesup-splash-gradient);
 }
 
 .text-splash-foreground { color: var(--splash-foreground); background: color-mix(in srgb, white 85%, transparent); padding: 0.25rem 0.5rem; }
@@ -30,12 +38,7 @@
 }
 
 .jesup-splash--tone-light .jesup-splash__backdrop {
-  background: linear-gradient(
-    180deg,
-    var(--background) 0%,
-    color-mix(in oklch, var(--muted) 30%, var(--background)) 55%,
-    color-mix(in oklch, var(--primary) 6%, var(--background)) 100%
-  );
+  background: var(--jesup-splash-gradient);
 }
 
 .jesup-splash--tone-dark .jesup-logo-mark__glow {

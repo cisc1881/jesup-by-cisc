@@ -48,6 +48,7 @@
   --color-banner-highlight: var(--banner-highlight);
   --color-home-foreground: var(--home-foreground);
   --color-home-muted: var(--home-muted);
+  --color-gradient-foreground: var(--gradient-foreground);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -151,7 +152,10 @@
   --bottom-nav-offset: 6rem;
 
   /* Signature gradients & shadows */
-  --gradient-jesup: linear-gradient(115deg, var(--primary), var(--primary-mid));
+  --gradient-jesup: var(--jesup-banner-gradient);
+  --gradient-foreground: var(--guest-gradient-foreground);
+  --entry-gradient: var(--jesup-splash-gradient);
+  --program-media-overlay: linear-gradient(180deg, rgb(0 0 0 / 65%), rgb(0 0 0 / 85%));
   --gradient-hero-institution: linear-gradient(115deg, #050505 0%, #3f3f46 52%, #a1a1aa 100%);
   --gradient-jesup-soft: linear-gradient(
     90deg,
@@ -184,8 +188,8 @@
   /* Fixed network masthead; selected-school colors remain subtle elsewhere. */
   --home-foreground: oklch(0.99 0 0);
   --home-muted: oklch(0.94 0.006 240);
-  --home-gradient: linear-gradient(115deg, #103b40, #166b70);
-  --banner-background: #12464b;
+  --home-gradient: var(--jesup-banner-gradient);
+  --banner-background: var(--jesup-banner-gradient);
   --banner-foreground: #ffffff;
   --banner-highlight: #bde4e1;
   --home-control-hover: oklch(0.99 0 0 / 10%);
@@ -627,6 +631,10 @@ body *::after {
 .home-slide-content { min-height: 280px; }
 .home-slide-control:hover { background: var(--home-control-hover); }
 .home-hero-cta, .home-hero-cta:hover { background: var(--home-cta); color: var(--home-cta-foreground); }
+.guest-entry-surface { background: var(--entry-gradient); }
+.brand-primary-control { background-image: var(--gradient-jesup); color: var(--gradient-foreground); }
+.brand-primary-control:hover { background-image: var(--gradient-jesup); }
+.program-media-overlay { background: var(--program-media-overlay); }
 @media (max-width: 639px) {
   .home-slide-content { min-height: 320px; }
 }

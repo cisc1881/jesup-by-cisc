@@ -7,8 +7,8 @@ const appBadgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent grad-crimson text-primary-foreground",
-        gold: "border-accent/25 bg-accent/10 text-accent",
+        default: "border-transparent grad-crimson text-gradient-foreground",
+        gold: "border-border bg-muted institution-accent-text",
         secondary: "border-transparent bg-secondary text-secondary-foreground",
         outline: "border-border bg-transparent text-foreground",
         muted: "border-transparent bg-muted text-muted-foreground",

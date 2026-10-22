@@ -1,5 +1,9 @@
 # FC135 recovery
 
+## Guest gradient reference
+- [ ] Match gradu.png through shared CSS gradients for splash, entry, Home, banners and accent buttons; preserve neutral cards and selection-only school palettes.
+- [ ] Run full tests, automatic build and desktop/mobile light/dark rendered contrast checks, including selected Tuskegee.
+
 ## Selection-only themes and session entry
 - [x] Replaced ownership-driven branding with profile/explicit guest school selection; all unselected pages inherit splash-palette gradient (lightened for readable text) and neutral controls. Header guest school picker switches/resets school for the session; featured content inherits it. Event metadata remains unchanged.
 - [x] First anonymous session shows splash then existing /auth sign-in/create-account screen with Continue as guest; session choice preserves safe public path/query/hash. Signed-in users bypass; reduced motion shortens the splash without animation. Reset/invite/OAuth return parameters bypass entry; invite/recovery type keeps password setup open. Public loaders and permissions unchanged.

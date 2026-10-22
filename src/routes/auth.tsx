@@ -153,7 +153,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary/40 p-4">
+    <div className="guest-entry-surface flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link to="/" className="mx-auto" aria-label="JESUP home">
@@ -287,13 +287,14 @@ function AuthPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <button
+                  <Button
                     type="button"
-                    className="mt-2 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    variant="link"
+                    className="mt-2 px-0 text-sm font-medium"
                     onClick={() => setForgotPassword(true)}
                   >
                     Forgot password?
-                  </button>
+                  </Button>
                 </div>
                 <Button
                   type="submit"
