@@ -1229,6 +1229,42 @@ export type Database = {
           },
         ]
       }
+      event_registration_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          registration_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          registration_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          registration_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registration_sessions_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_registration_sessions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_registrations: {
         Row: {
           accessibility_accommodations: string | null
