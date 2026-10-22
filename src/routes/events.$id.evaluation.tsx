@@ -21,12 +21,14 @@ import {
 } from "@/lib/query-config";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft } from "lucide-react";
+import { conferenceHead } from "@/lib/conference";
 
 export const Route = createFileRoute("/events/$id/evaluation")({
   loader: async ({ params }) => {
     const event = await fetchEventById(params.id);
     return { event };
   },
+  head: ({ loaderData }) => conferenceHead(loaderData?.event ?? null, " Evaluation"),
   component: EventEvaluationPage,
 });
 
