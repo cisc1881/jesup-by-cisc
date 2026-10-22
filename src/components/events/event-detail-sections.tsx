@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { fmtDateTime } from "@/lib/format";
 import { Calendar, MapPin } from "lucide-react";
 import { EventAgendaNotice } from "./event-agenda-notice";
+import { isDraftAgenda } from "@/lib/event-agenda-status";
+import { formatInTimeZone } from "date-fns-tz";
 
 type EventDetailHeroProps = {
   event: EventDetail;
@@ -113,17 +115,26 @@ function RelatedList({
 
 export function EventAgenda({ event }: { event: EventDetail }) {
   if (event.sessions.length === 0) return null;
+  const timezone = event.timezone || "America/Chicago";
+  const provisional = isDraftAgenda(event.metadata);
+  const days = new Map<string, typeof event.sessions>();
+  for (const session of event.sessions) {
+    const day = session.startsAt ? formatInTimeZone(session.startsAt, timezone, "yyyy-MM-dd") : "unscheduled";
+    days.set(day, [...(days.get(day) ?? []), session]);
+  }
   return (
     <section aria-labelledby="event-agenda-heading" className="space-y-4">
-      <SectionHeader title="Agenda" titleId="event-agenda-heading" />
+      <SectionHeader title={provisional ? "Provisional agenda" : "Agenda"} titleId="event-agenda-heading" />
       <div className="gold-divider" />
       <EventAgendaNotice metadata={event.metadata} />
-      <div className="space-y-3">
-        {event.sessions.map((session) => (
+      <p className="text-sm text-muted-foreground">Times shown in {timezone.replaceAll("_", " ")}.{provisional ? " Proposed times, topics and parallel tracks remain subject to organizer review. Speakers and hosts are unassigned unless explicitly confirmed." : ""}</p>
+      {[...days.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([day,sessions])=><div key={day} className="space-y-3">
+        <h3 className="border-b py-3 text-lg font-semibold">{day === "unscheduled" ? "Time to be assigned" : formatInTimeZone(`${day}T12:00:00Z`, "UTC", "EEEE, MMMM d, yyyy")}</h3>
+        {sessions.map((session) => (
           <AppCard key={session.id} variant="elevated" padding="md">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 className="font-bold text-foreground">{session.title}</h3>
+            <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
+              <div className="min-w-0 flex-1">
+                <h4 className="font-bold text-foreground">{session.title}</h4>
                 {session.description && (
                   <p className="mt-2 text-sm text-muted-foreground">{session.description}</p>
                 )}
@@ -133,13 +144,13 @@ export function EventAgenda({ event }: { event: EventDetail }) {
               </div>
               {session.startsAt && (
                 <div className="text-sm font-semibold text-primary">
-                  {fmtDateTime(session.startsAt)}
+                  {provisional && <span className="mr-1">Proposed ·</span>}{formatInTimeZone(session.startsAt,timezone,"h:mm a")}{session.endsAt ? `–${formatInTimeZone(session.endsAt,timezone,"h:mm a")}` : ""}
                 </div>
               )}
             </div>
           </AppCard>
         ))}
-      </div>
+      </div>)}
     </section>
   );
 }

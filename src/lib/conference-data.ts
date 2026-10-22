@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 
 export async function saveConferenceSettings(eventId: string, metadata: Record<string, unknown>) {
-  const keys = ["conference_shell", "conference_theme", "theme_preset", "brand_label", "map_url", "parking_url", "resource_links", "sections", "community_enabled", "attendee_workspace_enabled", "wallet_enabled", "catalog_enabled", "eventbrite_claim_enabled", "staff_operations_enabled"];
+  const keys = ["conference_shell", "conference_theme", "theme_preset", "brand_label", "map_url", "parking_url", "resource_links", "sections", "community_enabled", "attendee_workspace_enabled", "wallet_enabled", "catalog_enabled", "eventbrite_claim_enabled", "staff_operations_enabled", "agenda_status", "agenda_notice", "agenda_provenance"];
   const { data: event, error: readError } = await supabase.from("events").select("metadata").eq("id", eventId).single();
   if (readError) throw readError;
   const current = event.metadata && typeof event.metadata === "object" && !Array.isArray(event.metadata) ? event.metadata : {};

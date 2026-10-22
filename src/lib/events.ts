@@ -758,7 +758,6 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
     supabase.from("event_podcast_episodes").delete().eq("event_id", eventId),
     supabase.from("event_partners").delete().eq("event_id", eventId),
     supabase.from("event_grants").delete().eq("event_id", eventId),
-    supabase.from("event_sessions").delete().eq("event_id", eventId),
     supabase.from("event_speakers").delete().eq("event_id", eventId),
   ]);
 
@@ -819,10 +818,16 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
       ),
     );
   }
+  // Preserve existing session IDs so edits do not break attendee session plans.
+  const keptSessionIds = form.sessions.flatMap(session => session.id ? [session.id] : []);
+  let removeSessions = supabase.from("event_sessions").delete().eq("event_id", eventId);
+  if (keptSessionIds.length) removeSessions = removeSessions.not("id", "in", `(${keptSessionIds.join(",")})`);
+  const { error: removeSessionError } = await removeSessions;
+  if (removeSessionError) throw removeSessionError;
   if (form.sessions.length) {
-    inserts.push(
-      supabase.from("event_sessions").insert(
+    const { error: sessionError } = await supabase.from("event_sessions").upsert(
         form.sessions.map((session, index) => ({
+          id: session.id ?? crypto.randomUUID(),
           event_id: eventId,
           title: session.title,
           description: session.description || null,
@@ -831,8 +836,8 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
           location: session.location || null,
           sort_order: index,
         })),
-      ),
-    );
+      );
+    if (sessionError) throw sessionError;
   }
   if (form.speakers.length) {
     inserts.push(
