@@ -21,3 +21,4 @@
 - Conference operations use authenticated server functions and event-scoped RPCs; checkout stays disabled, issuance is explicitly admin-only, and imported identity claims require verified email plus an original one-time barcode.
 - Staff operation retries use request IDs and database locks; badge issuance records a print request, not confirmation that a physical printer succeeded.
 - The role policy helper is callable for public policies but returns false for anonymous callers and only checks the caller's own identity, preserving public reads without role enumeration.
+- Home always renders the network HomeHero; featured conferences use a separate event link rather than replacing it, keeping About discoverable and event themes scoped to their event pages.

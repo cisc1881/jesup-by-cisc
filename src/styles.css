@@ -44,6 +44,8 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-home-foreground: var(--home-foreground);
+  --color-home-muted: var(--home-muted);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -93,11 +95,11 @@
   --card-foreground: oklch(0.22 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.22 0 0);
-  --secondary: oklch(0.93 0.002 90);
+  --secondary: oklch(0.87 0.004 240);
   --secondary-foreground: oklch(0.22 0 0);
   --muted: oklch(0.94 0.002 90);
   --muted-foreground: oklch(0.5 0 0);
-  --accent: #3f3f46;
+  --accent: oklch(0.35 0.008 240);
   --accent-foreground: #ffffff;
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
@@ -176,6 +178,14 @@
   --btn-radius: 9999px;
   --btn-radius-square: var(--radius-md);
   --btn-shadow-primary: var(--shadow-crimson);
+
+  /* Fixed network masthead; selected-school colors remain subtle elsewhere. */
+  --home-foreground: oklch(0.99 0 0);
+  --home-muted: oklch(0.85 0.006 240);
+  --home-gradient: linear-gradient(115deg, oklch(0.19 0.009 240), oklch(0.29 0.015 220) 65%, oklch(0.39 0.022 190));
+  --home-control-hover: oklch(0.99 0 0 / 10%);
+  --home-cta: oklch(0.92 0.004 240);
+  --home-cta-foreground: oklch(0.22 0.008 240);
 }
 
 @media (min-width: 640px) {
@@ -212,7 +222,7 @@
   );
   --institution-border-primary: color-mix(in srgb, #d4d4d8 18%, var(--border));
   --institution-border-secondary: color-mix(in srgb, #71717a 24%, var(--border));
-  --secondary: oklch(0.24 0 0);
+  --secondary: oklch(0.32 0.004 240);
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.24 0 0);
   --muted-foreground: oklch(0.7 0 0);
@@ -615,3 +625,12 @@ body *::after {
 .conference-shell, .conference-shell * { letter-spacing: 0; }
 .conference-shell h1 { letter-spacing: 0; }
 .credential-qr { background: #ffffff; color: #171717; }
+
+.home-network-hero { background: var(--home-gradient); }
+.home-network-hero, .home-network-hero *, .jesup-about, .jesup-about * { letter-spacing: 0; }
+.home-slide-content { min-height: 280px; }
+.home-slide-control:hover { background: var(--home-control-hover); }
+.home-hero-cta, .home-hero-cta:hover { background: var(--home-cta); color: var(--home-cta-foreground); }
+@media (max-width: 639px) {
+  .home-slide-content { min-height: 320px; }
+}
