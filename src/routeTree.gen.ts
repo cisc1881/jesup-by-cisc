@@ -86,7 +86,6 @@ import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AuthenticatedEventsIdScanRouteImport } from './routes/_authenticated/events.$id.scan'
 import { Route as AuthenticatedAdminWeatherNotificationsRouteImport } from './routes/_authenticated/admin/weather/notifications'
 import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/_authenticated/admin/weather/counties'
 import { Route as AuthenticatedAdminReportsEventsRouteImport } from './routes/_authenticated/admin/reports.events'
@@ -527,12 +526,6 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedEventsIdScanRoute =
-  AuthenticatedEventsIdScanRouteImport.update({
-    id: '/events/$id/scan',
-    path: '/events/$id/scan',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminWeatherNotificationsRoute =
   AuthenticatedAdminWeatherNotificationsRouteImport.update({
     id: '/weather/notifications',
@@ -694,7 +687,6 @@ export interface FileRoutesByFullPath {
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
-  '/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
@@ -779,7 +771,6 @@ export interface FileRoutesByTo {
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
-  '/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
@@ -869,7 +860,6 @@ export interface FileRoutesById {
   '/_authenticated/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/_authenticated/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/_authenticated/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
-  '/_authenticated/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/_authenticated/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/_authenticated/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/_authenticated/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
@@ -959,7 +949,6 @@ export interface FileRouteTypes {
     | '/admin/reports/events'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
-    | '/events/$id/scan'
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
@@ -1044,7 +1033,6 @@ export interface FileRouteTypes {
     | '/admin/reports/events'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
-    | '/events/$id/scan'
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
@@ -1133,7 +1121,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/reports/events'
     | '/_authenticated/admin/weather/counties'
     | '/_authenticated/admin/weather/notifications'
-    | '/_authenticated/events/$id/scan'
     | '/_authenticated/admin/events/$eventId/attendance'
     | '/_authenticated/admin/events/$eventId/evaluations'
     | '/_authenticated/admin/events/$eventId/gallery'
@@ -1715,13 +1702,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/events/$id/scan': {
-      id: '/_authenticated/events/$id/scan'
-      path: '/events/$id/scan'
-      fullPath: '/events/$id/scan'
-      preLoaderRoute: typeof AuthenticatedEventsIdScanRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/weather/notifications': {
       id: '/_authenticated/admin/weather/notifications'
       path: '/weather/notifications'
@@ -1942,7 +1922,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedFunderRoute: typeof AuthenticatedFunderRouteWithChildren
   AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
-  AuthenticatedEventsIdScanRoute: typeof AuthenticatedEventsIdScanRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1950,7 +1929,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedFunderRoute: AuthenticatedFunderRouteWithChildren,
   AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
-  AuthenticatedEventsIdScanRoute: AuthenticatedEventsIdScanRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
