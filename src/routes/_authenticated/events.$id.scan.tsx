@@ -11,8 +11,7 @@ import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue} from '@/compo
 import {QrTicketScanner} from '@/components/admin/qr-ticket-scanner';
 import {conferenceWorkspace,operateConferenceCredential} from '@/lib/conference-operations.functions';
 import {printEventBadge} from '@/lib/badge-printing';
-import {buildPageHead} from '@/lib/seo';
-export const Route=createFileRoute('/_authenticated/events/$id/scan')({head:()=>buildPageHead({title:'Event staff scanner · JESUP',description:'Authorized event admission, entitlement redemption and badge issuance.'}),component:StaffScanner});
+export const Route=createFileRoute('/_authenticated/events/$id/scan')({head:()=>({meta:[{title:'Event staff scanner · JESUP'},{name:'description',content:'Authorized event admission, entitlement redemption and badge issuance.'},{property:'og:title',content:'Event staff scanner · JESUP'},{property:'og:description',content:'Authorized event admission, entitlement redemption and badge issuance.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary'},{name:'robots',content:'noindex, nofollow'}]}),component:StaffScanner});
 function StaffScanner(){
  const {id}=Route.useParams(),read=useServerFn(conferenceWorkspace),operate=useServerFn(operateConferenceCredential);
  const query=useQuery({queryKey:['staff-workspace',id],queryFn:()=>read({data:{eventId:id}})});

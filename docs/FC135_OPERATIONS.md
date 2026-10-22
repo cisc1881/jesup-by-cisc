@@ -3,7 +3,7 @@
 ## Implemented
 - Event-scoped admin product catalog: ticket, meal, activity, parking, sponsor and company packages; self, guest and company beneficiaries; nullable cents price, capacity and active state.
 - Explicit administrator-only issuance/revocation. Unpriced issuance requires an explicit approval flag; no automatic entitlements from imports or registration. Product capacity is serialized under a database lock.
-- Owner-only Wallet lists issued credentials and redemption counts. Guest/company credentials remain attached to the purchasing attendee's existing registration.
+- Owner-only Wallet lists the linked admission QR, issued credentials and redemption counts. Guest/company credentials remain attached to the attendee's existing registration; no purchase flow is enabled.
 - Eventbrite claim requires signed-in database-confirmed email and exact original Eventbrite barcode, with a row lock, per-account lock, consumed claim fields and the existing unique event/user constraint. Email-only claim is deprecated and execution revoked. Import updates no longer overwrite an account claimed during sync.
 - Event staff assignment roles: checkin, redemption, badge and manager. Explicit event operations enablement plus database authorization applies to every staff RPC.
 - Admission check-in is idempotent; entitlement/legacy meal consumption is quantity-limited and locked. Staff requests have idempotency keys with an audit ledger. Badge issuance allows one current badge per registration through the locked operation path; printing records an issuance request, not physical printer success.
@@ -22,3 +22,6 @@ Required before a future payment pass:
 
 ## Deferred
 Checkout/payment processing; seller OAuth and live onboarding; automatic Eventbrite product mapping/entitlement issuance; guest account transfer; badge printer integration/reprint UI; offline scanning and bulk issuance; confirmed FC135 product names/prices and service windows. No unconfirmed products are seeded into FC135.
+
+## Verification boundaries
+Authenticated administrator verification exercised actual database issuance, unpriced approval/capacity rejection, request retries, redemption replay rejection, repeat check-in, badge duplicate rejection, and verified-email/barcode claiming. Browser verification read the claimed admission QR through Wallet and checked the scanner error path and admin controls. FC135 settings were restored and test registrations removed; isolated verification events remain draft/inactive with audit records. Camera/printer hardware, live Eventbrite API imports, a separate non-admin staff session, and legacy meal redemption with configured meal data remain unverified.
