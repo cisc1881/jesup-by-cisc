@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { getDraftAgendaNotice } from "./event-agenda-status";
 
 describe("getDraftAgendaNotice", () => {
+  it("treats the 2027 provisional agenda as planning rather than confirmed", () => {
+    expect(getDraftAgendaNotice({ agenda_status: "provisional" })).not.toBeNull();
+  });
   it("returns the organizer notice for placeholder agendas", () => {
     expect(
       getDraftAgendaNotice({

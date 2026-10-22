@@ -22,3 +22,4 @@
 - Staff operation retries use request IDs and database locks; badge issuance records a print request, not confirmation that a physical printer succeeded.
 - The role policy helper is callable for public policies but returns false for anonymous callers and only checks the caller's own identity, preserving public reads without role enumeration.
 - Home always renders the network HomeHero; featured conferences use a separate event link rather than replacing it, keeping About discoverable and event themes scoped to their event pages.
+- Provisional agendas reuse event_sessions and event metadata agenda_status/agenda_notice/agenda_provenance; render proposed times in the event timezone and never create products or entitlements from planning blocks.
