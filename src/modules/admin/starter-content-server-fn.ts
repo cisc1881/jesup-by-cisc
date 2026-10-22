@@ -14,7 +14,6 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
     if (!role) throw new Error("Forbidden: admin role required.");
 
     const {
-      starterPrograms,
       starterEvents,
       starterNews,
       starterMarkets,
@@ -51,7 +50,6 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
     // The official partner roster and supplied brand assets are managed separately
     // so a starter-content refresh cannot overwrite approved logos or republish placeholders.
     const imports = [
-      ["programs", starterPrograms, "slug"],
       [
         "events",
         [...starterEvents, ...targetedInstitutionEvents, ...starterProgramWorkshops],
@@ -97,14 +95,6 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
         .from("program_events")
         .upsert(programEventLinks, { onConflict: "program_id,event_id" });
       if (linksError) throw new Error(`program_events: ${linksError.message}`);
-    }
-
-    const { error: retiredProgramsError } = await context.supabase
-      .from("programs")
-      .update({ is_active: false, is_featured: false })
-      .in("slug", ["black-belt-food-corridor", "2fas"]);
-    if (retiredProgramsError) {
-      throw new Error(`programs cleanup: ${retiredProgramsError.message}`);
     }
 
     return result;

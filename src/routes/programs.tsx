@@ -22,12 +22,14 @@ import {
 } from "@/components/institution-scope-filter";
 
 export const Route = createFileRoute("/programs")({
-  head: () =>
-    listPageHead({
+  head: () => {
+    const head = listPageHead({
       title: "Programs",
       description: "Signature programs from the Carver Integrative Sustainability Center.",
       path: "/programs",
-    }),
+    });
+    return { ...head, meta: head.meta.filter((meta) => !meta.property?.startsWith("og:image") && meta.name !== "twitter:image") };
+  },
   component: ProgramsLayout,
 });
 
