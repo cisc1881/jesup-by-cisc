@@ -9,7 +9,7 @@ export function ConferenceHero({ event, entry = false }: { event: EventDetail; e
   return (
     <header className="conference-masthead px-5 py-8 sm:px-10 sm:py-12">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-current/25 pb-5">
-        <JesupLogoMark tone="gold" size="md" />
+        <JesupLogoMark tone="on-light" size="md" />
         <span className="text-sm font-semibold">Tuskegee University · CISC</span>
       </div>
       <div className="max-w-4xl py-8 sm:py-12">
