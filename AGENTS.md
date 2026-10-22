@@ -27,3 +27,4 @@
 - Theme selection uses only the signed-in profile school or session-scoped explicit guest school, never event/program ownership or metadata; paired layout-scoped tokens keep unselected content neutral and prevent guest branding leaks.
 - Guest gradients are shared CSS tokens with a separate scrim-protected text-bearing variant and foreground token; keep the reference unobscured behind neutral entry content and preserve school overrides so light/dark controls never borrow incompatible solid-color foregrounds.
 - Session entry is a presentation gate after hydration and session resolution, not a public data/auth guard; auth callbacks bypass it, while guest continuation retains only safe public destinations and lasts in sessionStorage.
+- Eventbrite CSV imports go through one admin-only database function that does dry-run and commit with identical matching rules; why: preview and import can never disagree and protections live in the database.
