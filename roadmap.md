@@ -4,7 +4,7 @@
 - [x] Confirm hosted FC135 HTTP 500 in preview logs; identify browser-configured SSR reads as a deployment-specific failure path (exact underlying provider error not present in logs).
 - [x] Move public event reads behind request-scoped anonymous server functions without changing event data or permissions.
 - [x] Reproduce hosted 500 in a Worker runtime: occurs exactly when the hosted runtime lacks backend connection settings (inherited project binding). Add publishable fallback to the recovered project.
-- [ ] Confirm the hosted preview renders after the next hosted build — blocked: sandbox gets HTTP 401 from preview and no preview tab is open; user must reload the preview.
+- [x] Hosted preview build 70c60c19: home, /events and /events/fc135 return 200 in hosted logs, no errors (visual check of the open tab not possible).
 - [ ] Platform: re-bind hosted preview/deployment identity (badge points to lost project lovp_0s4ebmzbx19hxvh5nf1270fx8t) and inject this project's server settings — requires Lovable support.
 
 ## Active second increment

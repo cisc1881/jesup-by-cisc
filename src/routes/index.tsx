@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer, AppButton } from "@/components/design-system";
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
+function HomeRouteError({ error, reset }: ErrorComponentProps) {
   const router = useRouter();
 
   return (
@@ -73,7 +73,7 @@ function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
           </AppButton>
         </div>
         {import.meta.env.DEV ? (
-          <p className="mt-6 text-left text-xs text-muted-foreground">{error.message}</p>
+          <p className="mt-6 text-left text-xs text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
         ) : null}
       </PageContainer>
     </PublicLayout>
