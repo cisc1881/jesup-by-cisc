@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## One-time owner admin invitation
+- [x] Auth accepted one invitation for info@accessfarmtotable.com at 2026-10-22 10:38:19 UTC, explicitly returning to the recovered project's allowed preview /auth?mode=reset. No password generated or stored; no invite link/token logged.
+- [x] Verified exact invited auth ID bd648192-50a4-4280-967f-2f0aa94eafff and matching profile; idempotent admin insert and removal of only its automatic user role leaves [admin]. Two prior admins preserved. Email remains unconfirmed and password unset; no RLS/auth configuration/application-code changes or deployment.
+- [ ] Recipient inbox delivery and password setup remain unverified: Auth accepted sending through default sender but no auth delivery log is available; preview landing responds 401 to sandbox. Recipient should open invitation while signed into this recovered Lovable project; if still blocked, platform must repair the existing preview binding before requesting a fresh password-reset email through /auth. No invitation retries sent.
+
 ## Active official program cleanup
 - [x] Deleted only blank e59237f9-27f1-43aa-b771-f2334775cb0c and MeatMe cab68826-1a98-4e04-bac5-b79751f009e1; five gallery rows cascaded. All nine inquiries preserved, including MeatMe inquiry with its program link cleared. Value Addition record retained inactive/unfeatured; eight official programs ordered 1–8.
 - [x] Removed program demo definitions and program writes from starter imports; Home reads active ordered records with no demo fallback. Seven concise descriptions and eight source links verified against CISC pages. Family INC remains name/source-only due to reported title mismatch; generated program covers/hero metadata, unsupported objectives/taglines/contact details removed. Uploaded storage objects retained, not purged; non-program demo/event content unchanged.
