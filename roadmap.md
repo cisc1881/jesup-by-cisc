@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Selection-only themes and session entry
+- [x] Replaced ownership-driven branding with profile/explicit guest school selection; all unselected pages inherit splash-palette gradient (lightened for readable text) and neutral controls. Header guest school picker switches/resets school for the session; featured content inherits it. Event metadata remains unchanged.
+- [x] First anonymous session shows splash then existing /auth sign-in/create-account screen with Continue as guest; session choice preserves safe public path/query/hash. Signed-in users bypass; reduced motion shortens the splash without animation. Reset/invite/OAuth return parameters bypass entry; invite/recovery type keeps password setup open. Public loaders and permissions unchanged.
+- [x] 40 files / 164 tests passed; automatic build OK; desktop/mobile fresh/repeat guest, public deep link, Tuskegee→Alcorn→network school switching, authenticated admin, reduced motion, reset form, invite-type and OAuth-error bypass verified with no page errors. Mobile light/dark choice/screens inspected; 148 sampled page contrast pairs passed, minimum 6.01:1. Real email/token redemption and provider roundtrips were not attempted; external preview remains 401 Unauthorized and externally unverified. No auth/RLS/data/live deployment changes.
+
 ## Institution-aware colors and contrast
 - [x] Resolve explicit event branding, owner name or single institution ID before profile personalization; scoped layout tokens replace root mutations. FC135 preset and verified CISC-source program presentation use Tuskegee without login. Missing/multiple ownership stays network rather than inferred from location/name. Eight official programs lack normalized owner IDs; CISC provenance is presentation attribution only, not a data/filter change.
 - [x] Fixed shared button/banner/filter/card/navigation foreground pairs, solid secondary hover backgrounds, visible focus, independent dark-mode banner pairs, network teal gradient and Tuskegee featured-entry scope. Home hero follows selected institution when present. Auth/admin/data/RLS unchanged.

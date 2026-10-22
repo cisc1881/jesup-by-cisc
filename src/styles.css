@@ -622,7 +622,7 @@ body *::after {
 .home-slide-control, .home-slide-control:hover { color: var(--home-foreground); }
 .home-slide-control:focus-visible { outline: 2px solid var(--home-foreground); outline-offset: 4px; }
 .program-masthead { background: var(--banner-background); color: var(--banner-foreground); }
-.program-hero-overlay { background: color-mix(in srgb, var(--banner-background) 90%, transparent); }
+.program-hero-overlay { background: color-mix(in srgb, var(--banner-solid, var(--banner-background)) 90%, transparent); }
 .home-network-hero, .home-network-hero *, .jesup-about, .jesup-about * { letter-spacing: 0; }
 .home-slide-content { min-height: 280px; }
 .home-slide-control:hover { background: var(--home-control-hover); }

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext, useMemo, type ReactNode, type CSSProperties } from "react";
-import { useMatches } from "@tanstack/react-router";
+import { createContext, useContext, useEffect, useState, useMemo, type ReactNode, type CSSProperties } from "react";
+import { GUEST_SCHOOL_KEY, readSessionValue, writeSessionValue } from "@/lib/entry-session";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/hooks/use-auth";
 import { getInstitutionById } from "@/lib/institutions";
@@ -8,7 +8,6 @@ import { getMyProfile } from "@/lib/profile";
 import {
   JESUP_NETWORK_THEME,
   institutionThemeProperties,
-  resolveContentTheme,
   hasRecognizedInstitutionTheme,
   resolveInstitutionTheme,
   type InstitutionTheme,
@@ -20,26 +19,27 @@ type InstitutionThemeContextValue = {
   institutionId: string | null;
   isGuest: boolean;
   hasInstitutionTheme: boolean;
+  selectGuestSchool: (name: string | null) => void;
 };
 
 const InstitutionThemeContext = createContext<InstitutionThemeContextValue>({
   theme: JESUP_NETWORK_THEME,
   institutionName: null,
   institutionId: null,
-  isGuest: true,
+  isGuest: false,
   hasInstitutionTheme: false,
+  selectGuestSchool: () => {},
 });
 
 export function InstitutionThemeProvider({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const { resolvedTheme } = useTheme();
-  const matches = useMatches();
-  const contentMatch = [...matches].reverse().find((match) => match.routeId === "/events/$id" || match.routeId === "/programs/$slug");
-  const loader = contentMatch?.loaderData as { event?: ThemeContent | null; program?: ThemeContent | null } | undefined;
-  const content = loader?.event ?? loader?.program;
-  const ownerId = content?.institutionIds?.length === 1 ? content.institutionIds[0] : undefined;
-  const { data: owner } = useQuery({ queryKey: ["institution", ownerId], enabled: Boolean(ownerId),
-    queryFn: () => ownerId ? getInstitutionById(ownerId) : Promise.resolve(null) });
+  const [guestSchool, setGuestSchool] = useState<string | null>(null);
+  useEffect(() => { setGuestSchool(readSessionValue(GUEST_SCHOOL_KEY)); }, []);
+  const selectGuestSchool = (name: string | null) => {
+    setGuestSchool(name);
+    writeSessionValue(GUEST_SCHOOL_KEY, name ?? "");
+  };
   const { data: profile } = useQuery({
     queryKey: ["my-profile", user?.id],
     enabled: !!user,
@@ -51,10 +51,10 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
     queryFn: () => profile?.institutionId ? getInstitutionById(profile.institutionId) : Promise.resolve(null),
   });
 
-  const institutionName = institution?.name ?? profile?.schoolName ?? null;
+  const institutionName = user ? institution?.name ?? profile?.schoolName ?? null : guestSchool || null;
   const theme = useMemo(
-    () => content ? resolveContentTheme(content, owner?.name) : user ? resolveInstitutionTheme(institutionName) : JESUP_NETWORK_THEME,
-    [content, owner?.name, institutionName, user],
+    () => resolveInstitutionTheme(institutionName),
+    [institutionName],
   );
   const hasInstitutionTheme = hasRecognizedInstitutionTheme(theme);
 
@@ -65,6 +65,7 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
       institutionId: profile?.institutionId ?? null,
       isGuest: !loading && !user,
       hasInstitutionTheme,
+      selectGuestSchool,
     }),
     [theme, institutionName, profile?.institutionId, loading, user, hasInstitutionTheme],
   );
@@ -78,11 +79,10 @@ export function InstitutionThemeProvider({ children }: { children: ReactNode }) 
 
 type ThemeContent = { institutionIds?: string[]; metadata?: Record<string, unknown>; themeAccent?: string | null; themeSecondary?: string | null };
 
-/** A featured item can carry its brand without changing the surrounding network. */
-export function ContentThemeScope({ content, children }: { content: ThemeContent; children: ReactNode }) {
-  const { resolvedTheme } = useTheme();
-  const theme = resolveContentTheme(content);
-  return <div className="contents" data-content-theme={theme.key} style={institutionThemeProperties(theme, resolvedTheme === "dark") as CSSProperties}>{children}</div>;
+/** Featured content inherits selection; ownership never activates institution colors. */
+export function ContentThemeScope({ children }: { content: ThemeContent; children: ReactNode }) {
+  const { theme } = useInstitutionTheme();
+  return <div className="contents" data-content-theme={theme.key}>{children}</div>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components -- Provider hook is intentionally colocated.
