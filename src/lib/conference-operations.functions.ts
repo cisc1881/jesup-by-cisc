@@ -59,6 +59,6 @@ export const claimConferenceRegistration = createServerFn({method:'POST'}).middl
  return id;
 });
 export const operateConferenceCredential = createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(operationInput).handler(async ({data,context}) => {
- const {data:result,error} = await context.supabase.rpc('operate_event_credential',{p_event_id:data.eventId,p_operation:data.operation,p_code:data.code,p_request_id:data.requestId,p_meal_day_id:data.mealDayId});
+ const {data:result,error} = await context.supabase.rpc('operate_event_credential',{p_event_id:data.eventId,p_operation:data.operation,p_code:data.code,p_request_id:data.requestId,p_meal_day_id:data.mealDayId ?? undefined});
  if(error) throw new Error(error.message); return result;
 });
