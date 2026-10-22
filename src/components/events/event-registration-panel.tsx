@@ -30,6 +30,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarPlus, ExternalLink, QrCode, Search, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { EventbriteCheckout } from "@/components/events/eventbrite-checkout";
+import { authorizedEventbriteRegistrationUrl } from "@/lib/eventbrite-registration";
 
 type EventRegistrationPanelProps = {
   event: EventDetail;
@@ -68,10 +69,7 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
     typeof event.metadata.eventbrite_event_id === "string"
       ? event.metadata.eventbrite_event_id
       : "";
-  const eventbriteEventUrl =
-    typeof event.metadata.eventbrite_event_url === "string"
-      ? event.metadata.eventbrite_event_url
-      : "";
+  const eventbriteEventUrl = authorizedEventbriteRegistrationUrl(event);
   const ticketPriceLabel =
     typeof event.metadata.ticket_price_label === "string"
       ? event.metadata.ticket_price_label
@@ -247,14 +245,18 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
           {registrationProvider === "eventbrite" ? "Tickets" : "Registration"}
         </h2>
         {registrationProvider === "eventbrite" && eventbriteEventId && eventbriteEventUrl ? (
-          <EventbriteCheckout
+          event.slug === "fc135" ? <AppButton variant="primary" size="lg" shape="pill" className="w-full" asChild>
+            <a href={eventbriteEventUrl} target="_blank" rel="noopener noreferrer">
+              Register on Eventbrite <ExternalLink className="h-4 w-4" />
+            </a>
+          </AppButton> : <EventbriteCheckout
             eventId={eventbriteEventId}
             eventUrl={eventbriteEventUrl}
             priceLabel={ticketPriceLabel}
           />
         ) : registrationProvider === "eventbrite" ? (
           <p className="text-muted-foreground">
-            Ticket checkout is being prepared. Please check back soon.
+            Registration is not currently available. Please check back for organizer updates.
           </p>
         ) : registration ? (
           <div className="space-y-3">

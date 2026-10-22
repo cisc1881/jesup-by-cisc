@@ -755,12 +755,11 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="jesup">JESUP — free registration</SelectItem>
-                      <SelectItem value="eventbrite">Eventbrite — paid ticket checkout</SelectItem>
+                      <SelectItem value="eventbrite">Eventbrite — organizer registration</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Eventbrite securely processes paid tickets while the attendee remains on the
-                    JESUP event page.
+                    {form.slug === "fc135" ? "Tuskegee University organizes FC135 on Eventbrite and receives ticket proceeds. HNCH LLC is paid separately as a Tuskegee vendor under its agreement/invoice, not through ticket checkout. No JESUP application fee applies; native checkout stays disabled." : "Eventbrite registration links require organizer-confirmed publication, authorization, and an open registration status. Native ticket checkout is not enabled by this selection."}
                   </p>
                 </div>
                 <div>
@@ -832,19 +831,25 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                       />
                     </div>
                     <div className="sm:col-span-2">
-                      <Label>Eventbrite event URL *</Label>
+                      <Label>Authorized public Eventbrite registration URL</Label>
                       <Input
-                        required
                         type="url"
                         value={form.eventbriteEventUrl}
                         onChange={(e) =>
-                          setForm((f) => ({ ...f, eventbriteEventUrl: e.target.value }))
+                          setForm((f) => ({ ...f, eventbriteEventUrl: e.target.value, metadata: { ...f.metadata, eventbrite_registration_authorized: false } }))
                         }
                         placeholder="https://www.eventbrite.com/e/..."
                       />
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Used as a reliable fallback if embedded checkout is unavailable.
+                        Leave blank for drafts. Use only the published registration URL approved by the organizer; no access to the organizer's payout settings is implied.
                       </p>
+                    </div>
+                    <div className="sm:col-span-2 space-y-3">
+                      {form.slug === "fc135" && <p className="text-sm text-muted-foreground">FC135 Eventbrite event 2003462000776 is an unpublished draft. Keep registration closed until Tuskegee confirms publication, payout setup, and the authorized registration URL.</p>}
+                      <Label htmlFor="eventbrite-published">Organizer confirms Eventbrite event is published</Label>
+                      <Switch id="eventbrite-published" checked={form.metadata.eventbrite_event_status === "published"} onCheckedChange={value => setForm(f => ({ ...f, metadata: { ...f.metadata, eventbrite_event_status: value ? "published" : "draft", eventbrite_registration_authorized: false } }))} />
+                      <Label htmlFor="eventbrite-authorized">Organizer authorizes this public registration URL</Label>
+                      <Switch id="eventbrite-authorized" disabled={!form.eventbriteEventUrl.trim() || form.metadata.eventbrite_event_status !== "published"} checked={form.metadata.eventbrite_registration_authorized === true} onCheckedChange={value => setForm(f => ({ ...f, metadata: { ...f.metadata, eventbrite_registration_authorized: value } }))} />
                     </div>
                   </>
                 )}
@@ -857,7 +862,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
             <TabsContent value="conference" className="space-y-4 pt-4">
               <ConferenceSettingsPanel eventId={eventId} form={form} onMetadata={(metadata) => setForm(current => ({ ...current, metadata }))} />
             </TabsContent>
-            {eventId && <TabsContent value="operations" className="pt-4"><ConferenceOperationsPanel eventId={eventId} /></TabsContent>}
+              {eventId && <TabsContent value="operations" className="pt-4"><ConferenceOperationsPanel eventId={eventId} isFc135={form.slug === "fc135"} /></TabsContent>}
           </Tabs>
 
           <Button type="submit" className="w-full" disabled={saving}>

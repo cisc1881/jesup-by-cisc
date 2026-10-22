@@ -1,5 +1,6 @@
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import type { EventDetail } from "./events";
+import { authorizedEventbriteRegistrationUrl } from "./eventbrite-registration";
 
 export const FC135 = {
   slug: "fc135",
@@ -39,7 +40,7 @@ export function visibleConferenceSections(event: EventDetail, activeProductCount
     home: true,
     schedule: event.sessions.length > 0,
     speakers: event.speakers.length > 0,
-    tickets: event.metadata.catalog_enabled === true && activeProductCount > 0 || event.registrationOpen || Boolean(event.metadata.eventbrite_event_id && safeEventUrl(event.metadata.eventbrite_event_url)),
+    tickets: event.metadata.catalog_enabled === true && activeProductCount > 0 || (event.metadata.registration_provider !== "eventbrite" && event.registrationOpen) || Boolean(authorizedEventbriteRegistrationUrl(event)),
     sponsors: event.sponsors.length > 0,
     map: Boolean(event.lat != null && event.lng != null || safeEventUrl(event.metadata.parking_url) || safeEventUrl(event.metadata.map_url)),
     resources: event.publications.length > 0 || event.podcasts.length > 0 || conferenceResourceLinks(event.metadata).length > 0,
