@@ -20,13 +20,6 @@ import { conferenceHead } from "@/lib/conference";
 import { ConferenceHero } from "@/components/events/conference-hero";
 
 export const Route = createFileRoute("/")({
-  head: ({ loaderData }) => loaderData?.pilot ? conferenceHead(loaderData.pilot) :
-    buildPageHead({
-      title: "JESUP · The Digital Extension Wagon",
-      description:
-        "Programs, workshops, publications, and opportunities from the Carver Integrative Sustainability Center at Tuskegee University.",
-      path: "/",
-    }),
   loader: async ({ context: { queryClient } }): Promise<{ home: HomePageData; pilot: EventDetail | null }> => {
     try {
       const home = await queryClient.ensureQueryData({
@@ -44,6 +37,8 @@ export const Route = createFileRoute("/")({
       return { home: fallback, pilot: null };
     }
   },
+  head: ({ loaderData }) => loaderData?.pilot ? conferenceHead(loaderData.pilot) :
+    conferenceHead(null, " · The Digital Extension Wagon"),
   errorComponent: HomeRouteError,
   component: Home,
 });
@@ -87,7 +82,7 @@ function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
 function Home() {
   const loaderData = Route.useLoaderData();
   const { data: queryData, isLoading } = useHomeData();
-  const data: HomePageData | undefined = queryData ?? loaderData.home;
+  const data: HomePageData | undefined = queryData ?? loaderData?.home;
   const sections = data?.sections ?? DEFAULT_SECTION_META;
   const { institutionId } = useInstitutionTheme();
   const relevantEvents = useMemo(
@@ -122,7 +117,7 @@ function Home() {
 
   return (
     <PublicLayout>
-      {loaderData.pilot ? <PageContainer size="lg"><div className="conference-shell" data-event-theme={loaderData.pilot.metadata.theme_preset === "tuskegee" ? "tuskegee" : "network"}><ConferenceHero event={loaderData.pilot} entry /></div></PageContainer> : <HomeHero slides={relevantSlides} />}
+      {loaderData?.pilot ? <PageContainer size="lg"><div className="conference-shell" data-event-theme={loaderData.pilot.metadata.theme_preset === "tuskegee" ? "tuskegee" : "network"}><ConferenceHero event={loaderData.pilot} entry /></div></PageContainer> : <HomeHero slides={relevantSlides} />}
 
       <PageContainer
         size="lg"

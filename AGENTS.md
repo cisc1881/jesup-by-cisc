@@ -14,3 +14,4 @@
 - Convert admin local event/session inputs using the event timezone; date-only conferences use exclusive midnight boundaries and all-day calendar exports so unknown service times are not presented as appointments.
 - Staff authorization and redemption/check-in/claim operations are event-scoped database functions with explicit execution grants and locking; UI gates never substitute for authorization.
 - Square seller configuration is admin-only and database-enforced non-live; payment processing, secrets and OAuth are outside the foundation.
+- Public connection configuration follows managed VITE environment settings rather than hardcoded historical project endpoints, so recovered code and Cloud migrations use the same backend.
