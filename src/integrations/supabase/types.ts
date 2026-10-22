@@ -344,6 +344,48 @@ export type Database = {
           },
         ]
       }
+      event_badge_issues: {
+        Row: {
+          event_id: string
+          id: string
+          issued_at: string
+          issued_by: string
+          registration_id: string
+          status: string
+        }
+        Insert: {
+          event_id: string
+          id?: string
+          issued_at?: string
+          issued_by: string
+          registration_id: string
+          status?: string
+        }
+        Update: {
+          event_id?: string
+          id?: string
+          issued_at?: string
+          issued_by?: string
+          registration_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_badge_issues_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_badge_issues_registration_id_event_id_fkey"
+            columns: ["registration_id", "event_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
+            referencedColumns: ["id", "event_id"]
+          },
+        ]
+      }
       event_categories: {
         Row: {
           created_at: string
@@ -487,6 +529,118 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "event_registrations"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_entitlement_redemptions: {
+        Row: {
+          entitlement_id: string
+          event_id: string
+          id: string
+          redeemed_at: string
+          redeemed_by: string
+          redemption_number: number
+        }
+        Insert: {
+          entitlement_id: string
+          event_id: string
+          id?: string
+          redeemed_at?: string
+          redeemed_by: string
+          redemption_number: number
+        }
+        Update: {
+          entitlement_id?: string
+          event_id?: string
+          id?: string
+          redeemed_at?: string
+          redeemed_by?: string
+          redemption_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_entitlement_redemptions_entitlement_id_event_id_fkey"
+            columns: ["entitlement_id", "event_id"]
+            isOneToOne: false
+            referencedRelation: "event_entitlements"
+            referencedColumns: ["id", "event_id"]
+          },
+          {
+            foreignKeyName: "event_entitlement_redemptions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_entitlements: {
+        Row: {
+          beneficiary_name: string | null
+          created_at: string
+          credential_code: string
+          event_id: string
+          external_reference: string | null
+          id: string
+          product_id: string
+          quantity: number
+          registration_id: string
+          source: string
+          status: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          beneficiary_name?: string | null
+          created_at?: string
+          credential_code?: string
+          event_id: string
+          external_reference?: string | null
+          id?: string
+          product_id: string
+          quantity?: number
+          registration_id: string
+          source?: string
+          status?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          beneficiary_name?: string | null
+          created_at?: string
+          credential_code?: string
+          event_id?: string
+          external_reference?: string | null
+          id?: string
+          product_id?: string
+          quantity?: number
+          registration_id?: string
+          source?: string
+          status?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_entitlements_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_entitlements_product_id_event_id_fkey"
+            columns: ["product_id", "event_id"]
+            isOneToOne: false
+            referencedRelation: "event_products"
+            referencedColumns: ["id", "event_id"]
+          },
+          {
+            foreignKeyName: "event_entitlements_registration_id_event_id_fkey"
+            columns: ["registration_id", "event_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
+            referencedColumns: ["id", "event_id"]
           },
         ]
       }
@@ -1019,6 +1173,98 @@ export type Database = {
           },
         ]
       }
+      event_products: {
+        Row: {
+          beneficiary: string
+          capacity: number | null
+          configuration: Json
+          created_at: string
+          currency: string
+          description: string | null
+          event_id: string
+          id: string
+          is_active: boolean
+          kind: string
+          name: string
+          price_cents: number | null
+          sort_order: number
+        }
+        Insert: {
+          beneficiary?: string
+          capacity?: number | null
+          configuration?: Json
+          created_at?: string
+          currency?: string
+          description?: string | null
+          event_id: string
+          id?: string
+          is_active?: boolean
+          kind: string
+          name: string
+          price_cents?: number | null
+          sort_order?: number
+        }
+        Update: {
+          beneficiary?: string
+          capacity?: number | null
+          configuration?: Json
+          created_at?: string
+          currency?: string
+          description?: string | null
+          event_id?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name?: string
+          price_cents?: number | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_products_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_registration_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          registration_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          registration_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          registration_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registration_sessions_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_registration_sessions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_registrations: {
         Row: {
           accessibility_accommodations: string | null
@@ -1026,6 +1272,8 @@ export type Database = {
           attendee_email: string | null
           attendee_name: string | null
           checked_in_at: string | null
+          claimed_at: string | null
+          claimed_by: string | null
           confirmation_sent_at: string | null
           created_at: string
           dietary_restrictions: string | null
@@ -1048,6 +1296,8 @@ export type Database = {
           attendee_email?: string | null
           attendee_name?: string | null
           checked_in_at?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
           dietary_restrictions?: string | null
@@ -1070,6 +1320,8 @@ export type Database = {
           attendee_email?: string | null
           attendee_name?: string | null
           checked_in_at?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
           confirmation_sent_at?: string | null
           created_at?: string
           dietary_restrictions?: string | null
@@ -1151,6 +1403,59 @@ export type Database = {
             foreignKeyName: "event_report_snapshots_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_seller_connections: {
+        Row: {
+          application_fee_bps: number | null
+          application_fee_cents: number | null
+          application_id: string | null
+          created_at: string
+          environment: string
+          event_id: string
+          id: string
+          live_payments_enabled: boolean
+          location_id: string | null
+          merchant_id: string | null
+          provider: string
+          status: string
+        }
+        Insert: {
+          application_fee_bps?: number | null
+          application_fee_cents?: number | null
+          application_id?: string | null
+          created_at?: string
+          environment?: string
+          event_id: string
+          id?: string
+          live_payments_enabled?: boolean
+          location_id?: string | null
+          merchant_id?: string | null
+          provider?: string
+          status?: string
+        }
+        Update: {
+          application_fee_bps?: number | null
+          application_fee_cents?: number | null
+          application_id?: string | null
+          created_at?: string
+          environment?: string
+          event_id?: string
+          id?: string
+          live_payments_enabled?: boolean
+          location_id?: string | null
+          merchant_id?: string | null
+          provider?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_seller_connections_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
             referencedRelation: "events"
             referencedColumns: ["id"]
           },
@@ -1240,6 +1545,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "event_speakers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_staff_assignments: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          is_active: boolean
+          staff_role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          is_active?: boolean
+          staff_role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_active?: boolean
+          staff_role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_staff_assignments_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
@@ -4175,6 +4515,14 @@ export type Database = {
       }
     }
     Functions: {
+      can_operate_event: {
+        Args: { p_event_id: string; p_operation: string }
+        Returns: boolean
+      }
+      claim_eventbrite_registration: {
+        Args: { p_event_id: string }
+        Returns: string
+      }
       create_admin_notification: {
         Args: {
           p_action_url?: string
@@ -4311,6 +4659,18 @@ export type Database = {
         Args: { p_event_id: string; p_message: string }
         Returns: string
       }
+      record_event_badge_issue: {
+        Args: { p_event_id: string; p_registration_id: string }
+        Returns: string
+      }
+      redeem_event_entitlement: {
+        Args: { p_code: string; p_event_id: string }
+        Returns: {
+          entitlement_id: string
+          remaining: number
+          used_count: number
+        }[]
+      }
       redeem_event_meal_ticket: {
         Args: { p_meal_day_id: string; p_ticket_code: string }
         Returns: {
@@ -4341,6 +4701,14 @@ export type Database = {
           p_registration_id: string
         }
         Returns: undefined
+      }
+      scan_event_admission: {
+        Args: { p_code: string; p_event_id: string }
+        Returns: {
+          already_checked_in: boolean
+          attendee_name: string
+          registration_id: string
+        }[]
       }
       set_event_gallery_cover: {
         Args: { p_event_id: string; p_gallery_id: string }
@@ -4583,12 +4951,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4612,11 +4980,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4637,11 +5005,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4662,11 +5030,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4679,11 +5047,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

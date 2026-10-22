@@ -89,7 +89,8 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
 
         const { data: existing, error: existingError } = await supabaseAdmin
           .from("event_registrations")
-          .select("id")
+          .select("id, user_id")
+          .eq("event_id", event.id)
           .eq("registration_source", "eventbrite")
           .eq("external_registration_id", attendee.id)
           .maybeSingle();
@@ -97,7 +98,7 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
 
         const record = {
           event_id: event.id,
-          user_id: null,
+          user_id: existing?.user_id ?? null,
           attendee_name: attendeeName,
           attendee_email: attendee.profile?.email?.trim() || null,
           registration_source: "eventbrite",

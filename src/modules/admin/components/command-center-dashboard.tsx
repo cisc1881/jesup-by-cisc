@@ -24,6 +24,7 @@ import { ProgramFormDialog } from "@/components/admin/program-form-dialog";
 import { QuickActionTile } from "@/components/design-system/quick-action-tile";
 import { QueryErrorState } from "@/components/design-system/query-error-state";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { COMMAND_CENTER_SUBTITLE, COMMAND_CENTER_TITLE } from "../config/nav-items";

@@ -16,7 +16,6 @@ import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "@/components/ui/sonner";
 import { OfflineBanner } from "@/components/offline-banner";
 import { JesupSplashGate } from "@/components/branding";
-import { JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL } from "@/lib/seo";
 import { InstitutionThemeProvider } from "@/components/institution-theme-provider";
 
 function NotFoundComponent() {
@@ -92,18 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Powered by the Carver Integrative Sustainability Center at Tuskegee University.",
       },
       { property: "og:type", content: "website" },
-      {
-        property: "og:image",
-        content: new URL(JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL).toString(),
-      },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "JESUP by CISC" },
       { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:image",
-        content: new URL(JESUP_DEFAULT_SOCIAL_IMAGE, JESUP_SITE_URL).toString(),
-      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

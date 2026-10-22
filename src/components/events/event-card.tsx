@@ -4,6 +4,7 @@ import type { EventListItem } from "@/lib/events";
 import { registrationStatusLabel } from "@/lib/events";
 import { AppBadge, AppButton, AppCard } from "@/components/design-system";
 import { cn } from "@/lib/utils";
+import { eventDateLabel } from "@/lib/conference";
 
 type EventCardProps = {
   event: EventListItem;
@@ -96,7 +97,7 @@ export function EventCard({ event, className, animationIndex = 0, saved, onToggl
           {isFull && <AppBadge variant="muted">Sold Out</AppBadge>}
         </div>
         <h3 className="mt-2 line-clamp-2 text-lg font-black tracking-[var(--tracking-tight)] text-foreground">{event.title}</h3>
-        <p className="mt-2 text-sm font-semibold text-muted-foreground">{date.time}</p>
+        <p className="mt-2 text-sm font-semibold text-muted-foreground">{eventDateLabel(event)}</p>
         {event.location && (
           <p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />

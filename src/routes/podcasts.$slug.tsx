@@ -7,6 +7,7 @@ import {
   PodcastRelatedSection,
 } from "@/components/podcasts";
 import { fetchPodcastBySlug } from "@/lib/podcasts";
+import { buildPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/podcasts/$slug")({
   loader: async ({ params }) => {
@@ -15,17 +16,9 @@ export const Route = createFileRoute("/podcasts/$slug")({
     return { episode };
   },
   head: ({ loaderData }) => {
-    if (!loaderData) return { meta: [{ title: "Episode not found · JESUP" }, { name: "robots", content: "noindex" }] };
+    if (!loaderData) return buildPageHead({ title: "Episode unavailable · JESUP", description: "This JESUP podcast episode is not available.", noindex: true });
     const ep = loaderData.episode;
-    return {
-      meta: [
-        { title: `${ep.title} · JESUP Podcast` },
-        { name: "description", content: ep.description ?? ep.title },
-        { property: "og:title", content: `${ep.title} · JESUP Podcast` },
-        { property: "og:description", content: ep.description ?? ep.title },
-        ...(ep.coverUrl ? [{ property: "og:image", content: ep.coverUrl }] : []),
-      ],
-    };
+    return buildPageHead({ title: `${ep.title} · JESUP Podcast`, description: ep.description ?? ep.title, imageUrl: ep.coverUrl });
   },
   component: PodcastDetailPage,
   notFoundComponent: () => (

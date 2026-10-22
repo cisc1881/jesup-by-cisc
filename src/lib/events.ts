@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
+import { eventLocalInput, eventLocalToUtc } from "@/lib/conference";
 import {
   publishingWriteError,
   validateContentIdentity,
@@ -20,6 +22,7 @@ export type EventCategory = {
 };
 
 export type EventListItem = {
+  metadata?: Record<string, unknown>;
   id: string;
   slug: string;
   title: string;
@@ -248,6 +251,7 @@ function mapListRow(row: Record<string, unknown>, registrationCount = 0): EventL
     (value): value is string => typeof value === "string",
   );
   return {
+    metadata,
     id: row.id as string,
     slug: (row.slug as string) ?? (row.id as string),
     title: row.title as string,
@@ -675,8 +679,8 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     title: row.title,
     description: row.description ?? "",
     descriptionHtml: row.description_html ?? "",
-    startsAt: row.starts_at ? new Date(row.starts_at).toISOString().slice(0, 16) : "",
-    endsAt: row.ends_at ? new Date(row.ends_at).toISOString().slice(0, 16) : "",
+    startsAt: eventLocalInput(row.starts_at, row.timezone ?? "America/Chicago"),
+    endsAt: eventLocalInput(row.ends_at, row.timezone ?? "America/Chicago"),
     location: row.location ?? "",
     locationAddress: row.location_address ?? "",
     lat: row.lat != null ? String(row.lat) : "",
@@ -718,8 +722,8 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
       id: s.id,
       title: s.title,
       description: s.description ?? "",
-      startsAt: s.starts_at ? new Date(s.starts_at).toISOString().slice(0, 16) : "",
-      endsAt: s.ends_at ? new Date(s.ends_at).toISOString().slice(0, 16) : "",
+      startsAt: eventLocalInput(s.starts_at, row.timezone ?? "America/Chicago"),
+      endsAt: eventLocalInput(s.ends_at, row.timezone ?? "America/Chicago"),
       location: s.location ?? "",
       sortOrder: s.sort_order,
     })),
@@ -820,8 +824,8 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
           event_id: eventId,
           title: session.title,
           description: session.description || null,
-          starts_at: session.startsAt || null,
-          ends_at: session.endsAt || null,
+          starts_at: eventLocalToUtc(session.startsAt ?? "", form.timezone || "America/Chicago"),
+          ends_at: eventLocalToUtc(session.endsAt ?? "", form.timezone || "America/Chicago"),
           location: session.location || null,
           sort_order: index,
         })),
@@ -869,6 +873,7 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
   validateContentIdentity("Event", form.title, slug);
   validateEventSchedule(form.startsAt, form.endsAt);
   const registrationOpen =
+    form.registrationOpen &&
     form.registrationProvider === "jesup" &&
     (form.registrationStatus === "open" || form.registrationStatus === "waiting_list");
   let gisBoundaryGeoJson: Record<string, unknown> | null = null;
@@ -894,8 +899,8 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
     title: form.title.trim(),
     description: form.description || null,
     description_html: form.descriptionHtml || null,
-    starts_at: form.startsAt,
-    ends_at: form.endsAt || null,
+    starts_at: eventLocalToUtc(form.startsAt, form.timezone || "America/Chicago") ?? form.startsAt,
+    ends_at: eventLocalToUtc(form.endsAt, form.timezone || "America/Chicago"),
     location: form.location || null,
     location_address: form.locationAddress || null,
     lat: form.lat ? Number(form.lat) : null,
@@ -911,7 +916,7 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
     registration_open: registrationOpen,
     external_url: form.externalUrl || null,
     invite_code: form.inviteCode || null,
-    metadata,
+    metadata: JSON.parse(JSON.stringify(metadata)) as Json,
   };
 
   if (eventId) {

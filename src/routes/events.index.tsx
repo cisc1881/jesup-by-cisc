@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, type SearchSchemaInput } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
@@ -16,6 +16,7 @@ import { DirectoryResultList } from "@/components/directory-result-list";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { fetchEventCategories, fetchEvents, filterEvents, type EventListItem } from "@/lib/events";
 import { fmtDateTime } from "@/lib/format";
+import { eventDateLabel } from "@/lib/conference";
 import { listPageHead } from "@/lib/seo";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
 import { useAuth } from "@/hooks/use-auth";
@@ -28,7 +29,7 @@ import {
 } from "@/components/institution-scope-filter";
 
 export const Route = createFileRoute("/events/")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
     view: search.view === "mine" ? ("mine" as const) : ("explore" as const),
   }),
   head: () =>
@@ -253,7 +254,7 @@ function EventsPage() {
                       results={filtered.map((event) => ({
                         id: event.id,
                         title: event.title,
-                        subtitle: fmtDateTime(event.startsAt),
+                        subtitle: eventDateLabel(event),
                         detail: event.location,
                         imageUrl: event.coverImageUrl,
                         to: "/events/$id" as const,

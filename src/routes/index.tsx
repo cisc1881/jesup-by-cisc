@@ -15,30 +15,30 @@ import type { HomeEvent, HomeHeroSlide, HomePageData } from "@/lib/home";
 import { buildPageHead } from "@/lib/seo";
 import { HOME_PAGE_QUERY_KEY } from "@/lib/query-config";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
+import { fetchEventById, type EventDetail } from "@/lib/events";
+import { conferenceHead } from "@/lib/conference";
+import { ConferenceHero } from "@/components/events/conference-hero";
 
 export const Route = createFileRoute("/")({
-  head: () =>
-    buildPageHead({
-      title: "JESUP · The Digital Extension Wagon",
-      description:
-        "Programs, workshops, publications, and opportunities from the Carver Integrative Sustainability Center at Tuskegee University.",
-      path: "/",
-    }),
-  loader: async ({ context: { queryClient } }) => {
+  loader: async ({ context: { queryClient } }): Promise<{ home: HomePageData; pilot: EventDetail | null }> => {
     try {
-      return await queryClient.ensureQueryData({
+      const home = await queryClient.ensureQueryData({
         queryKey: HOME_PAGE_QUERY_KEY,
         queryFn: fetchHomePageData,
       });
+      const pilot = await fetchEventById("fc135");
+      return { home, pilot };
     } catch (error) {
       if (import.meta.env.DEV) {
         console.warn("[home] loader failed; using empty homepage defaults", error);
       }
       const fallback = createEmptyHomePageData();
       queryClient.setQueryData(HOME_PAGE_QUERY_KEY, fallback);
-      return fallback;
+      return { home: fallback, pilot: null };
     }
   },
+  head: ({ loaderData }) => loaderData?.pilot ? conferenceHead(loaderData.pilot) :
+    buildPageHead({ title: "JESUP by CISC · The Digital Extension Wagon", description: "Tuskegee University’s digital home for extension events, programs, markets, and trusted resources." }),
   errorComponent: HomeRouteError,
   component: Home,
 });
@@ -82,7 +82,7 @@ function HomeRouteError({ error, reset }: { error: Error; reset: () => void }) {
 function Home() {
   const loaderData = Route.useLoaderData();
   const { data: queryData, isLoading } = useHomeData();
-  const data: HomePageData | undefined = queryData ?? loaderData;
+  const data: HomePageData | undefined = queryData ?? loaderData?.home;
   const sections = data?.sections ?? DEFAULT_SECTION_META;
   const { institutionId } = useInstitutionTheme();
   const relevantEvents = useMemo(
@@ -117,7 +117,7 @@ function Home() {
 
   return (
     <PublicLayout>
-      <HomeHero slides={relevantSlides} />
+      {loaderData?.pilot ? <PageContainer size="lg"><div className="conference-shell" data-event-theme={loaderData.pilot.metadata.theme_preset === "tuskegee" ? "tuskegee" : "network"}><ConferenceHero event={loaderData.pilot} entry /></div></PageContainer> : <HomeHero slides={relevantSlides} />}
 
       <PageContainer
         size="lg"

@@ -1,13 +1,25 @@
 import type { EventDetail, EventListItem } from "@/lib/events";
 
+function escapeIcs(value: string) {
+  return value.replaceAll("\\", "\\\\").replaceAll("\n", "\\n").replaceAll(";", "\\;").replaceAll(",", "\\,").replaceAll("\r", "");
+}
+
 function formatIcsDate(iso: string) {
   return new Date(iso).toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 }
 
-export function buildEventIcs(event: Pick<EventListItem, "title" | "description" | "startsAt" | "endsAt" | "location" | "id">) {
+export function buildEventIcs(event: Pick<EventListItem, "title" | "description" | "startsAt" | "endsAt" | "location" | "id" | "metadata">) {
   const end = event.endsAt ?? new Date(new Date(event.startsAt).getTime() + 2 * 60 * 60 * 1000).toISOString();
-  const description = (event.description ?? "").replace(/\n/g, "\\n");
+  const description = escapeIcs(event.description ?? "");
   const location = event.location ?? "CISC · Tuskegee University";
+  const metadata = event.metadata;
+  const dateOnly = metadata?.date_only === true && typeof metadata.start_date === "string" && typeof metadata.end_date === "string";
+  const endDate = dateOnly ? new Date(`${String(metadata.end_date)}T00:00:00Z`) : null;
+  if (endDate) endDate.setUTCDate(endDate.getUTCDate() + 1);
+  const dates = dateOnly && endDate ? [
+    `DTSTART;VALUE=DATE:${String(metadata.start_date).replaceAll("-", "")}`,
+    `DTEND;VALUE=DATE:${endDate.toISOString().slice(0,10).replaceAll("-", "")}`,
+  ] : [`DTSTART:${formatIcsDate(event.startsAt)}`, `DTEND:${formatIcsDate(end)}`];
 
   return [
     "BEGIN:VCALENDAR",
@@ -18,11 +30,10 @@ export function buildEventIcs(event: Pick<EventListItem, "title" | "description"
     "BEGIN:VEVENT",
     `UID:event-${event.id}@jesup.cisc`,
     `DTSTAMP:${formatIcsDate(new Date().toISOString())}`,
-    `DTSTART:${formatIcsDate(event.startsAt)}`,
-    `DTEND:${formatIcsDate(end)}`,
-    `SUMMARY:${event.title}`,
+    ...dates,
+    `SUMMARY:${escapeIcs(event.title)}`,
     `DESCRIPTION:${description}`,
-    `LOCATION:${location}`,
+    `LOCATION:${escapeIcs(location)}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");

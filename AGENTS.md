@@ -8,3 +8,12 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Extend the shared event ledger for conferences; products represent tickets, self/guest add-ons, parking and company/sponsor packages, with entitlements tied to existing registrations to avoid duplicate attendee systems.
+- Conference presentation uses event metadata and event-scoped semantic theme tokens; section visibility requires explicit enablement plus content so unpublished details never appear as placeholder features.
+- Convert admin local event/session inputs using the event timezone; date-only conferences use exclusive midnight boundaries and all-day calendar exports so unknown service times are not presented as appointments.
+- Staff authorization and redemption/check-in/claim operations are event-scoped database functions with explicit execution grants and locking; UI gates never substitute for authorization.
+- Square seller configuration is admin-only and database-enforced non-live; payment processing, secrets and OAuth are outside the foundation.
+- Public connection configuration follows managed VITE environment settings rather than hardcoded historical project endpoints, so recovered code and Cloud migrations use the same backend.
+- The first recovery delivery exposes only the conference shell; already-applied commerce/staff schema remains dormant and must not be presented as a completed workflow.
+- The role policy helper is callable for public policies but returns false for anonymous callers and only checks the caller's own identity, preserving public reads without role enumeration.

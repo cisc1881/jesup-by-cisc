@@ -21,20 +21,14 @@ import { fetchMarketById } from "@/lib/markets";
 import { shareMarket } from "@/lib/market-geo";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { buildPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/markets/$id")({
   loader: async ({ params }) => {
     const market = await fetchMarketById(params.id);
     return { market };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        title: loaderData?.market ? `${loaderData.market.name} · Farmers Markets · JESUP` : "Market · JESUP",
-      },
-      { name: "description", content: loaderData?.market?.description ?? "Farmers market details from CISC." },
-    ],
-  }),
+  head: ({ loaderData }) => buildPageHead({ title: loaderData?.market ? `${loaderData.market.name} · Farmers Markets · JESUP` : "Market unavailable · JESUP", description: loaderData?.market?.description ?? "Farmers market details from CISC." }),
   component: MarketDetailPage,
 });
 

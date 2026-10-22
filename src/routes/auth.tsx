@@ -11,6 +11,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { resolvePostLoginPathForUser, validateNextPath } from "@/lib/auth-redirect";
 import { toast } from "sonner";
 import { JesupLogoMark } from "@/components/branding";
+import { buildPageHead } from "@/lib/seo";
 
 const searchSchema = z.object({
   next: z
@@ -22,6 +23,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
+  head: () => buildPageHead({ title: "Sign in · JESUP by CISC", description: "Access your JESUP registrations, event credentials, and personal workspace.", path: "/auth", noindex: true }),
   component: AuthPage,
 });
 
