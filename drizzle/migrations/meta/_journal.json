@@ -43,6 +43,13 @@
       "when": 1792706204304,
       "tag": "0005_eventbrite_csv_import",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792706757819,
+      "tag": "0006_eventbrite_import_accommodations",
+      "breakpoints": true
     }
   ]
 }
