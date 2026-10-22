@@ -16,6 +16,7 @@ import { desktopNavLinks } from "@/lib/navigation";
 import { JesupLogoMark } from "@/components/branding";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
 import { fetchNotifications } from "@/modules/notifications";
+import { GuestSchoolPicker } from "@/components/institutions/guest-school-picker";
 
 export function PublicNav() {
   const { user, isAdmin } = useAuth();
@@ -56,11 +57,12 @@ export function PublicNav() {
             aria-hidden="true"
           />
           <span className="truncate">
-            {isGuest ? "1890 Land-Grant Network" : (institutionName ?? "Choose your institution")}
+            {institutionName ?? "1890 Land-Grant Network"}
           </span>
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
+          <GuestSchoolPicker />
           {user && (
             <Button
               asChild

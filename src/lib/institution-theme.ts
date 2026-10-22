@@ -11,11 +11,11 @@ export type InstitutionTheme = {
 export const JESUP_NETWORK_THEME: InstitutionTheme = {
   key: "jesup-network",
   label: "1890 Land-Grant Network",
-  accent: "#166b70",
-  accentStrong: "#12464b",
-  accentSoft: "#e6f2f1",
+  accent: "#202020",
+  accentStrong: "#171717",
+  accentSoft: "#eeeeee",
   accentForeground: "#ffffff",
-  secondary: "#bde4e1",
+  secondary: "#e5e5e5",
 };
 
 type ThemeRule = InstitutionTheme & { matches: string[] };
@@ -257,29 +257,14 @@ type ThemeContent = {
   themeSecondary?: string | null;
 };
 
-/** Explicit branding wins; affiliation/filter scope is not proof of ownership. */
-export function resolveContentTheme(content: ThemeContent, ownerName?: string | null): InstitutionTheme {
-  const metadata = content.metadata ?? {};
-  const namedOwner = typeof metadata.owner_institution_name === "string" ? metadata.owner_institution_name : ownerName;
-  let base = resolveInstitutionTheme(namedOwner);
-  if (metadata.theme_preset === "tuskegee") base = resolveInstitutionTheme("Tuskegee University");
-  // Recovered official CISC program records have verified source provenance but no owner IDs.
-  // This is presentation attribution only; it never changes scope filters or database ownership.
-  if (!namedOwner && metadata.content_source === "CISC program page" && typeof metadata.source_url === "string") {
-    try {
-      if (new URL(metadata.source_url).hostname === "cisc1881.org") base = resolveInstitutionTheme("Tuskegee University");
-    } catch { /* Invalid source URLs cannot confer institution branding. */ }
-  }
-  const accent = content.themeAccent ?? metadata.theme_accent;
-  const secondary = content.themeSecondary ?? metadata.theme_secondary;
-  if (typeof accent !== "string" || !/^#[\da-f]{6}$/i.test(accent)) return base;
-  return { ...base, key: "event-custom", accent, accentStrong: accent,
-    accentForeground: getReadableForeground(accent),
-    secondary: typeof secondary === "string" && /^#[\da-f]{6}$/i.test(secondary) ? secondary : base.secondary };
+/** Content must never select a school for the viewer. */
+export function resolveContentTheme(_content: ThemeContent, selectedSchool?: string | null): InstitutionTheme {
+  return resolveInstitutionTheme(selectedSchool);
 }
 
 /** Every theme supplies paired surfaces; dark-mode links differ from filled banner colors. */
 export function institutionThemeProperties(theme: InstitutionTheme, dark = false): Record<string, string> {
+  const network = theme.key === "jesup-network" || theme.key === "affiliated-institution";
   const primary = dark ? `color-mix(in srgb, ${theme.accent} 35%, #ffffff)` : theme.accentStrong;
   const mid = dark ? `color-mix(in srgb, ${theme.accent} 25%, #ffffff)` : theme.accentStrong;
   return {
@@ -301,13 +286,14 @@ export function institutionThemeProperties(theme: InstitutionTheme, dark = false
     "--gradient-jesup": `linear-gradient(115deg, ${primary}, ${mid})`,
     "--gradient-hero-institution": `linear-gradient(115deg, ${primary}, ${mid})`,
     "--gradient-jesup-soft": `linear-gradient(115deg, ${primary}, ${mid})`,
-    "--banner-background": theme.accentStrong,
-    "--banner-foreground": getReadableForeground(theme.accentStrong),
-    "--banner-highlight": theme.secondary,
+    "--banner-background": network ? "var(--jesup-banner-gradient)" : theme.accentStrong,
+    "--banner-solid": network ? "#d5e7f3" : theme.accentStrong,
+    "--banner-foreground": network ? "#171717" : getReadableForeground(theme.accentStrong),
+    "--banner-highlight": network ? "#171717" : theme.secondary,
     "--banner-highlight-foreground": getReadableForeground(theme.secondary),
-    "--home-gradient": `linear-gradient(115deg, ${theme.accentStrong}, ${theme.accent})`,
-    "--home-foreground": getReadableForeground(theme.accentStrong),
-    "--home-muted": getReadableForeground(theme.accentStrong),
+    "--home-gradient": network ? "var(--jesup-banner-gradient)" : `linear-gradient(115deg, ${theme.accentStrong}, ${theme.accent})`,
+    "--home-foreground": network ? "#171717" : getReadableForeground(theme.accentStrong),
+    "--home-muted": network ? "#171717" : getReadableForeground(theme.accentStrong),
     "--home-cta": theme.secondary,
     "--home-cta-foreground": getReadableForeground(theme.secondary),
   };

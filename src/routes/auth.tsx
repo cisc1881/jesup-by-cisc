@@ -12,6 +12,8 @@ import { resolvePostLoginPathForUser, validateNextPath } from "@/lib/auth-redire
 import { toast } from "sonner";
 import { JesupLogoMark } from "@/components/branding";
 import { buildPageHead } from "@/lib/seo";
+import { ENTRY_DESTINATION_KEY, GUEST_ENTRY_KEY, isPasswordSetupReturn, publicEntryDestination, readSessionValue, writeSessionValue } from "@/lib/entry-session";
+import { useTheme } from "@/lib/theme";
 
 const searchSchema = z.object({
   next: z
@@ -30,6 +32,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { next, mode } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
+  const { resolvedTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -38,11 +41,20 @@ function AuthPage() {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordSetup, setPasswordSetup] = useState(mode === "reset");
+  useEffect(() => { setPasswordSetup(isPasswordSetupReturn(window.location.search, window.location.hash)); }, [mode]);
 
-  const returnTo = `${typeof window === "undefined" ? "" : window.location.origin}${validateNextPath(next) ?? ""}`;
+  const [returnTo, setReturnTo] = useState("");
+  useEffect(() => { setReturnTo(`${window.location.origin}/auth${next ? `?next=${encodeURIComponent(next)}` : ""}`); }, [next]);
+
+  function continueAsGuest() {
+    writeSessionValue(GUEST_ENTRY_KEY, "1");
+    const destination = publicEntryDestination(next ?? readSessionValue(ENTRY_DESTINATION_KEY));
+    void navigate({ to: destination as "/", replace: true });
+  }
 
   useEffect(() => {
-    if (mode === "reset") return;
+    if (mode === "reset" || isPasswordSetupReturn(window.location.search, window.location.hash)) return;
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session?.user) return;
       const destination = await resolvePostLoginPathForUser(next, data.session.user.id);
@@ -145,7 +157,7 @@ function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link to="/" className="mx-auto" aria-label="JESUP home">
-            <JesupLogoMark size="lg" tone="on-light" imageClassName="h-auto w-[min(15rem,70vw)]" />
+            <JesupLogoMark size="lg" tone={resolvedTheme === "dark" ? "on-dark" : "on-light"} imageClassName="h-auto w-[min(15rem,70vw)]" />
           </Link>
           <CardTitle className="font-serif text-2xl text-primary">Welcome to JESUP</CardTitle>
           <p className="text-sm text-muted-foreground">
@@ -153,7 +165,7 @@ function AuthPage() {
           </p>
         </CardHeader>
         <CardContent>
-          {mode === "reset" ? (
+          {passwordSetup ? (
             <form onSubmit={updatePassword} className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Enter a new password for your JESUP account.
@@ -235,7 +247,7 @@ function AuthPage() {
           <Button
             onClick={apple}
             variant="outline"
-            className="mb-4 w-full bg-black text-white hover:bg-black/90 hover:text-white"
+            className="mb-4 w-full"
           >
             <svg viewBox="0 0 384 512" className="mr-2 h-4 w-4 fill-current" aria-hidden="true">
               <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
@@ -248,7 +260,7 @@ function AuthPage() {
           <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign in</TabsTrigger>
-              <TabsTrigger value="signup">Sign up</TabsTrigger>
+              <TabsTrigger value="signup">Create account</TabsTrigger>
             </TabsList>
             <TabsContent value="signin">
               <form onSubmit={signIn} className="space-y-3">
@@ -339,6 +351,9 @@ function AuthPage() {
               </form>
             </TabsContent>
           </Tabs>
+          <div className="mt-6 border-t border-border pt-4">
+            <Button type="button" variant="secondary" className="min-h-12 w-full" onClick={continueAsGuest}>Continue as guest</Button>
+          </div>
             </>
           )}
         </CardContent>

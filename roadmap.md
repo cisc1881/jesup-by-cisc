@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Selection-only themes and session entry
+- [ ] Replace ownership-driven branding with explicit profile/guest school selection; unselected pages use splash gradient and neutral controls.
+- [ ] Add splash-to-account/guest choice per session, preserving public deep links and auth callbacks.
+- [ ] Test fresh/repeat guest, admin, callback bypass, school switching and mobile light/dark; no auth/RLS or live deployment changes.
+
 ## Institution-aware colors and contrast
 - [x] Resolve explicit event branding, owner name or single institution ID before profile personalization; scoped layout tokens replace root mutations. FC135 preset and verified CISC-source program presentation use Tuskegee without login. Missing/multiple ownership stays network rather than inferred from location/name. Eight official programs lack normalized owner IDs; CISC provenance is presentation attribution only, not a data/filter change.
 - [x] Fixed shared button/banner/filter/card/navigation foreground pairs, solid secondary hover backgrounds, visible focus, independent dark-mode banner pairs, network teal gradient and Tuskegee featured-entry scope. Home hero follows selected institution when present. Auth/admin/data/RLS unchanged.

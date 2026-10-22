@@ -16,8 +16,17 @@
   animation: splash-bg-in 0.5s ease-out forwards;
 }
 
+:root {
+  --jesup-splash-gradient: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
+  --splash-foreground: #171717;
+  /* Light wash preserves the full splash palette while supporting dark AA text. */
+  --jesup-banner-gradient: linear-gradient(90deg, color-mix(in srgb, #5de0e6 45%, white) 0%, color-mix(in srgb, #004aad 35%, white) 100%);
+}
+
+.text-splash-foreground { color: var(--splash-foreground); background: color-mix(in srgb, white 85%, transparent); padding: 0.25rem 0.5rem; }
+
 .jesup-splash--tone-dark .jesup-splash__backdrop {
-  background: linear-gradient(90deg, #5de0e6 0%, #004aad 100%);
+  background: var(--jesup-splash-gradient);
 }
 
 .jesup-splash--tone-light .jesup-splash__backdrop {
@@ -158,4 +167,9 @@
     opacity: 0;
     visibility: hidden;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jesup-splash, .jesup-splash * { animation: none !important; transform: none !important; }
+  .jesup-splash__backdrop, .jesup-splash__logo-wrap, .jesup-splash__subtitle, .jesup-splash__attribution { opacity: 1; }
 }

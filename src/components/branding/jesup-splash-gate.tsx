@@ -1,4 +1,6 @@
-import { useRouterState } from "@tanstack/react-router";
+import { useRouterState, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
+import { ENTRY_DESTINATION_KEY, GUEST_ENTRY_KEY, isAuthReturn, needsEntryChoice, readSessionValue, writeSessionValue } from "@/lib/entry-session";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import {
   JesupSplashScreen,
@@ -23,14 +25,6 @@ function hasSeenSplashThisSession(): boolean {
   }
 }
 
-function shouldSkipSplash(pathname: string): boolean {
-  if (hasSeenSplashThisSession()) return true;
-  if (prefersReducedMotion()) return true;
-  if (pathname === "/auth" || pathname.startsWith("/auth/")) return true;
-  if (pathname.startsWith("/admin")) return true;
-  return false;
-}
-
 function markSplashSeen(): void {
   try {
     sessionStorage.setItem(JESUP_SPLASH_SESSION_KEY, "1");
@@ -40,21 +34,44 @@ function markSplashSeen(): void {
 }
 
 export function JesupSplashGate({ children }: { children: ReactNode }) {
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const location = useRouterState({ select: (state) => state.location });
+  const pathname = location.pathname;
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const [gatePhase, setGatePhase] = useState<SplashGatePhase>("pending");
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (loading) return;
+    const authReturn = isAuthReturn(pathname, location.searchStr, window.location.hash);
+    if (user || authReturn || readSessionValue(GUEST_ENTRY_KEY) === "1") {
+      setGatePhase("done");
+      setReady(true);
+      return;
+    }
     if (gatePhase !== "pending") return;
-    if (shouldSkipSplash(pathname)) {
+    if (hasSeenSplashThisSession()) {
       setGatePhase("done");
       return;
     }
     setGatePhase("show");
-  }, [gatePhase, pathname]);
+  }, [gatePhase, pathname, location.searchStr, user, loading]);
+
+  useEffect(() => {
+    if (loading || gatePhase !== "done") return;
+    const authReturn = isAuthReturn(pathname, location.searchStr, window.location.hash);
+    if (!needsEntryChoice({signedIn: Boolean(user), guestChosen: readSessionValue(GUEST_ENTRY_KEY) === "1", authReturn}) || pathname === "/auth") {
+      setReady(true);
+      return;
+    }
+    const next = `${pathname}${location.searchStr}${window.location.hash}`;
+    writeSessionValue(ENTRY_DESTINATION_KEY, next);
+    void navigate({ to: "/auth", search: { next }, replace: true });
+  }, [gatePhase, loading, user, pathname, location.searchStr, navigate]);
 
   useEffect(() => {
     if (gatePhase !== "show") return;
-    const timer = window.setTimeout(() => setGatePhase("exit"), SPLASH_HOLD_MS);
+    const timer = window.setTimeout(() => setGatePhase("exit"), prefersReducedMotion() ? 100 : SPLASH_HOLD_MS);
     return () => window.clearTimeout(timer);
   }, [gatePhase]);
 
@@ -74,7 +91,8 @@ export function JesupSplashGate({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {children}
+      <div hidden={!ready} inert={!ready}>{children}</div>
+      {!ready && splashPhase === "hidden" && <div className="fixed inset-0 z-50 bg-background" aria-label="Opening JESUP" role="status" />}
       {splashPhase !== "hidden" && (
         <JesupSplashScreen phase={splashPhase} onExitComplete={handleExitComplete} />
       )}
