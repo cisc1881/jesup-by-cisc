@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Active recovered Home Hero Redesign
+- [ ] Restore image-free HomeHero with About Jesup and a prominent FC135 entry; preserve event-scoped branding.
+- [ ] Refine network secondary/accent and About wording without adding unverified features or facts.
+- [ ] Run existing tests, check automatic build, and verify Home, About, FC135 and mobile; report external access blockers.
+
 ## Active reusable Event Experience pass
 - [x] Audit existing builder, attendee sections, credentials and integration preparation.
 - [x] Complete date-only editing, event organizer/resource links, product descriptions/order, seller configuration editing and active-product section gating; no factual FC135 content added.
