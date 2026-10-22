@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Active official program cleanup
+- [ ] Remove blank/MeatMe demos while preserving inquiry history; deactivate genuine Value Addition; order the eight CISC programs.
+- [ ] Remove program demo seeding/fallbacks and unverified imagery/copy; add verified CISC source links.
+- [ ] Run tests/build and verify Home, Programs and details; report exact cleanup and access limitations.
+
 ## Active provisional 134th-program adaptation
 - [x] Seed 21 editable provisional FC135 sessions using only supplied reference times/topics, unassigned people and locations, with provenance notice; omit ambiguous gaps/Session III.
 - [x] Expose reusable agenda status editing and event-timezone day/time display; preserve session IDs on edits and unrelated content/protections.
