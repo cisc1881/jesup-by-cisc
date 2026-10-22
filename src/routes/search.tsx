@@ -24,6 +24,10 @@ export const Route = createFileRoute("/search")({
     meta: [
       { title: "Search · JESUP" },
       { name: "description", content: "Search programs, events, markets, publications, and more across JESUP." },
+      { property: "og:title", content: "Search · JESUP" },
+      { property: "og:description", content: "Search programs, events, markets, publications, and more across JESUP." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SearchPage,

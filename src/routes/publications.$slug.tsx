@@ -19,7 +19,13 @@ export const Route = createFileRoute("/publications/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData)
       return {
-        meta: [{ title: "Publication not found · JESUP" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Publication not found · JESUP" }, { name: "robots", content: "noindex" },
+          { name: "description", content: "This JESUP publication is unavailable. Browse the publication directory for current resources." },
+          { property: "og:title", content: "Publication not found · JESUP" },
+          { property: "og:description", content: "This JESUP publication is unavailable. Browse the publication directory for current resources." },
+          { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+        ],
       };
     const p = loaderData.publication;
     return {
@@ -28,7 +34,8 @@ export const Route = createFileRoute("/publications/$slug")({
         { name: "description", content: p.description ?? p.title },
         { property: "og:title", content: `${p.title} · JESUP` },
         { property: "og:description", content: p.description ?? p.title },
-        ...(p.coverImageUrl ? [{ property: "og:image", content: p.coverImageUrl }] : []),
+        { property: "og:type", content: "article" }, { name: "twitter:card", content: "summary_large_image" },
+        ...(p.coverImageUrl?.startsWith("https://") ? [{ property: "og:image", content: p.coverImageUrl }, { name: "twitter:image", content: p.coverImageUrl }] : []),
       ],
     };
   },
