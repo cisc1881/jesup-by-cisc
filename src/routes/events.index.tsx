@@ -1,6 +1,6 @@
 import { createFileRoute, type SearchSchemaInput } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
 import { PageContainer } from "@/components/design-system";
 import {
@@ -14,7 +14,8 @@ import {
 } from "@/components/events";
 import { DirectoryResultList } from "@/components/directory-result-list";
 import { useSavedEvents } from "@/hooks/use-saved-events";
-import { fetchEventCategories, fetchEvents, filterEvents, type EventListItem } from "@/lib/events";
+import { fetchEventCategories, filterEvents } from "@/lib/events";
+import { getPublicEvents } from '@/lib/public-events.functions';
 import { fmtDateTime } from "@/lib/format";
 import { eventDateLabel } from "@/lib/conference";
 import { listPageHead } from "@/lib/seo";
@@ -28,7 +29,9 @@ import {
   type InstitutionScope,
 } from "@/components/institution-scope-filter";
 
+const publicEventsQuery = queryOptions({ queryKey: ['events'], queryFn: () => getPublicEvents() });
 export const Route = createFileRoute("/events/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publicEventsQuery),
   validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
     view: search.view === "mine" ? ("mine" as const) : ("explore" as const),
   }),
@@ -64,10 +67,7 @@ function EventsPage() {
     isLoading,
     isFetching,
     refetch,
-  } = useQuery<EventListItem[]>({
-    queryKey: ["events"],
-    queryFn: () => fetchEvents({ upcomingOnly: false }),
-  });
+  } = useSuspenseQuery(publicEventsQuery);
 
   const { data: categories = [] } = useQuery({
     queryKey: ["event-categories"],
@@ -78,10 +78,11 @@ function EventsPage() {
     queryKey: ["event-directory-registrations", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      if (!user) return [];
       const { data, error } = await supabase
         .from("event_registrations")
         .select("event_id")
-        .eq("user_id", user!.id)
+        .eq("user_id", user.id)
         .neq("status", "cancelled");
       if (error) throw error;
       return (data ?? []).map((row) => row.event_id);
