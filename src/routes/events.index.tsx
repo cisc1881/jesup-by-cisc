@@ -14,7 +14,7 @@ import {
 } from "@/components/events";
 import { DirectoryResultList } from "@/components/directory-result-list";
 import { useSavedEvents } from "@/hooks/use-saved-events";
-import { fetchEventCategories, filterEvents } from "@/lib/events";
+import { fetchEventCategories, filterEvents, type EventListItem } from "@/lib/events";
 import { getPublicEvents } from '@/lib/public-events.functions';
 import { fmtDateTime } from "@/lib/format";
 import { eventDateLabel } from "@/lib/conference";
@@ -29,7 +29,7 @@ import {
   type InstitutionScope,
 } from "@/components/institution-scope-filter";
 
-const publicEventsQuery = queryOptions({ queryKey: ['events'], queryFn: () => getPublicEvents() });
+const publicEventsQuery = queryOptions({ queryKey: ['events'], queryFn: async () => JSON.parse(await getPublicEvents()) as EventListItem[] });
 export const Route = createFileRoute("/events/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicEventsQuery),
   validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({

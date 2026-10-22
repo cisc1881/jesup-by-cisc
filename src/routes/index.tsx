@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
         queryKey: HOME_PAGE_QUERY_KEY,
         queryFn: fetchHomePageData,
       });
-      const pilot = await getPublicEvent({ data: { id: 'fc135' } });
+      const pilot = JSON.parse(await getPublicEvent({ data: { id: 'fc135' } })) as EventDetail | null;
       return { home, pilot };
     } catch (error) {
       if (import.meta.env.DEV) {

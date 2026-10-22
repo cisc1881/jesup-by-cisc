@@ -7,7 +7,7 @@ export const getPublicEvent = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ id: z.string().min(1).max(200) }))
   .handler(async ({ data }) => {
     try {
-      return await fetchEventById(data.id, createPublicDataClient());
+      return JSON.stringify(await fetchEventById(data.id, createPublicDataClient()));
     } catch (error) {
       console.error('[public-event] Read failed', error);
       throw new Error('This event could not be loaded. Please try again.');
@@ -17,7 +17,7 @@ export const getPublicEvent = createServerFn({ method: 'GET' })
 export const getPublicEvents = createServerFn({ method: 'GET' })
   .handler(async () => {
     try {
-      return await fetchEvents({ activeOnly: true }, createPublicDataClient());
+      return JSON.stringify(await fetchEvents({ activeOnly: true }, createPublicDataClient()));
     } catch (error) {
       console.error('[public-events] Read failed', error);
       throw new Error('Events could not be loaded. Please try again.');
