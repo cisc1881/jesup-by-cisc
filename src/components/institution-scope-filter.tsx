@@ -1,5 +1,6 @@
 import { Building2, Globe2, School } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export type InstitutionScope = "mine" | "all" | "other";
 
@@ -24,22 +25,23 @@ export function InstitutionScopeFilter({
         const Icon = option.icon;
         const disabled = option.value !== "all" && !hasInstitution;
         return (
-          <button
+          <Button variant="ghost"
             key={option.value}
             type="button"
             disabled={disabled}
+            aria-pressed={value === option.value}
             onClick={() => onChange(option.value)}
             className={cn(
               "flex min-h-12 items-center justify-center gap-1.5 border-r border-border px-2 text-center text-[11px] font-bold leading-tight transition last:border-r-0 sm:text-sm",
               value === option.value
-                ? "institution-accent-bg"
+                ? "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground"
                 : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
-              disabled && "cursor-not-allowed opacity-40",
+              disabled && "cursor-not-allowed",
             )}
           >
             <Icon className="hidden h-4 w-4 shrink-0 sm:block" />
             {option.label}
-          </button>
+          </Button>
         );
       })}
     </div>

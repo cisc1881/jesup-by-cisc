@@ -1,5 +1,10 @@
 # FC135 recovery
 
+## Institution-aware colors and contrast
+- [x] Resolve explicit event branding, owner name or single institution ID before profile personalization; scoped layout tokens replace root mutations. FC135 preset and verified CISC-source program presentation use Tuskegee without login. Missing/multiple ownership stays network rather than inferred from location/name. Eight official programs lack normalized owner IDs; CISC provenance is presentation attribution only, not a data/filter change.
+- [x] Fixed shared button/banner/filter/card/navigation foreground pairs, solid secondary hover backgrounds, visible focus, independent dark-mode banner pairs, network teal gradient and Tuskegee featured-entry scope. Home hero follows selected institution when present. Auth/admin/data/RLS unchanged.
+- [x] Full suite 39 files / 154 tests passed; automatic build OK. Desktop/mobile light/dark checks for Home, Programs, Partners, FC135, TUAIC and authenticated Admin: 148 rendered foreground/background pairs, minimum 5.24:1; checked public button hover/focus, schedule tab and no public horizontal overflow/page errors. External home remains HTTP 401 Unauthorized, so hosted visuals unverified. No live deployment.
+
 ## One-time owner admin invitation
 - [x] Auth accepted one invitation for info@accessfarmtotable.com at 2026-10-22 10:38:19 UTC, explicitly returning to the recovered project's allowed preview /auth?mode=reset. No password generated or stored; no invite link/token logged.
 - [x] Verified exact invited auth ID bd648192-50a4-4280-967f-2f0aa94eafff and matching profile; idempotent admin insert and removal of only its automatic user role leaves [admin]. Two prior admins preserved. Email remains unconfirmed and password unset; no RLS/auth configuration/application-code changes or deployment.

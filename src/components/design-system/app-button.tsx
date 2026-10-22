@@ -4,21 +4,21 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const appButtonVariants = cva(
-  "inline-flex max-w-full items-center justify-center gap-2 whitespace-nowrap font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex max-w-full items-center justify-center gap-2 whitespace-normal font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         primary: "grad-crimson text-primary-foreground shadow-token-crimson hover:opacity-95",
-        secondary: "bg-secondary text-secondary-foreground shadow-token-soft hover:bg-secondary/80",
+        secondary: "bg-secondary text-secondary-foreground shadow-token-soft hover:bg-secondary hover:text-secondary-foreground hover:underline",
         outline: "border border-border bg-background text-foreground shadow-token-soft hover:bg-secondary/60",
         ghost: "text-foreground hover:bg-secondary/70",
         gold: "bg-accent text-accent-foreground shadow-token-soft hover:opacity-90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        inverse: "bg-card text-primary shadow-token-soft hover:bg-card/90",
+        inverse: "bg-card text-card-foreground shadow-token-soft hover:bg-muted",
       },
       size: {
-        sm: "h-8 px-3.5 text-xs",
-        md: "h-10 px-5 text-sm",
+        sm: "min-h-11 px-3.5 py-2 text-xs",
+        md: "min-h-11 px-5 py-2 text-sm",
         lg: "h-12 px-7 text-base",
         icon: "h-10 w-10",
       },

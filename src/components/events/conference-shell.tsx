@@ -39,9 +39,9 @@ export function ConferenceShell({ event }: { event: EventDetail }) {
         {isAdmin && <div className="flex gap-2"><Button variant="outline" size="sm" asChild><Link to="/admin/events"><Settings2 className="size-4" />Manage conference</Link></Button></div>}
         {workspace?.permissions.some(p=>p.allowed) && <Button variant="outline" asChild><Link to="/events/$id/scan" params={{id:event.id}}>Staff scanner</Link></Button>}
       </div>
-      <div className="conference-shell" data-event-theme={event.metadata.theme_preset === "tuskegee" ? "tuskegee" : "network"}>
+      <div className="conference-shell">
         <ConferenceHero event={event} />
-        <nav className="flex overflow-x-auto border-b bg-card" aria-label="Conference sections">{sections.map(([id,label]) => <Button key={id} type="button" variant="ghost" aria-current={tab === id ? "page" : undefined} className={`min-h-14 shrink-0 border-b-2 px-5 ${tab === id ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`} onClick={() => setSelected(id)}>{label}</Button>)}</nav>
+        <nav className="flex overflow-x-auto border-b bg-card" aria-label="Conference sections">{sections.map(([id,label]) => <Button key={id} type="button" variant="ghost" aria-current={tab === id ? "page" : undefined} className={`min-h-14 shrink-0 border-b-2 px-5 ${tab === id ? "border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "border-transparent text-muted-foreground"}`} onClick={() => setSelected(id)}>{label}</Button>)}</nav>
         <div className="py-8 sm:py-10">
           {tab === "home" && <div className="grid gap-8 sm:grid-cols-[minmax(0,1fr)_280px]">
             <section className="space-y-4"><p className="text-sm font-semibold text-primary">{eventDateLabel(event)}</p><h2 className="text-2xl font-bold">{event.title}</h2><p className="max-w-2xl leading-relaxed text-muted-foreground">{event.location}</p>{event.description && <p className="max-w-2xl leading-relaxed text-muted-foreground">{event.description}</p>}<Button variant="outline" onClick={() => downloadEventIcs(event)}><CalendarPlus className="size-4" />Save the dates</Button></section>

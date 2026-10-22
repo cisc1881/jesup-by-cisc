@@ -2,6 +2,7 @@ import type { ProgramCategory } from "@/lib/programs";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type ProgramFiltersProps = {
   categories: ProgramCategory[];
@@ -17,7 +18,7 @@ const chipBase =
 
 const chipInactive = "bg-background text-foreground hover:bg-muted";
 
-const chipActive = "institution-accent-bg border-transparent";
+const chipActive = "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground border-transparent";
 
 export function ProgramFilters({
   categories,
@@ -46,16 +47,16 @@ export function ProgramFilters({
           role="group"
           aria-label="Filter by category"
         >
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={() => onCategoryChange(null)}
             className={cn(chipBase, selectedCategoryId === null ? chipActive : chipInactive)}
             aria-pressed={selectedCategoryId === null}
           >
             Active
-          </button>
+          </Button>
           {categories.map((category) => (
-            <button
+            <Button variant="ghost"
               key={category.id}
               type="button"
               onClick={() => onCategoryChange(category.id)}
@@ -66,7 +67,7 @@ export function ProgramFilters({
               aria-pressed={selectedCategoryId === category.id}
             >
               {category.name}
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -89,7 +90,7 @@ export function filterPrograms<
       !q ||
       [program.name, program.tagline, program.short]
         .filter(Boolean)
-        .some((value) => value!.toLowerCase().includes(q));
+        .some((value) => value?.toLowerCase().includes(q));
     return matchesCategory && matchesSearch;
   });
 }

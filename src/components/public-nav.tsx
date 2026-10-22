@@ -150,10 +150,10 @@ export function PublicNav() {
         >
           <Link
             to="/"
-            className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
+            className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground transition hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
             activeOptions={{ exact: true }}
             activeProps={{
-              className: "bg-[var(--institution-accent-soft)] institution-accent-text",
+              className: "bg-primary text-primary-foreground",
             }}
           >
             Home
@@ -162,9 +162,9 @@ export function PublicNav() {
             <Link
               key={l.to}
               to={l.to}
-              className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground/70 transition hover:bg-secondary hover:text-foreground"
+              className="shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold text-foreground transition hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
               activeProps={{
-                className: "bg-[var(--institution-accent-soft)] institution-accent-text",
+                className: "bg-primary text-primary-foreground",
               }}
             >
               {l.label}

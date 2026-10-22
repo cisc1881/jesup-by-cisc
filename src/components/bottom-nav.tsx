@@ -78,7 +78,7 @@ export function BottomNav() {
       <Link
         key={item.to}
         to={item.to}
-        className="group flex min-h-[54px] min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[9px] font-semibold transition sm:text-[10px]"
+        className="group flex min-h-[54px] min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[9px] font-semibold transition hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2 sm:text-[10px]"
         aria-current={active ? "page" : undefined}
       >
         <item.icon
