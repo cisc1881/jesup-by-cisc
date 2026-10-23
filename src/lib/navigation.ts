@@ -20,7 +20,6 @@ export const RESOURCE_ROUTES = [
   "/publications",
   "/markets",
   "/grants",
-  "/equipment",
   "/surveys",
   "/partners",
   "/donate",
@@ -65,12 +64,6 @@ export const resourceHubLinks: ResourceHubLink[] = [
     icon: DollarSign,
     title: "Grants",
     body: "Funding for community and farm projects.",
-  },
-  {
-    to: "/equipment",
-    icon: Package,
-    title: "Equipment checkout",
-    body: "Reserve field tools, sensors, media kits, and workshop equipment.",
   },
   {
     to: "/surveys",
