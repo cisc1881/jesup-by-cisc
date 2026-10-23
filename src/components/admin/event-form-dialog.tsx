@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { listInstitutions } from "@/lib/institutions";
+import { SOCIAL_PLATFORMS } from "@/lib/speakers";
 import { ConferenceSettingsPanel } from "./conference-settings-panel";
 import { ConferenceOperationsPanel } from "./conference-operations-panel";
 import { EventAgendaNotice } from "@/components/events/event-agenda-notice";
