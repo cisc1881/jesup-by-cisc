@@ -214,6 +214,31 @@ const settingsInput = z.object({
   instructions: z.string().trim().max(4000).nullable(),
 });
 
+/** Event staff remove a submission file (storage object and record). */
+export const removePresenterFile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ submissionId: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    const db = context.supabase;
+    const { data: submission, error } = await db
+      .from("event_presenter_submissions")
+      .select("id, event_id, file_path")
+      .eq("id", data.submissionId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!submission) throw new Error("File not found or not accessible.");
+    await requireEventStaff(db, context.userId, submission.event_id);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.storage.from(PRESENTER_FILES_BUCKET).remove([submission.file_path]);
+    const { error: deleteError } = await db
+      .from("event_presenter_submissions")
+      .delete()
+      .eq("id", submission.id);
+    if (deleteError) throw deleteError;
+    return { removed: true };
+  });
+
 /** Event staff configure the submission window, allowed types, and size limit. */
 export const savePresenterSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
