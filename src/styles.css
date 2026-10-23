@@ -652,6 +652,7 @@ body *::after {
 @media (min-width: 768px) {
   .home-hero-media { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: right center; z-index: -1; }
   .home-hero-image .home-hero-inner { background: transparent; }
+  .home-hero-image .home-hero-controls { border-top: 0; padding: 0.25rem 1rem; border-radius: var(--radius-md); background: color-mix(in oklch, var(--home-panel) 92%, transparent); }
   .home-hero-image .home-hero-panel {
     max-width: 30rem;
     padding: 1.5rem;

@@ -47,7 +47,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
           </div>
         </div>
         {slides.length > 1 && (
-          <div className="mt-8 flex items-start gap-3 border-t border-home-muted/30 pt-4 sm:mt-10 sm:items-center">
+          <div className="home-hero-controls mt-8 flex items-start gap-3 border-t border-home-muted/30 pt-4 sm:mt-10 sm:items-center">
             <div className="flex min-w-0 flex-1 gap-4 overflow-x-auto" role="group" aria-label="Featured item selection">
               {slides.map((slide, index) => (
                 <AppButton
