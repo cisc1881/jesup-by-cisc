@@ -71,6 +71,13 @@
       "when": 1792797738087,
       "tag": "0009_presenter_submissions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792798268004,
+      "tag": "0010_presenter_submission_staff_delete",
+      "breakpoints": true
     }
   ]
 }

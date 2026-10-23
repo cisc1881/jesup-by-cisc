@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   getPresenterDownloadUrl,
   getPresenterStaffBoard,
+  removePresenterFile,
 } from "@/lib/presenter-submissions.functions";
 import {
   PRESENTER_FILE_KINDS,
