@@ -195,12 +195,11 @@ export const getPresenterDownloadUrl = createServerFn({ method: "POST" })
       .createSignedUrl(submission.file_path, 60);
     if (signError) throw signError;
 
-    await db.from("event_presenter_access_log").insert({
-      event_id: submission.event_id,
-      submission_id: submission.id,
-      actor_id: context.userId,
-      action: "download",
+    const { error: logError } = await db.rpc("log_presenter_file_access", {
+      p_submission_id: submission.id,
+      p_action: "download",
     });
+    if (logError) throw logError;
     return { url: signed.signedUrl };
   });
 
@@ -230,7 +229,15 @@ export const removePresenterFile = createServerFn({ method: "POST" })
     await requireEventStaff(db, context.userId, submission.event_id);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.storage.from(PRESENTER_FILES_BUCKET).remove([submission.file_path]);
+    const { error: storageError } = await supabaseAdmin.storage
+      .from(PRESENTER_FILES_BUCKET)
+      .remove([submission.file_path]);
+    if (storageError) throw new Error(`Could not remove the stored file: ${storageError.message}`);
+    const { error: logError } = await db.rpc("log_presenter_file_access", {
+      p_submission_id: submission.id,
+      p_action: "remove",
+    });
+    if (logError) throw logError;
     const { error: deleteError } = await db
       .from("event_presenter_submissions")
       .delete()
