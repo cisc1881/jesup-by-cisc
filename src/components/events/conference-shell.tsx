@@ -49,7 +49,7 @@ export function ConferenceShell({ event }: { event: EventDetail }) {
           <div className="grid gap-8 sm:grid-cols-[minmax(0,1fr)_280px]">
             <section className="space-y-4"><p className="text-sm font-semibold text-primary">{eventDateLabel(event)}</p><h2 className="text-2xl font-bold">{event.title}</h2><p className="max-w-2xl leading-relaxed text-muted-foreground">{event.location}</p>{event.description && <p className="max-w-2xl leading-relaxed text-muted-foreground">{event.description}</p>}<Button variant="outline" onClick={() => downloadEventIcs(event)}><CalendarPlus className="size-4" />Save the dates</Button></section>
             <aside className="space-y-4 border-t pt-6 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0"><Ticket className="size-6 text-primary" /><h2 className="text-lg font-bold">Registration updates</h2><p className="text-sm leading-relaxed text-muted-foreground">{event.registrationOpen ? "Registration is available in Tickets." : "Registration details are not yet announced."}</p>{sections.some(([id]) => id === "tickets") && <Button variant="outline" onClick={() => setSelected("tickets")}>Tickets</Button>}</aside>
-          </div>}
+          </div></div>}
           {tab === "schedule" && <EventAgenda event={event} />}
           {tab === "speakers" && <EventSpeakers event={event} />}
           {tab === "tickets" && <div className="space-y-6">{event.metadata.catalog_enabled===true && <ConferenceCatalog eventId={event.id}/>}<div className="max-w-2xl"><EventRegistrationPanel event={event} registration={registration} /></div></div>}

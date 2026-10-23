@@ -665,6 +665,190 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                       }))
                     }
                   />
+                  <label className="flex items-center gap-2 text-sm font-medium">
+                    <input
+                      type="checkbox"
+                      checked={speaker.isKeynote ?? false}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          speakers: f.speakers.map((s, i) =>
+                            i === index ? { ...s, isKeynote: e.target.checked } : s,
+                          ),
+                        }))
+                      }
+                    />
+                    Keynote / featured speaker (shown prominently)
+                  </label>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Input
+                      value={speaker.websiteUrl ?? ""}
+                      placeholder="Website (https://…)"
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          speakers: f.speakers.map((s, i) =>
+                            i === index ? { ...s, websiteUrl: e.target.value } : s,
+                          ),
+                        }))
+                      }
+                    />
+                    <Input
+                      value={speaker.contactEmail ?? ""}
+                      type="email"
+                      placeholder="Contact email (optional)"
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          speakers: f.speakers.map((s, i) =>
+                            i === index ? { ...s, contactEmail: e.target.value } : s,
+                          ),
+                        }))
+                      }
+                    />
+                    <Input
+                      value={speaker.contactPhone ?? ""}
+                      type="tel"
+                      placeholder="Contact phone (optional)"
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          speakers: f.speakers.map((s, i) =>
+                            i === index ? { ...s, contactPhone: e.target.value } : s,
+                          ),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Social profile links (optional, shown with platform labels)</Label>
+                    {(speaker.socialLinks ?? []).map((link, linkIndex) => (
+                      <div key={linkIndex} className="flex gap-2">
+                        <select
+                          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                          value={link.platform}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              speakers: f.speakers.map((s, i) =>
+                                i === index
+                                  ? {
+                                      ...s,
+                                      socialLinks: s.socialLinks.map((l, li) =>
+                                        li === linkIndex
+                                          ? { ...l, platform: e.target.value as typeof l.platform }
+                                          : l,
+                                      ),
+                                    }
+                                  : s,
+                              ),
+                            }))
+                          }
+                        >
+                          {SOCIAL_PLATFORMS.map((p) => (
+                            <option key={p.id} value={p.id}>{p.label}</option>
+                          ))}
+                        </select>
+                        <Input
+                          value={link.url}
+                          placeholder="https://…"
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              speakers: f.speakers.map((s, i) =>
+                                i === index
+                                  ? {
+                                      ...s,
+                                      socialLinks: s.socialLinks.map((l, li) =>
+                                        li === linkIndex ? { ...l, url: e.target.value } : l,
+                                      ),
+                                    }
+                                  : s,
+                              ),
+                            }))
+                          }
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            setForm((f) => ({
+                              ...f,
+                              speakers: f.speakers.map((s, i) =>
+                                i === index
+                                  ? { ...s, socialLinks: s.socialLinks.filter((_, li) => li !== linkIndex) }
+                                  : s,
+                              ),
+                            }))
+                          }
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          speakers: f.speakers.map((s, i) =>
+                            i === index
+                              ? {
+                                  ...s,
+                                  socialLinks: [
+                                    ...(s.socialLinks ?? []),
+                                    { platform: "linkedin" as const, label: "LinkedIn", url: "" },
+                                  ],
+                                }
+                              : s,
+                          ),
+                        }))
+                      }
+                    >
+                      <Plus className="h-4 w-4" /> Add social link
+                    </Button>
+                  </div>
+                  {form.sessions.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-xs">Sessions this speaker appears in</Label>
+                      <div className="grid gap-1">
+                        {form.sessions.map((session, sessionIndex) => {
+                          const sessionId = session.id ?? `new-${sessionIndex}`;
+                          const checked = (speaker.sessionIds ?? []).includes(sessionId);
+                          return (
+                            <label key={sessionId} className="flex items-center gap-2 text-sm">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={(e) =>
+                                  setForm((f) => ({
+                                    ...f,
+                                    speakers: f.speakers.map((s, i) =>
+                                      i === index
+                                        ? {
+                                            ...s,
+                                            sessionIds: e.target.checked
+                                              ? [...(s.sessionIds ?? []), sessionId]
+                                              : (s.sessionIds ?? []).filter((id) => id !== sessionId),
+                                          }
+                                        : s,
+                                    ),
+                                  }))
+                                }
+                              />
+                              <span className="truncate">
+                                {session.title || `Session ${sessionIndex + 1}`}
+                                {session.startsAt ? ` · ${session.startsAt}` : ""}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               <Button
@@ -675,7 +859,19 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                     ...f,
                     speakers: [
                       ...f.speakers,
-                      { name: "", title: "", bio: "", photoUrl: "", sortOrder: f.speakers.length },
+                      {
+                        name: "",
+                        title: "",
+                        bio: "",
+                        photoUrl: "",
+                        sortOrder: f.speakers.length,
+                        isKeynote: false,
+                        websiteUrl: "",
+                        socialLinks: [],
+                        contactEmail: "",
+                        contactPhone: "",
+                        sessionIds: [],
+                      },
                     ],
                   }))
                 }
