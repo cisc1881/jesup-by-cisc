@@ -635,6 +635,31 @@ body *::after {
 .brand-primary-control { background-image: var(--gradient-jesup); color: var(--gradient-foreground); }
 .brand-primary-control:hover { background-image: var(--gradient-jesup); }
 .program-media-overlay { background: var(--program-media-overlay); }
+/* Image slide: dark text on a cream panel over the artwork's light left side. */
+.home-network-hero.home-hero-image {
+  --home-foreground: oklch(0.2 0.02 60);
+  --home-muted: oklch(0.36 0.02 60);
+  --home-control-hover: oklch(0.2 0.02 60 / 10%);
+  --home-cta: oklch(0.2 0.02 60);
+  --home-cta-foreground: oklch(0.98 0.01 85);
+  --home-panel: oklch(0.96 0.025 85);
+  background: var(--home-panel);
+  position: relative;
+  isolation: isolate;
+}
+.home-hero-media { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: 72% 20%; }
+.home-hero-image .home-hero-inner { background: var(--home-panel); }
+@media (min-width: 768px) {
+  .home-hero-media { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: right center; z-index: -1; }
+  .home-hero-image .home-hero-inner { background: transparent; }
+  .home-hero-image .home-hero-panel {
+    max-width: 30rem;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--home-panel) 88%, transparent);
+  }
+}
+@media (min-width: 1024px) { .home-hero-image .home-hero-panel { max-width: 34rem; } }
 @media (max-width: 639px) {
   .home-slide-content { min-height: 320px; }
 }

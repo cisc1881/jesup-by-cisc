@@ -19,6 +19,7 @@ import type { EventDetail } from "@/lib/events";
 import { getPublicEvent } from '@/lib/public-events.functions';
 import { eventDateLabel } from "@/lib/conference";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
+import aboutHeroAsset from "@/assets/jesup-about-hero.png.asset.json";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context: { queryClient } }): Promise<{ home: HomePageData; pilot: EventDetail | null }> => {
@@ -99,7 +100,7 @@ function Home() {
   const relevantSlides = useMemo(() => {
     const aboutSlide: HomeHeroSlide = {
       id: "about-jesup",
-      imageUrl: "",
+      imageUrl: aboutHeroAsset.url,
       imageAlt: "About Jesup",
       title: "JESUP",
       subtitle:
