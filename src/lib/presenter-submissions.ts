@@ -83,6 +83,15 @@ export function presenterFilePath(eventId: string, presenterId: string, fileName
   return `${eventId}/${presenterId}/${crypto.randomUUID()}-${safeFileName(fileName)}`;
 }
 
+/**
+ * Mirrors the ownership check in public.submit_presenter_file (the database is
+ * authoritative; this exists for client-side pre-validation and tests).
+ */
+export function isOwnedPresenterPath(eventId: string, presenterId: string, path: string): boolean {
+  if (path.includes("..")) return false;
+  return path.startsWith(`${eventId}/${presenterId}/`) && path.length > eventId.length + presenterId.length + 2;
+}
+
 export function formatFileSize(bytes: number): string {
   if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_PRESENTER_MIME_TYPES,
+  isOwnedPresenterPath,
   presenterFilePath,
   safeFileName,
   submissionWindowStatus,
