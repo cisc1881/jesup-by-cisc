@@ -57,6 +57,13 @@
       "when": 1792767062990,
       "tag": "0007_eventbrite_ticket_mappings",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792767101336,
+      "tag": "0008_mapped_issue_admin_source",
+      "breakpoints": true
     }
   ]
 }
