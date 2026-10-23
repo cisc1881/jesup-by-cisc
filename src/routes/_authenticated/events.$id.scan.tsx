@@ -23,7 +23,7 @@ function StaffScanner(){
   if(!result||typeof result!=='object'||Array.isArray(result))throw new Error('Invalid scanner result');
   const r=result as Record<string,unknown>;
   if(selected==='badge'){printEventBadge({attendeeName:String(r.attendee_name??'Attendee'),eventTitle:'JESUP event',ticketCode:String(r.ticket_code??'')});setMessage('Badge issuance recorded; print dialog requested.')}
-  else if(selected==='checkin')setMessage(`${String(r.attendee_name??'Attendee')} · ${r.already_checked_in?'Already checked in':'Checked in'}`);
+  else if(selected==='checkin'){const tc=query.data?.registrations.find(x=>x.ticket_code===value.trim()||x.id===r.registration_id)?.eventbrite_ticket_class;setMessage(`${String(r.attendee_name??'Attendee')} · ${r.already_checked_in?'Already checked in':'Checked in'}${tc?` · ${tc}`:''}`)}
   else setMessage(`Redeemed · ${String(r.remaining??0)} remaining`);
   setCode('');
  }catch(e){setMessage(e instanceof Error?e.message:'Could not process credential')}finally{setBusy(false)}}

@@ -5,10 +5,6 @@ import { mappingInput, summarizeTicketClasses } from "./ticket-mapping";
 
 const eventInput = z.object({ eventId: z.string().uuid() });
 
-async function requireAdmin(db: { rpc: (...a: never[]) => unknown }, userId: string) {
-  const { data, error } = await (db.rpc as unknown as (n: string, a: object) => Promise<{ data: unknown; error: unknown }>)("has_role", { _user_id: userId, _role: "admin" });
-  if (error || !data) throw new Error("Administrator required");
-}
 
 /** Admin-only: distinct ticket classes with counts (no attendee data) plus current mappings. */
 export const readTicketMappings = createServerFn({ method: "POST" })
@@ -16,7 +12,8 @@ export const readTicketMappings = createServerFn({ method: "POST" })
   .inputValidator(eventInput)
   .handler(async ({ data, context }) => {
     const db = context.supabase;
-    await requireAdmin(db as never, context.userId);
+    const { data: admin, error: roleError } = await db.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (roleError || !admin) throw new Error("Administrator required");
     const [regs, maps] = await Promise.all([
       db.from("event_registrations").select("eventbrite_ticket_class,status").eq("event_id", data.eventId).eq("registration_source", "eventbrite"),
       db.from("event_ticket_mappings").select("id,ticket_class,product_id,quantity").eq("event_id", data.eventId).order("ticket_class"),
