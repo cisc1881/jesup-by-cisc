@@ -82,6 +82,15 @@
 - [x] Security lockdown (2026-10-23): direct submission inserts/updates and direct access-log inserts revoked; all writes via `submit_presenter_file` (verifies the storage object exists and matches size) and `log_presenter_file_access`; negative checks (forged path, direct insert/update, forged audit row, ghost object) verified blocked live.
 - [ ] Remaining setup: admins must set FC135 presenter deadlines and add presenter accounts before the module opens; presenter invite-by-email (vs account ID) is a future nicety.
 
+## Speaker experience increment (2026-10-23)
+- [x] Optional keynote/featured designation per speaker, shown prominently only when set.
+- [x] Admin-configured optional follow-up fields: website, platform-labelled social links, email, phone — validated/sanitized on save, only populated fields shown.
+- [x] Full readable speaker bio/detail dialog with session names and times in the event timezone.
+- [x] Event-scoped speaker ↔ session assignment (admin checkboxes in the event form).
+- [x] Live next-session countdown: event timezone display, simultaneous session grouping, "happening now" and after-event states, hidden for provisional/draft agendas and when `countdown_enabled` is false.
+- [x] Verified live on a temporary event (desktop + mobile + dialog); FC135 confirmed to show no countdown while its agenda is provisional; test data removed.
+- [ ] Remaining setup: FC135 speakers and session assignments await organizer-provided data; none were invented.
+
 ## Verification
 - Second increment: authenticated database checks passed for unpriced approval, capacity, issue retries, redemption retries/replay rejection, repeat admission, duplicate badge prevention, incorrect claim rejection, verified-email/barcode claim and duplicate claim prevention.
 - Browser read-back confirmed admission QR in Wallet, invalid scanner credential rejection, admin catalog/staff/seller screens, Home-only public FC135, and no page errors. Verification records are non-public and retained inactive for audit; FC135 test registration was removed and section settings restored.

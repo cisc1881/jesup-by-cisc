@@ -4,6 +4,13 @@ import type { Database } from '@/integrations/supabase/types';
 import type { Json } from "@/integrations/supabase/types";
 import { conferenceDateRange, eventLocalInput, eventLocalToUtc } from "@/lib/conference";
 import {
+  isValidContactEmail,
+  isValidContactPhone,
+  sanitizeSocialLinks,
+  sanitizeSpeakerUrl,
+  type SpeakerSocialLink,
+} from "@/lib/speakers";
+import {
   publishingWriteError,
   validateContentIdentity,
   validateEventSchedule,
@@ -65,6 +72,14 @@ export type EventSession = {
   sortOrder: number;
 };
 
+export type EventSpeakerSession = {
+  id: string;
+  title: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  location: string | null;
+};
+
 export type EventSpeaker = {
   id: string;
   name: string;
@@ -72,6 +87,12 @@ export type EventSpeaker = {
   bio: string | null;
   photoUrl: string | null;
   sortOrder: number;
+  isKeynote: boolean;
+  websiteUrl: string | null;
+  socialLinks: SpeakerSocialLink[];
+  contactEmail: string | null;
+  contactPhone: string | null;
+  sessions: EventSpeakerSession[];
 };
 
 export type EventGalleryImage = {
@@ -116,7 +137,10 @@ export type EventDetail = EventListItem & {
 };
 
 export type EventFormSession = Omit<EventSession, "id"> & { id?: string };
-export type EventFormSpeaker = Omit<EventSpeaker, "id"> & { id?: string };
+export type EventFormSpeaker = Omit<EventSpeaker, "id" | "sessions"> & {
+  id?: string;
+  sessionIds: string[];
+};
 export type EventFormGalleryImage = Omit<EventGalleryImage, "id"> & { id?: string };
 
 export type EventFormData = {
@@ -351,6 +375,7 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
   const [
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     partnersRes,
     programsRes,
@@ -361,6 +386,7 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
   ] = await Promise.all([
     client.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
     client.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
+    client.from("event_session_speakers").select("speaker_id, session_id").eq("event_id", eventId),
     client
       .from("event_gallery")
       .select("*")
@@ -398,6 +424,7 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
   for (const res of [
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     partnersRes,
     programsRes,
@@ -413,6 +440,22 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
     if (a.is_cover !== b.is_cover) return a.is_cover ? -1 : 1;
     return a.sort_order - b.sort_order;
   });
+
+  const sessionsById = new Map((sessionsRes.data ?? []).map((s) => [s.id, s]));
+  const sessionsBySpeaker = new Map<string, EventSpeakerSession[]>();
+  for (const link of sessionSpeakersRes.data ?? []) {
+    const session = sessionsById.get(link.session_id);
+    if (!session) continue;
+    const list = sessionsBySpeaker.get(link.speaker_id) ?? [];
+    list.push({
+      id: session.id,
+      title: session.title,
+      startsAt: session.starts_at,
+      endsAt: session.ends_at,
+      location: session.location,
+    });
+    sessionsBySpeaker.set(link.speaker_id, list);
+  }
 
   const base = mapListRow(row as Record<string, unknown>, countMap.get(eventId) ?? 0);
 
@@ -437,6 +480,14 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
       bio: s.bio,
       photoUrl: s.photo_url,
       sortOrder: s.sort_order,
+      isKeynote: s.is_keynote ?? false,
+      websiteUrl: s.website_url,
+      socialLinks: sanitizeSocialLinks(
+        (s.social_links as Array<{ platform?: string; url?: string }> | null) ?? [],
+      ),
+      contactEmail: s.contact_email,
+      contactPhone: s.contact_phone,
+      sessions: sessionsBySpeaker.get(s.id) ?? [],
     })),
     gallery: approvedGallery.map((g) => ({
       id: g.id,
@@ -637,6 +688,7 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     grantsRes,
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     surveyRes,
     evaluationRes,
@@ -648,6 +700,7 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     supabase.from("event_grants").select("grant_id").eq("event_id", eventId),
     supabase.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
     supabase.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
+    supabase.from("event_session_speakers").select("speaker_id, session_id").eq("event_id", eventId),
     supabase.from("event_gallery").select("*").eq("event_id", eventId).order("sort_order"),
     supabase.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
     supabase
@@ -665,11 +718,19 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     grantsRes,
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     surveyRes,
     evaluationRes,
   ]) {
     if (res.error) throw res.error;
+  }
+
+  const sessionIdsBySpeaker = new Map<string, string[]>();
+  for (const link of sessionSpeakersRes.data ?? []) {
+    const list = sessionIdsBySpeaker.get(link.speaker_id) ?? [];
+    list.push(link.session_id);
+    sessionIdsBySpeaker.set(link.speaker_id, list);
   }
 
   const metadata = (row.metadata as Record<string, unknown> | null) ?? {};
@@ -736,6 +797,14 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
       bio: s.bio ?? "",
       photoUrl: s.photo_url ?? "",
       sortOrder: s.sort_order,
+      isKeynote: s.is_keynote ?? false,
+      websiteUrl: s.website_url ?? "",
+      socialLinks: sanitizeSocialLinks(
+        (s.social_links as Array<{ platform?: string; url?: string }> | null) ?? [],
+      ),
+      contactEmail: s.contact_email ?? "",
+      contactPhone: s.contact_phone ?? "",
+      sessionIds: sessionIdsBySpeaker.get(s.id) ?? [],
     })),
     gallery: (galleryRes.data ?? []).map((g) => ({
       id: g.id,
@@ -824,10 +893,12 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
   if (keptSessionIds.length) removeSessions = removeSessions.not("id", "in", `(${keptSessionIds.join(",")})`);
   const { error: removeSessionError } = await removeSessions;
   if (removeSessionError) throw removeSessionError;
+  // Resolve session ids up front so speaker assignments can reference them.
+  const resolvedSessionIds = form.sessions.map((session) => session.id ?? crypto.randomUUID());
   if (form.sessions.length) {
     const { error: sessionError } = await supabase.from("event_sessions").upsert(
         form.sessions.map((session, index) => ({
-          id: session.id ?? crypto.randomUUID(),
+          id: resolvedSessionIds[index],
           event_id: eventId,
           title: session.title,
           description: session.description || null,
@@ -841,16 +912,57 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
   }
   if (form.speakers.length) {
     inserts.push(
-      supabase.from("event_speakers").insert(
-        form.speakers.map((speaker, index) => ({
-          event_id: eventId,
-          name: speaker.name,
-          title: speaker.title || null,
-          bio: speaker.bio || null,
-          photo_url: speaker.photoUrl || null,
-          sort_order: index,
-        })),
-      ),
+      (async () => {
+        const { data: insertedSpeakers, error: speakerError } = await supabase
+          .from("event_speakers")
+          .insert(
+            form.speakers.map((speaker, index) => ({
+              event_id: eventId,
+              name: speaker.name,
+              title: speaker.title || null,
+              bio: speaker.bio || null,
+              photo_url: speaker.photoUrl || null,
+              sort_order: index,
+              is_keynote: speaker.isKeynote ?? false,
+              website_url: sanitizeSpeakerUrl(speaker.websiteUrl),
+              social_links: sanitizeSocialLinks(speaker.socialLinks) as unknown as Json,
+              contact_email:
+                speaker.contactEmail && isValidContactEmail(speaker.contactEmail)
+                  ? speaker.contactEmail.trim()
+                  : null,
+              contact_phone:
+                speaker.contactPhone && isValidContactPhone(speaker.contactPhone)
+                  ? speaker.contactPhone.trim()
+                  : null,
+            })),
+          )
+          .select("id");
+        if (speakerError) throw speakerError;
+        const joinRows = form.speakers.flatMap((speaker, index) => {
+          const speakerId = insertedSpeakers?.[index]?.id;
+          if (!speakerId) return [];
+          return (speaker.sessionIds ?? [])
+            .map((sessionId) =>
+              sessionId.startsWith("new-")
+                ? resolvedSessionIds[Number(sessionId.slice(4))]
+                : sessionId,
+            )
+            .filter((sessionId): sessionId is string =>
+              Boolean(sessionId) && resolvedSessionIds.includes(sessionId),
+            )
+            .map((sessionId) => ({
+              event_id: eventId,
+              session_id: sessionId,
+              speaker_id: speakerId,
+            }));
+        });
+        if (joinRows.length) {
+          const { error: joinError } = await supabase
+            .from("event_session_speakers")
+            .insert(joinRows);
+          if (joinError) throw joinError;
+        }
+      })(),
     );
   }
 

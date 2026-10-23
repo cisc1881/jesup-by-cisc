@@ -85,6 +85,13 @@
       "when": 1792798532345,
       "tag": "0011_presenter_submission_write_lockdown",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792798892375,
+      "tag": "0012_event_speaker_profiles",
+      "breakpoints": true
     }
   ]
 }
