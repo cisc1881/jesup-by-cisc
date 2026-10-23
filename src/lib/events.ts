@@ -418,6 +418,7 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
   for (const res of [
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     partnersRes,
     programsRes,
@@ -433,6 +434,22 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
     if (a.is_cover !== b.is_cover) return a.is_cover ? -1 : 1;
     return a.sort_order - b.sort_order;
   });
+
+  const sessionsById = new Map((sessionsRes.data ?? []).map((s) => [s.id, s]));
+  const sessionsBySpeaker = new Map<string, EventSpeakerSession[]>();
+  for (const link of sessionSpeakersRes.data ?? []) {
+    const session = sessionsById.get(link.session_id);
+    if (!session) continue;
+    const list = sessionsBySpeaker.get(link.speaker_id) ?? [];
+    list.push({
+      id: session.id,
+      title: session.title,
+      startsAt: session.starts_at,
+      endsAt: session.ends_at,
+      location: session.location,
+    });
+    sessionsBySpeaker.set(link.speaker_id, list);
+  }
 
   const base = mapListRow(row as Record<string, unknown>, countMap.get(eventId) ?? 0);
 
