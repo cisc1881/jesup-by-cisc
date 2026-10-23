@@ -18,9 +18,12 @@ export function HomeHero({ slides }: HomeHeroProps) {
   }
 
   return (
-    <section aria-label="JESUP highlights" aria-roledescription="carousel" className="home-network-hero w-full text-home-foreground">
-      <div className="mx-auto max-w-7xl px-5 pb-6 pt-10 sm:px-8 sm:pt-14">
-        <div className="home-slide-content max-w-4xl" aria-live="polite" aria-atomic="true">
+    <section aria-label="JESUP highlights" aria-roledescription="carousel" className={cn("home-network-hero w-full text-home-foreground", active?.imageUrl && "home-hero-image")}>
+      {active?.imageUrl && (
+        <img key={active.id} src={active.imageUrl} alt="" className="home-hero-media" loading="eager" />
+      )}
+      <div className="home-hero-inner mx-auto max-w-7xl px-5 pb-6 pt-10 sm:px-8 sm:pt-14">
+        <div className="home-slide-content home-hero-panel max-w-4xl" aria-live="polite" aria-atomic="true">
           <p className="text-xs font-semibold text-home-muted">
             JESUP / The Digital Extension Wagon
           </p>
@@ -44,7 +47,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
           </div>
         </div>
         {slides.length > 1 && (
-          <div className="mt-8 flex items-start gap-3 border-t border-home-muted/30 pt-4 sm:mt-10 sm:items-center">
+          <div className="home-hero-controls mt-8 flex items-start gap-3 border-t border-home-muted/30 pt-4 sm:mt-10 sm:items-center">
             <div className="flex min-w-0 flex-1 gap-4 overflow-x-auto" role="group" aria-label="Featured item selection">
               {slides.map((slide, index) => (
                 <AppButton

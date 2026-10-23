@@ -19,6 +19,7 @@ import type { EventDetail } from "@/lib/events";
 import { getPublicEvent } from '@/lib/public-events.functions';
 import { eventDateLabel } from "@/lib/conference";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
+import aboutHeroAsset from "@/assets/jesup-about-hero.png.asset.json";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context: { queryClient } }): Promise<{ home: HomePageData; pilot: EventDetail | null }> => {
@@ -99,7 +100,7 @@ function Home() {
   const relevantSlides = useMemo(() => {
     const aboutSlide: HomeHeroSlide = {
       id: "about-jesup",
-      imageUrl: "",
+      imageUrl: aboutHeroAsset.url,
       imageAlt: "About Jesup",
       title: "JESUP",
       subtitle:
@@ -126,7 +127,7 @@ function Home() {
       { id: "programs", imageUrl: "", imageAlt: "Programs", title: "Programs & research", subtitle: "Connect with extension programs and research initiatives across the network.", linkTo: "/programs", linkLabel: "Explore programs", networkWide: true },
       { id: "publications", imageUrl: "", imageAlt: "Publications", title: "Knowledge to take with you", subtitle: "Find publications and practical resources to inform your work and community.", linkTo: "/publications", linkLabel: "Browse publications", networkWide: true },
     ];
-    return [aboutSlide, ...eventSlides, ...directorySlides, ...filtered].slice(0, 6);
+    return [aboutSlide, ...eventSlides, ...directorySlides, ...filtered.map((slide) => ({ ...slide, imageUrl: "" }))].slice(0, 6);
   }, [data?.heroSlides, institutionId, loaderData.pilot]);
 
   return (
