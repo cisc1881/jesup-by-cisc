@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { EVENTBRITE_IMPORT_MAX_BYTES, parseEventbriteCsv, sha256Hex } from "./eventbrite-import";
+import { EVENTBRITE_IMPORT_MAX_BYTES, parseEventbriteCsv, sha256Hex, ticketClassRows } from "./eventbrite-import";
 
 const input = z.object({
   eventId: z.string().uuid(),
@@ -32,6 +32,11 @@ export const importEventbriteCsv = createServerFn({ method: "POST" })
     if (error) {
       console.error("Eventbrite CSV import failed", error.code);
       throw new Error(error.message.includes("capacity") ? "Import stopped: event capacity reached. Nothing was saved." : "Import failed. Nothing was saved.");
+    }
+    const classes = data.commit ? ticketClassRows(parsed.rows) : [];
+    if (classes.length) {
+      const { error: classError } = await context.supabase.rpc("set_eventbrite_ticket_classes", { p_event_id: data.eventId, p_rows: classes });
+      if (classError) console.error("Eventbrite ticket class update failed", classError.code);
     }
     const r = result as { counts: Counts; issues?: Issue[]; replayed?: boolean; rows: number };
     const counts = { ...r.counts, invalid: (r.counts.invalid ?? 0) + parsed.issues.length };

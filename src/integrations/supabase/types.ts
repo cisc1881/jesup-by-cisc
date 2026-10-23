@@ -1322,6 +1322,7 @@ export type Database = {
           created_at: string
           dietary_restrictions: string | null
           event_id: string
+          eventbrite_ticket_class: string | null
           external_barcode: string | null
           external_registration_id: string | null
           food_allergies: string | null
@@ -1346,6 +1347,7 @@ export type Database = {
           created_at?: string
           dietary_restrictions?: string | null
           event_id: string
+          eventbrite_ticket_class?: string | null
           external_barcode?: string | null
           external_registration_id?: string | null
           food_allergies?: string | null
@@ -1370,6 +1372,7 @@ export type Database = {
           created_at?: string
           dietary_restrictions?: string | null
           event_id?: string
+          eventbrite_ticket_class?: string | null
           external_barcode?: string | null
           external_registration_id?: string | null
           food_allergies?: string | null
@@ -1665,6 +1668,48 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: true
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_ticket_mappings: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          product_id: string
+          quantity: number
+          ticket_class: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          product_id: string
+          quantity?: number
+          ticket_class: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          ticket_class?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_ticket_mappings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_ticket_mappings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "event_products"
             referencedColumns: ["id"]
           },
         ]
@@ -4710,6 +4755,15 @@ export type Database = {
         }
         Returns: string
       }
+      issue_mapped_entitlements: {
+        Args: {
+          p_allow_unpriced?: boolean
+          p_dry_run: boolean
+          p_event_id: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
       list_event_chat: {
         Args: { p_event_id: string }
         Returns: {
@@ -4771,6 +4825,16 @@ export type Database = {
         }[]
       }
       revoke_event_entitlement: { Args: { p_id: string }; Returns: undefined }
+      save_event_ticket_mapping: {
+        Args: {
+          p_event_id: string
+          p_product_id: string
+          p_quantity: number
+          p_remove?: boolean
+          p_ticket_class: string
+        }
+        Returns: undefined
+      }
       save_registration_accommodations: {
         Args: {
           p_accessibility_accommodations?: string
@@ -4812,6 +4876,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      set_eventbrite_ticket_classes: {
+        Args: { p_event_id: string; p_rows: Json }
+        Returns: number
       }
       set_funder_grant_access: {
         Args: {

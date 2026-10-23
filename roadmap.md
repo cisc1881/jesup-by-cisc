@@ -1,5 +1,8 @@
 # FC135 recovery
 
+## Eventbrite ticket-type mapping
+- [x] Store ticket type on import; admin mapping to products; counts-only preview and idempotent admin issuance; Wallet/scanner show ticket type. Verified on a rolled-back private test event.
+
 ## Confirmed FC135 Eventbrite direction
 - [x] Clarified Tuskegee Eventbrite proceeds and separate HNCH vendor payment in operations documentation and admin settings; FC135 seller tab no longer offers Square fee configuration. Import/claim and nine inactive products preserved.
 - [x] Shared resolver gates public registration links on organizer-confirmed publication, authorization, matching Eventbrite URL/ID and enabled registration status. FC135 provider set to Eventbrite, draft URL cleared, draft/unauthorized status recorded; native registration and checkout remain disabled.

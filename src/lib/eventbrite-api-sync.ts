@@ -1,12 +1,13 @@
 /** Live Eventbrite API sync, normalized into the same validated import path as CSV.
  * No direct table writes: every event goes through import_eventbrite_registrations. */
-import { EVENTBRITE_IMPORT_MAX_ROWS, contentRequestId, validateImportCandidates, type EventbriteImportRow, type EventbriteLineIssue } from "./eventbrite-import";
+import { EVENTBRITE_IMPORT_MAX_ROWS, contentRequestId, ticketClassRows, validateImportCandidates, type EventbriteImportRow, type EventbriteLineIssue } from "./eventbrite-import";
 
 export type EventbriteApiAttendee = {
   id?: string | number;
   status?: string;
   cancelled?: boolean;
   refunded?: boolean;
+  ticket_class_name?: string;
   profile?: { name?: string; first_name?: string; last_name?: string; email?: string };
   barcodes?: Array<{ barcode?: string; status?: string }>;
   answers?: Array<{ question?: string; answer?: string }>;
@@ -76,6 +77,7 @@ export function normalizeApiAttendees(attendees: EventbriteApiAttendee[]): { row
     barcode: a.barcodes?.find((b) => b.barcode?.trim())?.barcode ?? "",
     email: a.profile?.email ?? "",
     name: a.profile?.name?.trim() || [a.profile?.first_name, a.profile?.last_name].filter(Boolean).join(" ") || "Eventbrite attendee",
+    ticket_class: a.ticket_class_name ?? "",
     accommodations: extractAccommodations(a),
     cancelled: Boolean(a.cancelled || a.refunded) || /(not attending|cancel|refund|deleted|void|transferred)/i.test(a.status ?? ""),
   })));
@@ -83,12 +85,13 @@ export function normalizeApiAttendees(attendees: EventbriteApiAttendee[]): { row
 
 export type ImportRpc = (args: { p_event_id: string; p_request_id: string; p_rows: EventbriteImportRow[]; p_dry_run: boolean; p_file_sha256: string }) =>
   Promise<{ data: unknown; error: { message: string } | null }>;
+export type TicketClassRpc = (rows: { external_id: string; ticket_class: string }[]) => Promise<void>;
 export type Counts = Record<"new" | "update" | "duplicate" | "conflict" | "cancelled" | "invalid", number>;
 export type EventSyncReport = { eventId: string; title: string; ok: boolean; error?: string; replayed?: boolean; counts?: Counts; issues?: { line: number; outcome: string; reason: string }[] };
 
 export async function syncOneEvent(
   event: { id: string; title: string; eventbriteEventId: string },
-  deps: { token: string; fetch: FetchLike; rpc: ImportRpc; sleep?: (ms: number) => Promise<void>; maxPages?: number },
+  deps: { token: string; fetch: FetchLike; rpc: ImportRpc; setTicketClasses?: TicketClassRpc; sleep?: (ms: number) => Promise<void>; maxPages?: number },
 ): Promise<EventSyncReport> {
   try {
     const attendees = await listEventbriteAttendees(event.eventbriteEventId, deps.token, { fetch: deps.fetch, sleep: deps.sleep, maxPages: deps.maxPages });
@@ -98,6 +101,8 @@ export async function syncOneEvent(
     const { data, error } = await deps.rpc({ p_event_id: event.id, p_request_id: requestId, p_rows: rows, p_dry_run: false, p_file_sha256: (await contentRequestId(digest)).replace(/-/g, "") });
     if (error) return { eventId: event.id, title: event.title, ok: false, error: /capacity/i.test(error.message) ? "Event capacity reached; nothing was imported." : "Import was rejected; nothing was imported." };
     const r = data as { counts: Counts; issues?: EventSyncReport["issues"]; replayed?: boolean };
+    const classes = ticketClassRows(rows);
+    if (deps.setTicketClasses && classes.length) await deps.setTicketClasses(classes);
     return {
       eventId: event.id, title: event.title, ok: true, replayed: Boolean(r.replayed),
       counts: { ...r.counts, invalid: (r.counts?.invalid ?? 0) + issues.length },

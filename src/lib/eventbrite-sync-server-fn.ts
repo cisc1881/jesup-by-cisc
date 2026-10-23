@@ -33,6 +33,10 @@ export const syncEventbriteRegistrationsServerFn = createServerFn({ method: "POS
             const { data, error } = await db.rpc("import_eventbrite_registrations", { ...args, p_rows: args.p_rows as unknown as Json });
             return { data, error: error ? { message: error.message } : null };
           },
+          setTicketClasses: async (rows) => {
+            const { error } = await db.rpc("set_eventbrite_ticket_classes", { p_event_id: event.id, p_rows: rows as unknown as Json });
+            if (error) console.error("Eventbrite ticket class update failed for event", event.id, error.code);
+          },
         },
       );
       if (!report.ok) console.error("Eventbrite sync failed for event", event.id, report.error);
