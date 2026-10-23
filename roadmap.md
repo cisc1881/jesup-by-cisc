@@ -79,6 +79,7 @@
 - [x] Private `presenter-files` bucket with server-minted signed upload/download URLs; staff dashboard with latest files, missing/late status, access logging, file removal.
 - [x] Server-side authorization and deadline enforcement in database functions and RLS; FC135 left disabled (no settings row).
 - [x] End-to-end verified as admin: configure, add presenter, upload, staff board, signed download, past-cutoff lockout; test data cleaned up.
+- [x] Security lockdown (2026-10-23): direct submission inserts/updates and direct access-log inserts revoked; all writes via `submit_presenter_file` (verifies the storage object exists and matches size) and `log_presenter_file_access`; negative checks (forged path, direct insert/update, forged audit row, ghost object) verified blocked live.
 - [ ] Remaining setup: admins must set FC135 presenter deadlines and add presenter accounts before the module opens; presenter invite-by-email (vs account ID) is a future nicety.
 
 ## Verification

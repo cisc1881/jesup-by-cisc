@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_PRESENTER_MIME_TYPES,
+  isOwnedPresenterPath,
   presenterFilePath,
   safeFileName,
   submissionWindowStatus,
@@ -84,5 +85,32 @@ describe("presenterFilePath", () => {
     expect(path.startsWith("event-1/presenter-2/")).toBe(true);
     expect(path).toContain("my_slides_final_.pptx");
     expect(safeFileName("???")).toBe("___");
+  });
+});
+
+describe("isOwnedPresenterPath (mirrors the submit_presenter_file ownership check)", () => {
+  const eventId = "11111111-1111-1111-1111-111111111111";
+  const presenterId = "22222222-2222-2222-2222-222222222222";
+  const otherPresenter = "33333333-3333-3333-3333-333333333333";
+  const otherEvent = "44444444-4444-4444-4444-444444444444";
+
+  it("accepts a path minted for the caller's own event and presenter", () => {
+    expect(isOwnedPresenterPath(eventId, presenterId, presenterFilePath(eventId, presenterId, "talk.pdf"))).toBe(true);
+  });
+
+  it("rejects a forged path pointing at another presenter's object", () => {
+    const forged = presenterFilePath(eventId, otherPresenter, "victim.pdf");
+    expect(isOwnedPresenterPath(eventId, presenterId, forged)).toBe(false);
+  });
+
+  it("rejects a forged path pointing at another event's object", () => {
+    const forged = presenterFilePath(otherEvent, presenterId, "victim.pdf");
+    expect(isOwnedPresenterPath(eventId, presenterId, forged)).toBe(false);
+  });
+
+  it("rejects path traversal and prefix-lookalike tricks", () => {
+    expect(isOwnedPresenterPath(eventId, presenterId, `${eventId}/${presenterId}/../${otherPresenter}/x.pdf`)).toBe(false);
+    expect(isOwnedPresenterPath(eventId, presenterId, `${eventId}/${presenterId}x/y.pdf`)).toBe(false);
+    expect(isOwnedPresenterPath(eventId, presenterId, `${eventId}/${presenterId}/`)).toBe(false);
   });
 });
