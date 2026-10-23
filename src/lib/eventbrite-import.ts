@@ -28,6 +28,8 @@ export type EventbriteImportRow = {
   name: string;
   barcode: string;
   status: "registered" | "cancelled";
+  /** Eventbrite ticket class name; admin-only, used for ticket mapping. */
+  ticket_class?: string;
   /** API sync only; set only when the attendee gave explicit consent. Never returned in previews or logged. */
   accommodation_consent?: true;
   dietary_restrictions?: string;
@@ -107,13 +109,14 @@ export function parseEventbriteCsv(text: string): EventbriteParseResult {
       email: get(idx.email),
       name: get(idx.name) || [get(idx.firstName), get(idx.lastName)].filter(Boolean).join(" "),
       cancelled: mapEventbriteStatus(get(idx.status)) === "cancelled",
+      ticket_class: get(idx.ticketType),
     };
   });
   const validated = validateImportCandidates(candidates);
   return { ok: true, rows: validated.rows, issues: validated.issues, ignoredColumns };
 }
 
-export type ImportCandidate = { line: number; external_id: string; barcode: string; email: string; name: string; cancelled: boolean; accommodations?: Accommodations };
+export type ImportCandidate = { line: number; external_id: string; barcode: string; email: string; name: string; cancelled: boolean; ticket_class?: string; accommodations?: Accommodations };
 
 /** Shared row validation for CSV and live API sync; reasons never contain attendee data. */
 export function validateImportCandidates(candidates: ImportCandidate[]) {
@@ -130,7 +133,7 @@ export function validateImportCandidates(candidates: ImportCandidate[]) {
     if (seenIds.has(external_id)) { bad(`Duplicate Attendee # (also on line ${seenIds.get(external_id)})`); continue; }
     if (seenBarcodes.has(barcode)) { bad(`Duplicate Barcode # (also on line ${seenBarcodes.get(barcode)})`); continue; }
     seenIds.set(external_id, line); seenBarcodes.set(barcode, line);
-    rows.push({ line, external_id, email, name, barcode, status: c.cancelled ? "cancelled" : "registered", ...accommodationFields(c.accommodations) });
+    rows.push({ line, external_id, email, name, barcode, status: c.cancelled ? "cancelled" : "registered", ...ticketClassField(c.ticket_class), ...accommodationFields(c.accommodations) });
   }
   return { rows, issues };
 }
@@ -157,4 +160,14 @@ export function accommodationFields(a?: Accommodations): Partial<EventbriteImpor
   if (f) out.food_allergies = f;
   if (x) out.accessibility_accommodations = x;
   return Object.keys(out).length ? { accommodation_consent: true, ...out } : {};
+}
+
+/** Ticket class trimmed to 200 chars; omitted when blank. */
+export function ticketClassField(v?: string | null): { ticket_class?: string } {
+  const t = (v ?? "").trim().slice(0, 200);
+  return t ? { ticket_class: t } : {};
+}
+/** Minimal payload for set_eventbrite_ticket_classes: attendee ID and ticket class only. */
+export function ticketClassRows(rows: EventbriteImportRow[]) {
+  return rows.filter((r) => r.ticket_class).map((r) => ({ external_id: r.external_id, ticket_class: r.ticket_class! }));
 }
