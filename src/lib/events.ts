@@ -682,6 +682,7 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     grantsRes,
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     surveyRes,
     evaluationRes,
@@ -693,6 +694,7 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     supabase.from("event_grants").select("grant_id").eq("event_id", eventId),
     supabase.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
     supabase.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
+    supabase.from("event_session_speakers").select("speaker_id, session_id").eq("event_id", eventId),
     supabase.from("event_gallery").select("*").eq("event_id", eventId).order("sort_order"),
     supabase.from("event_surveys").select("*").eq("event_id", eventId).maybeSingle(),
     supabase
@@ -710,11 +712,19 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     grantsRes,
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     surveyRes,
     evaluationRes,
   ]) {
     if (res.error) throw res.error;
+  }
+
+  const sessionIdsBySpeaker = new Map<string, string[]>();
+  for (const link of sessionSpeakersRes.data ?? []) {
+    const list = sessionIdsBySpeaker.get(link.speaker_id) ?? [];
+    list.push(link.session_id);
+    sessionIdsBySpeaker.set(link.speaker_id, list);
   }
 
   const metadata = (row.metadata as Record<string, unknown> | null) ?? {};
