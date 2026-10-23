@@ -4969,6 +4969,10 @@ export type Database = {
           message: string
         }[]
       }
+      log_presenter_file_access: {
+        Args: { p_action: string; p_submission_id: string }
+        Returns: undefined
+      }
       mark_my_attendance_evaluation_complete: {
         Args: { p_attendance_id: string }
         Returns: undefined

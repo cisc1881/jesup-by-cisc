@@ -78,6 +78,13 @@
       "when": 1792798268004,
       "tag": "0010_presenter_submission_staff_delete",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792798532345,
+      "tag": "0011_presenter_submission_write_lockdown",
+      "breakpoints": true
     }
   ]
 }
