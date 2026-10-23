@@ -79,6 +79,12 @@ export function EventWorkspaceMenu({
     enabled: !!registration,
     queryFn: () => listEventMealDays(event.id),
   });
+  const presenterAccessFn = useServerFn(getPresenterAccess);
+  const { data: presenterAccess } = useQuery({
+    queryKey: ["presenter-access", event.id, userId],
+    enabled: !!userId,
+    queryFn: () => presenterAccessFn({ data: { eventId: event.id } }),
+  });
   const contactCard = `MECARD:N:${profile?.full_name ?? "JESUP attendee"};EMAIL:${profile?.email ?? userEmail ?? ""};TEL:${profile?.phone ?? ""};ORG:${profile?.affiliation ?? ""};;`;
   const parkingUrl =
     typeof event.metadata.parking_url === "string" ? event.metadata.parking_url : null;
