@@ -35,6 +35,8 @@ function PresenterStaffBoardPage() {
   const { id } = Route.useParams();
   const board = useServerFn(getPresenterStaffBoard);
   const download = useServerFn(getPresenterDownloadUrl);
+  const remove = useServerFn(removePresenterFile);
+  const qc = useQueryClient();
 
   const { data: event } = useQuery({
     queryKey: ["presenter-event", id],
@@ -66,6 +68,16 @@ function PresenterStaffBoardPage() {
       window.open(url, "_blank", "noopener");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not download file");
+    }
+  }
+
+  async function removeFile(submissionId: string) {
+    try {
+      await remove({ data: { submissionId } });
+      toast.success("File removed");
+      await qc.invalidateQueries({ queryKey: ["presenter-staff-board", id] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not remove file");
     }
   }
 
@@ -146,14 +158,24 @@ function PresenterStaffBoardPage() {
                           {late && <Badge variant="destructive">Late</Badge>}
                           {!file && <Badge variant="secondary">Missing</Badge>}
                           {file && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => void downloadFile(file.id)}
-                            >
-                              <Download className="h-4 w-4" /> Download
-                            </Button>
+                            <>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => void downloadFile(file.id)}
+                              >
+                                <Download className="h-4 w-4" /> Download
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => void removeFile(file.id)}
+                              >
+                                Remove
+                              </Button>
+                            </>
                           )}
                         </div>
                       </div>
