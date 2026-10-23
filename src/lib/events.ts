@@ -942,7 +942,14 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
           const speakerId = insertedSpeakers?.[index]?.id;
           if (!speakerId) return [];
           return (speaker.sessionIds ?? [])
-            .filter((sessionId) => resolvedSessionIds.includes(sessionId))
+            .map((sessionId) =>
+              sessionId.startsWith("new-")
+                ? resolvedSessionIds[Number(sessionId.slice(4))]
+                : sessionId,
+            )
+            .filter((sessionId): sessionId is string =>
+              Boolean(sessionId) && resolvedSessionIds.includes(sessionId),
+            )
             .map((sessionId) => ({
               event_id: eventId,
               session_id: sessionId,
