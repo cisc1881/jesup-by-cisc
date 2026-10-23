@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import type { EventAttachment, EventDetail } from "@/lib/events";
+import type { EventAttachment, EventDetail, EventSpeaker, EventSpeakerSession } from "@/lib/events";
 import { galleryImageAlt } from "@/lib/event-gallery";
 import { AppBadge, AppCard, SectionHeader } from "@/components/design-system";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { fmtDateTime } from "@/lib/format";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, ChevronRight, Globe, Link2, Mail, MapPin, Phone } from "lucide-react";
 import { EventAgendaNotice } from "./event-agenda-notice";
 import { isDraftAgenda } from "@/lib/event-agenda-status";
 import { formatInTimeZone } from "date-fns-tz";

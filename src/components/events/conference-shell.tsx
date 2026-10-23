@@ -10,6 +10,7 @@ import { fetchUserEventRegistration, type EventDetail } from "@/lib/events";
 import { conferenceResourceLinks, eventDateLabel, visibleConferenceSections, safeEventUrl, type ConferenceSection } from "@/lib/conference";
 import { downloadEventIcs } from "@/lib/event-calendar";
 import { ConferenceHero } from "./conference-hero";
+import { NextSessionCountdown } from "./next-session-countdown";
 import { EventAgenda, EventSpeakers, EventRelatedSections } from "./event-detail-sections";
 import { EventRegistrationPanel } from "./event-registration-panel";
 import { EventChatRoom } from "./event-chat-room";
@@ -43,7 +44,9 @@ export function ConferenceShell({ event }: { event: EventDetail }) {
         <ConferenceHero event={event} />
         <nav className="flex overflow-x-auto border-b bg-card" aria-label="Conference sections">{sections.map(([id,label]) => <Button key={id} type="button" variant="ghost" aria-current={tab === id ? "page" : undefined} className={`min-h-14 shrink-0 border-b-2 px-5 ${tab === id ? "border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "border-transparent text-muted-foreground"}`} onClick={() => setSelected(id)}>{label}</Button>)}</nav>
         <div className="py-8 sm:py-10">
-          {tab === "home" && <div className="grid gap-8 sm:grid-cols-[minmax(0,1fr)_280px]">
+          {tab === "home" && <div className="space-y-6">
+          <NextSessionCountdown event={event} />
+          <div className="grid gap-8 sm:grid-cols-[minmax(0,1fr)_280px]">
             <section className="space-y-4"><p className="text-sm font-semibold text-primary">{eventDateLabel(event)}</p><h2 className="text-2xl font-bold">{event.title}</h2><p className="max-w-2xl leading-relaxed text-muted-foreground">{event.location}</p>{event.description && <p className="max-w-2xl leading-relaxed text-muted-foreground">{event.description}</p>}<Button variant="outline" onClick={() => downloadEventIcs(event)}><CalendarPlus className="size-4" />Save the dates</Button></section>
             <aside className="space-y-4 border-t pt-6 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0"><Ticket className="size-6 text-primary" /><h2 className="text-lg font-bold">Registration updates</h2><p className="text-sm leading-relaxed text-muted-foreground">{event.registrationOpen ? "Registration is available in Tickets." : "Registration details are not yet announced."}</p>{sections.some(([id]) => id === "tickets") && <Button variant="outline" onClick={() => setSelected("tickets")}>Tickets</Button>}</aside>
           </div>}

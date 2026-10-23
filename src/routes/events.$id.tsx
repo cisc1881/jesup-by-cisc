@@ -23,6 +23,7 @@ import { ArrowLeft } from "lucide-react";
 import { AppButton } from "@/components/design-system";
 import { conferenceHead } from "@/lib/conference";
 import { ConferenceShell } from "@/components/events/conference-shell";
+import { NextSessionCountdown } from "@/components/events/next-session-countdown";
 
 export const Route = createFileRoute("/events/$id")({
   loader: async ({ params }) => {
@@ -86,6 +87,7 @@ function EventDetailPage() {
         </div>
 
         <EventDetailHero event={event} />
+        <NextSessionCountdown event={event} />
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className="space-y-10">
