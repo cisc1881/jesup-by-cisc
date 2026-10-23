@@ -91,6 +91,8 @@ import { Route as AuthenticatedAdminEventsGalleryRouteImport } from './routes/_a
 import { Route as AuthenticatedAdminReportsEventsRouteImport } from './routes/_authenticated/admin/reports.events'
 import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/_authenticated/admin/weather/counties'
 import { Route as AuthenticatedAdminWeatherNotificationsRouteImport } from './routes/_authenticated/admin/weather/notifications'
+import { Route as AuthenticatedEventsIdPresentRouteImport } from './routes/_authenticated/events.$id.present'
+import { Route as AuthenticatedEventsIdPresentationsRouteImport } from './routes/_authenticated/events.$id.presentations'
 import { Route as AuthenticatedEventsIdScanRouteImport } from './routes/_authenticated/events.$id.scan'
 import { Route as AuthenticatedAdminEventsEventIdAttendanceRouteImport } from './routes/_authenticated/admin/events.$eventId.attendance'
 import { Route as AuthenticatedAdminEventsEventIdEvaluationsRouteImport } from './routes/_authenticated/admin/events.$eventId.evaluations'
@@ -569,6 +571,18 @@ const AuthenticatedAdminWeatherNotificationsRoute =
       (d) => d.Route,
     ),
   )
+const AuthenticatedEventsIdPresentRoute =
+  AuthenticatedEventsIdPresentRouteImport.update({
+    id: '/events/$id/present',
+    path: '/events/$id/present',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEventsIdPresentationsRoute =
+  AuthenticatedEventsIdPresentationsRouteImport.update({
+    id: '/events/$id/presentations',
+    path: '/events/$id/presentations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEventsIdScanRoute =
   AuthenticatedEventsIdScanRouteImport.update({
     id: '/events/$id/scan',
@@ -694,6 +708,8 @@ export interface FileRoutesByFullPath {
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
+  '/events/$id/present': typeof AuthenticatedEventsIdPresentRoute
+  '/events/$id/presentations': typeof AuthenticatedEventsIdPresentationsRoute
   '/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
@@ -779,6 +795,8 @@ export interface FileRoutesByTo {
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
+  '/events/$id/present': typeof AuthenticatedEventsIdPresentRoute
+  '/events/$id/presentations': typeof AuthenticatedEventsIdPresentationsRoute
   '/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
@@ -869,6 +887,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/_authenticated/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/_authenticated/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
+  '/_authenticated/events/$id/present': typeof AuthenticatedEventsIdPresentRoute
+  '/_authenticated/events/$id/presentations': typeof AuthenticatedEventsIdPresentationsRoute
   '/_authenticated/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/_authenticated/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
   '/_authenticated/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
@@ -959,6 +979,8 @@ export interface FileRouteTypes {
     | '/admin/reports/events'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
+    | '/events/$id/present'
+    | '/events/$id/presentations'
     | '/events/$id/scan'
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
@@ -1044,6 +1066,8 @@ export interface FileRouteTypes {
     | '/admin/reports/events'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
+    | '/events/$id/present'
+    | '/events/$id/presentations'
     | '/events/$id/scan'
     | '/admin/events/$eventId/attendance'
     | '/admin/events/$eventId/evaluations'
@@ -1133,6 +1157,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/reports/events'
     | '/_authenticated/admin/weather/counties'
     | '/_authenticated/admin/weather/notifications'
+    | '/_authenticated/events/$id/present'
+    | '/_authenticated/events/$id/presentations'
     | '/_authenticated/events/$id/scan'
     | '/_authenticated/admin/events/$eventId/attendance'
     | '/_authenticated/admin/events/$eventId/evaluations'
@@ -1750,6 +1776,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminWeatherNotificationsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/events/$id/present': {
+      id: '/_authenticated/events/$id/present'
+      path: '/events/$id/present'
+      fullPath: '/events/$id/present'
+      preLoaderRoute: typeof AuthenticatedEventsIdPresentRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/events/$id/presentations': {
+      id: '/_authenticated/events/$id/presentations'
+      path: '/events/$id/presentations'
+      fullPath: '/events/$id/presentations'
+      preLoaderRoute: typeof AuthenticatedEventsIdPresentationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/events/$id/scan': {
       id: '/_authenticated/events/$id/scan'
       path: '/events/$id/scan'
@@ -1942,6 +1982,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedFunderRoute: typeof AuthenticatedFunderRouteWithChildren
   AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
+  AuthenticatedEventsIdPresentRoute: typeof AuthenticatedEventsIdPresentRoute
+  AuthenticatedEventsIdPresentationsRoute: typeof AuthenticatedEventsIdPresentationsRoute
   AuthenticatedEventsIdScanRoute: typeof AuthenticatedEventsIdScanRoute
 }
 
@@ -1950,6 +1992,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedFunderRoute: AuthenticatedFunderRouteWithChildren,
   AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
+  AuthenticatedEventsIdPresentRoute: AuthenticatedEventsIdPresentRoute,
+  AuthenticatedEventsIdPresentationsRoute:
+    AuthenticatedEventsIdPresentationsRoute,
   AuthenticatedEventsIdScanRoute: AuthenticatedEventsIdScanRoute,
 }
 
