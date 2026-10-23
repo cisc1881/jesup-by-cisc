@@ -80,7 +80,7 @@ export async function fetchAnalyticsSummary() {
     podcasts: podcasts.count ?? 0,
     partners: partners.count ?? 0,
     registrations: registrations.count ?? 0,
-    pendingApprovals: (pendingEquipment.count ?? 0) + (pendingInternships.count ?? 0),
+    pendingApprovals: pendingInternships.count ?? 0,
     users: users.count ?? 0,
     media: media.count ?? 0,
   };

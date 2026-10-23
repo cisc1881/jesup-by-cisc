@@ -21,7 +21,6 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
       starterInternships,
     } = await import("./starter-content");
     const {
-      starterEquipment,
       starterGrants,
       starterInstitutionEvents,
       starterProgramWorkshops,
@@ -61,7 +60,6 @@ export const importStarterContentServerFn = createServerFn({ method: "POST" })
       ["internships", starterInternships, "slug"],
       ["publications", starterPublications, "slug"],
       ["grants", starterGrants, "id"],
-      ["equipment", starterEquipment, "id"],
       ["surveys", starterSurveys, "id"],
     ] as const;
     const result: Record<string, number> = {};

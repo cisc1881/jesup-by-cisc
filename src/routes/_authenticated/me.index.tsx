@@ -68,20 +68,6 @@ function MePage() {
       return data ?? [];
     },
   });
-  const { data: cos } = useQuery({
-    queryKey: ["my-checkouts", user?.id],
-    enabled: !!user,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("equipment_checkouts")
-        .select(
-          "id,quantity,checkout_date,return_date,status,admin_notes,approved_at,checked_out_at,returned_at,equipment(id,name)",
-        )
-        .eq("user_id", user!.id)
-        .order("created_at", { ascending: false });
-      return data ?? [];
-    },
-  });
   const {
     data: inquiries = [],
     isLoading: inquiriesLoading,
@@ -139,7 +125,6 @@ function MePage() {
             <TabsTrigger value="photos">Photo Submissions</TabsTrigger>
             <TabsTrigger value="inquiries">Program Interest & Inquiries</TabsTrigger>
             <TabsTrigger value="apps">Internship Applications</TabsTrigger>
-            <TabsTrigger value="cos">Equipment Checkouts</TabsTrigger>
           </TabsList>
           <TabsContent value="profile" className="mt-4">
             <Card>
@@ -296,41 +281,6 @@ function MePage() {
                     </p>
                   </div>
                   <Badge>{a.status}</Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-          <TabsContent value="cos" className="mt-4 space-y-3">
-            {(!cos || cos.length === 0) && (
-              <p className="text-muted-foreground">No checkouts yet.</p>
-            )}
-            {cos?.map((c: any) => (
-              <Card key={c.id}>
-                <CardContent className="p-4 flex items-center justify-between gap-2">
-                  <div>
-                    <div className="font-serif text-lg font-semibold text-primary">
-                      {c.equipment.name}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Qty {c.quantity} · {fmtDate(c.checkout_date)} → {fmtDate(c.return_date)}
-                    </p>
-                    {c.admin_notes && (
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Staff note: {c.admin_notes}
-                      </p>
-                    )}
-                    {c.checked_out_at && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Picked up {fmtDateTime(c.checked_out_at)}
-                      </p>
-                    )}
-                    {c.returned_at && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Returned {fmtDateTime(c.returned_at)}
-                      </p>
-                    )}
-                  </div>
-                  <Badge>{c.status}</Badge>
                 </CardContent>
               </Card>
             ))}
