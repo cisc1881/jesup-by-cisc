@@ -1702,6 +1702,55 @@ export type Database = {
           },
         ]
       }
+      event_session_speakers: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          session_id: string
+          sort_order: number
+          speaker_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          session_id: string
+          sort_order?: number
+          speaker_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          session_id?: string
+          sort_order?: number
+          speaker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_session_speakers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_session_speakers_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_session_speakers_speaker_id_fkey"
+            columns: ["speaker_id"]
+            isOneToOne: false
+            referencedRelation: "event_speakers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_sessions: {
         Row: {
           created_at: string
@@ -1752,36 +1801,51 @@ export type Database = {
       event_speakers: {
         Row: {
           bio: string | null
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
           event_id: string
           id: string
+          is_keynote: boolean
           name: string
           photo_url: string | null
+          social_links: Json
           sort_order: number
           title: string | null
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           bio?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           event_id: string
           id?: string
+          is_keynote?: boolean
           name: string
           photo_url?: string | null
+          social_links?: Json
           sort_order?: number
           title?: string | null
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           bio?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           event_id?: string
           id?: string
+          is_keynote?: boolean
           name?: string
           photo_url?: string | null
+          social_links?: Json
           sort_order?: number
           title?: string | null
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: [
           {
