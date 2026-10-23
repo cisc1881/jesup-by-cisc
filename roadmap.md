@@ -72,6 +72,15 @@
 - [x] Narrow delivery to visibility and shell; defer ticket/payment/staff features and remove new scanner surface.
 - [x] Verify tests, preview, and current build signals; document exact remaining work.
 
+## Presenter submissions increment (2026-10-23)
+- [x] Retire Equipment from public/admin navigation, discovery, dashboards, and starter imports; preserve tables and history; public/admin routes show retired notices.
+- [x] Add per-conference presenter submissions: staff-configured window (event timezone), allowed types, max size, enable/disable.
+- [x] Staff-granted presenter access (student/faculty, optional session link); presenter portal with deadline, upload, replace-before-cutoff.
+- [x] Private `presenter-files` bucket with server-minted signed upload/download URLs; staff dashboard with latest files, missing/late status, access logging, file removal.
+- [x] Server-side authorization and deadline enforcement in database functions and RLS; FC135 left disabled (no settings row).
+- [x] End-to-end verified as admin: configure, add presenter, upload, staff board, signed download, past-cutoff lockout; test data cleaned up.
+- [ ] Remaining setup: admins must set FC135 presenter deadlines and add presenter accounts before the module opens; presenter invite-by-email (vs account ID) is a future nicety.
+
 ## Verification
 - Second increment: authenticated database checks passed for unpriced approval, capacity, issue retries, redemption retries/replay rejection, repeat admission, duplicate badge prevention, incorrect claim rejection, verified-email/barcode claim and duplicate claim prevention.
 - Browser read-back confirmed admission QR in Wallet, invalid scanner credential rejection, admin catalog/staff/seller screens, Home-only public FC135, and no page errors. Verification records are non-public and retained inactive for audit; FC135 test registration was removed and section settings restored.
