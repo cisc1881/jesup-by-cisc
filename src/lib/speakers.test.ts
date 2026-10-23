@@ -92,7 +92,7 @@ describe("sessionCountdown", () => {
     const result = sessionCountdown([session("a", day1morning, day1lunch), session("b", day2)], now);
     expect(result.kind).toBe("upcoming");
     if (result.kind === "upcoming") {
-      expect(result.startsAt.toISOString()).toBe(day1morning);
+      expect(result.startsAt.getTime()).toBe(new Date(day1morning).getTime());
       expect(result.sessions.map((s) => s.id)).toEqual(["a"]);
     }
   });
@@ -120,7 +120,7 @@ describe("sessionCountdown", () => {
     const now = new Date("2027-02-18T18:30:00Z"); // after lunch start
     const result = sessionCountdown([session("a", day1morning, day1lunch), session("b", day2)], now);
     expect(result.kind).toBe("upcoming");
-    if (result.kind === "upcoming") expect(result.startsAt.toISOString()).toBe(day2);
+    if (result.kind === "upcoming") expect(result.startsAt.getTime()).toBe(new Date(day2).getTime());
   });
 
   it("returns after once every session has ended", () => {
