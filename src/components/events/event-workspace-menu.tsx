@@ -35,7 +35,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
 import { listEventMealDays } from "@/lib/meals";
+import { getPresenterAccess } from "@/lib/presenter-submissions.functions";
 import type { EventDetail } from "@/lib/events";
 
 type Registration =
