@@ -3,7 +3,13 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import type { Json } from "@/integrations/supabase/types";
 import { conferenceDateRange, eventLocalInput, eventLocalToUtc } from "@/lib/conference";
-import { sanitizeSocialLinks, type SpeakerSocialLink } from "@/lib/speakers";
+import {
+  isValidContactEmail,
+  isValidContactPhone,
+  sanitizeSocialLinks,
+  sanitizeSpeakerUrl,
+  type SpeakerSocialLink,
+} from "@/lib/speakers";
 import {
   publishingWriteError,
   validateContentIdentity,
@@ -887,10 +893,12 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
   if (keptSessionIds.length) removeSessions = removeSessions.not("id", "in", `(${keptSessionIds.join(",")})`);
   const { error: removeSessionError } = await removeSessions;
   if (removeSessionError) throw removeSessionError;
+  // Resolve session ids up front so speaker assignments can reference them.
+  const resolvedSessionIds = form.sessions.map((session) => session.id ?? crypto.randomUUID());
   if (form.sessions.length) {
     const { error: sessionError } = await supabase.from("event_sessions").upsert(
         form.sessions.map((session, index) => ({
-          id: session.id ?? crypto.randomUUID(),
+          id: resolvedSessionIds[index],
           event_id: eventId,
           title: session.title,
           description: session.description || null,
@@ -904,16 +912,50 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
   }
   if (form.speakers.length) {
     inserts.push(
-      supabase.from("event_speakers").insert(
-        form.speakers.map((speaker, index) => ({
-          event_id: eventId,
-          name: speaker.name,
-          title: speaker.title || null,
-          bio: speaker.bio || null,
-          photo_url: speaker.photoUrl || null,
-          sort_order: index,
-        })),
-      ),
+      (async () => {
+        const { data: insertedSpeakers, error: speakerError } = await supabase
+          .from("event_speakers")
+          .insert(
+            form.speakers.map((speaker, index) => ({
+              event_id: eventId,
+              name: speaker.name,
+              title: speaker.title || null,
+              bio: speaker.bio || null,
+              photo_url: speaker.photoUrl || null,
+              sort_order: index,
+              is_keynote: speaker.isKeynote ?? false,
+              website_url: sanitizeSpeakerUrl(speaker.websiteUrl),
+              social_links: sanitizeSocialLinks(speaker.socialLinks) as unknown as Json,
+              contact_email:
+                speaker.contactEmail && isValidContactEmail(speaker.contactEmail)
+                  ? speaker.contactEmail.trim()
+                  : null,
+              contact_phone:
+                speaker.contactPhone && isValidContactPhone(speaker.contactPhone)
+                  ? speaker.contactPhone.trim()
+                  : null,
+            })),
+          )
+          .select("id");
+        if (speakerError) throw speakerError;
+        const joinRows = form.speakers.flatMap((speaker, index) => {
+          const speakerId = insertedSpeakers?.[index]?.id;
+          if (!speakerId) return [];
+          return (speaker.sessionIds ?? [])
+            .filter((sessionId) => resolvedSessionIds.includes(sessionId))
+            .map((sessionId) => ({
+              event_id: eventId,
+              session_id: sessionId,
+              speaker_id: speakerId,
+            }));
+        });
+        if (joinRows.length) {
+          const { error: joinError } = await supabase
+            .from("event_session_speakers")
+            .insert(joinRows);
+          if (joinError) throw joinError;
+        }
+      })(),
     );
   }
 
