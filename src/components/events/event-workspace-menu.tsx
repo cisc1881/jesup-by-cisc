@@ -9,6 +9,8 @@ import {
   ClipboardCheck,
   ContactRound,
   DoorOpen,
+  FileUp,
+  FolderOpen,
   HelpCircle,
   Map,
   Menu,
@@ -188,6 +190,28 @@ export function EventWorkspaceMenu({
                 </SheetClose>
               );
             })}
+            {presenterAccess?.isPresenter && (
+              <SheetClose asChild>
+                <Link
+                  to="/events/$id/present"
+                  params={{ id: event.id }}
+                  className="flex min-h-14 items-center gap-4 px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted/60"
+                >
+                  <FileUp className="h-5 w-5 institution-accent-text" /> Presenter submissions
+                </Link>
+              </SheetClose>
+            )}
+            {presenterAccess?.isStaff && (
+              <SheetClose asChild>
+                <Link
+                  to="/events/$id/presentations"
+                  params={{ id: event.id }}
+                  className="flex min-h-14 items-center gap-4 px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted/60"
+                >
+                  <FolderOpen className="h-5 w-5 institution-accent-text" /> Presentation files (staff)
+                </Link>
+              </SheetClose>
+            )}
             <SheetClose asChild>
               <Link
                 to="/ask"
