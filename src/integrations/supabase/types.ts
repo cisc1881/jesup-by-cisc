@@ -1217,6 +1217,200 @@ export type Database = {
           },
         ]
       }
+      event_presenter_access_log: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          event_id: string
+          id: string
+          submission_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          event_id: string
+          id?: string
+          submission_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          event_id?: string
+          id?: string
+          submission_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_presenter_access_log_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_presenter_access_log_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "event_presenter_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_presenter_settings: {
+        Row: {
+          allowed_mime_types: string[]
+          closes_at: string | null
+          enabled: boolean
+          event_id: string
+          instructions: string | null
+          max_file_bytes: number
+          opens_at: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allowed_mime_types?: string[]
+          closes_at?: string | null
+          enabled?: boolean
+          event_id: string
+          instructions?: string | null
+          max_file_bytes?: number
+          opens_at?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allowed_mime_types?: string[]
+          closes_at?: string | null
+          enabled?: boolean
+          event_id?: string
+          instructions?: string | null
+          max_file_bytes?: number
+          opens_at?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_presenter_settings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_presenter_submissions: {
+        Row: {
+          created_at: string
+          event_id: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          is_current: boolean
+          kind: string
+          mime_type: string
+          presenter_id: string
+          title: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          is_current?: boolean
+          kind: string
+          mime_type: string
+          presenter_id: string
+          title: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          is_current?: boolean
+          kind?: string
+          mime_type?: string
+          presenter_id?: string
+          title?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_presenter_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_presenter_submissions_presenter_id_fkey"
+            columns: ["presenter_id"]
+            isOneToOne: false
+            referencedRelation: "event_presenters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_presenters: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          display_name: string | null
+          event_id: string
+          id: string
+          presenter_type: string
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          display_name?: string | null
+          event_id: string
+          id?: string
+          presenter_type?: string
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          display_name?: string | null
+          event_id?: string
+          id?: string
+          presenter_type?: string
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_presenters_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_presenters_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_products: {
         Row: {
           beneficiary: string
@@ -4743,6 +4937,8 @@ export type Database = {
         }
         Returns: Json
       }
+      is_event_presenter: { Args: { p_event_id: string }; Returns: boolean }
+      is_event_staff: { Args: { p_event_id: string }; Returns: boolean }
       issue_event_entitlement: {
         Args: {
           p_allow_unpriced?: boolean
@@ -4790,6 +4986,10 @@ export type Database = {
       post_event_chat: {
         Args: { p_event_id: string; p_message: string }
         Returns: string
+      }
+      presenter_submissions_open: {
+        Args: { p_event_id: string }
+        Returns: boolean
       }
       record_event_badge_issue: {
         Args: { p_event_id: string; p_registration_id: string }
@@ -4892,6 +5092,18 @@ export type Database = {
       submit_anonymous_evaluation_answers: {
         Args: { p_access_token: string; p_answers: Json; p_response_id: string }
         Returns: undefined
+      }
+      submit_presenter_file: {
+        Args: {
+          p_event_id: string
+          p_file_name: string
+          p_file_path: string
+          p_file_size: number
+          p_kind: string
+          p_mime_type: string
+          p_title: string
+        }
+        Returns: string
       }
       submit_public_inquiry: {
         Args: {
