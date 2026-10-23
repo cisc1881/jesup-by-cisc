@@ -369,6 +369,7 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
   const [
     sessionsRes,
     speakersRes,
+    sessionSpeakersRes,
     galleryRes,
     partnersRes,
     programsRes,
@@ -379,6 +380,7 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
   ] = await Promise.all([
     client.from("event_sessions").select("*").eq("event_id", eventId).order("sort_order"),
     client.from("event_speakers").select("*").eq("event_id", eventId).order("sort_order"),
+    client.from("event_session_speakers").select("speaker_id, session_id").eq("event_id", eventId),
     client
       .from("event_gallery")
       .select("*")
@@ -455,6 +457,14 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
       bio: s.bio,
       photoUrl: s.photo_url,
       sortOrder: s.sort_order,
+      isKeynote: s.is_keynote ?? false,
+      websiteUrl: s.website_url,
+      socialLinks: sanitizeSocialLinks(
+        (s.social_links as Array<{ platform?: string; url?: string }> | null) ?? [],
+      ),
+      contactEmail: s.contact_email,
+      contactPhone: s.contact_phone,
+      sessions: sessionsBySpeaker.get(s.id) ?? [],
     })),
     gallery: approvedGallery.map((g) => ({
       id: g.id,
