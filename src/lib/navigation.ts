@@ -10,7 +10,6 @@ import {
   Newspaper,
   CloudSun,
   LayoutGrid,
-  Package,
   ClipboardList,
 } from "lucide-react";
 

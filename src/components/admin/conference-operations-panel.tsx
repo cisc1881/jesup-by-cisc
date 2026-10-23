@@ -12,6 +12,7 @@ import {conferenceWorkspace,saveConferenceConfiguration,issueConferenceCredentia
 import {productKinds,staffRoles} from '@/lib/conference-operations';
 import {EventbriteCsvImport} from './eventbrite-csv-import';
 import {TicketMappingPanel} from './ticket-mapping-panel';
+import {PresenterAdminPanel} from './presenter-admin-panel';
 
 export function ConferenceOperationsPanel({eventId,isFc135=false}:{eventId:string;isFc135?:boolean}) {
  const read=useServerFn(conferenceWorkspace),save=useServerFn(saveConferenceConfiguration),issue=useServerFn(issueConferenceCredential),revoke=useServerFn(revokeConferenceCredential);

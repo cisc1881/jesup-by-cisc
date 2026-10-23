@@ -5,7 +5,6 @@ import {
   BookOpen,
   DollarSign,
   Briefcase,
-  Package,
   ClipboardList,
   Users,
   GraduationCap,
