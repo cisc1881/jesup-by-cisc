@@ -5,7 +5,7 @@ import { resourceHubLinks } from "@/lib/navigation";
 import { listPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/resources")({
-  head: () => listPageHead({ title: "Resources", description: "Publications, farmers markets, grants, equipment, surveys, partners, donations, podcasts, and more.", path: "/resources" }),
+  head: () => listPageHead({ title: "Resources", description: "Publications, farmers markets, grants, surveys, partners, donations, podcasts, and more.", path: "/resources" }),
   component: Resources,
 });
 

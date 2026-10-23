@@ -69,13 +69,6 @@ export const PLATFORM_MODULES: Record<ModuleId, PlatformModule> = {
     description: "Donation and giving portal",
     publicRoute: "/donate",
   },
-  equipment: {
-    id: "equipment",
-    label: "Equipment",
-    description: "Equipment checkout and inventory",
-    publicRoute: "/equipment",
-    adminRoute: "/admin/equipment",
-  },
   grants: {
     id: "grants",
     label: "Grants",

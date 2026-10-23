@@ -9,6 +9,8 @@ import {
   ClipboardCheck,
   ContactRound,
   DoorOpen,
+  FileUp,
+  FolderOpen,
   HelpCircle,
   Map,
   Menu,
@@ -35,7 +37,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
 import { listEventMealDays } from "@/lib/meals";
+import { getPresenterAccess } from "@/lib/presenter-submissions.functions";
 import type { EventDetail } from "@/lib/events";
 
 type Registration =
@@ -76,6 +80,12 @@ export function EventWorkspaceMenu({
     queryKey: ["attendee-meal-days", event.id],
     enabled: !!registration,
     queryFn: () => listEventMealDays(event.id),
+  });
+  const presenterAccessFn = useServerFn(getPresenterAccess);
+  const { data: presenterAccess } = useQuery({
+    queryKey: ["presenter-access", event.id, userId],
+    enabled: !!userId,
+    queryFn: () => presenterAccessFn({ data: { eventId: event.id } }),
   });
   const contactCard = `MECARD:N:${profile?.full_name ?? "JESUP attendee"};EMAIL:${profile?.email ?? userEmail ?? ""};TEL:${profile?.phone ?? ""};ORG:${profile?.affiliation ?? ""};;`;
   const parkingUrl =
@@ -180,6 +190,28 @@ export function EventWorkspaceMenu({
                 </SheetClose>
               );
             })}
+            {presenterAccess?.isPresenter && (
+              <SheetClose asChild>
+                <Link
+                  to="/events/$id/present"
+                  params={{ id: event.id }}
+                  className="flex min-h-14 items-center gap-4 px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted/60"
+                >
+                  <FileUp className="h-5 w-5 institution-accent-text" /> Presenter submissions
+                </Link>
+              </SheetClose>
+            )}
+            {presenterAccess?.isStaff && (
+              <SheetClose asChild>
+                <Link
+                  to="/events/$id/presentations"
+                  params={{ id: event.id }}
+                  className="flex min-h-14 items-center gap-4 px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted/60"
+                >
+                  <FolderOpen className="h-5 w-5 institution-accent-text" /> Presentation files (staff)
+                </Link>
+              </SheetClose>
+            )}
             <SheetClose asChild>
               <Link
                 to="/ask"

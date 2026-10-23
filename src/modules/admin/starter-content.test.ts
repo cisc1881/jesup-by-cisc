@@ -8,7 +8,6 @@ import {
   starterPrograms,
 } from "./starter-content";
 import {
-  starterEquipment,
   starterGrants,
   starterInstitutionDemos,
   starterInstitutionEvents,
@@ -76,7 +75,6 @@ describe("starter content database defaults", () => {
     ).toBe(19);
     expect(starterPublications.length).toBeGreaterThan(0);
     expect(starterGrants.length).toBeGreaterThan(0);
-    expect(starterEquipment.length).toBeGreaterThan(0);
     expect(starterSurveys.length).toBeGreaterThan(0);
   });
 });

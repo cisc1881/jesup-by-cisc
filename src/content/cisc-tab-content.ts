@@ -137,19 +137,6 @@ export const CISC_TAB_CONTENT: Record<string, CiscTabStory> = {
     videoUrl: "https://youtu.be/B0vj7JTfUA0",
     videoLabel: "Watch the official program video",
   },
-  "/equipment": {
-    eyebrow: "Shared capacity",
-    title: "Tools that help move projects from planning to practice",
-    summary:
-      "JESUP’s equipment catalog is designed to make approved CISC tools, sensors, and field resources easier to discover and reserve for eligible program and community work.",
-    highlights: [
-      "Clear availability and reservation details",
-      "Program-connected field support",
-      "Responsible shared-resource use",
-    ],
-    sourceUrl: "https://cisc1881.org/programs-projects/value-addition-technology/",
-    sourceLabel: "Explore CISC value addition and technology",
-  },
   "/surveys": {
     eyebrow: "Community voice",
     title: "Help programs respond to real priorities",

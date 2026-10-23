@@ -9,7 +9,6 @@ export type ModuleId =
   | "partners"
   | "news"
   | "donations"
-  | "equipment"
   | "grants"
   | "surveys"
   | "internships"
