@@ -791,6 +791,14 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
       bio: s.bio ?? "",
       photoUrl: s.photo_url ?? "",
       sortOrder: s.sort_order,
+      isKeynote: s.is_keynote ?? false,
+      websiteUrl: s.website_url ?? "",
+      socialLinks: sanitizeSocialLinks(
+        (s.social_links as Array<{ platform?: string; url?: string }> | null) ?? [],
+      ),
+      contactEmail: s.contact_email ?? "",
+      contactPhone: s.contact_phone ?? "",
+      sessionIds: sessionIdsBySpeaker.get(s.id) ?? [],
     })),
     gallery: (galleryRes.data ?? []).map((g) => ({
       id: g.id,
