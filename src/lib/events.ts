@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import type { Json } from "@/integrations/supabase/types";
 import { conferenceDateRange, eventLocalInput, eventLocalToUtc } from "@/lib/conference";
+import { sanitizeSocialLinks, type SpeakerSocialLink } from "@/lib/speakers";
 import {
   publishingWriteError,
   validateContentIdentity,
@@ -65,6 +66,14 @@ export type EventSession = {
   sortOrder: number;
 };
 
+export type EventSpeakerSession = {
+  id: string;
+  title: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  location: string | null;
+};
+
 export type EventSpeaker = {
   id: string;
   name: string;
@@ -72,6 +81,12 @@ export type EventSpeaker = {
   bio: string | null;
   photoUrl: string | null;
   sortOrder: number;
+  isKeynote: boolean;
+  websiteUrl: string | null;
+  socialLinks: SpeakerSocialLink[];
+  contactEmail: string | null;
+  contactPhone: string | null;
+  sessions: EventSpeakerSession[];
 };
 
 export type EventGalleryImage = {
@@ -116,7 +131,10 @@ export type EventDetail = EventListItem & {
 };
 
 export type EventFormSession = Omit<EventSession, "id"> & { id?: string };
-export type EventFormSpeaker = Omit<EventSpeaker, "id"> & { id?: string };
+export type EventFormSpeaker = Omit<EventSpeaker, "id" | "sessions"> & {
+  id?: string;
+  sessionIds: string[];
+};
 export type EventFormGalleryImage = Omit<EventGalleryImage, "id"> & { id?: string };
 
 export type EventFormData = {
