@@ -1,97 +1,25 @@
-# JESUP — The Digital Extension Wagon
+# Next increment: Eventbrite ticket-type mapping with admin-reviewed credential issuance
 
-Rebrand the entire application and elevate it from a university-style site to a premium mobile-first product (Apple / Nike / Spotify feel). All existing CRUD, auth, RLS, admin dashboard, and equipment logic stay intact — this is a design + IA overhaul plus a few new content sections.
+## Why this one
+Import, verified-email claim, Wallet, staff scanner and badge print foundations already exist. The gap that blocks real FC135 use: imported Eventbrite attendees carry a `Ticket Type` (read but discarded), so a paid Eventbrite attendee who claims their ticket gets admission only — no meal/activity/parking/guest credentials. Staff then have nothing to redeem. This increment connects paid Eventbrite registrations to Wallet entitlements without any JESUP payment.
 
-## 1. Brand & design system (`src/styles.css`, `__root.tsx`)
+Out of scope: native checkout, Square/seller settings, fees, publishing the Eventbrite draft, offline scanning, guest transfers, physical printer confirmation.
 
-- App name everywhere: **JESUP** / subtitle *The Digital Extension Wagon* / "Powered by CISC · Tuskegee University Cooperative Extension".
-- Replace maroon/gold palette with the new crimson gradient + neutrals + metallic gold:
-  - `--primary` deep crimson `#7A0C16`, `--primary-mid` `#9E1B2F`, `--primary-bright` `#C1273D`
-  - `--gradient-primary: linear-gradient(135deg,#7A0C16,#9E1B2F 55%,#C1273D)`
-  - Neutrals: bg `#F5F5F3`, card `#FFFFFF`, secondary bg `#ECECEC`, text `#1F1F1F`, muted `#6B6B6B`, border `#D8D8D8`
-  - Metallic gold tokens `--gold`, `--gold-light`, `--gold-dark` (`#B08D57 / #C6A15B / #A87B2D`) — reserved for dividers, badges, active indicators, certificates only.
-- Typography: keep **Inter** for body, swap Playfair for **Instrument Sans / SF-style** display via existing Inter weights (600/700/800) — no serif. Larger tracking-tight headings.
-- Global tokens: `--radius: 1.25rem`, rounded-2xl/3xl cards, soft shadows (`shadow-[0_8px_30px_rgba(0,0,0,0.06)]`), generous spacing.
-- Utilities: `.grad-primary`, `.grad-text`, `.gold-divider`, `.card-elevated`, `.fade-in`, `.slide-up`.
-- Upload the CISC logo as a Lovable asset (`src/assets/cisc-logo.png.asset.json`) and use it in the footer / powered-by chip.
+## What gets built
+1. **Retain ticket type on import** (CSV and API sync, same RPC): store the Eventbrite ticket class name/ID per registration. Not shown publicly.
+2. **Admin mapping table** (Event Builder > Operations > "Eventbrite ticket mapping"): each distinct imported ticket type can be mapped to zero or more existing event products with a per-attendee quantity (e.g. "Self meal x2"). Guest products keep their beneficiary rule; the mapping never sets prices or activates inactive products.
+3. **Dry-run then explicit issue**: admin previews "N registrations would receive X credentials" (counts only, no names), then confirms. Issuance reuses `issue_event_entitlement` semantics: request ID replay, per-event lock, skip already-issued (idempotent by registration+product+mapping), skip cancelled registrations, never revoke on re-run.
+4. **Wallet**: claimed attendees see their ticket type label and mapped credentials (existing QR display); guest-beneficiary credentials show "Guest" label until a name is entered by staff/admin.
+5. **Scanner result**: check-in response shows ticket type so staff can confirm admission category.
 
-## 2. Information architecture
+## Safeguards
+- All writes through one admin-only SECURITY DEFINER function with explicit grants; UI gating is not authorization.
+- Inactive or unpriced products can only be issued via mapping when the admin ticks the existing "allow unpriced" acknowledgement; no product is activated by this flow.
+- No attendee names/emails/barcodes in previews, audit payloads or logs; audit records counts, mapping ID, request ID.
+- Cancellation import does not delete issued credentials; it flags them for admin review (existing revoke action).
+- FC135 registration stays closed, nine products stay inactive; no FC135 data is imported or issued.
 
-New public shell = **mobile-first with bottom tab bar** (5 tabs) on `<md`, top nav on desktop.
-
-Bottom tabs → routes:
-1. **Home** `/`
-2. **Programs** `/programs` (new hub) — nests existing markets/events/publications logic later
-3. **Events** `/events`
-4. **Resources** `/resources` (hub linking Publications, Grants, Internships, Equipment, Surveys)
-5. **Profile** `/me` (auth-gated, prompts sign-in if signed out)
-
-Secondary routes surfaced from Home / Resources: `/podcast`, `/partners`, `/donate`, plus the existing `/markets`, `/publications`, `/grants`, `/internships`, `/equipment`, `/surveys`, `/auth`.
-
-Admin dashboard stays exactly as-is (styling refreshed to match new tokens; no functional change).
-
-## 3. New / redesigned public screens
-
-### Home `/` — immersive dashboard
-- Hero **carousel** (embla) with 3–5 large image slides + crimson gradient overlay: welcome message ("Welcome to JESUP"), today's weather (static placeholder card — no external API this pass), upcoming workshop (from `events`), featured program, latest publication.
-- Quick Actions grid: Programs / Events / Podcast / Donate / Partners / Equipment — rounded image cards.
-- "Latest from CISC" strip (publications) and "Upcoming" strip (events).
-
-### Programs `/programs` — Apple Fitness-style cards
-Static hardcoded list of the 10 named programs, each with cover image (generated), tagline, tag chips. Detail route `/programs/$slug` shows hero, description, related events.
-
-### Podcast `/podcast` — Spotify-style
-- Show hero cover + play button (non-functional player UI; audio URL optional per episode)
-- Episode cards: cover, title, guest, duration, description, category badge.
-- Data: new `podcast_episodes` table + admin CRUD.
-
-### Partners `/partners`
-- Grid of logo cards with name, description, website, category filter.
-- Data: new `partners` table + admin CRUD.
-
-### Donate `/donate`
-- Large hero + mission statement.
-- "Ways to Give" cards: Sponsor Programs / Support Students / Support Research.
-- Placeholder "Give Online" CTA button (external URL configurable later).
-
-### Resources `/resources`
-Hub page linking Publications, Grants, Internships, Equipment, Surveys with icon cards. Existing pages restyled.
-
-### Profile `/me`
-Personalized dashboard: greeting, avatar, role chip, tabs for My Registrations / My Applications / My Checkouts (existing data), plus a "Personalize your experience" card teasing future role-based views (Farmer / Student / Faculty / Extension Agent / Community).
-
-## 4. Components to add
-- `src/components/bottom-nav.tsx` — fixed bottom tab bar, hides on `md+`.
-- `src/components/top-nav.tsx` — refreshed desktop nav with JESUP wordmark + gold divider.
-- `src/components/hero-carousel.tsx` — embla-based.
-- `src/components/program-card.tsx`, `podcast-card.tsx`, `partner-card.tsx`, `quick-action.tsx`, `section-header.tsx`, `stat-pill.tsx`.
-- `src/components/public-layout.tsx` — updated shell (top nav + bottom nav + page padding for tab bar).
-
-## 5. Database additions (single migration)
-- `podcast_episodes` (title, slug, guest, duration_seconds, description, cover_url, audio_url, category, published_at, is_published)
-- `partners` (name, slug, description, logo_url, website_url, category, sort_order)
-- `programs` seeded server-side (static in code — no table needed; keeps admin simple)
-- Public `SELECT` for anon+authenticated on published rows; admin full via `has_role('admin')`. Include `GRANT`s per rules.
-
-## 6. Admin additions
-- `/admin/podcast` and `/admin/partners` CRUD pages, styled to match refreshed tokens. CSV export wired.
-- Sidebar gets two new items.
-
-## 7. Assets
-Generate cover imagery with imagegen (fast tier): hero carousel (3 images), 10 program covers, podcast default cover, donate hero, partner placeholder. Save under `src/assets/jesup/*.jpg` and import.
-
-## 8. Out of scope this pass
-- Real weather API, real audio playback engine, real payment integration, push notifications, role-personalized profile logic (UI stub only), any AI/shelf-life/pesticide features.
-
-## Build order
-1. Design tokens + fonts + utilities (`src/styles.css`, `__root.tsx` title/meta).
-2. Migration for `podcast_episodes` + `partners` (await approval).
-3. Generate hero + program cover images in parallel.
-4. New layout shell + bottom nav + top nav + rebrand text.
-5. Redesign Home (`/`) with carousel + quick actions + strips.
-6. New routes: `/programs`, `/programs/$slug`, `/podcast`, `/partners`, `/donate`, `/resources`.
-7. Restyle existing catalog pages (Events, Publications, Grants, Internships, Equipment, Surveys, Markets, Me, Auth) to new tokens — content/logic unchanged.
-8. Admin: add Podcast + Partners CRUD, restyle sidebar/header to new tokens.
-9. Verify build + screenshot key screens at mobile viewport.
-
-Confirm and I'll start executing.
+## Technical details
+- Migration: add `eventbrite_ticket_class` (text, nullable) to `event_registrations`; new `event_ticket_mappings (event_id, ticket_class, product_id, quantity)` with RLS admin-only + staff read; RPC `issue_mapped_entitlements(p_event_id, p_request_id, p_dry_run, p_allow_unpriced)`; extend `import_eventbrite_registrations` to accept optional `ticket_class` without changing existing matching/protection rules.
+- Files: `src/lib/eventbrite-import.ts`, `src/lib/eventbrite-api-sync.ts` (pass ticket class), `src/lib/eventbrite-import.functions.ts`, new `src/lib/ticket-mapping.functions.ts`, `src/components/admin/conference-operations-panel.tsx` (new tab), `src/components/events/conference-wallet.tsx`, `src/lib/conference-operations.functions.ts` (wallet select), `src/routes/_authenticated/events.$id.scan.tsx` (ticket type in result), `docs/FC135_OPERATIONS.md`, `roadmap.md`, `AGENTS.md` rule.
+- Tests (vitest, next to existing): ticket class carried by CSV and API normalizers; mapping quantity validation; dry-run returns counts only; re-run issues nothing new; cancelled registrations skipped; inactive product refused without acknowledgement; non-admin rejected. Plus DB verification on a private test event (deleted afterward), full suite and build.
