@@ -635,7 +635,7 @@ body *::after {
 .brand-primary-control { background-image: var(--gradient-jesup); color: var(--gradient-foreground); }
 .brand-primary-control:hover { background-image: var(--gradient-jesup); }
 .program-media-overlay { background: var(--program-media-overlay); }
-/* Image slide: dark text on a cream panel over the artwork's light left side. */
+/* Image slide: uncropped artwork above a separate, high-contrast text band. */
 .home-network-hero.home-hero-image {
   --home-foreground: oklch(0.2 0.02 60);
   --home-muted: oklch(0.36 0.02 60);
@@ -647,20 +647,19 @@ body *::after {
   position: relative;
   isolation: isolate;
 }
-.home-hero-media { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: 72% 20%; }
-.home-hero-image .home-hero-inner { background: var(--home-panel); }
-@media (min-width: 768px) {
-  .home-hero-media { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: right center; z-index: -1; }
-  .home-hero-image .home-hero-inner { background: transparent; }
-  .home-hero-image .home-hero-controls { border-top: 0; padding: 0.25rem 1rem; border-radius: var(--radius-md); background: color-mix(in oklch, var(--home-panel) 92%, transparent); }
-  .home-hero-image .home-hero-panel {
-    max-width: 30rem;
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    background: color-mix(in oklch, var(--home-panel) 88%, transparent);
-  }
+.home-hero-media {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
 }
-@media (min-width: 1024px) { .home-hero-image .home-hero-panel { max-width: 34rem; } }
+.home-hero-image .home-hero-inner { background: var(--home-panel); padding-top: 1.5rem; }
+.home-hero-image .home-hero-panel { min-height: 0; }
+.home-hero-image .home-hero-panel h1 { margin-top: 0.75rem; }
+.home-hero-image .home-hero-panel h1 + p { margin-top: 0.75rem; }
+.home-hero-image .home-hero-controls { margin-top: 1.5rem; }
 @media (max-width: 639px) {
   .home-slide-content { min-height: 320px; }
 }
