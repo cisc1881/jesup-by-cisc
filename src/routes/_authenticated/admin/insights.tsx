@@ -32,7 +32,7 @@ export const Route = createFileRoute('/_authenticated/admin/insights')({
   ] }),
   component: ExtensionInsights,
   pendingComponent: () => <p className="p-6 text-muted-foreground" role="status">Loading Extension Insights…</p>,
-  errorComponent: ({ error }) => <InsightsError error={error} />,
+  errorComponent: ({ error }) => <InsightsError error={error instanceof Error ? error : new Error(String(error))} />,
   notFoundComponent: () => <p className="p-6">Extension Insights is unavailable.</p>,
 });
 function InsightsError({ error }: { error: Error }) {

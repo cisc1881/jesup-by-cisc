@@ -11,7 +11,7 @@ describe('Extension Insights boundaries', () => {
     expect(eligibleEvent({ status: 'published', is_active: false })).toBe(false);
   });
   it('rejects missing, nonfinite and out of range coordinates but permits zero', () => {
-    for (const pair of [[null, 1], [1, undefined], [NaN, 1], [Infinity, 1], [91, 1], [1, -181], ['32', 1]]) expect(validCoordinates(...pair)).toBe(false);
+    for (const [lat, lng] of [[null, 1], [1, undefined], [NaN, 1], [Infinity, 1], [91, 1], [1, -181], ['32', 1]]) expect(validCoordinates(lat, lng)).toBe(false);
     expect(validCoordinates(0, 0)).toBe(true);
     expect(validCoordinates(-90, 180)).toBe(true);
   });
