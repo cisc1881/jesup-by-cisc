@@ -23,6 +23,7 @@
 - The role policy helper is callable for public policies but returns false for anonymous callers and only checks the caller's own identity, preserving public reads without role enumeration.
 - Home always renders the network HomeHero; featured conferences use a separate event link rather than replacing it, keeping About discoverable and event themes scoped to their event pages.
 - Home image slides render uncropped media in normal flow above a separate token-themed text band; why: artwork subjects must remain visible without text overlays and non-image slides must retain their existing styling.
+- HomeHero owns a cleaned-up one-shot rotation timer and browser preference/visibility listeners; interaction pauses and manual reset share its timer dependencies, while only manual changes update a separate live announcement, preventing disruptive automatic announcements.
 - Provisional agendas reuse event_sessions and event metadata agenda_status/agenda_notice/agenda_provenance; render proposed times in the event timezone and never create products or entitlements from planning blocks.
 - Public program catalogs and Home program entries read active database records in sort_order; starter imports never create or overwrite programs, so approved content and deletions survive refreshes.
 - Theme selection uses only the signed-in profile school or session-scoped explicit guest school, never event/program ownership or metadata; paired layout-scoped tokens keep unselected content neutral and prevent guest branding leaks.
