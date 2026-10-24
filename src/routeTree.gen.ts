@@ -59,6 +59,7 @@ import { Route as AuthenticatedAdminEquipmentRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin/events'
 import { Route as AuthenticatedAdminGrantsRouteImport } from './routes/_authenticated/admin/grants'
 import { Route as AuthenticatedAdminInquiriesRouteImport } from './routes/_authenticated/admin/inquiries'
+import { Route as AuthenticatedAdminInsightsRouteImport } from './routes/_authenticated/admin/insights'
 import { Route as AuthenticatedAdminInternshipsRouteImport } from './routes/_authenticated/admin/internships'
 import { Route as AuthenticatedAdminMarketsRouteImport } from './routes/_authenticated/admin/markets'
 import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin/media'
@@ -363,6 +364,12 @@ const AuthenticatedAdminInquiriesRoute =
   } as any).lazy(() =>
     import('./routes/_authenticated/admin/inquiries.lazy').then((d) => d.Route),
   )
+const AuthenticatedAdminInsightsRoute =
+  AuthenticatedAdminInsightsRouteImport.update({
+    id: '/insights',
+    path: '/insights',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminInternshipsRoute =
   AuthenticatedAdminInternshipsRouteImport.update({
     id: '/internships',
@@ -675,6 +682,7 @@ export interface FileRoutesByFullPath {
   '/admin/events': typeof AuthenticatedAdminEventsRouteWithChildren
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/admin/inquiries': typeof AuthenticatedAdminInquiriesRoute
+  '/admin/insights': typeof AuthenticatedAdminInsightsRoute
   '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/admin/markets': typeof AuthenticatedAdminMarketsRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
@@ -762,6 +770,7 @@ export interface FileRoutesByTo {
   '/admin/events': typeof AuthenticatedAdminEventsRouteWithChildren
   '/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/admin/inquiries': typeof AuthenticatedAdminInquiriesRoute
+  '/admin/insights': typeof AuthenticatedAdminInsightsRoute
   '/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/admin/markets': typeof AuthenticatedAdminMarketsRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
@@ -854,6 +863,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRouteWithChildren
   '/_authenticated/admin/grants': typeof AuthenticatedAdminGrantsRoute
   '/_authenticated/admin/inquiries': typeof AuthenticatedAdminInquiriesRoute
+  '/_authenticated/admin/insights': typeof AuthenticatedAdminInsightsRoute
   '/_authenticated/admin/internships': typeof AuthenticatedAdminInternshipsRoute
   '/_authenticated/admin/markets': typeof AuthenticatedAdminMarketsRoute
   '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
@@ -946,6 +956,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/grants'
     | '/admin/inquiries'
+    | '/admin/insights'
     | '/admin/internships'
     | '/admin/markets'
     | '/admin/media'
@@ -1033,6 +1044,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/grants'
     | '/admin/inquiries'
+    | '/admin/insights'
     | '/admin/internships'
     | '/admin/markets'
     | '/admin/media'
@@ -1124,6 +1136,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/grants'
     | '/_authenticated/admin/inquiries'
+    | '/_authenticated/admin/insights'
     | '/_authenticated/admin/internships'
     | '/_authenticated/admin/markets'
     | '/_authenticated/admin/media'
@@ -1552,6 +1565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminInquiriesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/insights': {
+      id: '/_authenticated/admin/insights'
+      path: '/insights'
+      fullPath: '/admin/insights'
+      preLoaderRoute: typeof AuthenticatedAdminInsightsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/internships': {
       id: '/_authenticated/admin/internships'
       path: '/internships'
@@ -1877,6 +1897,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRouteWithChildren
   AuthenticatedAdminGrantsRoute: typeof AuthenticatedAdminGrantsRoute
   AuthenticatedAdminInquiriesRoute: typeof AuthenticatedAdminInquiriesRoute
+  AuthenticatedAdminInsightsRoute: typeof AuthenticatedAdminInsightsRoute
   AuthenticatedAdminInternshipsRoute: typeof AuthenticatedAdminInternshipsRoute
   AuthenticatedAdminMarketsRoute: typeof AuthenticatedAdminMarketsRoute
   AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
@@ -1914,6 +1935,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRouteWithChildren,
     AuthenticatedAdminGrantsRoute: AuthenticatedAdminGrantsRoute,
     AuthenticatedAdminInquiriesRoute: AuthenticatedAdminInquiriesRoute,
+    AuthenticatedAdminInsightsRoute: AuthenticatedAdminInsightsRoute,
     AuthenticatedAdminInternshipsRoute: AuthenticatedAdminInternshipsRoute,
     AuthenticatedAdminMarketsRoute: AuthenticatedAdminMarketsRoute,
     AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
