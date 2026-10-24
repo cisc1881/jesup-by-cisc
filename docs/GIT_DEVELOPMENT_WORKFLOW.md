@@ -30,3 +30,5 @@ For local preview, copy `.env.example` to an ignored `.env` and fill in **develo
 4. Publish to the live domain only after checking the actual hosting target, production Supabase project, environment variables, and a staging smoke test. Record the deployed commit and verify the public and admin routes.
 
 The existing [deployment guide](./DEPLOYMENT_GUIDE.md) describes a possible standalone Cloudflare Workers deployment. It is an alternative to the current Lovable hosting path, not a completed migration. Do not change DNS or deploy it until production infrastructure is verified.
+
+The proposed subdomain-only move to Cloudflare Pages is tracked in the [hosting migration guide](./HOSTING_MIGRATION.md).
