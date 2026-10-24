@@ -19,6 +19,7 @@ supabase/.temp/
 
 node_modules
 dist
+dist-pages-upload
 dist-ssr
 .output
 .vinxi
