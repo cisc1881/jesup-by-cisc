@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit --pretty false",
     "test:watch": "vitest",
     "verify:native-workflows": "node scripts/native_workflows_verify.mjs",
     "generate:vapid-keys": "node scripts/generate-vapid-keys.mjs",

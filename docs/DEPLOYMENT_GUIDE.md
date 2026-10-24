@@ -1,5 +1,7 @@
 # JESUP Deployment Guide
 
+For the current low-cost Git workflow and the distinction between code sync and live publication, see [Git Development Workflow](./GIT_DEVELOPMENT_WORKFLOW.md).
+
 **Document status:** Operations reference  
 **Version:** 1.0  
 **Last updated:** July 2026
