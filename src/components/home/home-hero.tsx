@@ -20,7 +20,7 @@ export function HomeHero({ slides }: HomeHeroProps) {
   return (
     <section aria-label="JESUP highlights" aria-roledescription="carousel" className={cn("home-network-hero w-full text-home-foreground", active?.imageUrl && "home-hero-image")}>
       {active?.imageUrl && (
-        <img key={active.id} src={active.imageUrl} alt="" className="home-hero-media" loading="eager" />
+        <img key={active.id} src={active.imageUrl} alt={active.imageAlt} className="home-hero-media" loading="eager" />
       )}
       <div className="home-hero-inner mx-auto max-w-7xl px-5 pb-6 pt-10 sm:px-8 sm:pt-14">
         <div className="home-slide-content home-hero-panel max-w-4xl" aria-live="polite" aria-atomic="true">

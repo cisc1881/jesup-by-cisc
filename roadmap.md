@@ -1,5 +1,8 @@
 # FC135 recovery
 
+## Updated About JESUP artwork (2026-10-24)
+- [x] Replaced only the About slide asset; wagon and portrait remain uncropped above high-contrast HTML text. Desktop (1280px) and phone (390px) screenshots inspected; carousel navigation and About link passed with no page errors or overflow. All 229 tests passed and automatic build OK; nothing published.
+
 ## Eventbrite ticket-type mapping
 - [x] Store ticket type on import; admin mapping to products; counts-only preview and idempotent admin issuance; Wallet/scanner show ticket type. Verified on a rolled-back private test event.
 
