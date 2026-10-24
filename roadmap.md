@@ -1,7 +1,7 @@
 # FC135 recovery
 
 ## Home carousel automatic rotation
-- [ ] Add seven-second rotation, interaction/visibility/reduced-motion pauses, manual timer reset and quiet announcements; verify timers and desktop/phone behavior without changing artwork or publishing.
+- [x] Added seven-second rotation, interaction/visibility/reduced-motion pauses, manual timer reset and quiet announcements. All 239 tests and automatic build passed; desktop (1280px) and phone (390px) rotation, focus pause, reduced motion, manual controls and uncropped artwork verified without overflow or page errors; nothing published.
 
 ## Updated About JESUP artwork (2026-10-24)
 - [x] Replaced only the About slide asset; wagon and portrait remain uncropped above high-contrast HTML text. Desktop (1280px) and phone (390px) screenshots inspected; carousel navigation and About link passed with no page errors or overflow. All 229 tests passed and automatic build OK; nothing published.
