@@ -1,5 +1,9 @@
 # FC135 recovery
 
+## Extension Insights
+- [ ] Implement read-only admin coverage map, place summary, source-labelled activity counts, filters and data quality.
+- [ ] Verify authorization, data semantics, full tests, automatic build and signed-in desktop/mobile; do not publish.
+
 ## Home carousel automatic rotation
 - [x] Added seven-second rotation, interaction/visibility/reduced-motion pauses, manual timer reset and quiet announcements. All 239 tests and automatic build passed; desktop (1280px) and phone (390px) rotation, focus pause, reduced motion, manual controls and uncropped artwork verified without overflow or page errors; nothing published.
 
