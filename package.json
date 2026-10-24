@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "build:pages": "NITRO_PRESET=cloudflare_pages vite build",
+    "build:pages": "VITE_SOCIAL_AUTH_AVAILABLE=false NITRO_PRESET=cloudflare_pages vite build",
     "prepare:pages-upload": "node scripts/prepare-pages-upload.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
