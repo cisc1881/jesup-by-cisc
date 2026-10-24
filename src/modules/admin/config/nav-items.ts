@@ -175,6 +175,7 @@ export const COMMAND_CENTER_NAV: CommandCenterNavItem[] = [
     icon: BarChart3,
     group: "analytics",
   },
+  { moduleId: "reports", to: "/admin/insights", label: "Extension Insights", icon: Map, group: "analytics" },
   {
     moduleId: "reports",
     to: "/admin/reports/events",
