@@ -103,6 +103,7 @@ function MePage() {
         description={user?.email ?? undefined}
         action={
           <div className="flex flex-wrap gap-2">
+            <AppButton asChild variant="outline"><Link to="/account/purchases">Institutional purchases</Link></AppButton>
             {isAdmin && (
               <AppButton asChild>
                 <Link to="/admin">Admin dashboard</Link>

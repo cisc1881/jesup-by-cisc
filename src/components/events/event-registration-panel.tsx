@@ -31,6 +31,7 @@ import { CalendarPlus, ExternalLink, QrCode, Search, Share2 } from "lucide-react
 import { toast } from "sonner";
 import { EventbriteCheckout } from "@/components/events/eventbrite-checkout";
 import { authorizedEventbriteRegistrationUrl } from "@/lib/eventbrite-registration";
+import { ProcurementQuoteRequest } from "@/components/events/procurement-quote-request";
 
 type EventRegistrationPanelProps = {
   event: EventDetail;
@@ -415,6 +416,8 @@ export function EventRegistrationPanel({ event, registration }: EventRegistratio
           </div>
         )}
       </AppCard>
+
+      {canRegister && <ProcurementQuoteRequest eventId={event.id} />}
 
       <div className="flex flex-wrap gap-3">
         <AppButton variant="outline" size="lg" shape="pill" onClick={() => downloadEventIcs(event)}>

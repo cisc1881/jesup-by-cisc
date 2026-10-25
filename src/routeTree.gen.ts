@@ -50,6 +50,7 @@ import { Route as ProgramsSlugRouteImport } from './routes/programs.$slug'
 import { Route as PublicationsSlugRouteImport } from './routes/publications.$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AuthenticatedAccountPurchasesRouteImport } from './routes/_authenticated/account.purchases'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
@@ -87,8 +88,11 @@ import { Route as AuthenticatedMeNotificationsRouteImport } from './routes/_auth
 import { Route as AuthenticatedMeWeatherAlertsRouteImport } from './routes/_authenticated/me.weather-alerts'
 import { Route as EventsIdEvaluationRouteImport } from './routes/events.$id.evaluation'
 import { Route as EventsIdHubRouteImport } from './routes/events.$id.hub'
+import { Route as AuthenticatedAccountPurchasesIdRouteImport } from './routes/_authenticated/account.purchases.$id'
 import { Route as AuthenticatedAdmin2fasApplicationsRouteImport } from './routes/_authenticated/admin/2fas/applications'
 import { Route as AuthenticatedAdminEventsGalleryRouteImport } from './routes/_authenticated/admin/events.gallery'
+import { Route as AuthenticatedAdminFinanceProcurementSettingsRouteImport } from './routes/_authenticated/admin/finance.procurement-settings'
+import { Route as AuthenticatedAdminFinancePurchaseOrdersRouteImport } from './routes/_authenticated/admin/finance.purchase-orders'
 import { Route as AuthenticatedAdminReportsEventsRouteImport } from './routes/_authenticated/admin/reports.events'
 import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/_authenticated/admin/weather/counties'
 import { Route as AuthenticatedAdminWeatherNotificationsRouteImport } from './routes/_authenticated/admin/weather/notifications'
@@ -99,6 +103,7 @@ import { Route as AuthenticatedAdminEventsEventIdAttendanceRouteImport } from '.
 import { Route as AuthenticatedAdminEventsEventIdEvaluationsRouteImport } from './routes/_authenticated/admin/events.$eventId.evaluations'
 import { Route as AuthenticatedAdminEventsEventIdGalleryRouteImport } from './routes/_authenticated/admin/events.$eventId.gallery'
 import { Route as AuthenticatedAdminEventsEventIdMealsRouteImport } from './routes/_authenticated/admin/events.$eventId.meals'
+import { Route as AuthenticatedAdminFinancePurchaseOrdersIdRouteImport } from './routes/_authenticated/admin/finance.purchase-orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -306,6 +311,12 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     id: '/.mcp/invoke-tool/$tool',
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAccountPurchasesRoute =
+  AuthenticatedAccountPurchasesRouteImport.update({
+    id: '/account/purchases',
+    path: '/account/purchases',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
@@ -536,6 +547,12 @@ const EventsIdHubRoute = EventsIdHubRouteImport.update({
   path: '/hub',
   getParentRoute: () => EventsIdRoute,
 } as any)
+const AuthenticatedAccountPurchasesIdRoute =
+  AuthenticatedAccountPurchasesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAccountPurchasesRoute,
+  } as any)
 const AuthenticatedAdmin2fasApplicationsRoute =
   AuthenticatedAdmin2fasApplicationsRouteImport.update({
     id: '/2fas/applications',
@@ -552,6 +569,18 @@ const AuthenticatedAdminEventsGalleryRoute =
       (d) => d.Route,
     ),
   )
+const AuthenticatedAdminFinanceProcurementSettingsRoute =
+  AuthenticatedAdminFinanceProcurementSettingsRouteImport.update({
+    id: '/finance/procurement-settings',
+    path: '/finance/procurement-settings',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminFinancePurchaseOrdersRoute =
+  AuthenticatedAdminFinancePurchaseOrdersRouteImport.update({
+    id: '/finance/purchase-orders',
+    path: '/finance/purchase-orders',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminReportsEventsRoute =
   AuthenticatedAdminReportsEventsRouteImport.update({
     id: '/events',
@@ -632,6 +661,12 @@ const AuthenticatedAdminEventsEventIdMealsRoute =
     path: '/$eventId/meals',
     getParentRoute: () => AuthenticatedAdminEventsRoute,
   } as any)
+const AuthenticatedAdminFinancePurchaseOrdersIdRoute =
+  AuthenticatedAdminFinancePurchaseOrdersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAdminFinancePurchaseOrdersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -674,6 +709,7 @@ export interface FileRoutesByFullPath {
   '/events/': typeof EventsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/account/purchases': typeof AuthenticatedAccountPurchasesRouteWithChildren
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -711,8 +747,11 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/funder/': typeof AuthenticatedFunderIndexRoute
   '/me/': typeof AuthenticatedMeIndexRoute
+  '/account/purchases/$id': typeof AuthenticatedAccountPurchasesIdRoute
   '/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
+  '/admin/finance/procurement-settings': typeof AuthenticatedAdminFinanceProcurementSettingsRoute
+  '/admin/finance/purchase-orders': typeof AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
@@ -723,6 +762,7 @@ export interface FileRoutesByFullPath {
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
   '/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
+  '/admin/finance/purchase-orders/$id': typeof AuthenticatedAdminFinancePurchaseOrdersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -762,6 +802,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/account/purchases': typeof AuthenticatedAccountPurchasesRouteWithChildren
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -799,8 +840,11 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/funder': typeof AuthenticatedFunderIndexRoute
   '/me': typeof AuthenticatedMeIndexRoute
+  '/account/purchases/$id': typeof AuthenticatedAccountPurchasesIdRoute
   '/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
+  '/admin/finance/procurement-settings': typeof AuthenticatedAdminFinanceProcurementSettingsRoute
+  '/admin/finance/purchase-orders': typeof AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
@@ -811,6 +855,7 @@ export interface FileRoutesByTo {
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
   '/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
+  '/admin/finance/purchase-orders/$id': typeof AuthenticatedAdminFinancePurchaseOrdersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -855,6 +900,7 @@ export interface FileRoutesById {
   '/events/': typeof EventsIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/account/purchases': typeof AuthenticatedAccountPurchasesRouteWithChildren
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/counties': typeof AuthenticatedAdminCountiesRoute
@@ -892,8 +938,11 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/funder/': typeof AuthenticatedFunderIndexRoute
   '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
+  '/_authenticated/account/purchases/$id': typeof AuthenticatedAccountPurchasesIdRoute
   '/_authenticated/admin/2fas/applications': typeof AuthenticatedAdmin2fasApplicationsRoute
   '/_authenticated/admin/events/gallery': typeof AuthenticatedAdminEventsGalleryRoute
+  '/_authenticated/admin/finance/procurement-settings': typeof AuthenticatedAdminFinanceProcurementSettingsRoute
+  '/_authenticated/admin/finance/purchase-orders': typeof AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren
   '/_authenticated/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
   '/_authenticated/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/_authenticated/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
@@ -904,6 +953,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/_authenticated/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
   '/_authenticated/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
+  '/_authenticated/admin/finance/purchase-orders/$id': typeof AuthenticatedAdminFinancePurchaseOrdersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -948,6 +998,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/account/purchases'
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
@@ -985,8 +1036,11 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/funder/'
     | '/me/'
+    | '/account/purchases/$id'
     | '/admin/2fas/applications'
     | '/admin/events/gallery'
+    | '/admin/finance/procurement-settings'
+    | '/admin/finance/purchase-orders'
     | '/admin/reports/events'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
@@ -997,6 +1051,7 @@ export interface FileRouteTypes {
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
     | '/admin/events/$eventId/meals'
+    | '/admin/finance/purchase-orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1036,6 +1091,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/account/purchases'
     | '/admin/activity'
     | '/admin/analytics'
     | '/admin/counties'
@@ -1073,8 +1129,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/funder'
     | '/me'
+    | '/account/purchases/$id'
     | '/admin/2fas/applications'
     | '/admin/events/gallery'
+    | '/admin/finance/procurement-settings'
+    | '/admin/finance/purchase-orders'
     | '/admin/reports/events'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
@@ -1085,6 +1144,7 @@ export interface FileRouteTypes {
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
     | '/admin/events/$eventId/meals'
+    | '/admin/finance/purchase-orders/$id'
   id:
     | '__root__'
     | '/'
@@ -1128,6 +1188,7 @@ export interface FileRouteTypes {
     | '/events/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/account/purchases'
     | '/_authenticated/admin/activity'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/counties'
@@ -1165,8 +1226,11 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/funder/'
     | '/_authenticated/me/'
+    | '/_authenticated/account/purchases/$id'
     | '/_authenticated/admin/2fas/applications'
     | '/_authenticated/admin/events/gallery'
+    | '/_authenticated/admin/finance/procurement-settings'
+    | '/_authenticated/admin/finance/purchase-orders'
     | '/_authenticated/admin/reports/events'
     | '/_authenticated/admin/weather/counties'
     | '/_authenticated/admin/weather/notifications'
@@ -1177,6 +1241,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/events/$eventId/evaluations'
     | '/_authenticated/admin/events/$eventId/gallery'
     | '/_authenticated/admin/events/$eventId/meals'
+    | '/_authenticated/admin/finance/purchase-orders/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1502,6 +1567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/account/purchases': {
+      id: '/_authenticated/account/purchases'
+      path: '/account/purchases'
+      fullPath: '/account/purchases'
+      preLoaderRoute: typeof AuthenticatedAccountPurchasesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -1761,6 +1833,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsIdHubRouteImport
       parentRoute: typeof EventsIdRoute
     }
+    '/_authenticated/account/purchases/$id': {
+      id: '/_authenticated/account/purchases/$id'
+      path: '/$id'
+      fullPath: '/account/purchases/$id'
+      preLoaderRoute: typeof AuthenticatedAccountPurchasesIdRouteImport
+      parentRoute: typeof AuthenticatedAccountPurchasesRoute
+    }
     '/_authenticated/admin/2fas/applications': {
       id: '/_authenticated/admin/2fas/applications'
       path: '/2fas/applications'
@@ -1774,6 +1853,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/events/gallery'
       preLoaderRoute: typeof AuthenticatedAdminEventsGalleryRouteImport
       parentRoute: typeof AuthenticatedAdminEventsRoute
+    }
+    '/_authenticated/admin/finance/procurement-settings': {
+      id: '/_authenticated/admin/finance/procurement-settings'
+      path: '/finance/procurement-settings'
+      fullPath: '/admin/finance/procurement-settings'
+      preLoaderRoute: typeof AuthenticatedAdminFinanceProcurementSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/finance/purchase-orders': {
+      id: '/_authenticated/admin/finance/purchase-orders'
+      path: '/finance/purchase-orders'
+      fullPath: '/admin/finance/purchase-orders'
+      preLoaderRoute: typeof AuthenticatedAdminFinancePurchaseOrdersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/reports/events': {
       id: '/_authenticated/admin/reports/events'
@@ -1845,6 +1938,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsEventIdMealsRouteImport
       parentRoute: typeof AuthenticatedAdminEventsRoute
     }
+    '/_authenticated/admin/finance/purchase-orders/$id': {
+      id: '/_authenticated/admin/finance/purchase-orders/$id'
+      path: '/$id'
+      fullPath: '/admin/finance/purchase-orders/$id'
+      preLoaderRoute: typeof AuthenticatedAdminFinancePurchaseOrdersIdRouteImport
+      parentRoute: typeof AuthenticatedAdminFinancePurchaseOrdersRoute
+    }
   }
 }
 
@@ -1888,6 +1988,21 @@ const AuthenticatedAdminReportsRouteWithChildren =
     AuthenticatedAdminReportsRouteChildren,
   )
 
+interface AuthenticatedAdminFinancePurchaseOrdersRouteChildren {
+  AuthenticatedAdminFinancePurchaseOrdersIdRoute: typeof AuthenticatedAdminFinancePurchaseOrdersIdRoute
+}
+
+const AuthenticatedAdminFinancePurchaseOrdersRouteChildren: AuthenticatedAdminFinancePurchaseOrdersRouteChildren =
+  {
+    AuthenticatedAdminFinancePurchaseOrdersIdRoute:
+      AuthenticatedAdminFinancePurchaseOrdersIdRoute,
+  }
+
+const AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren =
+  AuthenticatedAdminFinancePurchaseOrdersRoute._addFileChildren(
+    AuthenticatedAdminFinancePurchaseOrdersRouteChildren,
+  )
+
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminActivityRoute: typeof AuthenticatedAdminActivityRoute
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
@@ -1920,6 +2035,8 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminVolunteersRoute: typeof AuthenticatedAdminVolunteersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdmin2fasApplicationsRoute: typeof AuthenticatedAdmin2fasApplicationsRoute
+  AuthenticatedAdminFinanceProcurementSettingsRoute: typeof AuthenticatedAdminFinanceProcurementSettingsRoute
+  AuthenticatedAdminFinancePurchaseOrdersRoute: typeof AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren
   AuthenticatedAdminWeatherCountiesRoute: typeof AuthenticatedAdminWeatherCountiesRoute
   AuthenticatedAdminWeatherNotificationsRoute: typeof AuthenticatedAdminWeatherNotificationsRoute
 }
@@ -1959,6 +2076,10 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
     AuthenticatedAdmin2fasApplicationsRoute:
       AuthenticatedAdmin2fasApplicationsRoute,
+    AuthenticatedAdminFinanceProcurementSettingsRoute:
+      AuthenticatedAdminFinanceProcurementSettingsRoute,
+    AuthenticatedAdminFinancePurchaseOrdersRoute:
+      AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren,
     AuthenticatedAdminWeatherCountiesRoute:
       AuthenticatedAdminWeatherCountiesRoute,
     AuthenticatedAdminWeatherNotificationsRoute:
@@ -1999,11 +2120,26 @@ const AuthenticatedMeRouteWithChildren = AuthenticatedMeRoute._addFileChildren(
   AuthenticatedMeRouteChildren,
 )
 
+interface AuthenticatedAccountPurchasesRouteChildren {
+  AuthenticatedAccountPurchasesIdRoute: typeof AuthenticatedAccountPurchasesIdRoute
+}
+
+const AuthenticatedAccountPurchasesRouteChildren: AuthenticatedAccountPurchasesRouteChildren =
+  {
+    AuthenticatedAccountPurchasesIdRoute: AuthenticatedAccountPurchasesIdRoute,
+  }
+
+const AuthenticatedAccountPurchasesRouteWithChildren =
+  AuthenticatedAccountPurchasesRoute._addFileChildren(
+    AuthenticatedAccountPurchasesRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedFunderRoute: typeof AuthenticatedFunderRouteWithChildren
   AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
+  AuthenticatedAccountPurchasesRoute: typeof AuthenticatedAccountPurchasesRouteWithChildren
   AuthenticatedEventsIdPresentRoute: typeof AuthenticatedEventsIdPresentRoute
   AuthenticatedEventsIdPresentationsRoute: typeof AuthenticatedEventsIdPresentationsRoute
   AuthenticatedEventsIdScanRoute: typeof AuthenticatedEventsIdScanRoute
@@ -2014,6 +2150,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedFunderRoute: AuthenticatedFunderRouteWithChildren,
   AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
+  AuthenticatedAccountPurchasesRoute:
+    AuthenticatedAccountPurchasesRouteWithChildren,
   AuthenticatedEventsIdPresentRoute: AuthenticatedEventsIdPresentRoute,
   AuthenticatedEventsIdPresentationsRoute:
     AuthenticatedEventsIdPresentationsRoute,

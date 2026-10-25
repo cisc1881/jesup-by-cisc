@@ -103,6 +103,20 @@ export const COMMAND_CENTER_NAV: CommandCenterNavItem[] = [
     group: "operations",
   },
   {
+    moduleId: "events",
+    to: "/admin/finance/purchase-orders",
+    label: "Purchase Orders",
+    icon: FileText,
+    group: "operations",
+  },
+  {
+    moduleId: "events",
+    to: "/admin/finance/procurement-settings",
+    label: "PO Settings",
+    icon: Settings,
+    group: "operations",
+  },
+  {
     moduleId: "internships",
     to: "/admin/internships",
     label: "Internships",
