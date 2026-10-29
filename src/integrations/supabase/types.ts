@@ -1758,6 +1758,7 @@ export type Database = {
           ends_at: string | null
           event_id: string
           id: string
+          is_public: boolean
           location: string | null
           sort_order: number
           starts_at: string | null
@@ -1770,6 +1771,7 @@ export type Database = {
           ends_at?: string | null
           event_id: string
           id?: string
+          is_public?: boolean
           location?: string | null
           sort_order?: number
           starts_at?: string | null
@@ -1782,6 +1784,7 @@ export type Database = {
           ends_at?: string | null
           event_id?: string
           id?: string
+          is_public?: boolean
           location?: string | null
           sort_order?: number
           starts_at?: string | null

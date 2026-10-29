@@ -5,6 +5,7 @@ import { BottomNav } from "./bottom-nav";
 import { SkipLink } from "./skip-link";
 import { Link } from "@tanstack/react-router";
 import { FloatingUtilityDock } from "@/components/floating-utility-dock";
+import { AccessibilitySettings } from "@/components/accessibility-settings";
 import {
   Sheet,
   SheetContent,
@@ -48,7 +49,11 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               <Link to="/programs" className="px-1 py-3 hover:text-primary">
                 Programs
               </Link>
-              <Link to="/events" className="px-1 py-3 hover:text-primary">
+              <Link
+                to="/events"
+                search={{ view: "explore" }}
+                className="px-1 py-3 hover:text-primary"
+              >
                 Events
               </Link>
               <Link to="/podcasts" className="px-1 py-3 hover:text-primary">
@@ -67,6 +72,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
                 Terms
               </Link>
             </nav>
+            <AccessibilitySettings />
             <div className="border-t pt-5">
               <h2 className="text-sm font-black">Equal opportunity and accommodation</h2>
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground">

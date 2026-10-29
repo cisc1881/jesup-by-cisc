@@ -54,6 +54,7 @@ function MessagesPage() {
           </div>
           <Link
             to="/events"
+            search={{ view: "explore" }}
             className="grid h-11 w-11 place-items-center border border-white/70 text-white transition hover:bg-white/15"
             aria-label="Start an event conversation"
           >

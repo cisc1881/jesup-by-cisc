@@ -111,7 +111,10 @@ export function WeatherCenter({
           disabled={isRefreshing}
           aria-busy={isRefreshing}
         >
-          <RefreshCw className={isRefreshing ? "motion-safe:animate-spin" : ""} aria-hidden="true" />
+          <RefreshCw
+            className={isRefreshing ? "motion-safe:animate-spin" : ""}
+            aria-hidden="true"
+          />
           {isRefreshing ? "Refreshing…" : "Refresh weather"}
         </AppButton>
       </div>
@@ -170,9 +173,11 @@ export function WeatherCenter({
         />
       </div>
 
-      <div className="mt-6">
-        <AgriculturalInsightsCard insights={data.agriculture} showDemoLabel />
-      </div>
+      {data.agriculture.insights.length > 0 && (
+        <div className="mt-6">
+          <AgriculturalInsightsCard insights={data.agriculture} showDemoLabel />
+        </div>
+      )}
     </section>
   );
 }

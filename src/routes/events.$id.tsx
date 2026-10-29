@@ -24,6 +24,8 @@ import { AppButton } from "@/components/design-system";
 import { conferenceHead } from "@/lib/conference";
 import { ConferenceShell } from "@/components/events/conference-shell";
 import { NextSessionCountdown } from "@/components/events/next-session-countdown";
+import { EventWayfinding } from "@/components/events/event-wayfinding";
+import { EventMealTickets } from "@/components/events/event-meal-tickets";
 
 export const Route = createFileRoute("/events/$id")({
   loader: async ({ params }) => {
@@ -58,7 +60,9 @@ function EventDetailPage() {
         <PageContainer size="md" className="py-16 text-center">
           <h1 className="text-2xl font-bold">Event not found</h1>
           <AppButton variant="outline" className="mt-6" asChild>
-            <Link to="/events">Back to events</Link>
+            <Link to="/events" search={{ view: "explore" }}>
+              Back to events
+            </Link>
           </AppButton>
         </PageContainer>
       </PublicLayout>
@@ -73,7 +77,7 @@ function EventDetailPage() {
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <AppButton variant="ghost" size="sm" shape="pill" className="w-fit" asChild>
-            <Link to="/events">
+            <Link to="/events" search={{ view: "explore" }}>
               <ArrowLeft className="h-4 w-4" />
               All events
             </Link>
@@ -95,7 +99,9 @@ function EventDetailPage() {
             <div id="event-agenda" className="scroll-mt-24">
               <EventAgenda event={event} />
             </div>
-            <EventSpeakers event={event} />
+            <div id="event-speakers" className="scroll-mt-24">
+              <EventSpeakers event={event} />
+            </div>
             <EventGallery event={event} />
             {user && (
               <div className="flex justify-start">
@@ -106,23 +112,15 @@ function EventDetailPage() {
                 />
               </div>
             )}
-            <section
-              id="event-meals"
-              className="scroll-mt-24 rounded-3xl border border-border/70 bg-card p-6 shadow-[var(--shadow-soft)]"
-            >
-              <h2 className="text-xl font-black text-foreground">Meal tickets</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Registered attendees use the same event QR code for assigned meals. Every redemption
-                is validated for one-time use.
-              </p>
-            </section>
+            <EventMealTickets eventId={event.id} registrationId={registration?.id} />
             <EventChatRoom eventId={event.id} registered={!!registration} />
-            {(event.lat != null || event.location) && (
-              <div id="event-map" className="scroll-mt-24">
-                <EventMapView events={[event]} />
-              </div>
-            )}
-            <EventRelatedSections event={event} />
+            <div id="event-map" className="scroll-mt-24 space-y-8">
+              {(event.lat != null || event.location) && <EventMapView events={[event]} />}
+              <EventWayfinding eventId={event.id} />
+            </div>
+            <div id="event-resources" className="scroll-mt-24">
+              <EventRelatedSections event={event} />
+            </div>
             <EvaluationCta event={event} />
           </div>
 

@@ -20,6 +20,8 @@ import { getPublicEvent } from '@/lib/public-events.functions';
 import { eventDateLabel } from "@/lib/conference";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
 import aboutHeroAsset from "@/assets/jesup-about-hero-2026-10-23.png.asset.json";
+import { JesupToday } from "@/components/home/jesup-today";
+import { PersonalizedRecommendations } from "@/components/home/personalized-recommendations";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context: { queryClient } }): Promise<{ home: HomePageData; pilot: EventDetail | null }> => {
@@ -153,6 +155,8 @@ function Home() {
         size="lg"
         className="space-y-10 pb-[var(--space-12)] pt-[var(--space-6)] sm:space-y-12 sm:pt-[var(--space-8)]"
       >
+        <JesupToday events={relevantEvents} />
+        <PersonalizedRecommendations events={relevantEvents} programs={data?.programs ?? []} />
         <HomeWeatherSection />
         <EventDiscoveryHomeSection />
         <UpcomingEventsSection

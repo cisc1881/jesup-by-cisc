@@ -66,8 +66,7 @@ export async function getWeatherCenterData(lat: number, lon: number): Promise<We
       : new WeatherServiceError("nws-forecast-failed", "Forecast unavailable.");
   }
 
-  const forecastPeriods =
-    forecastResult.status === "fulfilled" ? forecastResult.value : [];
+  const forecastPeriods = forecastResult.status === "fulfilled" ? forecastResult.value : [];
   const hourlyPeriods = hourlyResult.status === "fulfilled" ? hourlyResult.value : [];
   const alerts =
     alertsResult.status === "fulfilled"
@@ -80,8 +79,7 @@ export async function getWeatherCenterData(lat: number, lon: number): Promise<We
         []);
 
   const hourlyCurrent = hourlyPeriods[0];
-  const observation =
-    observationResult.status === "fulfilled" ? observationResult.value : null;
+  const observation = observationResult.status === "fulfilled" ? observationResult.value : null;
 
   const current = observation
     ? mapObservationToCurrent(observation, hourlyCurrent)
@@ -123,7 +121,12 @@ export async function getWeatherCenterData(lat: number, lon: number): Promise<We
     alerts,
     forecast,
     countyPreparedness,
-    agriculture: DEMO_AGRICULTURE_DATA,
+    agriculture: {
+      title: "Agricultural guidance",
+      insights: [],
+      usdaDeadlineCount: 0,
+      extensionWorkshopCount: 0,
+    },
     radar: buildNwsRadarInfo(points.gridId, { lat, lon }),
     coordinates: { lat, lon },
   };

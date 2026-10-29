@@ -64,6 +64,7 @@ export type EventListItem = {
 
 export type EventSession = {
   id: string;
+  isPublic: boolean;
   title: string;
   description: string | null;
   startsAt: string | null;
@@ -466,6 +467,7 @@ export async function fetchEventById(idOrSlug: string, client: SupabaseClient<Da
     metadata: (row.metadata as Record<string, unknown>) ?? {},
     sessions: (sessionsRes.data ?? []).map((s) => ({
       id: s.id,
+      isPublic: s.is_public,
       title: s.title,
       description: s.description,
       startsAt: s.starts_at,
@@ -783,6 +785,7 @@ export async function fetchAdminEventForm(eventId: string): Promise<EventFormDat
     grantIds: (grantsRes.data ?? []).map((r) => r.grant_id),
     sessions: (sessionsRes.data ?? []).map((s) => ({
       id: s.id,
+      isPublic: s.is_public,
       title: s.title,
       description: s.description ?? "",
       startsAt: eventLocalInput(s.starts_at, row.timezone ?? "America/Chicago"),
@@ -900,6 +903,7 @@ async function replaceEventRelations(eventId: string, form: EventFormData) {
         form.sessions.map((session, index) => ({
           id: resolvedSessionIds[index],
           event_id: eventId,
+          is_public: session.isPublic,
           title: session.title,
           description: session.description || null,
           starts_at: eventLocalToUtc(session.startsAt ?? "", form.timezone || "America/Chicago"),
@@ -1016,7 +1020,7 @@ export async function saveEvent(eventId: string | null, form: EventFormData) {
     ticket_price_label: form.ticketPriceLabel.trim() || null,
     geofence_enabled: form.geofenceEnabled,
     geofence_radius_meters: radius,
-    gis_boundary_geojson: gisBoundaryGeoJson,
+    gis_boundary_geojson: gisBoundaryGeoJson as Json,
   };
   const payload = {
     slug,

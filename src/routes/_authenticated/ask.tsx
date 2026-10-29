@@ -22,7 +22,7 @@ const SUGGESTED_QUESTIONS = [
   "Find a farmers market near me",
   "What upcoming events can I attend?",
   "Show me publications for farmers",
-  "Find a session and add it to my agenda",
+  "Find sessions I can add to my agenda",
   "Where can I manage my registration?",
 ] as const;
 
@@ -184,6 +184,32 @@ function AskJESUPPage() {
           >
             <p className="font-medium text-destructive">JESUP couldn’t answer that question.</p>
             <p className="mt-1 text-sm text-muted-foreground">{error}</p>
+            <nav aria-label="Browse Jesup without AI" className="mt-4 flex flex-wrap gap-2">
+              <a
+                href="/events?view=explore"
+                className="inline-flex min-h-11 items-center rounded-lg border bg-card px-3 text-sm font-bold"
+              >
+                Events
+              </a>
+              <a
+                href="/programs"
+                className="inline-flex min-h-11 items-center rounded-lg border bg-card px-3 text-sm font-bold"
+              >
+                Programs
+              </a>
+              <a
+                href="/publications"
+                className="inline-flex min-h-11 items-center rounded-lg border bg-card px-3 text-sm font-bold"
+              >
+                Publications
+              </a>
+              <a
+                href="/weather"
+                className="inline-flex min-h-11 items-center rounded-lg border bg-card px-3 text-sm font-bold"
+              >
+                Weather & preparedness
+              </a>
+            </nav>
           </div>
         )}
 

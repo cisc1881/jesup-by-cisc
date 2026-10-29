@@ -39,6 +39,7 @@ import {
 import { toast } from "sonner";
 import { ProfileInstitutionForm } from "@/components/profile/profile-institution-form";
 import { QRCodeSVG } from "qrcode.react";
+import { Achievements } from "@/components/profile/achievements";
 
 export const Route = createFileRoute("/_authenticated/me/")({ component: MePage });
 
@@ -104,6 +105,12 @@ function MePage() {
         action={
           <div className="flex flex-wrap gap-2">
             <AppButton asChild variant="outline"><Link to="/account/purchases">Institutional purchases</Link></AppButton>
+            <AppButton asChild>
+              <Link to="/me/wallet">Open wallet</Link>
+            </AppButton>
+            <AppButton asChild variant="outline">
+              <Link to="/me/onboarding">My interests</Link>
+            </AppButton>
             {isAdmin && (
               <AppButton asChild>
                 <Link to="/admin">Admin dashboard</Link>
@@ -118,6 +125,7 @@ function MePage() {
         }
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
+        <Achievements />
         <Tabs defaultValue="profile">
           <TabsList className="flex h-auto flex-wrap gap-1">
             <TabsTrigger value="profile">Profile</TabsTrigger>

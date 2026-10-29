@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as EquipmentRouteImport } from './routes/equipment'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as GrantsRouteImport } from './routes/grants'
 import { Route as InternshipsRouteImport } from './routes/internships'
 import { Route as JoinRouteImport } from './routes/join'
@@ -85,6 +86,8 @@ import { Route as AuthenticatedFunderIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated/me.index'
 import { Route as AuthenticatedMeMessagesRouteImport } from './routes/_authenticated/me.messages'
 import { Route as AuthenticatedMeNotificationsRouteImport } from './routes/_authenticated/me.notifications'
+import { Route as AuthenticatedMeOnboardingRouteImport } from './routes/_authenticated/me.onboarding'
+import { Route as AuthenticatedMeWalletRouteImport } from './routes/_authenticated/me.wallet'
 import { Route as AuthenticatedMeWeatherAlertsRouteImport } from './routes/_authenticated/me.weather-alerts'
 import { Route as EventsIdEvaluationRouteImport } from './routes/events.$id.evaluation'
 import { Route as EventsIdHubRouteImport } from './routes/events.$id.hub'
@@ -100,10 +103,16 @@ import { Route as AuthenticatedEventsIdPresentRouteImport } from './routes/_auth
 import { Route as AuthenticatedEventsIdPresentationsRouteImport } from './routes/_authenticated/events.$id.presentations'
 import { Route as AuthenticatedEventsIdScanRouteImport } from './routes/_authenticated/events.$id.scan'
 import { Route as AuthenticatedAdminEventsEventIdAttendanceRouteImport } from './routes/_authenticated/admin/events.$eventId.attendance'
+import { Route as AuthenticatedAdminEventsEventIdCommandRouteImport } from './routes/_authenticated/admin/events.$eventId.command'
 import { Route as AuthenticatedAdminEventsEventIdEvaluationsRouteImport } from './routes/_authenticated/admin/events.$eventId.evaluations'
 import { Route as AuthenticatedAdminEventsEventIdGalleryRouteImport } from './routes/_authenticated/admin/events.$eventId.gallery'
+import { Route as AuthenticatedAdminEventsEventIdMapRouteImport } from './routes/_authenticated/admin/events.$eventId.map'
 import { Route as AuthenticatedAdminEventsEventIdMealsRouteImport } from './routes/_authenticated/admin/events.$eventId.meals'
+import { Route as AuthenticatedAdminEventsEventIdScanRouteImport } from './routes/_authenticated/admin/events.$eventId.scan'
+import { Route as AuthenticatedAdminEventsEventIdWalletRouteImport } from './routes/_authenticated/admin/events.$eventId.wallet'
 import { Route as AuthenticatedAdminFinancePurchaseOrdersIdRouteImport } from './routes/_authenticated/admin/finance.purchase-orders.$id'
+import { Route as AuthenticatedAdminProgramsProgramIdLinksRouteImport } from './routes/_authenticated/admin/programs.$programId.links'
+import { Route as AuthenticatedAdminProgramsProgramIdReplicationRouteImport } from './routes/_authenticated/admin/programs.$programId.replication'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -132,6 +141,11 @@ const DonateRoute = DonateRouteImport.update({
 const EquipmentRoute = EquipmentRouteImport.update({
   id: '/equipment',
   path: '/equipment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GrantsRoute = GrantsRouteImport.update({
@@ -531,6 +545,17 @@ const AuthenticatedMeNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedMeRoute,
   } as any)
+const AuthenticatedMeOnboardingRoute =
+  AuthenticatedMeOnboardingRouteImport.update({
+    id: '/onboarding',
+    path: '/onboarding',
+    getParentRoute: () => AuthenticatedMeRoute,
+  } as any)
+const AuthenticatedMeWalletRoute = AuthenticatedMeWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => AuthenticatedMeRoute,
+} as any)
 const AuthenticatedMeWeatherAlertsRoute =
   AuthenticatedMeWeatherAlertsRouteImport.update({
     id: '/weather-alerts',
@@ -635,6 +660,12 @@ const AuthenticatedAdminEventsEventIdAttendanceRoute =
       (d) => d.Route,
     ),
   )
+const AuthenticatedAdminEventsEventIdCommandRoute =
+  AuthenticatedAdminEventsEventIdCommandRouteImport.update({
+    id: '/$eventId/command',
+    path: '/$eventId/command',
+    getParentRoute: () => AuthenticatedAdminEventsRoute,
+  } as any)
 const AuthenticatedAdminEventsEventIdEvaluationsRoute =
   AuthenticatedAdminEventsEventIdEvaluationsRouteImport.update({
     id: '/$eventId/evaluations',
@@ -655,10 +686,28 @@ const AuthenticatedAdminEventsEventIdGalleryRoute =
       (d) => d.Route,
     ),
   )
+const AuthenticatedAdminEventsEventIdMapRoute =
+  AuthenticatedAdminEventsEventIdMapRouteImport.update({
+    id: '/$eventId/map',
+    path: '/$eventId/map',
+    getParentRoute: () => AuthenticatedAdminEventsRoute,
+  } as any)
 const AuthenticatedAdminEventsEventIdMealsRoute =
   AuthenticatedAdminEventsEventIdMealsRouteImport.update({
     id: '/$eventId/meals',
     path: '/$eventId/meals',
+    getParentRoute: () => AuthenticatedAdminEventsRoute,
+  } as any)
+const AuthenticatedAdminEventsEventIdScanRoute =
+  AuthenticatedAdminEventsEventIdScanRouteImport.update({
+    id: '/$eventId/scan',
+    path: '/$eventId/scan',
+    getParentRoute: () => AuthenticatedAdminEventsRoute,
+  } as any)
+const AuthenticatedAdminEventsEventIdWalletRoute =
+  AuthenticatedAdminEventsEventIdWalletRouteImport.update({
+    id: '/$eventId/wallet',
+    path: '/$eventId/wallet',
     getParentRoute: () => AuthenticatedAdminEventsRoute,
   } as any)
 const AuthenticatedAdminFinancePurchaseOrdersIdRoute =
@@ -667,6 +716,18 @@ const AuthenticatedAdminFinancePurchaseOrdersIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedAdminFinancePurchaseOrdersRoute,
   } as any)
+const AuthenticatedAdminProgramsProgramIdLinksRoute =
+  AuthenticatedAdminProgramsProgramIdLinksRouteImport.update({
+    id: '/$programId/links',
+    path: '/$programId/links',
+    getParentRoute: () => AuthenticatedAdminProgramsRoute,
+  } as any)
+const AuthenticatedAdminProgramsProgramIdReplicationRoute =
+  AuthenticatedAdminProgramsProgramIdReplicationRouteImport.update({
+    id: '/$programId/replication',
+    path: '/$programId/replication',
+    getParentRoute: () => AuthenticatedAdminProgramsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -674,6 +735,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/donate': typeof DonateRoute
   '/equipment': typeof EquipmentRoute
+  '/explore': typeof ExploreRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
   '/join': typeof JoinRoute
@@ -729,7 +791,7 @@ export interface FileRoutesByFullPath {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/podcast': typeof AuthenticatedAdminPodcastRoute
   '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
-  '/admin/programs': typeof AuthenticatedAdminProgramsRoute
+  '/admin/programs': typeof AuthenticatedAdminProgramsRouteWithChildren
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
   '/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRouteWithChildren
@@ -741,6 +803,8 @@ export interface FileRoutesByFullPath {
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
   '/me/messages': typeof AuthenticatedMeMessagesRoute
   '/me/notifications': typeof AuthenticatedMeNotificationsRoute
+  '/me/onboarding': typeof AuthenticatedMeOnboardingRoute
+  '/me/wallet': typeof AuthenticatedMeWalletRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/events/$id/hub': typeof EventsIdHubRoute
@@ -759,10 +823,16 @@ export interface FileRoutesByFullPath {
   '/events/$id/presentations': typeof AuthenticatedEventsIdPresentationsRoute
   '/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
+  '/admin/events/$eventId/command': typeof AuthenticatedAdminEventsEventIdCommandRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  '/admin/events/$eventId/map': typeof AuthenticatedAdminEventsEventIdMapRoute
   '/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
+  '/admin/events/$eventId/scan': typeof AuthenticatedAdminEventsEventIdScanRoute
+  '/admin/events/$eventId/wallet': typeof AuthenticatedAdminEventsEventIdWalletRoute
   '/admin/finance/purchase-orders/$id': typeof AuthenticatedAdminFinancePurchaseOrdersIdRoute
+  '/admin/programs/$programId/links': typeof AuthenticatedAdminProgramsProgramIdLinksRoute
+  '/admin/programs/$programId/replication': typeof AuthenticatedAdminProgramsProgramIdReplicationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -770,6 +840,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/donate': typeof DonateRoute
   '/equipment': typeof EquipmentRoute
+  '/explore': typeof ExploreRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
   '/join': typeof JoinRoute
@@ -822,7 +893,7 @@ export interface FileRoutesByTo {
   '/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/admin/podcast': typeof AuthenticatedAdminPodcastRoute
   '/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
-  '/admin/programs': typeof AuthenticatedAdminProgramsRoute
+  '/admin/programs': typeof AuthenticatedAdminProgramsRouteWithChildren
   '/admin/publications': typeof AuthenticatedAdminPublicationsRoute
   '/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRouteWithChildren
@@ -834,6 +905,8 @@ export interface FileRoutesByTo {
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
   '/me/messages': typeof AuthenticatedMeMessagesRoute
   '/me/notifications': typeof AuthenticatedMeNotificationsRoute
+  '/me/onboarding': typeof AuthenticatedMeOnboardingRoute
+  '/me/wallet': typeof AuthenticatedMeWalletRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/events/$id/hub': typeof EventsIdHubRoute
@@ -852,10 +925,16 @@ export interface FileRoutesByTo {
   '/events/$id/presentations': typeof AuthenticatedEventsIdPresentationsRoute
   '/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
+  '/admin/events/$eventId/command': typeof AuthenticatedAdminEventsEventIdCommandRoute
   '/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  '/admin/events/$eventId/map': typeof AuthenticatedAdminEventsEventIdMapRoute
   '/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
+  '/admin/events/$eventId/scan': typeof AuthenticatedAdminEventsEventIdScanRoute
+  '/admin/events/$eventId/wallet': typeof AuthenticatedAdminEventsEventIdWalletRoute
   '/admin/finance/purchase-orders/$id': typeof AuthenticatedAdminFinancePurchaseOrdersIdRoute
+  '/admin/programs/$programId/links': typeof AuthenticatedAdminProgramsProgramIdLinksRoute
+  '/admin/programs/$programId/replication': typeof AuthenticatedAdminProgramsProgramIdReplicationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -865,6 +944,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/donate': typeof DonateRoute
   '/equipment': typeof EquipmentRoute
+  '/explore': typeof ExploreRoute
   '/grants': typeof GrantsRoute
   '/internships': typeof InternshipsRoute
   '/join': typeof JoinRoute
@@ -920,7 +1000,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/partners': typeof AuthenticatedAdminPartnersRoute
   '/_authenticated/admin/podcast': typeof AuthenticatedAdminPodcastRoute
   '/_authenticated/admin/podcasts': typeof AuthenticatedAdminPodcastsRoute
-  '/_authenticated/admin/programs': typeof AuthenticatedAdminProgramsRoute
+  '/_authenticated/admin/programs': typeof AuthenticatedAdminProgramsRouteWithChildren
   '/_authenticated/admin/publications': typeof AuthenticatedAdminPublicationsRoute
   '/_authenticated/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
   '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRouteWithChildren
@@ -932,6 +1012,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
   '/_authenticated/me/messages': typeof AuthenticatedMeMessagesRoute
   '/_authenticated/me/notifications': typeof AuthenticatedMeNotificationsRoute
+  '/_authenticated/me/onboarding': typeof AuthenticatedMeOnboardingRoute
+  '/_authenticated/me/wallet': typeof AuthenticatedMeWalletRoute
   '/_authenticated/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
   '/events/$id/hub': typeof EventsIdHubRoute
@@ -950,10 +1032,16 @@ export interface FileRoutesById {
   '/_authenticated/events/$id/presentations': typeof AuthenticatedEventsIdPresentationsRoute
   '/_authenticated/events/$id/scan': typeof AuthenticatedEventsIdScanRoute
   '/_authenticated/admin/events/$eventId/attendance': typeof AuthenticatedAdminEventsEventIdAttendanceRoute
+  '/_authenticated/admin/events/$eventId/command': typeof AuthenticatedAdminEventsEventIdCommandRoute
   '/_authenticated/admin/events/$eventId/evaluations': typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   '/_authenticated/admin/events/$eventId/gallery': typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  '/_authenticated/admin/events/$eventId/map': typeof AuthenticatedAdminEventsEventIdMapRoute
   '/_authenticated/admin/events/$eventId/meals': typeof AuthenticatedAdminEventsEventIdMealsRoute
+  '/_authenticated/admin/events/$eventId/scan': typeof AuthenticatedAdminEventsEventIdScanRoute
+  '/_authenticated/admin/events/$eventId/wallet': typeof AuthenticatedAdminEventsEventIdWalletRoute
   '/_authenticated/admin/finance/purchase-orders/$id': typeof AuthenticatedAdminFinancePurchaseOrdersIdRoute
+  '/_authenticated/admin/programs/$programId/links': typeof AuthenticatedAdminProgramsProgramIdLinksRoute
+  '/_authenticated/admin/programs/$programId/replication': typeof AuthenticatedAdminProgramsProgramIdReplicationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -963,6 +1051,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/donate'
     | '/equipment'
+    | '/explore'
     | '/grants'
     | '/internships'
     | '/join'
@@ -1030,6 +1119,8 @@ export interface FileRouteTypes {
     | '/admin/volunteers'
     | '/me/messages'
     | '/me/notifications'
+    | '/me/onboarding'
+    | '/me/wallet'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/events/$id/hub'
@@ -1048,10 +1139,16 @@ export interface FileRouteTypes {
     | '/events/$id/presentations'
     | '/events/$id/scan'
     | '/admin/events/$eventId/attendance'
+    | '/admin/events/$eventId/command'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
+    | '/admin/events/$eventId/map'
     | '/admin/events/$eventId/meals'
+    | '/admin/events/$eventId/scan'
+    | '/admin/events/$eventId/wallet'
     | '/admin/finance/purchase-orders/$id'
+    | '/admin/programs/$programId/links'
+    | '/admin/programs/$programId/replication'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1059,6 +1156,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/donate'
     | '/equipment'
+    | '/explore'
     | '/grants'
     | '/internships'
     | '/join'
@@ -1123,6 +1221,8 @@ export interface FileRouteTypes {
     | '/admin/volunteers'
     | '/me/messages'
     | '/me/notifications'
+    | '/me/onboarding'
+    | '/me/wallet'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/events/$id/hub'
@@ -1141,10 +1241,16 @@ export interface FileRouteTypes {
     | '/events/$id/presentations'
     | '/events/$id/scan'
     | '/admin/events/$eventId/attendance'
+    | '/admin/events/$eventId/command'
     | '/admin/events/$eventId/evaluations'
     | '/admin/events/$eventId/gallery'
+    | '/admin/events/$eventId/map'
     | '/admin/events/$eventId/meals'
+    | '/admin/events/$eventId/scan'
+    | '/admin/events/$eventId/wallet'
     | '/admin/finance/purchase-orders/$id'
+    | '/admin/programs/$programId/links'
+    | '/admin/programs/$programId/replication'
   id:
     | '__root__'
     | '/'
@@ -1153,6 +1259,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/donate'
     | '/equipment'
+    | '/explore'
     | '/grants'
     | '/internships'
     | '/join'
@@ -1220,6 +1327,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/volunteers'
     | '/_authenticated/me/messages'
     | '/_authenticated/me/notifications'
+    | '/_authenticated/me/onboarding'
+    | '/_authenticated/me/wallet'
     | '/_authenticated/me/weather-alerts'
     | '/events/$id/evaluation'
     | '/events/$id/hub'
@@ -1238,10 +1347,16 @@ export interface FileRouteTypes {
     | '/_authenticated/events/$id/presentations'
     | '/_authenticated/events/$id/scan'
     | '/_authenticated/admin/events/$eventId/attendance'
+    | '/_authenticated/admin/events/$eventId/command'
     | '/_authenticated/admin/events/$eventId/evaluations'
     | '/_authenticated/admin/events/$eventId/gallery'
+    | '/_authenticated/admin/events/$eventId/map'
     | '/_authenticated/admin/events/$eventId/meals'
+    | '/_authenticated/admin/events/$eventId/scan'
+    | '/_authenticated/admin/events/$eventId/wallet'
     | '/_authenticated/admin/finance/purchase-orders/$id'
+    | '/_authenticated/admin/programs/$programId/links'
+    | '/_authenticated/admin/programs/$programId/replication'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1251,6 +1366,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DonateRoute: typeof DonateRoute
   EquipmentRoute: typeof EquipmentRoute
+  ExploreRoute: typeof ExploreRoute
   GrantsRoute: typeof GrantsRoute
   InternshipsRoute: typeof InternshipsRoute
   JoinRoute: typeof JoinRoute
@@ -1320,6 +1436,13 @@ declare module '@tanstack/react-router' {
       path: '/equipment'
       fullPath: '/equipment'
       preLoaderRoute: typeof EquipmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/grants': {
@@ -1812,6 +1935,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMeNotificationsRouteImport
       parentRoute: typeof AuthenticatedMeRoute
     }
+    '/_authenticated/me/onboarding': {
+      id: '/_authenticated/me/onboarding'
+      path: '/onboarding'
+      fullPath: '/me/onboarding'
+      preLoaderRoute: typeof AuthenticatedMeOnboardingRouteImport
+      parentRoute: typeof AuthenticatedMeRoute
+    }
+    '/_authenticated/me/wallet': {
+      id: '/_authenticated/me/wallet'
+      path: '/wallet'
+      fullPath: '/me/wallet'
+      preLoaderRoute: typeof AuthenticatedMeWalletRouteImport
+      parentRoute: typeof AuthenticatedMeRoute
+    }
     '/_authenticated/me/weather-alerts': {
       id: '/_authenticated/me/weather-alerts'
       path: '/weather-alerts'
@@ -1917,6 +2054,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsEventIdAttendanceRouteImport
       parentRoute: typeof AuthenticatedAdminEventsRoute
     }
+    '/_authenticated/admin/events/$eventId/command': {
+      id: '/_authenticated/admin/events/$eventId/command'
+      path: '/$eventId/command'
+      fullPath: '/admin/events/$eventId/command'
+      preLoaderRoute: typeof AuthenticatedAdminEventsEventIdCommandRouteImport
+      parentRoute: typeof AuthenticatedAdminEventsRoute
+    }
     '/_authenticated/admin/events/$eventId/evaluations': {
       id: '/_authenticated/admin/events/$eventId/evaluations'
       path: '/$eventId/evaluations'
@@ -1931,11 +2075,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsEventIdGalleryRouteImport
       parentRoute: typeof AuthenticatedAdminEventsRoute
     }
+    '/_authenticated/admin/events/$eventId/map': {
+      id: '/_authenticated/admin/events/$eventId/map'
+      path: '/$eventId/map'
+      fullPath: '/admin/events/$eventId/map'
+      preLoaderRoute: typeof AuthenticatedAdminEventsEventIdMapRouteImport
+      parentRoute: typeof AuthenticatedAdminEventsRoute
+    }
     '/_authenticated/admin/events/$eventId/meals': {
       id: '/_authenticated/admin/events/$eventId/meals'
       path: '/$eventId/meals'
       fullPath: '/admin/events/$eventId/meals'
       preLoaderRoute: typeof AuthenticatedAdminEventsEventIdMealsRouteImport
+      parentRoute: typeof AuthenticatedAdminEventsRoute
+    }
+    '/_authenticated/admin/events/$eventId/scan': {
+      id: '/_authenticated/admin/events/$eventId/scan'
+      path: '/$eventId/scan'
+      fullPath: '/admin/events/$eventId/scan'
+      preLoaderRoute: typeof AuthenticatedAdminEventsEventIdScanRouteImport
+      parentRoute: typeof AuthenticatedAdminEventsRoute
+    }
+    '/_authenticated/admin/events/$eventId/wallet': {
+      id: '/_authenticated/admin/events/$eventId/wallet'
+      path: '/$eventId/wallet'
+      fullPath: '/admin/events/$eventId/wallet'
+      preLoaderRoute: typeof AuthenticatedAdminEventsEventIdWalletRouteImport
       parentRoute: typeof AuthenticatedAdminEventsRoute
     }
     '/_authenticated/admin/finance/purchase-orders/$id': {
@@ -1945,15 +2110,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFinancePurchaseOrdersIdRouteImport
       parentRoute: typeof AuthenticatedAdminFinancePurchaseOrdersRoute
     }
+    '/_authenticated/admin/programs/$programId/links': {
+      id: '/_authenticated/admin/programs/$programId/links'
+      path: '/$programId/links'
+      fullPath: '/admin/programs/$programId/links'
+      preLoaderRoute: typeof AuthenticatedAdminProgramsProgramIdLinksRouteImport
+      parentRoute: typeof AuthenticatedAdminProgramsRoute
+    }
+    '/_authenticated/admin/programs/$programId/replication': {
+      id: '/_authenticated/admin/programs/$programId/replication'
+      path: '/$programId/replication'
+      fullPath: '/admin/programs/$programId/replication'
+      preLoaderRoute: typeof AuthenticatedAdminProgramsProgramIdReplicationRouteImport
+      parentRoute: typeof AuthenticatedAdminProgramsRoute
+    }
   }
 }
 
 interface AuthenticatedAdminEventsRouteChildren {
   AuthenticatedAdminEventsGalleryRoute: typeof AuthenticatedAdminEventsGalleryRoute
   AuthenticatedAdminEventsEventIdAttendanceRoute: typeof AuthenticatedAdminEventsEventIdAttendanceRoute
+  AuthenticatedAdminEventsEventIdCommandRoute: typeof AuthenticatedAdminEventsEventIdCommandRoute
   AuthenticatedAdminEventsEventIdEvaluationsRoute: typeof AuthenticatedAdminEventsEventIdEvaluationsRoute
   AuthenticatedAdminEventsEventIdGalleryRoute: typeof AuthenticatedAdminEventsEventIdGalleryRoute
+  AuthenticatedAdminEventsEventIdMapRoute: typeof AuthenticatedAdminEventsEventIdMapRoute
   AuthenticatedAdminEventsEventIdMealsRoute: typeof AuthenticatedAdminEventsEventIdMealsRoute
+  AuthenticatedAdminEventsEventIdScanRoute: typeof AuthenticatedAdminEventsEventIdScanRoute
+  AuthenticatedAdminEventsEventIdWalletRoute: typeof AuthenticatedAdminEventsEventIdWalletRoute
 }
 
 const AuthenticatedAdminEventsRouteChildren: AuthenticatedAdminEventsRouteChildren =
@@ -1961,17 +2144,43 @@ const AuthenticatedAdminEventsRouteChildren: AuthenticatedAdminEventsRouteChildr
     AuthenticatedAdminEventsGalleryRoute: AuthenticatedAdminEventsGalleryRoute,
     AuthenticatedAdminEventsEventIdAttendanceRoute:
       AuthenticatedAdminEventsEventIdAttendanceRoute,
+    AuthenticatedAdminEventsEventIdCommandRoute:
+      AuthenticatedAdminEventsEventIdCommandRoute,
     AuthenticatedAdminEventsEventIdEvaluationsRoute:
       AuthenticatedAdminEventsEventIdEvaluationsRoute,
     AuthenticatedAdminEventsEventIdGalleryRoute:
       AuthenticatedAdminEventsEventIdGalleryRoute,
+    AuthenticatedAdminEventsEventIdMapRoute:
+      AuthenticatedAdminEventsEventIdMapRoute,
     AuthenticatedAdminEventsEventIdMealsRoute:
       AuthenticatedAdminEventsEventIdMealsRoute,
+    AuthenticatedAdminEventsEventIdScanRoute:
+      AuthenticatedAdminEventsEventIdScanRoute,
+    AuthenticatedAdminEventsEventIdWalletRoute:
+      AuthenticatedAdminEventsEventIdWalletRoute,
   }
 
 const AuthenticatedAdminEventsRouteWithChildren =
   AuthenticatedAdminEventsRoute._addFileChildren(
     AuthenticatedAdminEventsRouteChildren,
+  )
+
+interface AuthenticatedAdminProgramsRouteChildren {
+  AuthenticatedAdminProgramsProgramIdLinksRoute: typeof AuthenticatedAdminProgramsProgramIdLinksRoute
+  AuthenticatedAdminProgramsProgramIdReplicationRoute: typeof AuthenticatedAdminProgramsProgramIdReplicationRoute
+}
+
+const AuthenticatedAdminProgramsRouteChildren: AuthenticatedAdminProgramsRouteChildren =
+  {
+    AuthenticatedAdminProgramsProgramIdLinksRoute:
+      AuthenticatedAdminProgramsProgramIdLinksRoute,
+    AuthenticatedAdminProgramsProgramIdReplicationRoute:
+      AuthenticatedAdminProgramsProgramIdReplicationRoute,
+  }
+
+const AuthenticatedAdminProgramsRouteWithChildren =
+  AuthenticatedAdminProgramsRoute._addFileChildren(
+    AuthenticatedAdminProgramsRouteChildren,
   )
 
 interface AuthenticatedAdminReportsRouteChildren {
@@ -2023,7 +2232,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminPartnersRoute: typeof AuthenticatedAdminPartnersRoute
   AuthenticatedAdminPodcastRoute: typeof AuthenticatedAdminPodcastRoute
   AuthenticatedAdminPodcastsRoute: typeof AuthenticatedAdminPodcastsRoute
-  AuthenticatedAdminProgramsRoute: typeof AuthenticatedAdminProgramsRoute
+  AuthenticatedAdminProgramsRoute: typeof AuthenticatedAdminProgramsRouteWithChildren
   AuthenticatedAdminPublicationsRoute: typeof AuthenticatedAdminPublicationsRoute
   AuthenticatedAdminRegistrationsRoute: typeof AuthenticatedAdminRegistrationsRoute
   AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRouteWithChildren
@@ -2063,7 +2272,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminPartnersRoute: AuthenticatedAdminPartnersRoute,
     AuthenticatedAdminPodcastRoute: AuthenticatedAdminPodcastRoute,
     AuthenticatedAdminPodcastsRoute: AuthenticatedAdminPodcastsRoute,
-    AuthenticatedAdminProgramsRoute: AuthenticatedAdminProgramsRoute,
+    AuthenticatedAdminProgramsRoute:
+      AuthenticatedAdminProgramsRouteWithChildren,
     AuthenticatedAdminPublicationsRoute: AuthenticatedAdminPublicationsRoute,
     AuthenticatedAdminRegistrationsRoute: AuthenticatedAdminRegistrationsRoute,
     AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRouteWithChildren,
@@ -2105,6 +2315,8 @@ const AuthenticatedFunderRouteWithChildren =
 interface AuthenticatedMeRouteChildren {
   AuthenticatedMeMessagesRoute: typeof AuthenticatedMeMessagesRoute
   AuthenticatedMeNotificationsRoute: typeof AuthenticatedMeNotificationsRoute
+  AuthenticatedMeOnboardingRoute: typeof AuthenticatedMeOnboardingRoute
+  AuthenticatedMeWalletRoute: typeof AuthenticatedMeWalletRoute
   AuthenticatedMeWeatherAlertsRoute: typeof AuthenticatedMeWeatherAlertsRoute
   AuthenticatedMeIndexRoute: typeof AuthenticatedMeIndexRoute
 }
@@ -2112,6 +2324,8 @@ interface AuthenticatedMeRouteChildren {
 const AuthenticatedMeRouteChildren: AuthenticatedMeRouteChildren = {
   AuthenticatedMeMessagesRoute: AuthenticatedMeMessagesRoute,
   AuthenticatedMeNotificationsRoute: AuthenticatedMeNotificationsRoute,
+  AuthenticatedMeOnboardingRoute: AuthenticatedMeOnboardingRoute,
+  AuthenticatedMeWalletRoute: AuthenticatedMeWalletRoute,
   AuthenticatedMeWeatherAlertsRoute: AuthenticatedMeWeatherAlertsRoute,
   AuthenticatedMeIndexRoute: AuthenticatedMeIndexRoute,
 }
@@ -2251,6 +2465,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DonateRoute: DonateRoute,
   EquipmentRoute: EquipmentRoute,
+  ExploreRoute: ExploreRoute,
   GrantsRoute: GrantsRoute,
   InternshipsRoute: InternshipsRoute,
   JoinRoute: JoinRoute,

@@ -117,16 +117,19 @@ export const starterEvents = [
     slug: "booker-t-washington-economic-development-summit-2026",
     title: "30th Annual Booker T. Washington Economic Development Summit",
     description:
-      "A legacy gathering focused on leadership, innovation, community empowerment, and economic ecosystems that promote development and prosperity.",
+      "Establishing economic ecosystems that promote development and prosperity.",
     description_html:
-      "<p>Leaders, educators, entrepreneurs, students, and community stakeholders gather for dialogue, collaboration, and forward-looking economic-development solutions.</p>",
+      "<p>Tuskegee University will host the 30th Annual Booker T. Washington Economic Development Summit on September 10–11, 2026. This year’s theme is <strong>Establishing Economic Ecosystems that Promote Development and Prosperity</strong>.</p><p>Join leaders, educators, entrepreneurs, students, and community stakeholders at the Tuskegee University campus for dialogue, collaboration, and forward-looking economic-development solutions.</p>",
     starts_at: "2026-09-10T09:00:00-05:00",
     ends_at: "2026-09-11T17:00:00-05:00",
     location: "Tuskegee University Campus",
     location_address: "1200 W Montgomery Rd, Tuskegee, AL 36088",
-    image_url: COVERS.economic,
+    image_url: "/events/30th-annual-booker-t-washington-summit-2026.png",
     external_url: "https://www.tuskegee.edu/btwsummit",
-    metadata: { hero_image_url: HEROES.economic, image_note: "AI-generated illustrative image" },
+    metadata: {
+      hero_image_url: "/events/30th-annual-booker-t-washington-summit-2026.png",
+      image_note: "Official 2026 event flyer",
+    },
     status: "published",
     is_active: true,
     is_featured: true,

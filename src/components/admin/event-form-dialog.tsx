@@ -573,6 +573,21 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                       }))
                     }
                   />
+                  <label className="flex min-h-11 items-center gap-3 text-sm font-medium">
+                    <input
+                      type="checkbox"
+                      checked={session.isPublic}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          sessions: current.sessions.map((item, itemIndex) =>
+                            itemIndex === index ? { ...item, isPublic: event.target.checked } : item,
+                          ),
+                        }))
+                      }
+                    />
+                    Show this session in the public agenda
+                  </label>
                 </div>
               ))}
               <Button
@@ -584,6 +599,7 @@ export function EventFormDialog({ open, onOpenChange, eventId, onSaved }: EventF
                     sessions: [
                       ...f.sessions,
                       {
+                        isPublic: false,
                         title: "",
                         description: "",
                         startsAt: "",

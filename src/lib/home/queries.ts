@@ -216,10 +216,12 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
 export async function fetchHomeEvents(limit = 6): Promise<HomeEvent[]> {
   const { data, error } = await supabase
     .from("events")
-    .select("id,title,starts_at,location,image_url,registration_open,metadata")
+    .select("id,title,starts_at,ends_at,location,image_url,registration_open,metadata")
     .eq("status", "published")
     .eq("is_active", true)
-    .gte("starts_at", now())
+    .or(
+      `starts_at.gte.${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()},ends_at.gte.${now()}`,
+    )
     .order("starts_at", { ascending: true })
     .limit(limit);
   if (error) throw error;
@@ -227,6 +229,7 @@ export async function fetchHomeEvents(limit = 6): Promise<HomeEvent[]> {
     id: event.id,
     title: event.title,
     startsAt: event.starts_at,
+    endsAt: event.ends_at,
     location: event.location,
     imageUrl: event.image_url,
     registrationOpen: event.registration_open,

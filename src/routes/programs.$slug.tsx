@@ -10,6 +10,8 @@ import {
 } from "@/components/programs";
 import { buildPageHead, programJsonLd } from "@/lib/seo";
 import { fetchProgramBySlug, fetchPrograms, type ProgramListItem } from "@/lib/programs";
+import { ProgramReplication } from "@/components/programs/program-replication";
+import { ContinueLearning } from "@/components/programs/continue-learning";
 
 export const Route = createFileRoute("/programs/$slug")({
   loader: async ({ params }) => {
@@ -46,7 +48,10 @@ export const Route = createFileRoute("/programs/$slug")({
     <PublicLayout>
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="text-3xl font-black tracking-tight">Program not found</h1>
-        <Link to="/programs" className="mt-6 inline-flex rounded-full grad-crimson px-5 py-2.5 text-sm font-bold text-white">
+        <Link
+          to="/programs"
+          className="mt-6 inline-flex rounded-full grad-crimson px-5 py-2.5 text-sm font-bold text-white"
+        >
           Back to programs
         </Link>
       </div>
@@ -78,6 +83,9 @@ function ProgramDetail() {
             <ProgramContactCard program={program} />
           </aside>
         </div>
+
+        <ProgramReplication programId={program.id} programName={program.name} />
+        <ContinueLearning programId={program.id} />
 
         {related.length > 0 && (
           <section className="mt-16 border-t border-border/60 pt-10">

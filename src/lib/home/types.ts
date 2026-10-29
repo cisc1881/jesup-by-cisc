@@ -30,6 +30,7 @@ export type HomeEvent = {
   id: string;
   title: string;
   startsAt: string;
+  endsAt?: string | null;
   location: string | null;
   imageUrl: string | null;
   registrationOpen: boolean;

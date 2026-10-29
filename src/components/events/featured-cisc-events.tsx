@@ -6,9 +6,9 @@ const FEATURED_EVENTS = [
     date: "September 10–11, 2026",
     location: "Tuskegee University Campus · 1200 W. Montgomery Road, Tuskegee, AL 36088",
     description:
-      "A legacy gathering focused on leadership, innovation, community empowerment, and economic ecosystems that promote development and prosperity.",
-    image: "/starter/economic-development.jpg",
-    imageAlt: "AI-generated illustration of rural economic development and entrepreneurship",
+      "Establishing economic ecosystems that promote development and prosperity.",
+    image: "/events/30th-annual-booker-t-washington-summit-2026.png",
+    imageAlt: "Official flyer for the 30th Annual Booker T. Washington Economic Development Summit",
     url: "https://www.tuskegee.edu/btwsummit",
     linkLabel: "Summit information",
   },

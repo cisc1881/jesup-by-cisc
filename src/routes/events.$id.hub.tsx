@@ -36,11 +36,13 @@ import {
   Star,
   Store,
   Trophy,
+  Ticket,
   UserRoundCheck,
   Users,
   Vote,
 } from "lucide-react";
 import { EventAgendaNotice, EventChatRoom } from "@/components/events";
+import { EventChallenges } from "@/components/events/event-challenges";
 import { PublicLayout } from "@/components/public-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -76,25 +78,6 @@ type EventAttendee = {
   major_or_interest: string | null;
 };
 
-const additionalTools = [
-  ["Announcements & reminders", BellRing],
-  ["QR check-in & badges", QrCode],
-  ["Session attendance", ClipboardCheck],
-  ["Meal tickets", Soup],
-  ["Floor map & parking", MapPinned],
-  ["Speakers", Mic2],
-  ["Documents & handouts", FileText],
-  ["Surveys & live polls", Vote],
-  ["Session Q&A", CircleHelp],
-  ["Photos", Camera],
-  ["Exhibitors & sponsors", Store],
-  ["Lead capture", BriefcaseBusiness],
-  ["Career fair", Handshake],
-  ["Networking meetings", Network],
-  ["Passport & leaderboard", Trophy],
-  ["Accessibility requests", Accessibility],
-] as const;
-
 function EventHubPage() {
   const { event } = Route.useLoaderData();
   if (event?.metadata.conference_shell === true) return <ConferenceShell event={event} />;
@@ -129,6 +112,19 @@ function LegacyEventHubPage() {
     queryFn: () => fetchUserEventRegistration(id, user!.id),
   });
   const registered = !!registration || isAdmin;
+  const { data: mealDays = [] } = useQuery({
+    queryKey: ["event-hub-meal-days", id],
+    enabled: registered,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("event_meal_days")
+        .select("id")
+        .eq("event_id", id)
+        .eq("is_active", true);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
   const { data: registeredSessionIds = [] } = useQuery({
     queryKey: ["registration-session-plan", registration?.id],
     enabled: !!registration?.id,
@@ -248,11 +244,30 @@ function LegacyEventHubPage() {
 
   const primaryTools = [
     { label: "My registration", icon: CheckCircle2, tab: "home" as HubTab },
-    { label: "My event QR", icon: QrCode, href: `/events/${id}#event-registration` },
+    {
+      label: "My wallet & event QR",
+      icon: QrCode,
+      href: user ? "/me/wallet" : "/auth?next=/me/wallet",
+    },
     { label: "My agenda", icon: CalendarDays, tab: "agenda" as HubTab },
     { label: "Attendees", icon: Users, tab: "attendees" as HubTab },
     { label: "Community", icon: MessageCircle, tab: "community" as HubTab },
     { label: "Ask JESUP", icon: Sparkles, href: "/ask" },
+  ];
+  const eventTools = [
+    ...(event.speakers.length > 0
+      ? [{ label: "Speakers", icon: Mic2, href: `/events/${id}#event-speakers` }]
+      : []),
+    { label: "Map & directions", icon: MapPinned, href: `/events/${id}#event-map` },
+    ...(mealDays.length > 0 && !!registration
+      ? [{ label: "Meal tickets", icon: Soup, href: `/events/${id}#event-meals` }]
+      : []),
+    ...([event.programs, event.publications, event.podcasts, event.partners, event.sponsors].some(
+      (items) => items.length > 0,
+    )
+      ? [{ label: "Documents & resources", icon: FileText, href: `/events/${id}#event-resources` }]
+      : []),
+    { label: "Registration & tickets", icon: Ticket, href: `/events/${id}#event-registration` },
   ];
 
   return (
@@ -373,19 +388,19 @@ function LegacyEventHubPage() {
                   Featured resources
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3">
-                  {additionalTools.slice(0, 9).map(([label, Icon]) => (
-                    <button
+                  {eventTools.map(({ label, icon: Icon, href }) => (
+                    <a
                       key={label}
-                      type="button"
-                      onClick={() => setTab("more")}
+                      href={href}
                       className="min-h-28 border-b border-r p-4 text-left hover:bg-muted/50"
                     >
                       <Icon className="h-6 w-6 text-primary" />
                       <span className="mt-3 block text-sm font-bold">{label}</span>
-                    </button>
+                    </a>
                   ))}
                 </div>
               </section>
+              <EventChallenges eventId={id} />
             </div>
           )}
 
@@ -759,22 +774,25 @@ function LegacyEventHubPage() {
             <section>
               <h2 className="border-b px-4 py-4 text-xl font-black sm:px-6">All event tools</h2>
               <div className="divide-y">
-                {additionalTools.map(([label, Icon]) => (
-                  <div key={label} className="flex min-h-16 items-center gap-4 px-4 py-3 sm:px-6">
+                {eventTools.map(({ label, icon: Icon, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    className="flex min-h-16 items-center gap-4 px-4 py-3 sm:px-6 hover:bg-muted/50"
+                  >
                     <span className="grid h-10 w-10 place-items-center bg-primary/10 text-primary">
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="flex-1 font-bold">{label}</span>
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      {registered ? "Available" : "Registration required"}
-                    </span>
-                  </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  </a>
                 ))}
               </div>
               {isAdmin && (
                 <div className="border-t-[6px] border-muted">
                   <h2 className="border-b px-4 py-4 text-xl font-black sm:px-6">Organizer tools</h2>
                   {[
+                    ["Event Command Center", `/admin/events/${id}/command`, BarChart3],
                     [
                       "Attendance, badges & scanners",
                       `/admin/events/${id}/attendance`,
