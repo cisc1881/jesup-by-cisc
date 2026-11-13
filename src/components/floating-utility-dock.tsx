@@ -13,6 +13,11 @@ const DEFAULT_PREFERENCES: Preferences = {
   reduceMotion: false,
 };
 const STORAGE_KEY = "jesup-accessibility-preferences";
+const DOCK_QUESTIONS = [
+  "What events are coming up?",
+  "Where can I find my event pass?",
+  "Find publications for farmers",
+] as const;
 
 function applyPreferences(preferences: Preferences) {
   const root = document.documentElement;
@@ -79,6 +84,19 @@ export function FloatingUtilityDock() {
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
             Find programs, events, markets, publications, and application information.
           </p>
+          <div className="mt-4 space-y-2" aria-label="Suggested questions">
+            {DOCK_QUESTIONS.map((question) => (
+              <Link
+                key={question}
+                to="/ask"
+                search={{ question }}
+                onClick={() => setPanel(null)}
+                className="flex min-h-11 items-center border border-border bg-muted/40 px-3 text-left text-sm font-medium transition-colors duration-200 hover:bg-muted"
+              >
+                {question}
+              </Link>
+            ))}
+          </div>
           <Button asChild className="mt-4 w-full rounded-full">
             <Link to="/ask">Start a conversation</Link>
           </Button>
@@ -185,6 +203,7 @@ export function FloatingUtilityDock() {
           type="button"
           size="sm"
           className="rounded-full"
+          aria-label="Ask JESUP"
           aria-expanded={panel === "ask"}
           onClick={() => setPanel(panel === "ask" ? null : "ask")}
         >

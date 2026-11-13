@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, LoaderCircle, Send, Sparkles } from "lucide-react";
 import { PublicLayout, PageHeader } from "@/components/public-layout";
@@ -7,7 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { askJESUPServerFn } from "@/modules/ai/ask-server-fn";
 
-export const Route = createFileRoute("/_authenticated/ask")({ component: AskJESUPPage });
+export const Route = createFileRoute("/_authenticated/ask")({
+  validateSearch: (search): { question?: string } => ({
+    question: typeof search.question === "string" ? search.question.slice(0, 240) : undefined,
+  }),
+  component: AskJESUPPage,
+});
 
 type Source = Awaited<ReturnType<typeof askJESUPServerFn>>["sources"][number];
 type Message = {
@@ -27,10 +32,15 @@ const SUGGESTED_QUESTIONS = [
 ] as const;
 
 function AskJESUPPage() {
-  const [question, setQuestion] = useState("");
+  const { question: suggestedQuestion } = Route.useSearch();
+  const [question, setQuestion] = useState(suggestedQuestion ?? "");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (suggestedQuestion) setQuestion(suggestedQuestion);
+  }, [suggestedQuestion]);
 
   async function sendQuestion(value: string) {
     const normalized = value.replace(/\s+/g, " ").trim();

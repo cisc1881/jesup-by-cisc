@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const JESUP_SPLASH_SESSION_KEY = "jesup-splash-seen";
 
 /** Hold before exit fade begins (ms). */
-export const SPLASH_HOLD_MS = 1800;
+export const SPLASH_HOLD_MS = 350;
 /** Exit fade duration (ms) — keep in sync with splash.css. */
-export const SPLASH_EXIT_MS = 450;
+export const SPLASH_EXIT_MS = 200;
 
 export type JesupSplashScreenProps = {
   phase: SplashTransitionPhase;
@@ -92,7 +92,7 @@ export function JesupSplashScreen({
         <p
           className={cn(
             "jesup-splash__subtitle mt-5 text-sm font-medium tracking-wide sm:text-base",
-            isDarkSplash ? "text-splash-foreground" : "text-muted-foreground",
+            isDarkSplash ? "text-primary-foreground/90" : "text-muted-foreground",
           )}
         >
           The Digital Extension Wagon
@@ -101,7 +101,7 @@ export function JesupSplashScreen({
         <p
           className={cn(
             "jesup-splash__attribution mt-3 max-w-xs text-xs leading-relaxed",
-            isDarkSplash ? "text-splash-foreground" : "text-muted-foreground",
+            isDarkSplash ? "text-primary-foreground/65" : "text-muted-foreground/80",
           )}
         >
           Powered by the Carver Integrative Sustainability Center

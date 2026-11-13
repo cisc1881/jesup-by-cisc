@@ -18,19 +18,20 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { EventFormDialog } from "@/components/admin/event-form-dialog";
 import { MarketFormDialog } from "@/components/admin/market-form-dialog";
 import { ProgramFormDialog } from "@/components/admin/program-form-dialog";
 import { QuickActionTile } from "@/components/design-system/quick-action-tile";
 import { QueryErrorState } from "@/components/design-system/query-error-state";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { COMMAND_CENTER_SUBTITLE, COMMAND_CENTER_TITLE } from "../config/nav-items";
 import type { CommandCenterMetrics } from "../services/command-center-dashboard";
 import {
   fetchCommandCenterDashboard,
+  type CommandCenterDashboardData,
   type CommandCenterActivityItem,
   type CommandCenterActivityType,
   type CommandCenterPendingItem,
@@ -108,7 +109,7 @@ function MetricCard({
         <CardContent className="p-5">
           <div className="mb-3 flex items-center justify-between">
             <span className="gold-bar" />
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/8 text-primary transition group-hover:grad-crimson group-hover:text-gradient-foreground">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/8 text-primary transition group-hover:grad-crimson group-hover:text-primary-foreground">
               <Icon className="h-4 w-4" aria-hidden="true" />
             </span>
           </div>
@@ -166,78 +167,96 @@ function PendingRow({ item }: { item: CommandCenterPendingItem }) {
   );
 }
 
-const DEFAULT_GOALS: Partial<Record<keyof CommandCenterMetrics, number>> = {
-  eventRegistrations: 250,
-  upcomingEvents: 12,
-  activePrograms: 20,
-  publications: 30,
-};
-
-function OperationalGoals({ metrics }: { metrics: CommandCenterMetrics }) {
-  const [goals, setGoals] = useState(() => {
-    if (typeof window === "undefined") return DEFAULT_GOALS;
-    try {
-      return {
-        ...DEFAULT_GOALS,
-        ...JSON.parse(window.localStorage.getItem("jesup-admin-goals") ?? "{}"),
-      };
-    } catch {
-      return DEFAULT_GOALS;
-    }
-  });
-  const items = METRIC_CARDS.filter((item) => goals[item.key] != null).map((item) => {
-    const goal = Math.max(1, Number(goals[item.key] ?? 1));
-    const value = metrics[item.key];
-    return { ...item, goal, value, percent: Math.min(100, Math.round((value / goal) * 100)) };
-  });
-  function updateGoal(key: keyof CommandCenterMetrics, raw: string) {
-    const next = { ...goals, [key]: Math.max(1, Number(raw) || 1) };
-    setGoals(next);
-    window.localStorage.setItem("jesup-admin-goals", JSON.stringify(next));
-  }
+function RegistrationInsights({ data }: { data: CommandCenterDashboardData }) {
+  const { registrationTrend, registrationFlow, metrics } = data;
+  const hasTrend = registrationTrend.some((day) => day.count > 0);
+  const checkInRate =
+    metrics.eventRegistrations > 0
+      ? Math.min(100, Math.round((registrationFlow.checkedIn / metrics.eventRegistrations) * 100))
+      : 0;
   return (
-    <Card className="border border-border bg-card shadow-token-soft">
-      <CardHeader>
-        <CardTitle className="text-base">Goals and progress</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        {items.map((item) => (
-          <div key={item.key}>
-            <div className="mb-2 flex items-end justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold">{item.label}</p>
-                <p className="text-xs text-muted-foreground">
-                  {item.value.toLocaleString()} of {item.goal.toLocaleString()} · {item.percent}%
-                </p>
-              </div>
-              <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                Goal{" "}
-                <Input
-                  className="h-8 w-24"
-                  type="number"
-                  min="1"
-                  value={item.goal}
-                  onChange={(event) => updateGoal(item.key, event.target.value)}
-                />
-              </label>
+    <section className="grid gap-6 lg:grid-cols-[1.35fr_1fr]" aria-label="Registration insights">
+      <Card className="border border-border bg-card shadow-token-soft">
+        <CardHeader>
+          <CardTitle className="text-base">New sign-ups · last 7 days</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {hasTrend ? (
+            <div
+              className="h-64 w-full"
+              role="img"
+              aria-label={`Daily sign-ups: ${registrationTrend.map((day) => `${day.day}: ${day.count}`).join(", ")}`}
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={registrationTrend}
+                  margin={{ top: 8, right: 8, left: -24, bottom: 0 }}
+                >
+                  <CartesianGrid vertical={false} stroke="var(--border)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
+                  <Tooltip labelFormatter={(_, payload) => payload?.[0]?.payload?.day ?? ""} />
+                  <Bar
+                    dataKey="count"
+                    name="Sign-ups"
+                    fill="var(--institution-accent)"
+                    maxBarSize={46}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <p className="grid h-64 place-items-center text-sm text-muted-foreground">
+              No sign-ups in the last 7 days.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+      <Card className="border border-border bg-card shadow-token-soft">
+        <CardHeader>
+          <CardTitle className="text-base">Registration to check-in</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="border bg-muted/30 p-4">
+              <p className="text-3xl font-black tabular-nums">
+                {metrics.eventRegistrations.toLocaleString()}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Registrations</p>
+            </div>
+            <div className="border bg-muted/30 p-4">
+              <p className="text-3xl font-black tabular-nums">
+                {registrationFlow.checkedIn.toLocaleString()}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Checked in</p>
+            </div>
+          </div>
+          <div>
+            <div className="mb-2 flex justify-between gap-3 text-sm">
+              <span className="font-semibold">Check-in rate</span>
+              <span className="tabular-nums">{checkInRate}%</span>
             </div>
             <div
               className="h-3 bg-muted"
               role="progressbar"
-              aria-label={`${item.label} progress`}
+              aria-label="Check-in rate"
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-valuenow={item.percent}
+              aria-valuenow={checkInRate}
             >
               <div
-                className="h-full bg-primary transition-[width]"
-                style={{ width: `${item.percent}%` }}
+                className="h-full bg-primary transition-[width] duration-300"
+                style={{ width: `${checkInRate}%` }}
               />
             </div>
           </div>
-        ))}
-      </CardContent>
-    </Card>
+          <p className="text-xs text-muted-foreground">
+            {registrationFlow.waitingList.toLocaleString()} waitlisted ·{" "}
+            {registrationFlow.cancelled.toLocaleString()} cancelled
+          </p>
+        </CardContent>
+      </Card>
+    </section>
   );
 }
 
@@ -251,6 +270,7 @@ export function CommandCenterDashboard() {
   const { data, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ["command-center-dashboard"],
     queryFn: fetchCommandCenterDashboard,
+    refetchInterval: 60_000,
   });
 
   function refreshDashboard() {
@@ -293,20 +313,20 @@ export function CommandCenterDashboard() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <section className="brand-banner relative overflow-hidden rounded-2xl p-6 shadow-token-crimson sm:p-8">
+      <section className="relative overflow-hidden rounded-2xl grad-crimson p-6 text-primary-foreground shadow-token-crimson sm:p-8">
         <div className="relative z-10">
           <span className="gold-bar mb-4" />
           <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
             {COMMAND_CENTER_TITLE}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-banner-foreground sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
             {COMMAND_CENTER_SUBTITLE}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-11"
+              className="min-h-[44px] bg-white/15 text-primary-foreground hover:bg-white/25"
               onClick={refreshDashboard}
               disabled={isFetching}
               aria-label="Refresh dashboard"
@@ -317,7 +337,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-11"
+              className="min-h-[44px] bg-white/15 text-primary-foreground hover:bg-white/25"
               onClick={() => setProgramOpen(true)}
             >
               <LayoutGrid className="mr-1.5 h-4 w-4" />
@@ -326,7 +346,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-11"
+              className="bg-white/15 text-primary-foreground hover:bg-white/25"
               onClick={() => setEventOpen(true)}
             >
               <CalendarPlus className="mr-1.5 h-4 w-4" />
@@ -335,7 +355,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-11"
+              className="bg-white/15 text-primary-foreground hover:bg-white/25"
               onClick={() => setMarketOpen(true)}
             >
               <MapPinPlus className="mr-1.5 h-4 w-4" />
@@ -354,7 +374,7 @@ export function CommandCenterDashboard() {
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-11"
+              className="bg-white/15 text-primary-foreground hover:bg-white/25"
               asChild
             >
               <Link to="/admin/internships">
@@ -393,7 +413,7 @@ export function CommandCenterDashboard() {
         )}
       </section>
 
-      {data?.metrics && <OperationalGoals metrics={data.metrics} />}
+      {data && !isError && <RegistrationInsights data={data} />}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-0 bg-card shadow-token-soft">

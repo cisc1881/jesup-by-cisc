@@ -11,11 +11,7 @@ export type CommandCenterMetrics = {
 };
 
 export type CommandCenterActivityType =
-  | "event_registration"
-  | "twofas_application"
-  | "publication"
-  | "program"
-  | "market";
+  "event_registration" | "twofas_application" | "publication" | "program" | "market";
 
 export type CommandCenterActivityItem = {
   id: string;
@@ -27,9 +23,7 @@ export type CommandCenterActivityItem = {
 };
 
 export type CommandCenterPendingType =
-  | "twofas_application"
-  | "low_capacity_event"
-  | "event_registration";
+  "twofas_application" | "low_capacity_event" | "event_registration";
 
 export type CommandCenterPendingItem = {
   id: string;
@@ -42,6 +36,8 @@ export type CommandCenterPendingItem = {
 
 export type CommandCenterDashboardData = {
   metrics: CommandCenterMetrics;
+  registrationTrend: { day: string; label: string; count: number }[];
+  registrationFlow: { checkedIn: number; waitingList: number; cancelled: number };
   recentActivity: CommandCenterActivityItem[];
   pendingReview: CommandCenterPendingItem[];
 };
@@ -50,8 +46,11 @@ async function fetchEventRegistrationCounts(eventIds: string[]) {
   const map = new Map<string, number>();
   await Promise.all(
     eventIds.map(async (id) => {
-      const { data, error } = await supabase.rpc("get_event_registration_count", { p_event_id: id });
-      if (!error) map.set(id, Number(data ?? 0));
+      const { data, error } = await supabase.rpc("get_event_registration_count", {
+        p_event_id: id,
+      });
+      if (error) throw error;
+      map.set(id, Number(data ?? 0));
     }),
   );
   return map;
@@ -94,11 +93,9 @@ export async function fetchCommandCenterDashboard(): Promise<CommandCenterDashbo
     supabase
       .from("event_registrations")
       .select("*", { count: "exact", head: true })
-      .eq("status", "registered"),
-    supabase
-      .from("inquiries")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "new"),
+      .neq("status", "cancelled")
+      .neq("status", "waiting_list"),
+    supabase.from("inquiries").select("*", { count: "exact", head: true }).eq("status", "new"),
     supabase
       .from("event_registrations")
       .select("id, created_at, events ( title ), profiles ( full_name )")
@@ -107,7 +104,9 @@ export async function fetchCommandCenterDashboard(): Promise<CommandCenterDashbo
       .limit(5),
     supabase
       .from("internship_applications")
-      .select("id, created_at, status, profiles ( full_name ), internships!inner ( title, is_2fas )")
+      .select(
+        "id, created_at, status, profiles ( full_name ), internships!inner ( title, is_2fas )",
+      )
       .eq("internships.is_2fas", true)
       .order("created_at", { ascending: false })
       .limit(5),
@@ -150,6 +149,65 @@ export async function fetchCommandCenterDashboard(): Promise<CommandCenterDashbo
       .order("created_at", { ascending: false })
       .limit(5),
   ]);
+
+  for (const result of [
+    programsRes,
+    eventsRes,
+    marketsRes,
+    publicationsRes,
+    pending2fasRes,
+    registrationsRes,
+    newInquiriesRes,
+  ]) {
+    if (result.error) throw result.error;
+  }
+
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const start = new Date(today);
+    start.setUTCDate(today.getUTCDate() - (6 - index));
+    const end = new Date(start);
+    end.setUTCDate(start.getUTCDate() + 1);
+    return { start, end };
+  });
+  const [checkedInRes, waitingRes, cancelledRes, ...dailyRes] = await Promise.all([
+    supabase
+      .from("event_registrations")
+      .select("id", { count: "exact", head: true })
+      .not("checked_in_at", "is", null)
+      .neq("status", "cancelled")
+      .neq("status", "waiting_list"),
+    supabase
+      .from("event_registrations")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "waiting_list"),
+    supabase
+      .from("event_registrations")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "cancelled"),
+    ...days.map(({ start, end }) =>
+      supabase
+        .from("event_registrations")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", start.toISOString())
+        .lt("created_at", end.toISOString())
+        .neq("status", "cancelled"),
+    ),
+  ]);
+  for (const result of [checkedInRes, waitingRes, cancelledRes, ...dailyRes]) {
+    if (result.error) throw result.error;
+  }
+  const registrationTrend = days.map(({ start }, index) => ({
+    day: start.toISOString().slice(0, 10),
+    label: new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "UTC" }).format(start),
+    count: dailyRes[index].count ?? 0,
+  }));
+  const registrationFlow = {
+    checkedIn: checkedInRes.count ?? 0,
+    waitingList: waitingRes.count ?? 0,
+    cancelled: cancelledRes.count ?? 0,
+  };
 
   const metrics: CommandCenterMetrics = {
     activePrograms: programsRes.count ?? 0,
@@ -276,6 +334,8 @@ export async function fetchCommandCenterDashboard(): Promise<CommandCenterDashbo
 
   return {
     metrics,
+    registrationTrend,
+    registrationFlow,
     recentActivity,
     pendingReview: pendingReview.slice(0, 10),
   };
