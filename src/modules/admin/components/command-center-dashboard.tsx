@@ -109,14 +109,14 @@ function MetricCard({
         <CardContent className="p-5">
           <div className="mb-3 flex items-center justify-between">
             <span className="gold-bar" />
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/8 text-primary transition group-hover:grad-crimson group-hover:text-primary-foreground">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/8 text-card-foreground transition group-hover:grad-crimson group-hover:text-primary-foreground">
               <Icon className="h-4 w-4" aria-hidden="true" />
             </span>
           </div>
           {isLoading ? (
             <Skeleton className="h-9 w-20" />
           ) : (
-            <div className="font-serif text-3xl font-bold text-primary">
+            <div className="font-serif text-3xl font-bold text-card-foreground">
               {value.toLocaleString()}
             </div>
           )}
