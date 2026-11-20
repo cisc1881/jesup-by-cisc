@@ -23,7 +23,7 @@ const chipBase =
   "shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95";
 const chipInactive =
   "glass-surface border-border/40 bg-background/70 text-foreground shadow-token-soft hover:bg-background/90";
-const chipActive = "grad-crimson border-transparent text-primary-foreground shadow-token-crimson";
+const chipActive = "grad-crimson border-transparent text-gradient-foreground shadow-token-crimson";
 
 const categories = Object.entries(MARKET_PRODUCT_CATEGORY_LABELS) as [MarketProductCategory, string][];
 
