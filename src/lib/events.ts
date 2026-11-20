@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import type { Json } from "@/integrations/supabase/types";
+import { resolveEventCoverImage } from "@/lib/event-cover-image";
 import { conferenceDateRange, eventLocalInput, eventLocalToUtc } from "@/lib/conference";
 import {
   isValidContactEmail,
@@ -293,7 +294,7 @@ function mapListRow(row: Record<string, unknown>, registrationCount = 0): EventL
     capacity,
     registrationCount,
     spotsRemaining: capacity != null ? Math.max(capacity - registrationCount, 0) : null,
-    coverImageUrl: (row.image_url as string | null) ?? null,
+    coverImageUrl: resolveEventCoverImage(row.slug as string | null, row.image_url as string | null),
     categoryId: (row.category_id as string | null) ?? category?.id ?? null,
     categoryName: category?.name ?? null,
     categorySlug: category?.slug ?? null,

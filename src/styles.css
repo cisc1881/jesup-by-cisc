@@ -83,20 +83,21 @@ html[data-jesup-reduced-motion="true"] *::after {
 
 :root {
   --radius: 1.25rem;
+  --signature-cyan: #5de0e6;
+  --signature-gold: #d6ad55;
 
-  /* Neutral JESUP network palette. InstitutionThemeProvider adds school color
-     only after a recognized institution is selected. */
-  --primary: #12464b;
+  /* JESUP network palette stays consistent for every institution. */
+  --primary: #1764d4;
   --primary-foreground: oklch(0.99 0 0);
-  --primary-mid: #166b70;
-  --primary-bright: #bde4e1;
+  --primary-mid: #1764d4;
+  --primary-bright: #75a9ff;
 
-  /* Affiliation accents are changed by InstitutionThemeProvider after sign-in. */
-  --institution-accent: #166b70;
-  --institution-accent-strong: #12464b;
+  /* Shared interface accents. School identity appears through logos and ticket artwork. */
+  --institution-accent: #1764d4;
+  --institution-accent-strong: #1764d4;
   --institution-accent-soft: #f1f1f1;
   --institution-accent-foreground: #ffffff;
-  --institution-secondary: #bde4e1;
+  --institution-secondary: #75a9ff;
   --institution-secondary-foreground: #171717;
   --institution-surface-primary: color-mix(in srgb, #3f3f46 7%, var(--card));
   --institution-surface-secondary: color-mix(in srgb, #a1a1aa 9%, var(--card));
@@ -108,13 +109,13 @@ html[data-jesup-reduced-motion="true"] *::after {
   --institution-border-primary: color-mix(in srgb, #3f3f46 22%, var(--border));
   --institution-border-secondary: color-mix(in srgb, #a1a1aa 26%, var(--border));
 
-  /* Legacy accent tokens remain neutral until an institution is selected. */
+  /* Legacy accent tokens use the shared JESUP palette. */
   --gold: var(--institution-accent);
   --gold-light: var(--institution-secondary);
   --gold-dark: var(--institution-accent-strong);
 
   /* Neutrals */
-  --background: oklch(0.97 0.003 90);
+  --background: #f8f8f6;
   --foreground: oklch(0.22 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.22 0 0);
@@ -124,22 +125,22 @@ html[data-jesup-reduced-motion="true"] *::after {
   --secondary-foreground: oklch(0.22 0 0);
   --muted: oklch(0.94 0.002 90);
   --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.35 0.008 240);
+  --accent: #1764d4;
   --accent-foreground: #ffffff;
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.87 0.002 90);
   --input: oklch(0.9 0.002 90);
-  --ring: #52525b;
+  --ring: #1764d4;
 
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.22 0 0);
-  --sidebar-primary: var(--institution-accent);
+  --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: var(--institution-accent-soft);
   --sidebar-accent-foreground: var(--institution-accent-strong);
   --sidebar-border: oklch(0.9 0.002 90);
-  --sidebar-ring: var(--institution-accent);
+  --sidebar-ring: var(--primary);
 
   /* Typography scale */
   --text-xs: 0.6875rem;
@@ -174,18 +175,15 @@ html[data-jesup-reduced-motion="true"] *::after {
   --bottom-nav-offset: 6rem;
 
   /* Signature gradients & shadows */
-  --gradient-jesup: var(--jesup-banner-gradient);
-  --gradient-foreground: var(--guest-gradient-foreground);
-  --entry-gradient: var(--jesup-splash-gradient);
-  --program-media-overlay: linear-gradient(180deg, rgb(0 0 0 / 65%), rgb(0 0 0 / 85%));
-  --gradient-hero-institution: linear-gradient(115deg, #050505 0%, #3f3f46 52%, #a1a1aa 100%);
+  --gradient-jesup: linear-gradient(115deg, #080808 0%, #202020 65%, #1764d4 140%);
+  --gradient-hero-institution: linear-gradient(115deg, #080808 0%, #202020 65%, #1764d4 140%);
   --gradient-jesup-soft: linear-gradient(
     90deg,
     color-mix(in srgb, #050505 88%, transparent) 0%,
     color-mix(in srgb, #737373 82%, transparent) 100%
   );
   /* Legacy aliases keep existing screens visually continuous during migration. */
-  --gradient-crimson: var(--gradient-jesup);
+  --gradient-crimson: linear-gradient(125deg, #1764d4 0%, #3984f6 100%);
   --gradient-crimson-soft: var(--gradient-jesup-soft);
   --gradient-gold: linear-gradient(
     135deg,
@@ -228,21 +226,21 @@ html[data-jesup-reduced-motion="true"] *::after {
 }
 
 .dark {
-  --background: oklch(0.12 0 0);
+  --background: #080808;
   --foreground: oklch(0.98 0 0);
-  --card: oklch(0.18 0 0);
+  --card: #191919;
   --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.18 0 0);
+  --popover: #282828;
   --popover-foreground: oklch(0.98 0 0);
-  --primary: #f4f4f5;
-  --primary-foreground: #18181b;
-  --primary-mid: #d4d4d8;
-  --primary-bright: #ffffff;
-  --institution-accent: #d4d4d8;
-  --institution-accent-strong: #f4f4f5;
-  --institution-accent-soft: #27272a;
-  --institution-accent-foreground: #18181b;
-  --institution-secondary: #71717a;
+  --primary: #3984f6;
+  --primary-foreground: #080808;
+  --primary-mid: #3984f6;
+  --primary-bright: #75a9ff;
+  --institution-accent: #3984f6;
+  --institution-accent-strong: #3984f6;
+  --institution-accent-soft: #152b4d;
+  --institution-accent-foreground: #080808;
+  --institution-secondary: #75a9ff;
   --institution-secondary-foreground: #ffffff;
   --institution-surface-primary: color-mix(in srgb, #d4d4d8 8%, var(--card));
   --institution-surface-secondary: color-mix(in srgb, #71717a 12%, var(--card));
@@ -253,12 +251,12 @@ html[data-jesup-reduced-motion="true"] *::after {
   );
   --institution-border-primary: color-mix(in srgb, #d4d4d8 18%, var(--border));
   --institution-border-secondary: color-mix(in srgb, #71717a 24%, var(--border));
-  --secondary: oklch(0.32 0.004 240);
+  --secondary: #282828;
   --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.24 0 0);
+  --muted: #282828;
   --muted-foreground: oklch(0.7 0 0);
-  --accent: #d4d4d8;
-  --accent-foreground: #18181b;
+  --accent: #3984f6;
+  --accent-foreground: #080808;
   --gold: var(--institution-accent);
   --gold-light: var(--institution-secondary);
   --gold-dark: var(--institution-accent-strong);
@@ -266,18 +264,19 @@ html[data-jesup-reduced-motion="true"] *::after {
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
-  --ring: var(--institution-accent);
-  --sidebar: oklch(0.18 0 0);
+  --ring: #3984f6;
+  --sidebar: #191919;
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: var(--institution-accent);
+  --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: color-mix(in oklch, var(--institution-accent) 18%, oklch(0.18 0 0));
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: var(--institution-accent);
+  --sidebar-ring: var(--primary);
   --shadow-soft: 0 4px 20px -6px oklch(0 0 0 / 35%), 0 2px 6px -2px oklch(0 0 0 / 20%);
   --shadow-lift: 0 12px 40px -12px oklch(0 0 0 / 45%), 0 4px 10px -4px oklch(0 0 0 / 25%);
   --shadow-crimson: 0 20px 50px -20px color-mix(in oklch, var(--primary) 55%, transparent);
+  --gradient-crimson: linear-gradient(125deg, #3984f6 0%, #1764d4 100%);
 }
 
 @layer base {
@@ -380,17 +379,155 @@ html[data-jesup-reduced-motion="true"] *::after {
   background-image: var(--gradient-jesup);
 }
 
+/* The wagon's moving light is reserved for attendee moments and credentials. */
+.jesup-today-banner::after,
+.wallet-pass-top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 88% 0%,
+      color-mix(in srgb, var(--signature-cyan) 30%, transparent),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 72% 120%,
+      color-mix(in srgb, var(--signature-gold) 12%, transparent),
+      transparent 45%
+    );
+}
+
+.jesup-hero-shell {
+  box-shadow: var(--shadow-soft);
+}
+.jesup-hero-visual {
+  background:
+    radial-gradient(
+      circle at 75% 25%,
+      color-mix(in srgb, var(--signature-cyan) 32%, transparent),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 18% 82%,
+      color-mix(in srgb, var(--signature-gold) 24%, transparent),
+      transparent 36%
+    ),
+    linear-gradient(135deg, #080808 0%, #191919 70%, #282828 100%);
+}
+.jesup-hero-content {
+  animation: jesup-hero-in 0.25s ease-out both;
+}
+@keyframes jesup-hero-in {
+  from {
+    opacity: 0.7;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.jesup-today-action,
+.jesup-today-credential,
+.wallet-pass {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.jesup-today-action:hover,
+.jesup-today-credential:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+}
+
+.jesup-today-action:active,
+.jesup-today-credential:active {
+  transform: translateY(0);
+}
+
+.wallet-pass-bottom {
+  position: relative;
+  border-top: 2px dashed var(--border);
+}
+
+.wallet-pass-bottom::before,
+.wallet-pass-bottom::after {
+  content: "";
+  position: absolute;
+  top: -0.8rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  transform: rotate(45deg);
+}
+
+.wallet-pass-bottom::before {
+  left: -0.9rem;
+}
+.wallet-pass-bottom::after {
+  right: -0.9rem;
+}
+
+.wallet-pass-skeleton > div {
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.wallet-pass--confirmed {
+  animation: wallet-confirmed 0.65s ease-out;
+}
+
+@keyframes wallet-confirmed {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, #15803d 35%, transparent);
+  }
+  60% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, #15803d 5%, transparent);
+  }
+  100% {
+    box-shadow: var(--shadow-soft);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jesup-today-action,
+  .jesup-today-credential,
+  .wallet-pass {
+    transition: none;
+  }
+  .jesup-today-action:hover,
+  .jesup-today-credential:hover {
+    transform: none;
+  }
+  .wallet-pass-skeleton > div {
+    animation: none;
+  }
+  .wallet-pass--confirmed {
+    animation: none;
+  }
+}
+
+html[data-jesup-reduced-motion="true"] .jesup-today-action:hover,
+html[data-jesup-reduced-motion="true"] .jesup-today-credential:hover {
+  transform: none;
+}
+
 @utility institution-accent-bg {
-  background-color: var(--institution-accent);
-  color: var(--institution-accent-foreground);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 
 @utility institution-accent-text {
-  color: var(--institution-accent-strong);
+  color: var(--primary);
 }
 
 @utility institution-accent-border {
-  border-color: var(--institution-accent);
+  border-color: var(--primary);
 }
 
 @utility institution-secondary-bg {
@@ -431,7 +568,7 @@ html[data-jesup-reduced-motion="true"] *::after {
 }
 
 @utility card-elevated {
-  background-color: var(--color-card);
+  background-color: var(--color-popover);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-soft);
 }

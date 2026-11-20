@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { publishingWriteError, validateContentIdentity } from "@/lib/content-publishing";
+import { curatedContentImage, SMALL_FARM_GALLERY_IMAGE } from "@/lib/curated-content-images";
 
 export const PROGRAM_IMAGES_BUCKET = "program-images";
 
@@ -134,7 +135,11 @@ function mapListRow(row: Record<string, unknown>): ProgramListItem {
     name: row.name as string,
     short: (row.short as string | null) ?? null,
     tagline: (row.tagline as string | null) ?? null,
-    coverImageUrl: (row.cover_image_url as string | null) ?? null,
+    coverImageUrl: curatedContentImage(
+      "program",
+      row.slug as string,
+      row.cover_image_url as string | null,
+    ),
     categoryId: (row.category_id as string | null) ?? category?.id ?? null,
     categoryName: category?.name ?? null,
     categorySlug: category?.slug ?? null,
@@ -257,12 +262,26 @@ export async function fetchProgramBySlug(slug: string): Promise<ProgramDetail | 
     websiteUrl: (program.website_url as string | null) ?? null,
     registrationUrl: (program.registration_url as string | null) ?? null,
     metadata: (program.metadata as Record<string, unknown>) ?? {},
-    gallery: (galleryRes.data ?? []).map((g) => ({
-      id: g.id,
-      imageUrl: g.image_url,
-      caption: g.caption,
-      sortOrder: g.sort_order,
-    })),
+    gallery: (galleryRes.data ?? [])
+      .map((g) => ({
+        id: g.id,
+        imageUrl: g.image_url,
+        caption: g.caption,
+        sortOrder: g.sort_order,
+      }))
+      .concat(
+        base.slug === "small-farm-rural-development" &&
+          !(galleryRes.data ?? []).some((g) => g.image_url === SMALL_FARM_GALLERY_IMAGE)
+          ? [
+              {
+                id: "small-farm-curated-photo",
+                imageUrl: SMALL_FARM_GALLERY_IMAGE,
+                caption: "Small farm and rural development",
+                sortOrder: 999,
+              },
+            ]
+          : [],
+      ),
     publications: (pubsRes.data ?? []).map((row) => {
       const pub = row.publications as {
         id: string;

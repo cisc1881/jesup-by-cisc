@@ -33,7 +33,11 @@ const METRICS = [
 
 function AdminReports() {
   const matches = useMatches();
-  const isChild = matches.some((m) => m.routeId === "/_authenticated/admin/reports/events");
+  const isChild = matches.some(
+    (m) =>
+      m.routeId === "/_authenticated/admin/reports/events" ||
+      m.routeId === "/_authenticated/admin/reports/pears",
+  );
   if (isChild) return <Outlet />;
 
   const { data: summary, isLoading } = useQuery({
@@ -75,7 +79,8 @@ function AdminReports() {
         <CardContent className="p-6">
           <h2 className="font-semibold text-foreground">Event reporting</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Build printable event reports with attendance, evaluation, demographic aggregates, gallery documentation, and CSV exports.
+            Build printable event reports with attendance, evaluation, demographic aggregates,
+            gallery documentation, and CSV exports.
           </p>
           <Button className="mt-4" variant="outline" asChild>
             <Link to="/admin/reports/events">Open Event Reports</Link>
@@ -85,11 +90,14 @@ function AdminReports() {
 
       <Card className="mt-4">
         <CardContent className="p-6">
-          <h2 className="font-semibold text-foreground">Reporting roadmap</h2>
+          <h2 className="font-semibold text-foreground">PEARS preparation</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Future reports will include engagement trends, content performance, geographic reach,
-            registration funnels, and leadership insights for Cooperative Extension.
+            Connect an institution and prepare an aggregate event review package for PEARS
+            reporting.
           </p>
+          <Button className="mt-4" variant="outline" asChild>
+            <Link to="/admin/reports/pears">Open PEARS preparation</Link>
+          </Button>
         </CardContent>
       </Card>
     </CommandCenterContentShell>

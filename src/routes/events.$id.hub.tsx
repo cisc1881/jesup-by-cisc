@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Accessibility,
   ArrowLeft,
@@ -8,7 +9,6 @@ import {
   BellRing,
   BriefcaseBusiness,
   CalendarDays,
-  Camera,
   CheckCircle2,
   ChevronRight,
   CircleHelp,
@@ -19,12 +19,10 @@ import {
   Gamepad2,
   Handshake,
   HeartHandshake,
-  Heart,
   Map,
   MapPin,
   MapPinned,
   MessageCircle,
-  NotebookPen,
   Paperclip,
   Mic2,
   Network,
@@ -39,7 +37,6 @@ import {
   Ticket,
   UserRoundCheck,
   Users,
-  Vote,
 } from "lucide-react";
 import { EventAgendaNotice, EventChatRoom } from "@/components/events";
 import { EventChallenges } from "@/components/events/event-challenges";
@@ -94,8 +91,11 @@ function LegacyEventHubPage() {
   const [dateFilter, setDateFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
   const [savedSessions, setSavedSessions] = useState<string[]>([]);
+  const [savingAgenda, setSavingAgenda] = useState(false);
   const [agendaMode, setAgendaMode] = useState<"full" | "mine">("full");
   const [selectedSession, setSelectedSession] = useState<EventSession | null>(null);
+  const [sessionNote, setSessionNote] = useState("");
+  const [noteSaveFailed, setNoteSaveFailed] = useState(false);
   const storageKey = `jesup-event-agenda:${id}:${user?.id ?? "guest"}`;
 
   useEffect(() => {
@@ -106,12 +106,47 @@ function LegacyEventHubPage() {
     }
   }, [storageKey]);
 
+  useEffect(() => {
+    const openLinkedSession = () => {
+      if (window.location.hash === "#agenda") {
+        setTab("agenda");
+        setSelectedSession(null);
+        return;
+      }
+      const match = window.location.hash.match(/^#session-([a-f0-9-]+)$/i);
+      const session = event?.sessions.find((item) => item.id === match?.[1]);
+      if (session) {
+        setTab("agenda");
+        setSelectedSession(session);
+      }
+    };
+    openLinkedSession();
+    window.addEventListener("hashchange", openLinkedSession);
+    return () => window.removeEventListener("hashchange", openLinkedSession);
+  }, [event]);
+
+  useEffect(() => {
+    if (!selectedSession) return;
+    const key = `jesup-session-note:${id}:${selectedSession.id}:${user?.id ?? "guest"}`;
+    try {
+      setSessionNote(window.localStorage.getItem(key) ?? "");
+      setNoteSaveFailed(false);
+    } catch {
+      setSessionNote("");
+      setNoteSaveFailed(true);
+    }
+  }, [id, selectedSession, user?.id]);
+
   const { data: registration } = useQuery({
     queryKey: ["event-hub-registration", id, user?.id],
     enabled: !!user,
     queryFn: () => fetchUserEventRegistration(id, user!.id),
   });
-  const registered = !!registration || isAdmin;
+  const registered =
+    (!!registration &&
+      registration.status !== "waiting_list" &&
+      registration.status !== "cancelled") ||
+    isAdmin;
   const { data: mealDays = [] } = useQuery({
     queryKey: ["event-hub-meal-days", id],
     enabled: registered,
@@ -224,20 +259,67 @@ function LegacyEventHubPage() {
     );
   }, [attendees, search]);
 
-  function toggleSession(sessionId: string) {
-    const next = savedSessions.includes(sessionId)
+  async function toggleSession(sessionId: string) {
+    if (savingAgenda) return;
+    const previous = savedSessions;
+    const wasSaved = previous.includes(sessionId);
+    const next = wasSaved
       ? savedSessions.filter((item) => item !== sessionId)
       : [...savedSessions, sessionId];
     setSavedSessions(next);
     window.localStorage.setItem(storageKey, JSON.stringify(next));
     if (registration?.id) {
-      void saveRegistrationSessionSelections(registration.id, next);
+      setSavingAgenda(true);
+      try {
+        await saveRegistrationSessionSelections(registration.id, next);
+        toast.success(wasSaved ? "Removed from your agenda" : "Added to your agenda");
+      } catch {
+        setSavedSessions(previous);
+        window.localStorage.setItem(storageKey, JSON.stringify(previous));
+        toast.error("Agenda could not be saved. Please try again.");
+      } finally {
+        setSavingAgenda(false);
+      }
+    } else {
+      toast.success(
+        wasSaved ? "Removed from this device's agenda" : "Added to this device's agenda",
+      );
     }
   }
 
   function submitSessionSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSearch(searchDraft.trim());
+  }
+
+  async function shareSession(session: EventSession) {
+    const url = `${window.location.origin}/events/${encodeURIComponent(id)}/hub#session-${session.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: session.title, url });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        toast.success("Session link copied");
+      } else {
+        toast.error("Sharing is unavailable in this browser.");
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      toast.error("Session could not be shared.");
+    }
+  }
+
+  function saveSessionNote(value: string) {
+    if (!selectedSession) return;
+    setSessionNote(value);
+    const key = `jesup-session-note:${id}:${selectedSession.id}:${user?.id ?? "guest"}`;
+    try {
+      window.localStorage.setItem(key, value);
+      setNoteSaveFailed(false);
+    } catch {
+      setNoteSaveFailed(true);
+      toast.error("This device could not save your note.");
+    }
   }
 
   if (!event) return null;
@@ -259,6 +341,7 @@ function LegacyEventHubPage() {
       ? [{ label: "Speakers", icon: Mic2, href: `/events/${id}#event-speakers` }]
       : []),
     { label: "Map & directions", icon: MapPinned, href: `/events/${id}#event-map` },
+    { label: "City Guide", icon: Store, href: `/events/${id}/guide` },
     ...(mealDays.length > 0 && !!registration
       ? [{ label: "Meal tickets", icon: Soup, href: `/events/${id}#event-meals` }]
       : []),
@@ -420,6 +503,7 @@ function LegacyEventHubPage() {
                       <span className="font-black">Session details</span>
                       <button
                         type="button"
+                        onClick={() => void shareSession(selectedSession)}
                         className="grid h-11 w-11 place-items-center"
                         aria-label="Share session"
                       >
@@ -458,8 +542,10 @@ function LegacyEventHubPage() {
                   <div className="space-y-3 border-b p-4 sm:p-6">
                     <button
                       type="button"
-                      onClick={() => toggleSession(selectedSession.id)}
-                      className="flex min-h-14 w-full items-center justify-center gap-3 bg-primary px-5 font-extrabold text-primary-foreground"
+                      onClick={() => void toggleSession(selectedSession.id)}
+                      disabled={savingAgenda}
+                      aria-pressed={savedSessions.includes(selectedSession.id)}
+                      className="flex min-h-14 w-full items-center justify-center gap-3 bg-primary px-5 font-extrabold text-primary-foreground transition-transform duration-200 active:scale-[0.99] disabled:opacity-60"
                     >
                       <Star
                         className={cn(
@@ -471,53 +557,49 @@ function LegacyEventHubPage() {
                         ? "Remove from My Agenda"
                         : "Add to My Agenda"}
                     </button>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setTab("community")}
-                        className="flex min-h-12 items-center justify-center gap-2 border border-primary px-2 text-sm font-bold text-primary"
-                      >
-                        <Vote className="h-4 w-4" /> Polls
-                      </button>
-                      <button
-                        type="button"
-                        className="flex min-h-12 items-center justify-center gap-2 border border-primary px-2 text-sm font-bold text-primary"
-                      >
-                        <Heart className="h-4 w-4" /> Like
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setTab("community")}
-                        className="flex min-h-12 items-center justify-center gap-2 border border-primary px-2 text-sm font-bold text-primary"
-                      >
-                        <MessageCircle className="h-4 w-4" /> Chat
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setTab("community")}
+                      className="flex min-h-12 w-full items-center justify-center gap-2 border border-primary px-3 text-sm font-bold text-primary transition-colors duration-200 hover:bg-primary/5"
+                    >
+                      <MessageCircle className="h-4 w-4" /> Open event community
+                    </button>
                   </div>
 
                   <section className="border-b-[6px] border-muted">
                     <h3 className="border-b bg-muted/70 px-5 py-3 text-sm font-black uppercase tracking-wide sm:px-6">
                       Personal notes
                     </h3>
-                    <div className="grid grid-cols-2 gap-3 p-4 sm:p-6">
-                      <button
-                        type="button"
-                        className="flex min-h-14 items-center justify-center gap-2 bg-muted px-3 font-bold"
+                    <div className="space-y-2 p-4 sm:p-6">
+                      <label
+                        htmlFor={`session-note-${selectedSession.id}`}
+                        className="block text-sm font-semibold"
                       >
-                        <Camera className="h-5 w-5" /> Add a photo
-                      </button>
-                      <button
-                        type="button"
-                        className="flex min-h-14 items-center justify-center gap-2 bg-primary px-3 font-bold text-primary-foreground"
+                        Private note
+                      </label>
+                      <textarea
+                        id={`session-note-${selectedSession.id}`}
+                        value={sessionNote}
+                        onChange={(event) => saveSessionNote(event.target.value)}
+                        maxLength={2000}
+                        rows={4}
+                        placeholder="What would you like to remember from this session?"
+                        className="w-full resize-y border border-border bg-card p-3 text-sm outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary"
+                      />
+                      <p
+                        className="text-xs text-muted-foreground"
+                        role={noteSaveFailed ? "alert" : undefined}
                       >
-                        <NotebookPen className="h-5 w-5" /> Add a note
-                      </button>
+                        {noteSaveFailed
+                          ? "This device could not save the note."
+                          : "Saved locally in this browser."}
+                      </p>
                     </div>
                   </section>
 
                   <section>
                     <h3 className="border-b bg-muted/70 px-5 py-3 text-sm font-black uppercase tracking-wide sm:px-6">
-                      Handouts ({event.publications.length})
+                      Event resources ({event.publications.length})
                     </h3>
                     {event.publications.length > 0 ? (
                       <div className="divide-y">
@@ -536,7 +618,7 @@ function LegacyEventHubPage() {
                       </div>
                     ) : (
                       <p className="px-5 py-8 text-sm leading-6 text-muted-foreground sm:px-6">
-                        No session handouts have been uploaded yet. Documents added by the organizer
+                        No event resources have been uploaded yet. Documents added by the organizer
                         will appear here.
                       </p>
                     )}
@@ -560,7 +642,7 @@ function LegacyEventHubPage() {
                       </label>
                       <button
                         type="submit"
-                        className="min-h-12 bg-slate-900 px-5 text-sm font-extrabold text-white hover:bg-slate-800"
+                        className="min-h-12 bg-primary px-5 text-sm font-extrabold text-primary-foreground hover:bg-primary/90"
                       >
                         Search
                       </button>
@@ -660,8 +742,10 @@ function LegacyEventHubPage() {
                           )}
                         </button>
                         <button
-                          onClick={() => toggleSession(session.id)}
-                          className="grid h-11 w-11 place-items-center"
+                          onClick={() => void toggleSession(session.id)}
+                          disabled={savingAgenda}
+                          aria-pressed={savedSessions.includes(session.id)}
+                          className="grid h-11 w-11 place-items-center transition-transform duration-200 active:scale-90 disabled:opacity-60"
                           aria-label={
                             savedSessions.includes(session.id)
                               ? "Remove from my agenda"

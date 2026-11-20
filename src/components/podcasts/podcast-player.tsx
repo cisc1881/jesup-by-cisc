@@ -1,9 +1,13 @@
 import { cn } from "@/lib/utils";
+import { useRef } from "react";
+
+export const PODCAST_PROGRESS_KEY = "jesup-podcast-progress";
 
 type PodcastPlayerProps = {
   embedUrl?: string | null;
   audioUrl?: string | null;
   title: string;
+  slug?: string;
   className?: string;
 };
 
@@ -17,7 +21,8 @@ function normalizeEmbedSrc(url: string) {
   return trimmed;
 }
 
-export function PodcastPlayer({ embedUrl, audioUrl, title, className }: PodcastPlayerProps) {
+export function PodcastPlayer({ embedUrl, audioUrl, title, slug, className }: PodcastPlayerProps) {
+  const lastSavedSecond = useRef(-1);
   const embedSrc = embedUrl ? normalizeEmbedSrc(embedUrl) : null;
 
   if (embedSrc) {
@@ -36,8 +41,48 @@ export function PodcastPlayer({ embedUrl, audioUrl, title, className }: PodcastP
 
   if (audioUrl) {
     return (
-      <div className={cn("rounded-2xl border border-border/60 bg-card p-4 shadow-token-soft", className)}>
-        <audio controls preload="metadata" className="w-full" src={audioUrl}>
+      <div
+        className={cn(
+          "rounded-2xl border border-border/60 bg-card p-4 shadow-token-soft",
+          className,
+        )}
+      >
+        <audio
+          controls
+          preload="metadata"
+          className="w-full"
+          src={audioUrl}
+          onLoadedMetadata={(event) => {
+            if (!slug) return;
+            try {
+              const saved = JSON.parse(localStorage.getItem(PODCAST_PROGRESS_KEY) ?? "null") as {
+                slug?: string;
+                seconds?: number;
+              } | null;
+              if (
+                saved?.slug === slug &&
+                saved.seconds &&
+                saved.seconds < event.currentTarget.duration - 10
+              )
+                event.currentTarget.currentTime = saved.seconds;
+            } catch {
+              /* Invalid browser storage should not stop playback. */
+            }
+          }}
+          onTimeUpdate={(event) => {
+            if (!slug) return;
+            const seconds = Math.floor(event.currentTarget.currentTime);
+            if (seconds === lastSavedSecond.current || seconds % 5 !== 0) return;
+            lastSavedSecond.current = seconds;
+            localStorage.setItem(
+              PODCAST_PROGRESS_KEY,
+              JSON.stringify({ slug, title, seconds, updatedAt: Date.now() }),
+            );
+          }}
+          onEnded={() => {
+            if (slug) localStorage.removeItem(PODCAST_PROGRESS_KEY);
+          }}
+        >
           Your browser does not support audio playback.
         </audio>
       </div>

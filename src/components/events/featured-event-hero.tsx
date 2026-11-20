@@ -10,9 +10,6 @@ type FeaturedEventHeroProps = {
 };
 
 export function FeaturedEventHero({ event }: FeaturedEventHeroProps) {
-  const accent = event.themeAccent ?? "var(--institution-accent)";
-  const secondary = event.themeSecondary ?? "var(--institution-secondary)";
-
   return (
     <section className="relative isolate animate-fade-up overflow-hidden rounded-3xl shadow-token-crimson">
       <div className="relative min-h-[360px] w-full overflow-hidden bg-secondary sm:min-h-[440px]">
@@ -21,6 +18,7 @@ export function FeaturedEventHero({ event }: FeaturedEventHeroProps) {
             src={event.coverImageUrl}
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
+            style={event.slug === "fc135" ? { objectPosition: "center 25%" } : undefined}
             fetchPriority="high"
           />
         ) : (
@@ -29,7 +27,8 @@ export function FeaturedEventHero({ event }: FeaturedEventHeroProps) {
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(145deg, color-mix(in srgb, ${secondary} 28%, transparent) 0%, color-mix(in srgb, ${accent} 58%, transparent) 52%, color-mix(in srgb, ${accent} 94%, black) 100%)`,
+            background:
+              "linear-gradient(180deg, transparent 0%, rgba(8,8,8,.45) 42%, rgba(8,8,8,.95) 100%)",
           }}
         />
         <div className="relative z-10 flex min-h-[360px] flex-col justify-end p-6 sm:min-h-[440px] sm:p-10">

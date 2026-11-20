@@ -2,7 +2,7 @@ import { createFileRoute, type SearchSchemaInput } from "@tanstack/react-router"
 import { useCallback, useMemo, useState } from "react";
 import { useQuery, queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/public-layout";
-import { PageContainer } from "@/components/design-system";
+import { PageContainer, QueryErrorState } from "@/components/design-system";
 import {
   EventCalendarView,
   EventFilters,
@@ -12,12 +12,14 @@ import {
   EventsPullRefresh,
   type EventViewMode,
 } from "@/components/events";
-import { DirectoryResultList } from "@/components/directory-result-list";
+import { WideDiscoveryCard } from "@/components/design-system/wide-discovery-card";
+import { EventDiscoveryRails } from "@/components/events/event-discovery-rails";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { fetchEventCategories, filterEvents, type EventListItem } from "@/lib/events";
 import { getPublicEvents } from '@/lib/public-events.functions';
 import { fmtDateTime } from "@/lib/format";
 import { eventDateLabel } from "@/lib/conference";
+import { eventCoverImageAlt } from "@/lib/event-cover-image";
 import { listPageHead } from "@/lib/seo";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
 import { useAuth } from "@/hooks/use-auth";
@@ -65,6 +67,7 @@ function EventsPage() {
   const {
     data: events,
     isLoading,
+    isError,
     isFetching,
     refetch,
   } = useSuspenseQuery(publicEventsQuery);
@@ -205,7 +208,18 @@ function EventsPage() {
             ))}
           </div>
 
-          {showInitialSkeleton ? (
+          {!isError &&
+            !showInitialSkeleton &&
+            discoveryMode === "explore" &&
+            !search &&
+            !categoryId &&
+            !showSavedOnly &&
+            format === "all" &&
+            viewMode === "list" && <EventDiscoveryRails events={relevantEvents} />}
+
+          {isError ? (
+            <QueryErrorState title="Events could not be loaded" onRetry={() => void refetch()} />
+          ) : showInitialSkeleton ? (
             <EventsPageSkeleton />
           ) : !relevantEvents.length ? (
             <EventsEmptyState variant="empty" />
@@ -249,19 +263,26 @@ function EventsPage() {
                   {viewMode === "map" && <EventMapView events={filtered} />}
 
                   {viewMode === "list" && (
-                    <DirectoryResultList
-                      title={discoveryMode === "mine" ? "My events" : "Upcoming events"}
-                      className="-mx-[var(--page-px)] sm:mx-0"
-                      results={filtered.map((event) => ({
-                        id: event.id,
-                        title: event.title,
-                        subtitle: eventDateLabel(event),
-                        detail: event.location,
-                        imageUrl: event.coverImageUrl,
-                        to: "/events/$id" as const,
-                        params: { id: event.id },
-                      }))}
-                    />
+                    <section
+                      aria-label={discoveryMode === "mine" ? "My events" : "Discover events"}
+                    >
+                      <h2 className="mb-4 text-2xl font-black">
+                        {discoveryMode === "mine" ? "My events" : "Discover events"}
+                      </h2>
+                      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {filtered.map((event) => (
+                          <WideDiscoveryCard
+                            key={event.id}
+                            href={`/events/${encodeURIComponent(event.id)}`}
+                            title={event.title}
+                            imageUrl={event.coverImageUrl}
+                            imageAlt={eventCoverImageAlt(event.coverImageUrl, event.title)}
+                            eyebrow={fmtDateTime(event.startsAt)}
+                            detail={event.location}
+                          />
+                        ))}
+                      </div>
+                    </section>
                   )}
                 </div>
               )}

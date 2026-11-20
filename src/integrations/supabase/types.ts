@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      pears_connections: {
+        Row: { id: string; institution_id: string; organization_id: string; environment: string; status: string; created_at: string; updated_at: string }
+        Insert: { id?: string; institution_id: string; organization_id: string; environment?: string; status?: string; created_at?: string; updated_at?: string }
+        Update: { id?: string; institution_id?: string; organization_id?: string; environment?: string; status?: string; created_at?: string; updated_at?: string }
+        Relationships: []
+      }
+      pears_mappings: {
+        Row: { id: string; connection_id: string; entity_type: string; jesup_id: string; pears_id: string; created_at: string; updated_at: string }
+        Insert: { id?: string; connection_id: string; entity_type: string; jesup_id: string; pears_id: string; created_at?: string; updated_at?: string }
+        Update: { id?: string; connection_id?: string; entity_type?: string; jesup_id?: string; pears_id?: string; created_at?: string; updated_at?: string }
+        Relationships: []
+      }
+      pears_export_jobs: {
+        Row: { id: string; connection_id: string; event_id: string; payload: Json; status: string; created_by: string; created_at: string; updated_at: string }
+        Insert: { id?: string; connection_id: string; event_id: string; payload: Json; status?: string; created_by: string; created_at?: string; updated_at?: string }
+        Update: { id?: string; connection_id?: string; event_id?: string; payload?: Json; status?: string; created_by?: string; created_at?: string; updated_at?: string }
+        Relationships: []
+      }
       content_tag_links: {
         Row: {
           created_at: string

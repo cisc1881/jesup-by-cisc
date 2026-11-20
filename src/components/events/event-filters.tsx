@@ -46,7 +46,7 @@ export function EventFilters({
   return (
     <div className={cn("space-y-4", className)}>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
         <Input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
@@ -69,7 +69,7 @@ export function EventFilters({
             )}
             aria-pressed={viewMode === id}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className={cn("h-4 w-4", viewMode !== id && "text-primary")} />
             {label}
           </button>
         ))}

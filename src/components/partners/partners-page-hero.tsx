@@ -3,22 +3,15 @@ import { AppButton } from "@/components/design-system";
 
 export function PartnersPageHero() {
   return (
-    <section className="brand-banner relative overflow-hidden">
-      <div className="absolute inset-0 opacity-20" aria-hidden="true">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage: "radial-gradient(circle at 20% 20%, white 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-      </div>
+    <section className="relative isolate overflow-hidden bg-black text-white">
+      <img src="/images/partners-collaboration.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-center" fetchPriority="high" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/50" aria-hidden="true" />
       <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
-        <p className="text-eyebrow text-banner-foreground">Collaboration</p>
+        <p className="text-eyebrow text-[#75a9ff]">Collaboration</p>
         <h1 className="mt-2 max-w-3xl text-4xl font-black tracking-[var(--tracking-tight)] sm:text-5xl">
           Strategic Partners
         </h1>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-banner-foreground sm:text-lg">
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/90 sm:text-lg">
           Building stronger communities through collaboration, research, education, innovation, and sustainable
           development.
         </p>
@@ -30,6 +23,7 @@ export function PartnersPageHero() {
             variant="secondary"
             size="lg"
             shape="pill"
+            className="border border-[#75a9ff] bg-[#1764d4]/35 text-white hover:bg-[#1764d4]/55"
             asChild
           >
             <Link to="/programs">View Programs</Link>

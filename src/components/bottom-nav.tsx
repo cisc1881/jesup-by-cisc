@@ -1,15 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, Compass, Home, User, Users } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { Compass, Home, Ticket, User, Users } from "lucide-react";
 
 const items = [
   { to: "/", label: "Home", icon: Home, match: (path: string) => path === "/" },
-  {
-    to: "/events",
-    label: "Agenda",
-    icon: CalendarDays,
-    match: (path: string) => path.startsWith("/events") || path.startsWith("/workshops"),
-  },
   {
     to: "/explore",
     label: "Explore",
@@ -36,7 +29,6 @@ const items = [
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const { user } = useAuth();
 
   if (pathname.startsWith("/admin")) return null;
 
@@ -46,17 +38,14 @@ export function BottomNav() {
       <Link
         key={item.to}
         to={item.to}
-        search={item.to === "/events" ? { view: user ? "mine" : "explore" } : undefined}
         className="group flex min-h-[60px] min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[11px] font-semibold transition"
         aria-current={active ? "page" : undefined}
       >
         <item.icon
-          className={`h-5 w-5 ${active ? "institution-accent-text" : "text-muted-foreground group-hover:text-foreground"}`}
+          className="h-5 w-5 text-primary"
           aria-hidden="true"
         />
-        <span className={active ? "institution-accent-text" : "text-muted-foreground"}>
-          {item.label}
-        </span>
+        <span className={active ? "text-primary" : "text-muted-foreground"}>{item.label}</span>
       </Link>
     );
   };
@@ -68,7 +57,19 @@ export function BottomNav() {
         aria-label="Primary"
       >
         <div className="mx-auto grid max-w-xl grid-cols-5 items-end px-1 pt-1">
-          {items.map(renderItem)}
+          {items.slice(0, 2).map(renderItem)}
+          <Link
+            to="/me/wallet"
+            className="group relative flex min-h-[60px] flex-col items-center justify-end gap-0.5 pb-1.5 text-[11px] font-bold text-primary"
+            aria-current={pathname.startsWith("/me/wallet") ? "page" : undefined}
+            aria-label="Tickets and wallet"
+          >
+            <span className="absolute -top-6 grid h-14 w-14 place-items-center rounded-full border-4 border-background bg-primary text-primary-foreground shadow-[var(--shadow-lift)] transition group-active:scale-95">
+              <Ticket className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <span>Tickets</span>
+          </Link>
+          {items.slice(2).map(renderItem)}
         </div>
       </nav>
     </>

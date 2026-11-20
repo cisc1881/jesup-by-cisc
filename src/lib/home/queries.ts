@@ -3,6 +3,13 @@ import { fetchFeaturedNewsArticle, fetchNewsArticles } from "@/lib/news";
 import { fetchFeaturedPodcastEpisode } from "@/lib/podcasts";
 import { fetchPartners } from "@/lib/partners";
 import { fetchPublications } from "@/lib/publications";
+import {
+  FC135_COVER_IMAGE,
+  eventCoverImageAlt,
+  resolveEventCoverImage,
+} from "@/lib/event-cover-image";
+import { curatedContentImage, curatedMarketIdentity } from "@/lib/curated-content-images";
+import { podcastCoverUrl } from "@/lib/2fas-podcast";
 import { fetchHomePrograms } from "./programs-source";
 import {
   DEFAULT_IMPACT_METRICS,
@@ -113,19 +120,18 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
   const [eventsRes, marketsRes, podcastRes, programsRes] = await Promise.all([
     supabase
       .from("events")
-      .select("id,title,description,image_url,starts_at,is_featured,metadata")
+      .select("id,slug,title,description,image_url,starts_at,is_featured,metadata")
       .eq("status", "published")
       .eq("is_active", true)
-      .not("image_url", "is", null)
+      .or("image_url.not.is.null,slug.eq.fc135")
       .gte("starts_at", now())
       .order("is_featured", { ascending: false })
       .order("starts_at", { ascending: true })
       .limit(limit),
     supabase
       .from("markets")
-      .select("id,name,description,image_url,is_featured,metadata")
+      .select("id,slug,name,description,image_url,is_featured,metadata")
       .eq("is_active", true)
-      .not("image_url", "is", null)
       .order("is_featured", { ascending: false })
       .order("name")
       .limit(limit),
@@ -142,7 +148,6 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
       .select("id,slug,name,tagline,cover_image_url,metadata")
       .eq("is_active", true)
       .eq("is_featured", true)
-      .not("cover_image_url", "is", null)
       .order("sort_order", { ascending: true })
       .limit(limit),
   ]);
@@ -150,11 +155,16 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
   const slides: HomeHeroSlide[] = [];
 
   for (const e of eventsRes.data ?? []) {
-    if (!e.image_url) continue;
+    const coverImageUrl = resolveEventCoverImage(e.slug, e.image_url);
+    if (!coverImageUrl) continue;
+    const slideImageUrl =
+      coverImageUrl.startsWith("/images/content/") || coverImageUrl === FC135_COVER_IMAGE
+        ? coverImageUrl
+        : (heroImage(e.metadata, coverImageUrl) ?? coverImageUrl);
     slides.push({
       id: `event-${e.id}`,
-      imageUrl: heroImage(e.metadata, e.image_url) ?? e.image_url,
-      imageAlt: e.title,
+      imageUrl: slideImageUrl,
+      imageAlt: eventCoverImageAlt(slideImageUrl, e.title),
       title: e.title,
       subtitle: e.description,
       linkTo: "/events/$id",
@@ -165,12 +175,15 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
   }
 
   for (const m of marketsRes.data ?? []) {
-    if (!m.image_url) continue;
+    const { name, coverImageUrl } = curatedMarketIdentity(m);
+    if (!coverImageUrl) continue;
     slides.push({
       id: `market-${m.id}`,
-      imageUrl: heroImage(m.metadata, m.image_url) ?? m.image_url,
-      imageAlt: m.name,
-      title: m.name,
+      imageUrl: coverImageUrl.startsWith("/images/content/")
+        ? coverImageUrl
+        : (heroImage(m.metadata, coverImageUrl) ?? coverImageUrl),
+      imageAlt: name,
+      title: name,
       subtitle: m.description,
       linkTo: "/markets/$id",
       linkParams: { id: m.id },
@@ -180,10 +193,11 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
   }
 
   for (const p of podcastRes.data ?? []) {
-    if (!p.cover_url) continue;
+    const coverUrl = podcastCoverUrl(p.slug, p.cover_url);
+    if (!coverUrl) continue;
     slides.push({
       id: `podcast-${p.id}`,
-      imageUrl: p.cover_url,
+      imageUrl: coverUrl,
       imageAlt: p.title,
       title: p.title,
       subtitle: p.description,
@@ -196,10 +210,13 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
   }
 
   for (const p of programsRes.data ?? []) {
-    if (!p.cover_image_url) continue;
+    const coverImageUrl = curatedContentImage("program", p.slug, p.cover_image_url);
+    if (!coverImageUrl) continue;
     slides.push({
       id: `program-${p.id}`,
-      imageUrl: heroImage(p.metadata, p.cover_image_url) ?? p.cover_image_url,
+      imageUrl: coverImageUrl.startsWith("/images/content/")
+        ? coverImageUrl
+        : (heroImage(p.metadata, coverImageUrl) ?? coverImageUrl),
       imageAlt: p.name,
       title: p.name,
       subtitle: p.tagline,
@@ -216,7 +233,7 @@ export async function fetchHomeHeroSlides(limit = 5): Promise<HomeHeroSlide[]> {
 export async function fetchHomeEvents(limit = 6): Promise<HomeEvent[]> {
   const { data, error } = await supabase
     .from("events")
-    .select("id,title,starts_at,ends_at,location,image_url,registration_open,metadata")
+    .select("id,slug,title,starts_at,ends_at,location,image_url,registration_open,metadata")
     .eq("status", "published")
     .eq("is_active", true)
     .or(
@@ -231,7 +248,7 @@ export async function fetchHomeEvents(limit = 6): Promise<HomeEvent[]> {
     startsAt: event.starts_at,
     endsAt: event.ends_at,
     location: event.location,
-    imageUrl: event.image_url,
+    imageUrl: resolveEventCoverImage(event.slug, event.image_url),
     registrationOpen: event.registration_open,
     ...contentAffiliation(event.metadata),
   }));

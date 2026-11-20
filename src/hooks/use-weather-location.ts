@@ -5,7 +5,12 @@ import {
   writeStoredWeatherLocation,
 } from "@/lib/weather/location-storage";
 import { geocodeLocationServerFn } from "@/lib/weather/server-fn";
-import type { GeocodedPlace, LocationSource, StoredWeatherLocation, WeatherCenterStatus } from "@/lib/weather/types";
+import type {
+  GeocodedPlace,
+  LocationSource,
+  StoredWeatherLocation,
+  WeatherCenterStatus,
+} from "@/lib/weather/types";
 
 type UseWeatherLocationResult = {
   location: StoredWeatherLocation;
@@ -45,7 +50,25 @@ export function useWeatherLocation(): UseWeatherLocationResult {
 
   useEffect(() => {
     writeStoredWeatherLocation(location);
+    window.dispatchEvent(new Event("jesup-weather-location-changed"));
   }, [location]);
+
+  useEffect(() => {
+    const syncLocation = () => {
+      const saved = readStoredWeatherLocation();
+      if (!saved) return;
+      setLocation((current) =>
+        current.lat === saved.lat &&
+        current.lon === saved.lon &&
+        current.label === saved.label &&
+        current.source === saved.source
+          ? current
+          : saved,
+      );
+    };
+    window.addEventListener("jesup-weather-location-changed", syncLocation);
+    return () => window.removeEventListener("jesup-weather-location-changed", syncLocation);
+  }, []);
 
   const locationSource = location.source;
 

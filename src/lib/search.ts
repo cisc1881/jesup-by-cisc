@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import { curatedMarketIdentity } from "@/lib/curated-content-images";
+import { podcastCoverUrl } from "@/lib/2fas-podcast";
 
 export type SearchEntityType =
   | "program"
@@ -246,16 +248,17 @@ export async function universalSearch(
 
   for (const row of marketsRes.data ?? []) {
     const location = [row.city, row.state].filter(Boolean).join(", ") || null;
+    const { name, coverImageUrl } = curatedMarketIdentity(row);
     const hit = buildResult(
       {
         id: row.id,
         entityType: "market",
-        title: row.name,
+        title: name,
         description: location ?? row.description,
         href: "/markets/$id",
         hrefParams: { id: row.slug ?? row.id },
-        imageUrl: row.image_url,
-        scoreFields: [row.name, row.description, row.city, row.state],
+        imageUrl: coverImageUrl,
+        scoreFields: [name, row.description, row.city, row.state],
       },
       q,
     );
@@ -337,7 +340,7 @@ export async function universalSearch(
         description: row.guest ?? row.description,
         href: "/podcasts/$slug",
         hrefParams: { slug: row.slug },
-        imageUrl: row.cover_url,
+        imageUrl: podcastCoverUrl(row.slug, row.cover_url),
         scoreFields: [row.title, row.description, row.guest],
       },
       q,

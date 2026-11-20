@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { publishingWriteError, validateContentIdentity } from "@/lib/content-publishing";
 import { distanceKm } from "@/lib/market-geo";
+import { curatedMarketIdentity } from "@/lib/curated-content-images";
 
 export const MARKET_IMAGES_BUCKET = "market-images";
 
@@ -33,7 +34,15 @@ export const MARKET_PRODUCT_CATEGORY_LABELS: Record<MarketProductCategory, strin
   crafts: "Crafts",
 };
 
-export const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+export const DAY_LABELS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 export type MarketHour = {
   id?: string;
@@ -172,7 +181,11 @@ export type MarketFormData = {
 };
 
 export function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export function formatMarketAddress(market: Pick<MarketListItem, "address" | "city" | "state">) {
@@ -181,7 +194,9 @@ export function formatMarketAddress(market: Pick<MarketListItem, "address" | "ci
 
 export async function uploadMarketImage(file: File, prefix = "covers") {
   const path = `${prefix}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const { error } = await supabase.storage.from(MARKET_IMAGES_BUCKET).upload(path, file, { upsert: true });
+  const { error } = await supabase.storage
+    .from(MARKET_IMAGES_BUCKET)
+    .upload(path, file, { upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from(MARKET_IMAGES_BUCKET).getPublicUrl(path);
   return data.publicUrl;
@@ -238,10 +253,16 @@ function mapListRow(
 ): MarketListItem {
   const lat = (row.lat as number | null) ?? null;
   const lng = (row.lng as number | null) ?? null;
+  const identity = curatedMarketIdentity({
+    id: row.id as string,
+    slug: (row.slug as string | null) ?? null,
+    name: row.name as string,
+    image_url: (row.image_url as string | null) ?? null,
+  });
   return {
     id: row.id as string,
     slug: (row.slug as string) ?? (row.id as string),
-    name: row.name as string,
+    name: identity.name,
     description: (row.description as string | null) ?? null,
     address: (row.address as string | null) ?? null,
     city: (row.city as string | null) ?? null,
@@ -250,7 +271,7 @@ function mapListRow(
     lng,
     hours: (row.hours as string | null) ?? null,
     season: (row.season as string | null) ?? null,
-    coverImageUrl: (row.image_url as string | null) ?? null,
+    coverImageUrl: identity.coverImageUrl,
     phone: (row.phone as string | null) ?? null,
     email: (row.email as string | null) ?? null,
     websiteUrl: (row.website_url as string | null) ?? null,
@@ -307,9 +328,15 @@ export async function fetchMarkets(options?: {
   return mapped;
 }
 
-export async function fetchMarketById(idOrSlug: string, coords?: { lat: number; lng: number } | null): Promise<MarketDetail | null> {
+export async function fetchMarketById(
+  idOrSlug: string,
+  coords?: { lat: number; lng: number } | null,
+): Promise<MarketDetail | null> {
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
-  let query = supabase.from("markets").select(`${listSelect}, contact_name, payment_notes, metadata`).eq("is_active", true);
+  let query = supabase
+    .from("markets")
+    .select(`${listSelect}, contact_name, payment_notes, metadata`)
+    .eq("is_active", true);
   query = isUuid ? query.eq("id", idOrSlug) : query.eq("slug", idOrSlug);
 
   const { data: row, error } = await query.maybeSingle();
@@ -321,10 +348,28 @@ export async function fetchMarketById(idOrSlug: string, coords?: { lat: number; 
     await Promise.all([
       supabase.from("market_hours").select("*").eq("market_id", marketId).order("day_of_week"),
       supabase.from("market_images").select("*").eq("market_id", marketId).order("sort_order"),
-      supabase.from("market_vendors").select("*").eq("market_id", marketId).eq("is_active", true).order("sort_order"),
-      supabase.from("market_announcements").select("*").eq("market_id", marketId).eq("is_active", true).order("created_at", { ascending: false }),
-      supabase.from("market_events").select("sort_order, events ( id, title, starts_at )").eq("market_id", marketId).order("sort_order"),
-      supabase.from("market_programs").select("sort_order, programs ( id, name, slug )").eq("market_id", marketId).order("sort_order"),
+      supabase
+        .from("market_vendors")
+        .select("*")
+        .eq("market_id", marketId)
+        .eq("is_active", true)
+        .order("sort_order"),
+      supabase
+        .from("market_announcements")
+        .select("*")
+        .eq("market_id", marketId)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("market_events")
+        .select("sort_order, events ( id, title, starts_at )")
+        .eq("market_id", marketId)
+        .order("sort_order"),
+      supabase
+        .from("market_programs")
+        .select("sort_order, programs ( id, name, slug )")
+        .eq("market_id", marketId)
+        .order("sort_order"),
       fetchMarkets({ coords }),
     ]);
 
@@ -332,7 +377,9 @@ export async function fetchMarketById(idOrSlug: string, coords?: { lat: number; 
     if (res.error) throw res.error;
   }
 
-  const structuredHours = (hoursRes.data ?? []).map((h) => mapHourRow(h as Record<string, unknown>));
+  const structuredHours = (hoursRes.data ?? []).map((h) =>
+    mapHourRow(h as Record<string, unknown>),
+  );
   const vendorIds = (vendorsRes.data ?? []).map((v) => v.id);
   let products: MarketProduct[] = [];
   if (vendorIds.length > 0) {
@@ -397,11 +444,22 @@ export async function fetchMarketById(idOrSlug: string, coords?: { lat: number; 
     })),
     events: (eventsRes.data ?? []).map((item) => {
       const event = item.events as { id: string; title: string; starts_at: string };
-      return { id: event.id, title: event.title, subtitle: event.starts_at, href: "/events/$id", hrefParams: { id: event.id } };
+      return {
+        id: event.id,
+        title: event.title,
+        subtitle: event.starts_at,
+        href: "/events/$id",
+        hrefParams: { id: event.id },
+      };
     }),
     programs: (programsRes.data ?? []).map((item) => {
       const program = item.programs as { id: string; name: string; slug: string };
-      return { id: program.id, title: program.name, href: "/programs/$slug", hrefParams: { slug: program.slug } };
+      return {
+        id: program.id,
+        title: program.name,
+        href: "/programs/$slug",
+        hrefParams: { slug: program.slug },
+      };
     }),
     nearbyMarkets: allMarkets.filter((m) => m.id !== marketId && m.lat != null).slice(0, 6),
   };
@@ -434,7 +492,9 @@ export function partitionMarkets(markets: MarketListItem[], now = new Date()) {
   const rest = featured ? markets.filter((m) => m.id !== featured.id) : markets;
   const openToday = rest.filter((m) => m.isOpenToday);
   const thisWeekend = rest.filter((m) => !m.isOpenToday && m.isOpenThisWeekend);
-  const seasonal = rest.filter((m) => m.season && !openToday.includes(m) && !thisWeekend.includes(m));
+  const seasonal = rest.filter(
+    (m) => m.season && !openToday.includes(m) && !thisWeekend.includes(m),
+  );
   const nearMe = [...rest]
     .filter((m) => m.distanceKm != null)
     .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
@@ -448,7 +508,9 @@ export async function fetchAdminMarkets() {
   const { data, error } = await supabase.from("markets").select(listSelect).order("name");
   if (error) throw error;
   const hoursMap = await fetchHoursForMarkets((data ?? []).map((r) => r.id));
-  return (data ?? []).map((row) => mapListRow(row as Record<string, unknown>, hoursMap.get(row.id) ?? []));
+  return (data ?? []).map((row) =>
+    mapListRow(row as Record<string, unknown>, hoursMap.get(row.id) ?? []),
+  );
 }
 
 export function emptyMarketForm(): MarketFormData {
@@ -490,17 +552,26 @@ export function emptyMarketForm(): MarketFormData {
 }
 
 export async function fetchAdminMarketForm(marketId: string): Promise<MarketFormData> {
-  const { data: row, error } = await supabase.from("markets").select("*").eq("id", marketId).single();
+  const { data: row, error } = await supabase
+    .from("markets")
+    .select("*")
+    .eq("id", marketId)
+    .single();
   if (error) throw error;
 
-  const [hoursRes, galleryRes, vendorsRes, announcementsRes, eventsRes, programsRes] = await Promise.all([
-    supabase.from("market_hours").select("*").eq("market_id", marketId).order("day_of_week"),
-    supabase.from("market_images").select("*").eq("market_id", marketId).order("sort_order"),
-    supabase.from("market_vendors").select("*").eq("market_id", marketId).order("sort_order"),
-    supabase.from("market_announcements").select("*").eq("market_id", marketId).order("created_at", { ascending: false }),
-    supabase.from("market_events").select("event_id").eq("market_id", marketId),
-    supabase.from("market_programs").select("program_id").eq("market_id", marketId),
-  ]);
+  const [hoursRes, galleryRes, vendorsRes, announcementsRes, eventsRes, programsRes] =
+    await Promise.all([
+      supabase.from("market_hours").select("*").eq("market_id", marketId).order("day_of_week"),
+      supabase.from("market_images").select("*").eq("market_id", marketId).order("sort_order"),
+      supabase.from("market_vendors").select("*").eq("market_id", marketId).order("sort_order"),
+      supabase
+        .from("market_announcements")
+        .select("*")
+        .eq("market_id", marketId)
+        .order("created_at", { ascending: false }),
+      supabase.from("market_events").select("event_id").eq("market_id", marketId),
+      supabase.from("market_programs").select("program_id").eq("market_id", marketId),
+    ]);
 
   for (const res of [hoursRes, galleryRes, vendorsRes, announcementsRes, eventsRes, programsRes]) {
     if (res.error) throw res.error;
@@ -691,16 +762,28 @@ async function replaceMarketRelations(marketId: string, form: MarketFormData) {
   }
 
   if (form.eventIds.length) {
-    const { error } = await supabase.from("market_events").insert(
-      form.eventIds.map((eventId, index) => ({ market_id: marketId, event_id: eventId, sort_order: index })),
-    );
+    const { error } = await supabase
+      .from("market_events")
+      .insert(
+        form.eventIds.map((eventId, index) => ({
+          market_id: marketId,
+          event_id: eventId,
+          sort_order: index,
+        })),
+      );
     if (error) throw error;
   }
 
   if (form.programIds.length) {
-    const { error } = await supabase.from("market_programs").insert(
-      form.programIds.map((programId, index) => ({ market_id: marketId, program_id: programId, sort_order: index })),
-    );
+    const { error } = await supabase
+      .from("market_programs")
+      .insert(
+        form.programIds.map((programId, index) => ({
+          market_id: marketId,
+          program_id: programId,
+          sort_order: index,
+        })),
+      );
     if (error) throw error;
   }
 }
@@ -751,18 +834,27 @@ export async function deleteMarket(marketId: string) {
 }
 
 export async function fetchUserFavoriteMarketIds(userId: string) {
-  const { data, error } = await supabase.from("favorites").select("market_id").eq("user_id", userId);
+  const { data, error } = await supabase
+    .from("favorites")
+    .select("market_id")
+    .eq("user_id", userId);
   if (error) throw error;
   return new Set((data ?? []).map((row) => row.market_id));
 }
 
 export async function toggleFavoriteMarket(userId: string, marketId: string, favorite: boolean) {
   if (favorite) {
-    const { error } = await supabase.from("favorites").insert({ user_id: userId, market_id: marketId });
+    const { error } = await supabase
+      .from("favorites")
+      .insert({ user_id: userId, market_id: marketId });
     if (error) throw error;
     return;
   }
-  const { error } = await supabase.from("favorites").delete().eq("user_id", userId).eq("market_id", marketId);
+  const { error } = await supabase
+    .from("favorites")
+    .delete()
+    .eq("user_id", userId)
+    .eq("market_id", marketId);
   if (error) throw error;
 }
 
@@ -780,7 +872,10 @@ export async function fetchMarketIdsByProductCategory(category: MarketProductCat
 export async function getMarketAnalytics() {
   const [markets, vendors, products, favorites] = await Promise.all([
     supabase.from("markets").select("id", { count: "exact", head: true }).eq("is_active", true),
-    supabase.from("market_vendors").select("id", { count: "exact", head: true }).eq("is_active", true),
+    supabase
+      .from("market_vendors")
+      .select("id", { count: "exact", head: true })
+      .eq("is_active", true),
     supabase.from("market_products").select("id", { count: "exact", head: true }),
     supabase.from("favorites").select("market_id", { count: "exact", head: true }),
   ]);

@@ -26,6 +26,7 @@ import {
 } from "@/components/institution-scope-filter";
 import { listInstitutions } from "@/lib/institutions";
 import { parseInternshipAudience } from "@/lib/internships";
+import { curatedContentImage } from "@/lib/curated-content-images";
 
 export const Route = createFileRoute("/internships")({
   head: () =>
@@ -121,6 +122,7 @@ function InternshipsPage() {
 
 type InternshipRow = {
   id: string;
+  slug: string | null;
   title: string;
   description: string | null;
   department: string | null;
@@ -141,10 +143,17 @@ function InternshipCard({
   const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const cover = curatedContentImage("internship", internship.slug);
 
   return (
     <Card>
       <CardContent className="p-6">
+        {cover && (
+          <div className="relative -mx-6 -mt-6 mb-5 aspect-[16/9] overflow-hidden bg-secondary">
+            <img src={cover} alt="" loading="lazy" className="h-full w-full object-cover" />
+            <span className="absolute inset-0 bg-black/15" aria-hidden="true" />
+          </div>
+        )}
         <div className="grid h-11 w-11 place-items-center rounded-lg bg-primary/10 text-primary">
           <Briefcase className="h-5 w-5" />
         </div>

@@ -18,15 +18,9 @@ export function FeaturedMarketHero({ market }: FeaturedMarketHeroProps) {
         {market.coverImageUrl ? (
           <img src={market.coverImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
         ) : (
-          <div className="absolute inset-0 grad-crimson" />
+          <img src="/images/market-produce.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
         )}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(122,12,22,0.45) 50%, rgba(122,12,22,0.96) 100%)",
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/65 to-black/95" aria-hidden="true" />
         <div className="relative z-10 flex min-h-[360px] flex-col justify-end p-6 sm:min-h-[440px] sm:p-10">
           <div className="mb-6">
             <span className="glass-surface-dark inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">

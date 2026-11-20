@@ -112,9 +112,8 @@ export function ProfileInstitutionForm() {
   return (
     <form onSubmit={handleSave} className="space-y-6" aria-busy={busy}>
       <p className="text-sm text-muted-foreground">
-        Choose your school to personalize JESUP with its colors and receive more relevant events,
-        programs, people, and opportunities. The universal JESUP interface remains consistent across
-        the network.
+        Choose your school to see its logo and receive more relevant events, programs, people,
+        and opportunities. JESUP uses the same blue interface across the network.
       </p>
 
       <InstitutionFields

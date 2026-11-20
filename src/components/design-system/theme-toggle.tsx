@@ -2,7 +2,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { AppButton } from "./app-button";
 
-/** Optional control for settings/profile screens — not wired into nav yet. */
+/** One-tap theme switch shared by public and account navigation. */
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -13,7 +13,9 @@ export function ThemeToggle() {
       variant="outline"
       size="icon"
       shape="square"
+      className="min-h-11 min-w-11 shrink-0"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
       {isDark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}

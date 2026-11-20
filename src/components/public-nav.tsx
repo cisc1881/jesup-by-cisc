@@ -16,11 +16,14 @@ import { desktopNavLinks } from "@/lib/navigation";
 import { JesupLogoMark } from "@/components/branding";
 import { useInstitutionTheme } from "@/components/institution-theme-provider";
 import { fetchNotifications } from "@/modules/notifications";
-import { GuestSchoolPicker } from "@/components/institutions/guest-school-picker";
+import { landGrant1890Logo } from "@/lib/land-grant-1890";
+import { HeaderWeather } from "@/components/weather/header-weather";
+import { ThemeToggle } from "@/components/design-system/theme-toggle";
 
 export function PublicNav() {
   const { user, isAdmin } = useAuth();
-  const { institutionName, isGuest } = useInstitutionTheme();
+  const { institutionName, institutionSlug, isGuest } = useInstitutionTheme();
+  const institutionLogo = institutionSlug ? landGrant1890Logo(institutionSlug) : null;
   const navigate = useNavigate();
   const { data: messageUpdates = [] } = useQuery({
     queryKey: ["header-message-count", user?.id],
@@ -37,13 +40,13 @@ export function PublicNav() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-card/85 backdrop-blur-xl after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[var(--gradient-jesup)]">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-1 px-4 sm:gap-6 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center" aria-label="JESUP home">
           <JesupLogoMark
             size="sm"
             tone="on-light"
             className="items-start"
-            imageClassName="h-9 max-w-[7.75rem] sm:max-w-[9rem]"
+            imageClassName="h-9 max-w-20 min-[375px]:max-w-[6.5rem] sm:max-w-[9rem]"
           />
         </Link>
 
@@ -52,17 +55,22 @@ export function PublicNav() {
           className="hidden max-w-[17rem] items-center gap-2 rounded-full border border-border/70 bg-secondary/65 px-3 py-1.5 text-xs font-semibold text-foreground lg:flex"
           title={institutionName ?? "1890 Land-Grant Network"}
         >
-          <span
-            className="h-2 w-2 shrink-0 rounded-full institution-accent-bg"
-            aria-hidden="true"
-          />
-          <span className="truncate">
-            {institutionName ?? "1890 Land-Grant Network"}
-          </span>
+          {institutionLogo ? (
+            <img
+              src={institutionLogo}
+              alt=""
+              className="h-6 w-6 shrink-0 rounded bg-white object-contain p-0.5"
+              onError={(event) => {
+                event.currentTarget.hidden = true;
+              }}
+            />
+          ) : (
+            <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+          )}
+          <span className="truncate">{institutionName ?? "1890 Land-Grant Network"}</span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-2">
-          <GuestSchoolPicker />
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
           {user && (
             <Button
               asChild
@@ -81,6 +89,8 @@ export function PublicNav() {
               </Link>
             </Button>
           )}
+          <HeaderWeather />
+          <ThemeToggle />
           <Button
             asChild
             variant="outline"

@@ -4,6 +4,7 @@ import type { EventListItem } from "@/lib/events";
 import { registrationStatusLabel } from "@/lib/events";
 import { AppBadge, AppButton, AppCard } from "@/components/design-system";
 import { cn } from "@/lib/utils";
+import { eventCoverImageAlt } from "@/lib/event-cover-image";
 import { eventDateLabel } from "@/lib/conference";
 
 type EventCardProps = {
@@ -54,7 +55,7 @@ export function EventCard({ event, className, animationIndex = 0, saved, onToggl
         {event.coverImageUrl ? (
           <img
             src={event.coverImageUrl}
-            alt={event.title}
+            alt={eventCoverImageAlt(event.coverImageUrl, event.title)}
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
             loading="lazy"
           />

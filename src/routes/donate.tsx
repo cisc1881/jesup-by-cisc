@@ -24,7 +24,7 @@ function DonatePage() {
       <section className="relative overflow-hidden">
         <div className="relative h-[440px] w-full overflow-hidden sm:h-[540px]">
           <img src={donateHero} alt="" className="h-full w-full object-cover" fetchPriority="high" />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(122,12,22,0.65) 60%, rgba(122,12,22,0.9) 100%)" }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/65 to-black/90" aria-hidden="true" />
           <div className="relative z-10 mx-auto flex h-full max-w-4xl flex-col items-center justify-end px-5 pb-14 text-center text-white sm:pb-20">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] backdrop-blur">
               <Heart className="h-3.5 w-3.5" /> Give
@@ -35,7 +35,7 @@ function DonatePage() {
               href={TUSKEGEE_GIVING_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-primary shadow-2xl transition hover:scale-[1.02]"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-2xl transition hover:scale-[1.02]"
             >
               Give through Tuskegee <ArrowRight className="h-4 w-4" />
             </a>
@@ -90,7 +90,7 @@ function DonatePage() {
               <h3 className="text-2xl font-black tracking-tight sm:text-3xl">Talk with our team.</h3>
               <p className="mt-2 max-w-xl text-white/70">For sponsorships, endowments, and multi-year partnerships, our development team is ready to design a gift that fits your goals.</p>
             </div>
-            <a href="mailto:cisc@tuskegee.edu" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-foreground transition hover:scale-[1.02]">
+            <a href="mailto:cisc@tuskegee.edu" className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition hover:scale-[1.02]">
               Contact us <ArrowRight className="h-4 w-4" />
             </a>
           </div>

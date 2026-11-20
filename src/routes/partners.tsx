@@ -19,6 +19,7 @@ import {
   type PartnerSortMode,
 } from "@/lib/partners";
 import { listPageHead } from "@/lib/seo";
+import { LandGrantNetwork } from "@/components/partners/land-grant-network";
 
 export const Route = createFileRoute("/partners")({
   head: () => listPageHead({ title: "Strategic Partners", description: "Universities, federal agencies, foundations, and community organizations collaborating with CISC through JESUP.", path: "/partners" }),
@@ -60,6 +61,7 @@ function PartnersLayout() {
     <PublicLayout>
       <PartnersPageHero />
       <PageContainer size="lg" className="space-y-8 pb-bottom-nav pt-10 md:pb-[var(--page-py)]">
+        <LandGrantNetwork />
         {impactCounts && <PartnerImpactStats counts={impactCounts} />}
 
         {isLoading ? (

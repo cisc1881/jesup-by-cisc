@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { podcastCoverUrl, podcastEmbedUrl } from "@/lib/2fas-podcast";
 
 export const PODCAST_IMAGES_BUCKET = "podcast-images";
 
@@ -58,9 +59,9 @@ function mapRow(row: Record<string, unknown>): PodcastListItem {
     description: (row.description as string | null) ?? null,
     guest: (row.guest as string | null) ?? null,
     category: (row.category as string | null) ?? null,
-    coverUrl: (row.cover_url as string | null) ?? null,
+    coverUrl: podcastCoverUrl(row.slug as string, (row.cover_url as string | null) ?? null),
     audioUrl: (row.audio_url as string | null) ?? null,
-    embedUrl: (row.embed_url as string | null) ?? null,
+    embedUrl: podcastEmbedUrl(row.slug as string, (row.embed_url as string | null) ?? null),
     durationSeconds: (row.duration_seconds as number | null) ?? null,
     publishedAt: (row.published_at as string | null) ?? null,
     isPublished: row.is_published as boolean,
@@ -78,7 +79,9 @@ export function slugify(value: string) {
 
 export async function uploadPodcastCover(file: File) {
   const path = `covers/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const { error } = await supabase.storage.from(PODCAST_IMAGES_BUCKET).upload(path, file, { upsert: true });
+  const { error } = await supabase.storage
+    .from(PODCAST_IMAGES_BUCKET)
+    .upload(path, file, { upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from(PODCAST_IMAGES_BUCKET).getPublicUrl(path);
   return data.publicUrl;
@@ -193,7 +196,11 @@ export async function fetchPodcastBySlug(slug: string): Promise<PodcastDetail | 
   };
 }
 
-export function filterPodcasts(episodes: PodcastListItem[], search: string, category: string | null) {
+export function filterPodcasts(
+  episodes: PodcastListItem[],
+  search: string,
+  category: string | null,
+) {
   const q = search.trim().toLowerCase();
   return episodes.filter((ep) => {
     if (category && ep.category !== category) return false;
@@ -214,7 +221,11 @@ export async function fetchAdminPodcasts() {
 }
 
 export async function fetchAdminPodcastForm(episodeId: string): Promise<PodcastFormData> {
-  const { data: row, error } = await supabase.from("podcast_episodes").select("*").eq("id", episodeId).single();
+  const { data: row, error } = await supabase
+    .from("podcast_episodes")
+    .select("*")
+    .eq("id", episodeId)
+    .single();
   if (error) throw error;
   return mapFormRow(row);
 }
@@ -254,7 +265,10 @@ export function emptyPodcastForm(): PodcastFormData {
 }
 
 async function clearOtherFeatured(excludeId?: string) {
-  let query = supabase.from("podcast_episodes").update({ is_featured: false }).eq("is_featured", true);
+  let query = supabase
+    .from("podcast_episodes")
+    .update({ is_featured: false })
+    .eq("is_featured", true);
   if (excludeId) query = query.neq("id", excludeId);
   const { error } = await query;
   if (error) throw error;
@@ -289,7 +303,11 @@ export async function savePodcast(episodeId: string | null, form: PodcastFormDat
     return episodeId;
   }
 
-  const { data, error } = await supabase.from("podcast_episodes").insert(payload).select("id").single();
+  const { data, error } = await supabase
+    .from("podcast_episodes")
+    .insert(payload)
+    .select("id")
+    .single();
   if (error) throw error;
   return data.id as string;
 }

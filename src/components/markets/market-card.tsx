@@ -43,7 +43,7 @@ export function MarketCard({ market, className, animationIndex = 0, saved, onTog
             loading="lazy"
           />
         ) : (
-          <div className="h-full w-full grad-crimson" />
+          <img src="/images/market-produce.jpg" alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
         )}
         <div
           className="absolute inset-0"

@@ -8,13 +8,13 @@ const appButtonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "grad-crimson text-gradient-foreground shadow-token-crimson hover:opacity-95",
-        secondary: "bg-secondary text-secondary-foreground shadow-token-soft hover:bg-secondary hover:text-secondary-foreground hover:underline",
-        outline: "border border-border bg-background text-foreground shadow-token-soft hover:bg-secondary/60",
-        ghost: "text-foreground hover:bg-secondary/70",
-        gold: "bg-accent text-accent-foreground shadow-token-soft hover:opacity-90",
+        primary: "grad-crimson text-primary-foreground shadow-token-crimson hover:opacity-95",
+        secondary: "border border-primary/45 bg-primary/10 text-primary shadow-token-soft hover:bg-primary/20",
+        outline: "border border-primary/55 bg-background text-primary shadow-token-soft hover:bg-primary/10",
+        ghost: "text-primary hover:bg-primary/10",
+        gold: "bg-primary text-primary-foreground shadow-token-crimson hover:opacity-90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        inverse: "bg-card text-card-foreground shadow-token-soft hover:bg-muted",
+        inverse: "bg-primary text-primary-foreground shadow-token-crimson hover:bg-primary/90",
       },
       size: {
         sm: "min-h-11 px-3.5 py-2 text-xs",

@@ -42,7 +42,7 @@ export function MarketFilters({
   return (
     <div className={cn("space-y-4", className)}>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
         <Input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
@@ -57,7 +57,7 @@ export function MarketFilters({
           onClick={() => onViewModeChange("list")}
           className={cn(chipBase, "inline-flex items-center gap-2", viewMode === "list" ? chipActive : chipInactive)}
         >
-          <LayoutGrid className="h-4 w-4" />
+          <LayoutGrid className={cn("h-4 w-4", viewMode !== "list" && "text-primary")} />
           List
         </button>
         <button
@@ -65,7 +65,7 @@ export function MarketFilters({
           onClick={() => onViewModeChange("map")}
           className={cn(chipBase, "inline-flex items-center gap-2", viewMode === "map" ? chipActive : chipInactive)}
         >
-          <Map className="h-4 w-4" />
+          <Map className={cn("h-4 w-4", viewMode !== "map" && "text-primary")} />
           Map
         </button>
         <button

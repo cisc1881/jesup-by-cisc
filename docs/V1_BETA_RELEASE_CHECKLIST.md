@@ -188,7 +188,7 @@ Content below should be added **through the Command Center** (no code changes re
 
 | Content | Where to add | Suggested examples |
 |---------|--------------|-------------------|
-| **Tuskegee Farmers Market** | `/admin/markets` | Verify featured, SNAP/EBT, vendors, products, gallery photos |
+| **Macon County Farmers Market** | `/admin/markets` | Verify featured, SNAP/EBT, vendors, products, gallery photos |
 | **Podcast placeholder** | `/admin/podcasts` | 1 featured episode — "JESUP: The Digital Extension Wagon" |
 | **Partner placeholders** | `/admin/partners` | 3–5 logos (Tuskegee Extension, local orgs, USDA partner) |
 | **News article** | `/admin/news` | 1 announcement — BTW Summit or 2FAS cohort opening |
@@ -313,7 +313,7 @@ Run this checklist **on the target demo environment** (staging or production) wi
 - [ ] **Home** — Featured programs, events, publications, market, podcast sections render with real content
 - [ ] **Programs** — Open 2FAS and EEE Academy detail pages; images and attachments load
 - [ ] **Events** — BTW Summit opens; registration status and capacity display correctly
-- [ ] **Markets** — Tuskegee Farmers Market shows location, SNAP/EBT, products
+- [ ] **Markets** — Macon County Farmers Market shows location, SNAP/EBT, products
 - [ ] **Universal Search** — Returns hits for: 2FAS, BTW, farmers, sustainability
 - [ ] **Command Center** — Dashboard metrics match live counts; quick actions open correct forms
 - [ ] **2FAS Applications** — Filter by status; open detail dialog; update status; download documents

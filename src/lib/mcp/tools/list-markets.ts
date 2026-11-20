@@ -1,6 +1,7 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 import { supabaseForUser } from "../supabase";
+import { curatedMarketIdentity } from "../../curated-content-images";
 
 export default defineTool({
   name: "list_markets",
@@ -28,9 +29,13 @@ export default defineTool({
 
     const { data, error } = await query;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    const markets = (data ?? []).map((market) => ({
+      ...market,
+      name: curatedMarketIdentity(market).name,
+    }));
     return {
-      content: [{ type: "text", text: JSON.stringify(data ?? []) }],
-      structuredContent: { markets: data ?? [] },
+      content: [{ type: "text", text: JSON.stringify(markets) }],
+      structuredContent: { markets },
     };
   },
 });

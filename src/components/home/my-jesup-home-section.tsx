@@ -66,9 +66,11 @@ export function MyJesupHomeSection() {
                   {fmtDateTime(event.starts_at)}
                   {event.location ? ` · ${event.location}` : ""}
                 </span>
-                <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold institution-accent-text">
-                  <QrCode className="h-3.5 w-3.5" /> Ticket ready
-                </span>
+                {registration.ticket_code && (
+                  <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold institution-accent-text">
+                    <QrCode className="h-3.5 w-3.5" /> View event pass
+                  </span>
+                )}
               </span>
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </Link>

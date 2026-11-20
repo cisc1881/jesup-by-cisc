@@ -43,17 +43,32 @@ import { Achievements } from "@/components/profile/achievements";
 
 export const Route = createFileRoute("/_authenticated/me/")({ component: MePage });
 
+type CheckoutSummary = {
+  id: string;
+  quantity: number;
+  checkout_date: string;
+  return_date: string;
+  status: string;
+  admin_notes: string | null;
+  checked_out_at: string | null;
+  returned_at: string | null;
+  equipment: { name: string } | null;
+};
+
 function MePage() {
   const { user, isAdmin, isFunder } = useAuth();
-  const { data: regs } = useQuery({
+  const { data: regs, isSuccess: regsReady } = useQuery({
     queryKey: ["my-regs", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("event_registrations")
-        .select("id, notes, status, ticket_code, created_at, events(id,title,starts_at,location)")
+        .select(
+          "id, notes, status, ticket_code, checked_in_at, created_at, events(id,title,starts_at,location)",
+        )
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
+      if (error) throw error;
       return data ?? [];
     },
   });
@@ -85,7 +100,7 @@ function MePage() {
     enabled: !!user,
     queryFn: () => getMyPendingEvaluations(user!.id),
   });
-  const { data: completedEvaluations = [] } = useQuery({
+  const { data: completedEvaluations = [], isSuccess: completedEvaluationsReady } = useQuery({
     queryKey: [...MY_COMPLETED_EVALUATIONS_QUERY_KEY, user?.id],
     enabled: !!user,
     queryFn: () => getMyCompletedEvaluations(user!.id),
@@ -278,15 +293,15 @@ function MePage() {
             {(!apps || apps.length === 0) && (
               <p className="text-muted-foreground">No applications yet.</p>
             )}
-            {apps?.map((a: any) => (
+            {apps?.map((a) => (
               <Card key={a.id}>
                 <CardContent className="p-4 flex items-center justify-between gap-2">
                   <div>
                     <div className="font-serif text-lg font-semibold text-primary">
-                      {a.internships.title}
+                      {a.internships?.title ?? "Internship"}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {a.internships.department} · {fmtDate(a.created_at)}
+                      {a.internships?.department ?? "Department pending"} · {fmtDate(a.created_at)}
                     </p>
                   </div>
                   <Badge>{a.status}</Badge>

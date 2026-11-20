@@ -30,12 +30,13 @@ export const starterPodcasts = [
     slug: "2fas-podcast",
     title: "2FAS Podcast",
     description:
-      "Conversations about student pathways, professional development, agriculture, food systems, and the next generation of leaders.",
+      "Health, science, agriculture, and culture from Tuskegee University and the Carver Integrative Sustainability Center.",
     category: "2FAS",
-    cover_url: COVERS.community,
+    cover_url: "/images/content/2fas-podcast.jpg",
+    embed_url: "https://open.spotify.com/embed/show/4BCy3DO6boEw4UBhM0Ykjh",
     is_published: true,
     is_featured: true,
-    published_at: "2026-07-01T12:00:00Z",
+    published_at: null,
   },
   {
     slug: "earth2tu",
@@ -312,10 +313,8 @@ export const starterMarkets = [
     state: "AL",
     hours: "Wednesday and Saturday, 8:30 AM–2:00 PM",
     season: "June–November; confirm current schedule",
-    image_url: COVERS.community,
+    image_url: "/images/content/macon-county-farmers-market.jpg",
     metadata: {
-      hero_image_url: HEROES.community,
-      image_note: "AI-generated illustrative image",
       source: "Alabama Farmers Market Authority / USDA directory",
     },
     accepts_credit: true,

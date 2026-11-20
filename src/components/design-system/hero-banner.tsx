@@ -42,7 +42,7 @@ export function HeroBanner({
       )}
       {overlay && <div className="absolute inset-0 hero-overlay" aria-hidden="true" />}
       {children && (
-        <div className="relative z-10 flex h-full flex-col justify-end page-x pb-[var(--space-10)] pt-[var(--space-16)] text-primary-foreground">
+        <div className="relative z-10 flex h-full flex-col justify-end page-x pb-[var(--space-10)] pt-[var(--space-16)] text-white">
           {children}
         </div>
       )}

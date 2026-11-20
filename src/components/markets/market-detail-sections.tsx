@@ -46,15 +46,9 @@ export function MarketDetailHero({
         {market.coverImageUrl ? (
           <img src={market.coverImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
         ) : (
-          <div className="absolute inset-0 grad-crimson" />
+          <img src="/images/market-produce.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
         )}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(122,12,22,0.5) 55%, rgba(122,12,22,0.95) 100%)",
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/65 to-black/95" aria-hidden="true" />
         <div className="absolute right-4 top-4 z-10 flex gap-2 sm:right-6 sm:top-6">
           {onToggleSaved && (
             <button

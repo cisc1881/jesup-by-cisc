@@ -39,7 +39,10 @@ export const Route = createFileRoute("/events/$id")({
 function EventDetailPage() {
   const matches = useMatches();
   const isChild = matches.some(
-    (m) => m.routeId === "/events/$id/evaluation" || m.routeId === "/events/$id/hub",
+    (m) =>
+      m.routeId === "/events/$id/evaluation" ||
+      m.routeId === "/events/$id/hub" ||
+      m.routeId === "/events/$id/guide",
   );
   const { user } = useAuth();
   const { event } = Route.useLoaderData();

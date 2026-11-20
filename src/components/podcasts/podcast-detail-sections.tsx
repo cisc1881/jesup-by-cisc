@@ -10,7 +10,11 @@ export function PodcastDetailHero({ episode }: { episode: PodcastDetail }) {
     <section className="relative">
       <div className="relative min-h-[280px] overflow-hidden bg-secondary sm:min-h-[360px]">
         {episode.coverUrl ? (
-          <img src={episode.coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={episode.coverUrl}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <div className="absolute inset-0 grad-crimson" />
         )}
@@ -26,8 +30,12 @@ export function PodcastDetailHero({ episode }: { episode: PodcastDetail }) {
             {episode.category && <AppBadge variant="secondary">{episode.category}</AppBadge>}
             {episode.isFeatured && <AppBadge variant="gold">Featured</AppBadge>}
           </div>
-          <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">{episode.title}</h1>
-          {episode.guest && <p className="mt-3 text-sm text-white/85 sm:text-base">with {episode.guest}</p>}
+          <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">
+            {episode.title}
+          </h1>
+          {episode.guest && (
+            <p className="mt-3 text-sm text-white/85 sm:text-base">with {episode.guest}</p>
+          )}
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-white/70">
             {episode.publishedAt && <span>{fmtDate(episode.publishedAt)}</span>}
             {episode.durationSeconds != null && <span>{fmtDuration(episode.durationSeconds)}</span>}
@@ -41,9 +49,16 @@ export function PodcastDetailHero({ episode }: { episode: PodcastDetail }) {
 export function PodcastDetailBody({ episode }: { episode: PodcastDetail }) {
   return (
     <div className="space-y-8">
-      <PodcastPlayer embedUrl={episode.embedUrl} audioUrl={episode.audioUrl} title={episode.title} />
+      <PodcastPlayer
+        embedUrl={episode.embedUrl}
+        audioUrl={episode.audioUrl}
+        title={episode.title}
+        slug={episode.slug}
+      />
       {episode.description && (
-        <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">{episode.description}</p>
+        <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">
+          {episode.description}
+        </p>
       )}
     </div>
   );
@@ -71,7 +86,9 @@ export function PodcastRelatedSection({
               <div className="min-w-0">
                 <p className="truncate font-semibold text-foreground">{item.title}</p>
                 {item.subtitle && (
-                  <p className="truncate text-xs text-muted-foreground">{fmtDateTime(item.subtitle)}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {fmtDateTime(item.subtitle)}
+                  </p>
                 )}
               </div>
               <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-primary" />

@@ -90,6 +90,7 @@ import { Route as AuthenticatedMeOnboardingRouteImport } from './routes/_authent
 import { Route as AuthenticatedMeWalletRouteImport } from './routes/_authenticated/me.wallet'
 import { Route as AuthenticatedMeWeatherAlertsRouteImport } from './routes/_authenticated/me.weather-alerts'
 import { Route as EventsIdEvaluationRouteImport } from './routes/events.$id.evaluation'
+import { Route as EventsIdGuideRouteImport } from './routes/events.$id.guide'
 import { Route as EventsIdHubRouteImport } from './routes/events.$id.hub'
 import { Route as AuthenticatedAccountPurchasesIdRouteImport } from './routes/_authenticated/account.purchases.$id'
 import { Route as AuthenticatedAdmin2fasApplicationsRouteImport } from './routes/_authenticated/admin/2fas/applications'
@@ -97,6 +98,7 @@ import { Route as AuthenticatedAdminEventsGalleryRouteImport } from './routes/_a
 import { Route as AuthenticatedAdminFinanceProcurementSettingsRouteImport } from './routes/_authenticated/admin/finance.procurement-settings'
 import { Route as AuthenticatedAdminFinancePurchaseOrdersRouteImport } from './routes/_authenticated/admin/finance.purchase-orders'
 import { Route as AuthenticatedAdminReportsEventsRouteImport } from './routes/_authenticated/admin/reports.events'
+import { Route as AuthenticatedAdminReportsPearsRouteImport } from './routes/_authenticated/admin/reports.pears'
 import { Route as AuthenticatedAdminWeatherCountiesRouteImport } from './routes/_authenticated/admin/weather/counties'
 import { Route as AuthenticatedAdminWeatherNotificationsRouteImport } from './routes/_authenticated/admin/weather/notifications'
 import { Route as AuthenticatedEventsIdPresentRouteImport } from './routes/_authenticated/events.$id.present'
@@ -567,6 +569,11 @@ const EventsIdEvaluationRoute = EventsIdEvaluationRouteImport.update({
   path: '/evaluation',
   getParentRoute: () => EventsIdRoute,
 } as any)
+const EventsIdGuideRoute = EventsIdGuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
+  getParentRoute: () => EventsIdRoute,
+} as any)
 const EventsIdHubRoute = EventsIdHubRouteImport.update({
   id: '/hub',
   path: '/hub',
@@ -610,6 +617,12 @@ const AuthenticatedAdminReportsEventsRoute =
   AuthenticatedAdminReportsEventsRouteImport.update({
     id: '/events',
     path: '/events',
+    getParentRoute: () => AuthenticatedAdminReportsRoute,
+  } as any)
+const AuthenticatedAdminReportsPearsRoute =
+  AuthenticatedAdminReportsPearsRouteImport.update({
+    id: '/pears',
+    path: '/pears',
     getParentRoute: () => AuthenticatedAdminReportsRoute,
   } as any)
 const AuthenticatedAdminWeatherCountiesRoute =
@@ -807,6 +820,7 @@ export interface FileRoutesByFullPath {
   '/me/wallet': typeof AuthenticatedMeWalletRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
+  '/events/$id/guide': typeof EventsIdGuideRoute
   '/events/$id/hub': typeof EventsIdHubRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/funder/': typeof AuthenticatedFunderIndexRoute
@@ -817,6 +831,7 @@ export interface FileRoutesByFullPath {
   '/admin/finance/procurement-settings': typeof AuthenticatedAdminFinanceProcurementSettingsRoute
   '/admin/finance/purchase-orders': typeof AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
+  '/admin/reports/pears': typeof AuthenticatedAdminReportsPearsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
   '/events/$id/present': typeof AuthenticatedEventsIdPresentRoute
@@ -909,6 +924,7 @@ export interface FileRoutesByTo {
   '/me/wallet': typeof AuthenticatedMeWalletRoute
   '/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
+  '/events/$id/guide': typeof EventsIdGuideRoute
   '/events/$id/hub': typeof EventsIdHubRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/funder': typeof AuthenticatedFunderIndexRoute
@@ -919,6 +935,7 @@ export interface FileRoutesByTo {
   '/admin/finance/procurement-settings': typeof AuthenticatedAdminFinanceProcurementSettingsRoute
   '/admin/finance/purchase-orders': typeof AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren
   '/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
+  '/admin/reports/pears': typeof AuthenticatedAdminReportsPearsRoute
   '/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
   '/events/$id/present': typeof AuthenticatedEventsIdPresentRoute
@@ -1016,6 +1033,7 @@ export interface FileRoutesById {
   '/_authenticated/me/wallet': typeof AuthenticatedMeWalletRoute
   '/_authenticated/me/weather-alerts': typeof AuthenticatedMeWeatherAlertsRoute
   '/events/$id/evaluation': typeof EventsIdEvaluationRoute
+  '/events/$id/guide': typeof EventsIdGuideRoute
   '/events/$id/hub': typeof EventsIdHubRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/funder/': typeof AuthenticatedFunderIndexRoute
@@ -1026,6 +1044,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/finance/procurement-settings': typeof AuthenticatedAdminFinanceProcurementSettingsRoute
   '/_authenticated/admin/finance/purchase-orders': typeof AuthenticatedAdminFinancePurchaseOrdersRouteWithChildren
   '/_authenticated/admin/reports/events': typeof AuthenticatedAdminReportsEventsRoute
+  '/_authenticated/admin/reports/pears': typeof AuthenticatedAdminReportsPearsRoute
   '/_authenticated/admin/weather/counties': typeof AuthenticatedAdminWeatherCountiesRoute
   '/_authenticated/admin/weather/notifications': typeof AuthenticatedAdminWeatherNotificationsRoute
   '/_authenticated/events/$id/present': typeof AuthenticatedEventsIdPresentRoute
@@ -1123,6 +1142,7 @@ export interface FileRouteTypes {
     | '/me/wallet'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
+    | '/events/$id/guide'
     | '/events/$id/hub'
     | '/admin/'
     | '/funder/'
@@ -1133,6 +1153,7 @@ export interface FileRouteTypes {
     | '/admin/finance/procurement-settings'
     | '/admin/finance/purchase-orders'
     | '/admin/reports/events'
+    | '/admin/reports/pears'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
     | '/events/$id/present'
@@ -1225,6 +1246,7 @@ export interface FileRouteTypes {
     | '/me/wallet'
     | '/me/weather-alerts'
     | '/events/$id/evaluation'
+    | '/events/$id/guide'
     | '/events/$id/hub'
     | '/admin'
     | '/funder'
@@ -1235,6 +1257,7 @@ export interface FileRouteTypes {
     | '/admin/finance/procurement-settings'
     | '/admin/finance/purchase-orders'
     | '/admin/reports/events'
+    | '/admin/reports/pears'
     | '/admin/weather/counties'
     | '/admin/weather/notifications'
     | '/events/$id/present'
@@ -1331,6 +1354,7 @@ export interface FileRouteTypes {
     | '/_authenticated/me/wallet'
     | '/_authenticated/me/weather-alerts'
     | '/events/$id/evaluation'
+    | '/events/$id/guide'
     | '/events/$id/hub'
     | '/_authenticated/admin/'
     | '/_authenticated/funder/'
@@ -1341,6 +1365,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/finance/procurement-settings'
     | '/_authenticated/admin/finance/purchase-orders'
     | '/_authenticated/admin/reports/events'
+    | '/_authenticated/admin/reports/pears'
     | '/_authenticated/admin/weather/counties'
     | '/_authenticated/admin/weather/notifications'
     | '/_authenticated/events/$id/present'
@@ -1963,6 +1988,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsIdEvaluationRouteImport
       parentRoute: typeof EventsIdRoute
     }
+    '/events/$id/guide': {
+      id: '/events/$id/guide'
+      path: '/guide'
+      fullPath: '/events/$id/guide'
+      preLoaderRoute: typeof EventsIdGuideRouteImport
+      parentRoute: typeof EventsIdRoute
+    }
     '/events/$id/hub': {
       id: '/events/$id/hub'
       path: '/hub'
@@ -2010,6 +2042,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/admin/reports/events'
       preLoaderRoute: typeof AuthenticatedAdminReportsEventsRouteImport
+      parentRoute: typeof AuthenticatedAdminReportsRoute
+    }
+    '/_authenticated/admin/reports/pears': {
+      id: '/_authenticated/admin/reports/pears'
+      path: '/pears'
+      fullPath: '/admin/reports/pears'
+      preLoaderRoute: typeof AuthenticatedAdminReportsPearsRouteImport
       parentRoute: typeof AuthenticatedAdminReportsRoute
     }
     '/_authenticated/admin/weather/counties': {
@@ -2185,11 +2224,13 @@ const AuthenticatedAdminProgramsRouteWithChildren =
 
 interface AuthenticatedAdminReportsRouteChildren {
   AuthenticatedAdminReportsEventsRoute: typeof AuthenticatedAdminReportsEventsRoute
+  AuthenticatedAdminReportsPearsRoute: typeof AuthenticatedAdminReportsPearsRoute
 }
 
 const AuthenticatedAdminReportsRouteChildren: AuthenticatedAdminReportsRouteChildren =
   {
     AuthenticatedAdminReportsEventsRoute: AuthenticatedAdminReportsEventsRoute,
+    AuthenticatedAdminReportsPearsRoute: AuthenticatedAdminReportsPearsRoute,
   }
 
 const AuthenticatedAdminReportsRouteWithChildren =
@@ -2446,11 +2487,13 @@ const PublicationsRouteWithChildren = PublicationsRoute._addFileChildren(
 
 interface EventsIdRouteChildren {
   EventsIdEvaluationRoute: typeof EventsIdEvaluationRoute
+  EventsIdGuideRoute: typeof EventsIdGuideRoute
   EventsIdHubRoute: typeof EventsIdHubRoute
 }
 
 const EventsIdRouteChildren: EventsIdRouteChildren = {
   EventsIdEvaluationRoute: EventsIdEvaluationRoute,
+  EventsIdGuideRoute: EventsIdGuideRoute,
   EventsIdHubRoute: EventsIdHubRoute,
 }
 

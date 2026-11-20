@@ -12,6 +12,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import type { Institution } from "@/lib/institutions";
+import { landGrant1890Logo } from "@/lib/land-grant-1890";
 
 type InstitutionComboboxProps = {
   institutions: Institution[];
@@ -59,9 +60,14 @@ export function InstitutionCombobox({
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
-          className={cn("h-10 w-full justify-between font-normal", className)}
+          className={cn("h-12 w-full justify-between font-normal", className)}
         >
-          <span className="truncate">{triggerLabel}</span>
+          <span className="flex min-w-0 items-center gap-2">
+            {selected && landGrant1890Logo(selected.slug) && (
+              <img src={landGrant1890Logo(selected.slug) ?? undefined} alt="" className="h-8 w-8 shrink-0 rounded bg-white object-contain p-0.5" onError={(event) => { event.currentTarget.hidden = true; }} />
+            )}
+            <span className="truncate">{triggerLabel}</span>
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -85,6 +91,7 @@ export function InstitutionCombobox({
               )}
               {institutions.map((institution) => {
                 const label = `${institution.name}${institution.state ? ` (${institution.state})` : ""}`;
+                const logo = landGrant1890Logo(institution.slug);
                 return (
                   <CommandItem
                     key={institution.id}
@@ -100,6 +107,7 @@ export function InstitutionCombobox({
                         value === institution.id ? "opacity-100" : "opacity-0",
                       )}
                     />
+                    {logo && <img src={logo} alt="" className="mr-2 h-8 w-8 shrink-0 rounded bg-white object-contain p-0.5" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />}
                     <span className="flex min-w-0 flex-1 flex-col">
                       <span className="truncate">{label}</span>
                       {institution.is1890LandGrant && (
