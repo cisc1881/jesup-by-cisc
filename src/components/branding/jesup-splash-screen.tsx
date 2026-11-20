@@ -92,7 +92,7 @@ export function JesupSplashScreen({
         <p
           className={cn(
             "jesup-splash__subtitle mt-5 text-sm font-medium tracking-wide sm:text-base",
-            isDarkSplash ? "text-primary-foreground/90" : "text-muted-foreground",
+            isDarkSplash ? "text-white/90" : "text-muted-foreground",
           )}
         >
           The Digital Extension Wagon
@@ -101,7 +101,7 @@ export function JesupSplashScreen({
         <p
           className={cn(
             "jesup-splash__attribution mt-3 max-w-xs text-xs leading-relaxed",
-            isDarkSplash ? "text-primary-foreground/65" : "text-muted-foreground/80",
+            isDarkSplash ? "text-white/75" : "text-muted-foreground/80",
           )}
         >
           Powered by the Carver Integrative Sustainability Center

@@ -148,7 +148,7 @@ export function PublicNav() {
             <Button
               asChild
               size="sm"
-              className="rounded-full grad-jesup text-primary-foreground shadow-[var(--shadow-crimson)] hover:opacity-95"
+              className="rounded-full grad-jesup text-white shadow-[var(--shadow-crimson)] hover:opacity-95"
             >
               <Link to="/auth">Sign in</Link>
             </Button>

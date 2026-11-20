@@ -17,7 +17,7 @@ export function FilterPill({ active, onClick, children, className }: FilterPillP
       className={cn(
         "shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         active
-          ? "grad-crimson text-primary-foreground shadow-token-crimson"
+          ? "grad-crimson text-gradient-foreground shadow-token-crimson"
           : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         className,
       )}

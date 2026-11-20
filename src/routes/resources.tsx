@@ -17,7 +17,7 @@ function Resources() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {resourceHubLinks.map((c) => (
             <Link key={c.to} to={c.to} className="group flex items-start gap-4 rounded-3xl bg-card p-6 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl grad-crimson text-white">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl grad-crimson text-gradient-foreground">
                 <c.icon className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">

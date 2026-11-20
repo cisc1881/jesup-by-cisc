@@ -24,12 +24,12 @@ export function PodcastCard({ episode, className, variant = "grid" }: PodcastCar
             {episode.coverUrl ? (
               <img src={episode.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center grad-crimson text-primary-foreground">
+              <div className="flex h-full w-full items-center justify-center grad-crimson text-gradient-foreground">
                 <Mic className="h-8 w-8 opacity-80" aria-hidden="true" />
               </div>
             )}
             <span className="absolute inset-0 grid place-items-center bg-black/0 transition group-hover:bg-black/25">
-              <span className="grid h-10 w-10 translate-y-1 place-items-center rounded-full bg-white text-foreground opacity-0 shadow-lg transition group-hover:translate-y-0 group-hover:opacity-100">
+              <span className="grid h-10 w-10 translate-y-1 place-items-center rounded-full bg-white text-[#080808] opacity-0 shadow-lg transition group-hover:translate-y-0 group-hover:opacity-100">
                 <Play className="h-4 w-4 fill-current" aria-hidden="true" />
               </span>
             </span>
@@ -66,12 +66,12 @@ export function PodcastCard({ episode, className, variant = "grid" }: PodcastCar
           {episode.coverUrl ? (
             <img src={episode.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center grad-crimson text-primary-foreground">
+            <div className="flex h-full w-full items-center justify-center grad-crimson text-gradient-foreground">
               <Mic className="h-10 w-10 opacity-80" aria-hidden="true" />
             </div>
           )}
           <span className="absolute inset-0 grid place-items-center bg-black/0 transition hover:bg-black/25">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-white text-foreground opacity-90 shadow-lg">
+            <span className="grid h-12 w-12 place-items-center rounded-full bg-white text-[#080808] opacity-90 shadow-lg">
               <Play className="h-5 w-5 fill-current" aria-hidden="true" />
             </span>
           </span>

@@ -407,7 +407,7 @@ export function PublicationFormDialog({
             </TabsContent>
           </Tabs>
 
-          <Button type="submit" className="w-full grad-crimson text-white" disabled={saving}>
+          <Button type="submit" className="w-full grad-crimson text-gradient-foreground" disabled={saving}>
             {saving ? "Saving…" : "Save publication"}
           </Button>
         </form>

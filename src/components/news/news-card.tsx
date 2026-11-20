@@ -34,7 +34,7 @@ export function NewsCard({ article, className, variant = "default" }: NewsCardPr
           {article.coverImageUrl ? (
             <img src={article.coverImageUrl} alt={`${article.title} cover`} className="h-full w-full object-cover" loading="lazy" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center grad-crimson text-primary-foreground">
+            <div className="flex h-full w-full items-center justify-center grad-crimson text-gradient-foreground">
               <span className="text-4xl font-black opacity-30">NEWS</span>
             </div>
           )}

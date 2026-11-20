@@ -63,7 +63,7 @@ function DonatePage() {
         <div className="grid gap-5 md:grid-cols-3">
           {ways.map((w) => (
             <div key={w.title} className="group rounded-3xl bg-card p-8 shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]">
-              <span className="grid h-14 w-14 place-items-center rounded-2xl grad-crimson text-white shadow-[var(--shadow-crimson)]">
+              <span className="grid h-14 w-14 place-items-center rounded-2xl grad-crimson text-gradient-foreground shadow-[var(--shadow-crimson)]">
                 <w.icon className="h-6 w-6" />
               </span>
               <h3 className="mt-5 text-xl font-black tracking-tight">{w.title}</h3>
@@ -83,12 +83,12 @@ function DonatePage() {
 
       {/* Contact strip */}
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
-        <div className="rounded-3xl bg-foreground p-8 text-white sm:p-12">
+        <div className="rounded-3xl bg-foreground p-8 text-background sm:p-12">
           <div className="grid gap-6 sm:grid-cols-[1fr_auto] sm:items-center">
             <div>
               <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] grad-gold-text">Major gifts & partnerships</div>
               <h3 className="text-2xl font-black tracking-tight sm:text-3xl">Talk with our team.</h3>
-              <p className="mt-2 max-w-xl text-white/70">For sponsorships, endowments, and multi-year partnerships, our development team is ready to design a gift that fits your goals.</p>
+              <p className="mt-2 max-w-xl text-background/80">For sponsorships, endowments, and multi-year partnerships, our development team is ready to design a gift that fits your goals.</p>
             </div>
             <a href="mailto:cisc@tuskegee.edu" className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition hover:scale-[1.02]">
               Contact us <ArrowRight className="h-4 w-4" />

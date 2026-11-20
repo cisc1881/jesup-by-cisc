@@ -212,7 +212,7 @@ export function PodcastFormDialog({ open, onOpenChange, episodeId, onSaved }: Po
             </TabsContent>
           </Tabs>
 
-          <Button type="submit" className="w-full grad-crimson text-white" disabled={saving}>
+          <Button type="submit" className="w-full grad-crimson text-gradient-foreground" disabled={saving}>
             {saving ? "Saving…" : "Save episode"}
           </Button>
         </form>

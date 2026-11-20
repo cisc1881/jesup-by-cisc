@@ -89,6 +89,7 @@ html[data-jesup-reduced-motion="true"] *::after {
   /* JESUP network palette stays consistent for every institution. */
   --primary: #1764d4;
   --primary-foreground: oklch(0.99 0 0);
+  --gradient-foreground: #ffffff;
   --primary-mid: #1764d4;
   --primary-bright: #75a9ff;
 
@@ -183,7 +184,7 @@ html[data-jesup-reduced-motion="true"] *::after {
     color-mix(in srgb, #737373 82%, transparent) 100%
   );
   /* Legacy aliases keep existing screens visually continuous during migration. */
-  --gradient-crimson: linear-gradient(125deg, #1764d4 0%, #3984f6 100%);
+  --gradient-crimson: linear-gradient(125deg, #1764d4 0%, #155cbd 100%);
   --gradient-crimson-soft: var(--gradient-jesup-soft);
   --gradient-gold: linear-gradient(
     135deg,
@@ -241,7 +242,7 @@ html[data-jesup-reduced-motion="true"] *::after {
   --institution-accent-soft: #152b4d;
   --institution-accent-foreground: #080808;
   --institution-secondary: #75a9ff;
-  --institution-secondary-foreground: #ffffff;
+  --institution-secondary-foreground: #080808;
   --institution-surface-primary: color-mix(in srgb, #d4d4d8 8%, var(--card));
   --institution-surface-secondary: color-mix(in srgb, #71717a 12%, var(--card));
   --institution-surface-split: linear-gradient(
@@ -268,7 +269,7 @@ html[data-jesup-reduced-motion="true"] *::after {
   --sidebar: #191919;
   --sidebar-foreground: oklch(0.98 0 0);
   --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-primary-foreground: #080808;
   --sidebar-accent: color-mix(in oklch, var(--institution-accent) 18%, oklch(0.18 0 0));
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
@@ -276,7 +277,7 @@ html[data-jesup-reduced-motion="true"] *::after {
   --shadow-soft: 0 4px 20px -6px oklch(0 0 0 / 35%), 0 2px 6px -2px oklch(0 0 0 / 20%);
   --shadow-lift: 0 12px 40px -12px oklch(0 0 0 / 45%), 0 4px 10px -4px oklch(0 0 0 / 25%);
   --shadow-crimson: 0 20px 50px -20px color-mix(in oklch, var(--primary) 55%, transparent);
-  --gradient-crimson: linear-gradient(125deg, #3984f6 0%, #1764d4 100%);
+  --gradient-crimson: linear-gradient(125deg, #1764d4 0%, #155cbd 100%);
 }
 
 @layer base {
@@ -791,7 +792,7 @@ body *::after {
 .home-slide-control:hover { background: var(--home-control-hover); }
 .home-hero-cta, .home-hero-cta:hover { background: var(--home-cta); color: var(--home-cta-foreground); }
 .guest-entry-surface { background: var(--entry-gradient); }
-.brand-primary-control { background-image: var(--gradient-jesup); color: var(--gradient-foreground); }
+.brand-primary-control { background-image: var(--gradient-jesup); color: #fff; }
 .brand-primary-control:hover { background-image: var(--gradient-jesup); }
 .program-media-overlay { background: var(--program-media-overlay); }
 /* Image slide: uncropped artwork above a separate, high-contrast text band. */

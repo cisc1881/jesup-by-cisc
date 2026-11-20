@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Compass, Home, Ticket, User, Users } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 const items = [
   { to: "/", label: "Home", icon: Home, match: (path: string) => path === "/" },
@@ -14,38 +15,43 @@ const items = [
       path.startsWith("/publications"),
   },
   {
-    to: "/join",
-    label: "Connect",
+    to: "/me/messages",
+    label: "Messages",
     icon: Users,
-    match: (path: string) => path.startsWith("/join") || path.startsWith("/partners"),
+    match: (path: string) => path.startsWith("/me/messages"),
   },
   {
     to: "/me",
     label: "Me",
     icon: User,
-    match: (path: string) => path.startsWith("/me") || path.startsWith("/auth"),
+    match: (path: string) =>
+      (path.startsWith("/me") &&
+        !path.startsWith("/me/messages") &&
+        !path.startsWith("/me/wallet")) ||
+      path.startsWith("/auth"),
   },
 ] as const;
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { user } = useAuth();
 
   if (pathname.startsWith("/admin")) return null;
 
   const renderItem = (item: (typeof items)[number]) => {
-    const active = item.match(pathname);
+    const guestJoin = item.label === "Messages" && !user;
+    const active = guestJoin ? pathname.startsWith("/join") : item.match(pathname);
     return (
       <Link
         key={item.to}
-        to={item.to}
+        to={guestJoin ? "/join" : item.to}
         className="group flex min-h-[60px] min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[11px] font-semibold transition"
         aria-current={active ? "page" : undefined}
       >
-        <item.icon
-          className="h-5 w-5 text-primary"
-          aria-hidden="true"
-        />
-        <span className={active ? "text-primary" : "text-muted-foreground"}>{item.label}</span>
+        <item.icon className="h-5 w-5 text-primary" aria-hidden="true" />
+        <span className={active ? "text-primary" : "text-muted-foreground"}>
+          {guestJoin ? "Join" : item.label}
+        </span>
       </Link>
     );
   };

@@ -628,7 +628,7 @@ function LegacyEventHubPage() {
                 <>
                   <div className="grad-jesup p-4 text-white sm:p-6">
                     <form onSubmit={submitSessionSearch} className="flex items-stretch gap-2">
-                      <label className="flex min-h-12 min-w-0 flex-1 items-center gap-3 bg-white px-4 text-foreground">
+                      <label className="flex min-h-12 min-w-0 flex-1 items-center gap-3 bg-white px-4 text-[#080808]">
                         <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
                         <span className="sr-only">Search event sessions</span>
                         <input
@@ -704,7 +704,7 @@ function LegacyEventHubPage() {
                           onClick={() => setAgendaMode(mode)}
                           className={cn(
                             "min-h-11 font-bold",
-                            agendaMode === mode ? "bg-white text-primary" : "text-white",
+                            agendaMode === mode ? "bg-white text-[#1764d4]" : "text-white",
                           )}
                         >
                           {mode === "full" ? "Full agenda" : `My agenda (${savedSessions.length})`}

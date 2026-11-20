@@ -19,7 +19,7 @@ export function QuickActionTile({ to, label, icon: Icon, className }: QuickActio
         className,
       )}
     >
-      <span className="grid h-12 w-12 place-items-center rounded-2xl grad-crimson text-primary-foreground shadow-token-crimson transition group-hover:scale-105">
+      <span className="grid h-12 w-12 place-items-center rounded-2xl grad-crimson text-gradient-foreground shadow-token-crimson transition group-hover:scale-105">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <span className="text-center text-xs font-semibold text-foreground">{label}</span>

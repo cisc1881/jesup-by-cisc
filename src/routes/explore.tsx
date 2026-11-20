@@ -119,13 +119,18 @@ function ExplorePage() {
           <h2 id="explore-categories" className="mb-4 text-2xl font-black">
             Browse by category
           </h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <div
+            className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-3 touch-pan-x scrollbar-none sm:mx-0 sm:px-0"
+            role="region"
+            aria-label="Swipe to browse categories"
+            tabIndex={0}
+          >
             {categories.map((category) => (
               <Link
                 key={category.to}
                 to={category.to}
                 search={category.to === "/events" ? { view: "explore" } : undefined}
-                className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#191919] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="group relative aspect-[4/5] w-[42vw] max-w-[210px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#191919] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-[25vw] lg:w-[16vw]"
               >
                 <img
                   src={category.image}
@@ -157,7 +162,12 @@ function ExplorePage() {
                 View all
               </Link>
             </div>
-            <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
+            <div
+              className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-4 pb-3 touch-pan-x scrollbar-none sm:mx-0 sm:px-0"
+              role="region"
+              aria-label={`Swipe through ${rail.title} events`}
+              tabIndex={0}
+            >
               {rail.entries.map((event) => (
                 <WideDiscoveryCard
                   key={event.id}
@@ -174,7 +184,7 @@ function ExplorePage() {
           </section>
         ))}
         {data && (
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="space-y-9">
             {data.programs.length > 0 && (
               <section aria-label="Programs" className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -183,14 +193,20 @@ function ExplorePage() {
                     View all
                   </Link>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {data.programs.slice(0, 2).map((program) => (
+                <div
+                  className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-4 pb-3 touch-pan-x scrollbar-none sm:mx-0 sm:px-0"
+                  role="region"
+                  aria-label="Swipe through programs"
+                  tabIndex={0}
+                >
+                  {data.programs.map((program) => (
                     <WideDiscoveryCard
                       key={program.slug}
                       href={`/programs/${encodeURIComponent(program.slug)}`}
                       title={program.name}
                       imageUrl={program.imageUrl}
                       detail={program.short}
+                      className="w-[82vw] max-w-[420px] shrink-0 snap-start sm:w-[42vw]"
                     />
                   ))}
                 </div>
@@ -204,14 +220,20 @@ function ExplorePage() {
                     View all
                   </Link>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {data.markets.slice(0, 2).map((market) => (
+                <div
+                  className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-4 pb-3 touch-pan-x scrollbar-none sm:mx-0 sm:px-0"
+                  role="region"
+                  aria-label="Swipe through markets"
+                  tabIndex={0}
+                >
+                  {data.markets.map((market) => (
                     <WideDiscoveryCard
                       key={market.id}
                       href={`/markets/${encodeURIComponent(market.id)}`}
                       title={market.name}
                       imageUrl={market.coverImageUrl}
                       detail={[market.city, market.state].filter(Boolean).join(", ")}
+                      className="w-[82vw] max-w-[420px] shrink-0 snap-start sm:w-[42vw]"
                     />
                   ))}
                 </div>
@@ -225,14 +247,20 @@ function ExplorePage() {
                     View all
                   </Link>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {data.publications.slice(0, 2).map((publication) => (
+                <div
+                  className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-4 pb-3 touch-pan-x scrollbar-none sm:mx-0 sm:px-0"
+                  role="region"
+                  aria-label="Swipe through publications"
+                  tabIndex={0}
+                >
+                  {data.publications.map((publication) => (
                     <WideDiscoveryCard
                       key={publication.id}
                       href={`/publications/${encodeURIComponent(publication.slug)}`}
                       title={publication.title}
                       imageUrl={publication.coverImageUrl}
                       detail={publication.description}
+                      className="w-[82vw] max-w-[420px] shrink-0 snap-start sm:w-[42vw]"
                     />
                   ))}
                 </div>

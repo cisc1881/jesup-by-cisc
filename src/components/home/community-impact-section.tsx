@@ -18,7 +18,7 @@ export function CommunityImpactSection({ stats, meta, isLoading }: CommunityImpa
           titleId={headingId}
           eyebrow={meta.eyebrow ?? undefined}
           title={meta.title}
-          titleClassName="text-primary-foreground"
+          titleClassName="text-gradient-foreground"
         />
         {isLoading ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

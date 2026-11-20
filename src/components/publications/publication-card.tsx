@@ -21,7 +21,7 @@ export function PublicationCard({ publication, className }: PublicationCardProps
           {publication.coverImageUrl ? (
             <img src={publication.coverImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center grad-crimson text-primary-foreground">
+            <div className="flex h-full w-full items-center justify-center grad-crimson text-gradient-foreground">
               {isVideo ? <Play className="h-10 w-10 opacity-80" /> : <span className="text-3xl font-black opacity-30">PDF</span>}
             </div>
           )}

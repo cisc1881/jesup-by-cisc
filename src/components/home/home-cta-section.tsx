@@ -15,7 +15,7 @@ export function HomeCtaSection({ cta }: HomeCtaSectionProps) {
       <AppCard
         variant="lift"
         padding="lg"
-        className="relative overflow-hidden border-0 grad-crimson text-primary-foreground shadow-token-crimson"
+        className="relative overflow-hidden border-0 grad-crimson text-gradient-foreground shadow-token-crimson"
       >
         <div
           className="pointer-events-none absolute inset-0 opacity-20"
@@ -27,7 +27,7 @@ export function HomeCtaSection({ cta }: HomeCtaSectionProps) {
         />
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 max-w-xl">
-            {cta.eyebrow && <p className="text-eyebrow grad-gold-text">{cta.eyebrow}</p>}
+            {cta.eyebrow && <p className="text-eyebrow text-white/85">{cta.eyebrow}</p>}
             <h2 id="home-cta-heading" className="mt-1 text-2xl font-black tracking-[var(--tracking-tight)] sm:text-3xl">
               {cta.title}
             </h2>

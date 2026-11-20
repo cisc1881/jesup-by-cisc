@@ -8,7 +8,7 @@ const appButtonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "grad-crimson text-primary-foreground shadow-token-crimson hover:opacity-95",
+        primary: "grad-crimson text-gradient-foreground shadow-token-crimson hover:opacity-95",
         secondary: "border border-primary/45 bg-primary/10 text-primary shadow-token-soft hover:bg-primary/20",
         outline: "border border-primary/55 bg-background text-primary shadow-token-soft hover:bg-primary/10",
         ghost: "text-primary hover:bg-primary/10",

@@ -39,7 +39,7 @@ export function NextSessionCountdown({ event }: { event: EventDetail }) {
       <div className="relative z-10 p-6 sm:p-8">
         {state.kind === "now" ? (
           <>
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent">
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/90">
               <Clock className="h-4 w-4" /> Happening now
             </p>
             <h2 id="next-session-heading" className="mt-2 text-2xl font-black text-white sm:text-3xl">
@@ -58,7 +58,7 @@ export function NextSessionCountdown({ event }: { event: EventDetail }) {
           </>
         ) : (
           <>
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent">
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/90">
               <Clock className="h-4 w-4" /> Next session
             </p>
             <h2 id="next-session-heading" className="mt-2 text-2xl font-black text-white sm:text-3xl">

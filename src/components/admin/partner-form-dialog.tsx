@@ -282,7 +282,7 @@ export function PartnerFormDialog({ open, onOpenChange, partnerId, onSaved }: Pa
                       className={cn(
                         "rounded-full px-3 py-1.5 text-xs font-semibold transition",
                         active
-                          ? "grad-crimson text-primary-foreground"
+                          ? "grad-crimson text-gradient-foreground"
                           : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
                       )}
                     >
@@ -333,7 +333,7 @@ export function PartnerFormDialog({ open, onOpenChange, partnerId, onSaved }: Pa
             </TabsContent>
           </Tabs>
 
-          <Button type="submit" className="w-full grad-crimson text-white" disabled={saving}>
+          <Button type="submit" className="w-full grad-crimson text-gradient-foreground" disabled={saving}>
             {saving ? "Saving…" : "Save partner"}
           </Button>
         </form>

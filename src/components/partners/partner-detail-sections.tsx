@@ -168,11 +168,11 @@ export function PartnerRelatedSection({
 
 export function PartnerDetailCta() {
   return (
-    <div className="rounded-3xl grad-crimson p-6 text-center text-primary-foreground shadow-token-crimson sm:p-8">
+    <div className="rounded-3xl grad-crimson p-6 text-center text-gradient-foreground shadow-token-crimson sm:p-8">
       <h2 className="text-xl font-black tracking-[var(--tracking-tight)] sm:text-2xl">
         Partner with CISC
       </h2>
-      <p className="mx-auto mt-2 max-w-lg text-sm text-primary-foreground/85">
+      <p className="mx-auto mt-2 max-w-lg text-sm text-gradient-foreground/85">
         Join our network of universities, agencies, foundations, and community organizations advancing sustainable
         development across the Black Belt.
       </p>
