@@ -10,17 +10,14 @@ import { fmtDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/explore")({ component: ExplorePage });
 
+const categoryImage = "/images/content/fc135-conference-art.jpg";
 const categories = [
-  { label: "Events", to: "/events", image: "/images/content/fc135-conference-art.jpg" },
-  { label: "Programs", to: "/programs", image: "/images/content/chfp.jpg" },
-  {
-    label: "Publications",
-    to: "/publications",
-    image: "/images/content/state-of-african-americans-black-belt.jpg",
-  },
-  { label: "Markets", to: "/markets", image: "/images/content/macon-county-farmers-market.jpg" },
-  { label: "Podcasts", to: "/podcast", image: "/images/content/2fas-podcast.jpg" },
-  { label: "Internships", to: "/internships", image: "/images/content/chfp-cohort.jpg" },
+  { label: "Events", to: "/events" },
+  { label: "Programs", to: "/programs" },
+  { label: "Publications", to: "/publications" },
+  { label: "Markets", to: "/markets" },
+  { label: "Podcasts", to: "/podcast" },
+  { label: "Internships", to: "/internships" },
 ] as const;
 
 function ExplorePage() {
@@ -119,34 +116,32 @@ function ExplorePage() {
           <h2 id="explore-categories" className="mb-4 text-2xl font-black">
             Browse by category
           </h2>
-          <div
-            className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-3 touch-pan-x scrollbar-none sm:mx-0 sm:px-0"
-            role="region"
-            aria-label="Swipe to browse categories"
-            tabIndex={0}
-          >
-            {categories.map((category) => (
-              <Link
-                key={category.to}
-                to={category.to}
-                search={category.to === "/events" ? { view: "explore" } : undefined}
-                className="group relative aspect-[4/5] w-[42vw] max-w-[210px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#191919] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-[25vw] lg:w-[16vw]"
-              >
-                <img
-                  src={category.image}
-                  alt=""
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-                <span
-                  className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/20"
-                  aria-hidden="true"
-                />
-                <span className="absolute inset-x-3 bottom-3 text-base font-extrabold text-white sm:text-lg">
-                  {category.label}
-                </span>
-              </Link>
-            ))}
+          <div className="relative isolate overflow-hidden rounded-3xl bg-[#191919] p-2 shadow-[var(--shadow-soft)]">
+            <img
+              src={categoryImage}
+              alt=""
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
+            <div className="relative grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {categories.map((category) => (
+                <Link
+                  key={category.to}
+                  to={category.to}
+                  search={category.to === "/events" ? { view: "explore" } : undefined}
+                  className="group relative flex aspect-[3/2] min-w-0 items-end overflow-hidden rounded-xl border border-white/35 p-3 text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:p-5"
+                >
+                  <span
+                    className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10 transition-colors group-hover:from-black/95 group-hover:via-black/45"
+                    aria-hidden="true"
+                  />
+                  <span className="relative text-base font-extrabold drop-shadow-sm sm:text-xl">
+                    {category.label}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 
