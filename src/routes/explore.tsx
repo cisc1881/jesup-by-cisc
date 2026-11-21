@@ -10,7 +10,7 @@ import { fmtDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/explore")({ component: ExplorePage });
 
-const categoryImage = "/images/content/fc135-conference-art.jpg";
+const categoryImage = "/images/content/jesup-wagon.jpg";
 const categories = [
   { label: "Events", to: "/events" },
   { label: "Programs", to: "/programs" },
@@ -116,7 +116,7 @@ function ExplorePage() {
           <h2 id="explore-categories" className="mb-4 text-2xl font-black">
             Browse by category
           </h2>
-          <div className="relative isolate overflow-hidden rounded-3xl bg-[#191919] p-2 shadow-[var(--shadow-soft)]">
+          <div className="relative isolate overflow-hidden rounded-2xl bg-[#191919] shadow-[var(--shadow-soft)]">
             <img
               src={categoryImage}
               alt=""
@@ -124,19 +124,19 @@ function ExplorePage() {
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
-            <div className="relative grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <div className="relative grid grid-cols-2">
               {categories.map((category) => (
                 <Link
                   key={category.to}
                   to={category.to}
                   search={category.to === "/events" ? { view: "explore" } : undefined}
-                  className="group relative flex aspect-[3/2] min-w-0 items-end overflow-hidden rounded-xl border border-white/35 p-3 text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:p-5"
+                  className="group relative flex aspect-square min-w-0 items-end overflow-hidden p-3 text-white ring-1 ring-inset ring-white/45 transition-colors hover:bg-white/10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary sm:p-6"
                 >
                   <span
-                    className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10 transition-colors group-hover:from-black/95 group-hover:via-black/45"
+                    className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent transition-colors group-hover:from-black/90"
                     aria-hidden="true"
                   />
-                  <span className="relative text-base font-extrabold drop-shadow-sm sm:text-xl">
+                  <span className="relative text-base font-extrabold drop-shadow-sm sm:text-2xl">
                     {category.label}
                   </span>
                 </Link>
